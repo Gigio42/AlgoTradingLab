@@ -78,10 +78,9 @@ Interactive Brokers e TradeStation oferecem ferramentas e APIs para que
 investidores, inclusive de varejo, desenvolvam e implementem estratégias
 algorítmicas.
 
-Diante desse cenário, o objetivo deste projeto é propor a criação de uma ferramenta
-baseada em trading algorítmico e modelos estatísticos para analisar padrões de
-tendência no mercado de ativos, explorando as oportunidades geradas pela
-volatilidade.
+Diante desse cenário, este trabalho desenvolveu uma ferramenta baseada em trading
+algorítmico e modelos estatísticos para analisar padrões de tendência no mercado de
+ativos, explorando as oportunidades geradas pela volatilidade.
 
 \section{Problema}
 
@@ -109,60 +108,34 @@ particular.
 \section{Hipóteses}
 
 \subsection{Hipótese Central}
-Propõe-se que a integração metodológica de previsão de séries temporais com modelo
-ARIMA, modelagem de volatilidade condicional com modelo GARCH e indicadores como
-RSI em uma ferramenta algorítmica unificada, desenvolvida em MQL5, permite a geração
+Este trabalho partiu da premissa de que a integração metodológica de previsão de séries temporais com modelo
+ARIMA e modelagem de volatilidade condicional com modelo GARCH em uma ferramenta algorítmica unificada, desenvolvida em MQL5, permite a geração
 de sinais de negociação para ativos com maior eficácia, aferida em termos de
 potencial de acerto e adequação ao risco, do que abordagens que empregam estas
 técnicas de forma isolada ou incompleta. A viabilidade de combinar diferentes
 ferramentas de análise para obter resultados superiores encontra respaldo em
 trabalhos como o de \citeonline{batista2024}, que demonstrou resultados positivos ao
-integrar indicadores como RSI, Médias Móveis Exponenciais e MACD em um modelo de
-negociação.
+integrar indicadores técnicos em um modelo de negociação.
 
 \subsection{Hipótese da Complementaridade Preditiva e de Risco}
-Postula-se que a combinação sequencial dos modelos ARIMA e GARCH constitui um avanço
+Partiu-se da premissa que a combinação sequencial dos modelos ARIMA e GARCH constitui um avanço
 significativo em relação a análises baseadas em Médias Móveis, como as exploradas
-por \citeonline{almeida2016}. Especificamente, espera-se que: o modelo ARIMA capture
-a dinâmica temporal e forneça previsões de curto prazo da direção dos preços com
+por \citeonline{almeida2016}. Especificamente, esperava-se que: o modelo ARIMA capturasse
+a dinâmica temporal e fornecesse previsões de curto prazo da direção dos preços com
 maior refinamento do que as Médias Móveis. A subsequente aplicação do modelo GARCH
-aos resíduos gerados pelo ARIMA incorpore com maior detalhe a modelagem da
+aos resíduos gerados pelo ARIMA incorpora com maior detalhe a modelagem da
 volatilidade e do risco associado às previsões, permitindo uma avaliação mais ampla
 do cenário de mercado.
 
-\subsection{Hipótese da Necessidade de Confirmação por Indicadores}
-Assume-se que a incorporação de indicadores técnicos como o RSI pode assegurar
-melhores decisões prevenindo falsos positivos. A análise de condições de mercado
-adicionais (e.g., níveis de sobrecompra/sobrevenda indicados pelo RSI) atua como um
-mecanismo de filtro essencial para validar ou invalidar os sinais primários gerados
-pela combinação ARIMA-GARCH, mitigando o risco de entradas em momentos
-potencialmente inoportunos e aumentando a seletividade das operações identificadas
-pela ferramenta.
-
-\subsection{Hipótese da Potencialização Preditiva com uso de Machine Learning}
-Propõe-se que, motivada pelos desafios que modelos estatísticos tradicionais como
-ARIMA e GARCH enfrentam ao lidar com a complexidade dos mercados financeiros,
-conforme demonstrado por \citeonline{araya2024} em sua pesquisa com modelos
-híbridos, a integração do modelo LSTM pode aprimorar a precisão das previsões
-geradas por esses modelos. Os mercados financeiros são influenciados por diversos
-fatores, muitos dos quais não seguem padrões lineares simples. O LSTM, por sua
-capacidade de identificar padrões complexos e pequenas dependências temporais nos
-dados, pode capturar nuances que escapam a modelos mais tradicionais.
-
-Embora o estudo de \citeonline{xing2024} mostre que, em algumas situações, modelos
-lineares podem ser mais eficazes, assume-se que as características específicas do
-mercado de ações brasileiro e a volatilidade histórica de PETR4 introduzem um nível
-significativo de não linearidade. Portanto, espera-se que o LSTM, após um treinamento
-cuidadoso, seja capaz de refinar e complementar as previsões de ARIMA, GARCH e
-indicadores técnicos, resultando em uma ferramenta de negociação mais adaptável,
-precisa e eficaz na gestão de riscos.
+\subsection{Hipótese da Adequação ao Risco}
+Partiu-se da premissa que a modelagem estatística da volatilidade via GARCH, complementada por métricas quantitativas de risco, assegura uma avaliação mais robusta das condições de mercado. A análise integrada de tendência (ARIMA) e risco (GARCH) reduz a probabilidade de decisões inadequadas em momentos de mercado desfavorável, aumentando a seletividade e a segurança das operações identificadas pela ferramenta.
 
 \section{Objetivo}
 
 \subsection{Objetivo Geral}
-Propor uma ferramenta algorítmica integrada, utilizando a linguagem de programação
+Desenvolver e avaliar uma ferramenta algorítmica integrada, utilizando a linguagem de programação
 MQL5 e a plataforma MetaTrader 5, para análise e previsão de tendências no mercado
-de ativos, com foco na economia brasileira.
+de ativos, com o propósito de gerar retornos superiores à taxa Selic, com foco na economia brasileira.
 
 \subsection{Objetivos Específicos}
 \begin{itemize}
@@ -172,11 +145,8 @@ de ativos, com foco na economia brasileira.
         com MQL5 na automação de estratégias;
   \item Implementar modelos estatísticos (ARIMA e GARCH) para previsão de séries
         temporais e modelagem de volatilidade;
-  \item Integrar indicadores técnicos (RSI e MACD) para obter sinais congruentes em
-        pontos de entrada e saída;
-  \item Comparar resultados obtidos com a atual Taxa SELIC (16, mai. 2025);
-  \item Usar Machine Learning com modelo LSTM para realizar análises não lineares
-        com os resultados do modelo que será criado.
+  \item Comparar resultados obtidos com a taxa Selic vigente;
+  \item Documentar obstáculos encontrados e lições aprendidas durante a execução do projeto.
 \end{itemize}
 
 \section{Justificativa}
@@ -248,18 +218,17 @@ nomotético da investigação.
 Em relação aos objetivos, a pesquisa se classifica como explicativa. Conforme
 \citeonline{wazlawick2014}, a pesquisa explicativa busca identificar as causas ou
 razões de determinados fenômenos, aprofundando o conhecimento sobre as relações
-entre variáveis. Neste caso, o estudo busca explicar como a combinação de diferentes
-modelos estatísticos e de aprendizado de máquina pode influenciar a capacidade
-preditiva e a gestão de riscos no mercado de ações, investigando os mecanismos pelos
-quais essa integração pode otimizar o desempenho da ferramenta algorítmica.
+entre variáveis. Neste caso, o estudo buscou explicar como a combinação de diferentes
+modelos estatísticos pode influenciar a capacidade preditiva e a gestão de riscos no mercado de ações, investigando os mecanismos pelos
+quais essa integração otimiza o desempenho da ferramenta algorítmica.
 
-No que concerne aos procedimentos técnicos, a pesquisa se desenvolve por meio de
-pesquisa bibliográfica e pesquisa experimental. A pesquisa bibliográfica é
-fundamental para a revisão da literatura existente sobre modelos estatísticos,
-aprendizado de máquina e trading algorítmico, fornecendo a base teórica e conceitual
-para o estudo. A pesquisa experimental, por sua vez, é realizada por meio de
+No que concerne aos procedimentos técnicos, a pesquisa se desenvolveu por meio de
+pesquisa bibliográfica e pesquisa experimental. A pesquisa bibliográfica foi
+fundamental para a revisão da literatura existente sobre modelos estatísticos
+e trading algorítmico, fornecendo a base teórica e conceitual
+para o estudo. A pesquisa experimental, por sua vez, foi realizada por meio de
 backtesting na plataforma MetaTrader 5, envolvendo a manipulação de variáveis
-(parâmetros dos modelos, indicadores técnicos) e a observação dos resultados (taxa
+(parâmetros dos modelos) e a observação dos resultados (taxa
 de acerto, lucro/prejuízo) para validar a eficácia da ferramenta desenvolvida.
 
 \section{Organização dos capítulos}
@@ -267,39 +236,37 @@ de acerto, lucro/prejuízo) para validar a eficácia da ferramenta desenvolvida.
 O Capítulo 1 apresenta a Fundamentação Teórica, oferecendo a base de conhecimento
 necessária para a compreensão do projeto.
 
-Inicialmente, serão abordados conceitos introdutórios que contextualizam a pesquisa.
-Isso inclui algumas partes sobre economia e princípios básicos do mercado
+Inicialmente, foram abordados conceitos introdutórios que contextualizam a pesquisa.
+Isso inclui partes sobre economia e princípios básicos do mercado
 financeiro, como o funcionamento de corretoras, bolsas de valores e as
 características dos ativos negociados.
 
 Mais adiante, o capítulo se aprofunda em conceitos mais técnicos, importantes para a
-análise e modelagem. Serão discutidas as diferentes abordagens da análise técnica de
+análise e modelagem. Foram discutidas as diferentes abordagens da análise técnica de
 ativos, com foco nos métodos estatísticos. A plataforma MetaTrader 5 e sua linguagem
-MQL5, utilizadas no desenvolvimento, serão apresentadas, assim como os tipos de
+MQL5, utilizadas no desenvolvimento, foram apresentadas, assim como os tipos de
 indicadores de mercado e os modelos estatísticos para análise de séries temporais e
-volatilidade. Também serão introduzidos os conceitos de Aprendizagem de Máquina
-aplicados à previsão financeira.
+volatilidade.
 
-Por fim, o capítulo apresentará uma revisão de pesquisas anteriores. Esta seção
-buscará relacionar o presente estudo com trabalhos já existentes na área,
+Por fim, o capítulo apresenta uma revisão de pesquisas anteriores. Esta seção
+relaciona o presente estudo com trabalhos já existentes na área,
 identificando como esta pesquisa se posiciona e contribui para o campo.
 
 O Capítulo 2 detalha a Metodologia utilizada, explicando o processo de construção e
 validação da ferramenta algorítmica.
 
-Este capítulo começa descrevendo a natureza da pesquisa e como o ambiente para os
-experimentos será preparado. Serão especificadas as ferramentas de software,
+Este capítulo começa descrevendo a natureza da pesquisa e o ambiente para os
+experimentos. Foram especificadas as ferramentas de software,
 linguagens de programação e as fontes de dados para o ativo financeiro em estudo,
-incluindo como os dados do mercado brasileiro serão acessados.
+incluindo como os dados do mercado brasileiro foram acessados.
 
-Em seguida, explora-se como o experimento de pesquisa será conduzido, com a descrição
+Em seguida, é descrito como o experimento de pesquisa foi conduzido, com a descrição
 das etapas para a implementação dos diferentes componentes da ferramenta. O processo
-inicia com as análises baseadas em indicadores de tendência, avança para a modelagem
-estatística dos preços e a análise da volatilidade dos resíduos, e culmina na
-integração de técnicas de Aprendizagem de Máquina visando aprimorar as previsões.
+iniciou com as análises baseadas em indicadores de tendência, avançando para a modelagem
+estatística dos preços e a análise da volatilidade dos resíduos via ARIMA e GARCH.
 
-O capítulo conclui estabelecendo os critérios para a avaliação dos modelos
-desenvolvidos e da ferramenta como um todo, detalhando as métricas de desempenho que
-serão utilizadas nos testes. Adicionalmente, são apresentados os resultados
-preliminares obtidos e os esperados ao final do projeto e o cronograma planejado
-para a sua execução.
+O capítulo apresenta também os obstáculos encontrados durante a execução, conclui
+estabelecendo os critérios para a avaliação dos modelos desenvolvidos e da ferramenta
+como um todo, detalhando as métricas de desempenho utilizadas nos testes.
+Adicionalmente, são apresentados os resultados preliminares obtidos e as limitações
+bem como perspectivas para trabalhos futuros.
