@@ -1,0 +1,412 @@
+% =====================================================================
+%  CAPÍTULO II / 3 Metodologia
+% =====================================================================
+\setdiv{CAPÍTULO II}
+\chapter{Metodologia}
+
+A metodologia deste projeto será estruturada em etapas sequenciais, visando o
+desenvolvimento, implementação e validação da ferramenta algorítmica proposta para a
+negociação de ativos financeiros. O objetivo é descrever os passos para construir e
+testar a solução, desde a escolha do ambiente até a avaliação de seu desempenho.
+
+\section{Natureza da Pesquisa}
+
+Este projeto, como mencionado na introdução, adota uma natureza de pesquisa
+experimental. A pesquisa experimental, no contexto de desenvolvimento de sistemas e
+algoritmos, envolve a manipulação controlada de variáveis que, neste caso, seriam os
+parâmetros dos modelos, as combinações de indicadores e as arquiteturas de rede
+neural, para observar e analisar os efeitos resultantes em um ambiente controlado.
+Serão conduzidos experimentos para testar diferentes configurações da ferramenta
+algorítmica, buscando identificar as abordagens mais eficazes para a negociação do
+ativo financeiro selecionado \cite{wazlawick2014}.
+
+\section{Padrões para Pesquisa Experimental}
+
+Para a condução dos experimentos e o desenvolvimento da ferramenta algorítmica
+proposta, será utilizado um conjunto definido de padrões e ferramentas, cujas
+funcionalidades e conceitos foram detalhados no capítulo anterior de Fundamentação
+Teórica.
+
+A plataforma MetaTrader 5 (MT5) será empregada como o ambiente central para as fases
+de desenvolvimento e teste. A linguagem de programação MQL5, nativa do MT5, será
+utilizada para a codificação dos Expert Advisors (EAs). Estes EAs são os algoritmos
+que efetivamente incorporarão a lógica dos modelos de análise de tendência,
+volatilidade, os indicadores técnicos e, em uma fase posterior, as previsões geradas
+pelo modelo de Aprendizagem de Máquina (LSTM) para a execução automatizada de ordens
+de negociação.
+
+O testador de estratégias integrado ao MT5 será uma ferramenta crucial, permitindo a
+realização de backtests. Esses testes simularão o desempenho operacional das
+estratégias desenvolvidas ao longo de períodos históricos, utilizando os dados de
+cotações passadas para avaliar a viabilidade e a rentabilidade potencial.
+
+Como fonte primária de dados, será utilizado o banco de dados histórico de cotações
+fornecido pela própria plataforma MetaTrader 5 com integração a corretoras
+brasileiras, como a Rico, que permite acessar ações da B3, como o ativo selecionado.
+Esta escolha metodológica simplifica significativamente o processo de aquisição de
+dados, seu tratamento inicial e a subsequente manipulação, uma vez que os dados já se
+encontram em um formato padronizado e são diretamente acessíveis via MQL5. Os dados a
+serem extraídos e utilizados incluirão, no mínimo, os preços de abertura, máximo,
+mínimo e fechamento, bem como o volume de negociação para cada período do timeframe
+definido para a análise, que será diário -- D1 para capturar tendências mais longas,
+mas podendo ser adaptado.
+
+O ativo referente às ações preferenciais da Petrobras (PETR4) será o objeto de estudo
+principal. Sua notória volatilidade histórica é um aspecto central para a aplicação
+dos modelos subsequentes, em particular o modelo GARCH, que é projetado
+especificamente para capturar e modelar a variância condicional em séries temporais
+que exibem tais flutuações. A liquidez e a representatividade do PETR4 no Ibovespa
+serão consideradas para assegurar a disponibilidade de dados robustos para esta
+análise de volatilidade e para contextualizar os resultados no mercado acionário
+nacional.
+
+Para uma caracterização inicial e visualização dessa volatilidade inerente ao PETR4
+e, se relevante para contextualização, de outros ativos comparáveis, serão calculadas
+e analisadas as Bandas de Bollinger. Este indicador técnico, que constrói um canal em
+torno de uma média móvel utilizando o desvio padrão dos preços, será aplicado à série
+histórica de preços do ativo. A observação da largura das bandas e do comportamento do
+preço em relação a elas poderá fornecer insights valiosos sobre os diferentes regimes
+de variação dos preços (períodos de alta ou baixa volatilidade) e auxiliar na
+compreensão do ambiente de mercado no qual a ferramenta algorítmica operará.
+
+No que tange ao desenvolvimento específico dos componentes de Aprendizagem de Máquina,
+notadamente o modelo LSTM, serão empregadas bibliotecas e ferramentas do ecossistema
+Python. Para as etapas cruciais de pré-processamento avançado de dados, que podem
+incluir a normalização/escalonamento das séries temporais, a criação de sequências de
+entrada para o LSTM e outras manipulações de arrays multidimensionais, serão
+utilizadas bibliotecas consolidadas como NumPy e Pandas.
+
+A implementação da arquitetura da rede neural LSTM, seu treinamento com os dados
+históricos e a subsequente avaliação de seu desempenho preditivo serão conduzidos
+utilizando um framework de deep learning robusto e popular, como Keras com o backend
+TensorFlow, ou alternativamente, PyTorch. A escolha final entre estes frameworks será
+guiada pela flexibilidade oferecida para a modelagem de arquiteturas LSTM específicas
+para séries temporais, a disponibilidade de recursos de otimização de hiperparâmetros,
+a qualidade da documentação e o suporte da comunidade para as tarefas de previsão
+financeira.
+
+\section{Experimento de Pesquisa}
+
+O experimento de pesquisa se iniciará com a implementação de abordagens para análise
+de tendência utilizando Médias Móveis. Serão programados em MQL5 diferentes tipos de
+médias móveis, como a Simples e a Exponencial. Estratégias baseadas em cruzamentos
+dessas médias serão implementadas para gerar indicações preliminares sobre a direção
+potencial do mercado, ou seja, sinais de compra ou venda. Estas estratégias também
+servirão para verificar o desempenho de modelos baseados apenas em médias no mercado
+mais recente.
+
+Posteriormente, o experimento avançará para uma modelagem estatística mais sofisticada
+da série temporal de preços, utilizando o modelo ARIMA. A determinação da ordem de
+integração `d' do modelo ARIMA $(p, d, q)$ será realizada através da aplicação
+sequencial do teste de raiz unitária ADF sobre a série. Para a definição das ordens
+autorregressiva `p' e de médias móveis `q', será adotado um procedimento sistemático
+de testar múltiplas combinações de 0 a 4. A seleção da especificação final será
+baseada no critério de informação Akaike Information Criterion (AIC).
+
+Na sequência, os resíduos obtidos a partir do modelo ARIMA ajustado serão utilizados
+como série de entrada para a modelagem da volatilidade condicional, por meio de um
+modelo GARCH. Esta abordagem combinada, ARIMA-GARCH, visará capturar a dinâmica da
+variância dos erros que não foi explicada pelo modelo de média condicional ARIMA.
+Serão estimados modelos GARCH, com foco inicial e principal na especificação GARCH
+(1,1), dada a sua prevalência e bom desempenho demonstrado na literatura para séries
+temporais financeiras e conforme a prática adotada em estudos de referência. O
+objetivo é modelar e, potencialmente, prever a volatilidade futura de curto prazo dos
+resíduos, fornecendo uma medida do risco associado às previsões de preço do ARIMA.
+
+Para enriquecer a análise e fornecer uma espécie de filtro de confirmação, serão
+incorporados indicadores técnicos. Especificamente, o RSI será utilizado para avaliar
+potenciais níveis de sobrecompra ou sobrevenda do ativo antes de validar operações com
+base nos demais modelos. A metodologia também contempla a possibilidade de inclusão
+futura de outros indicadores técnicos relevantes, conforme a necessidade.
+
+Em um esforço para refinar ainda mais a capacidade preditiva da ferramenta, a
+metodologia será expandida com a incorporação de um modelo de redes neurais
+recorrentes (RNN), especificamente o Long Short-Term Memory (LSTM). A escolha do LSTM
+se justifica por sua habilidade intrínseca de modelar relações não lineares,
+corrigindo uma limitação frequentemente observada em modelos puramente estatísticos
+como ARIMA e GARCH. A implementação buscará adaptações para o contexto do ativo PETR4 e
+as características operacionais do MetaTrader 5.
+
+Inicialmente, será crucial avaliar a necessidade de pré-processamento dos dados para o
+LSTM. Caso seja identificado como necessário, etapas como o preenchimento de dados
+faltantes, utilizando, por exemplo, interpolação spline cúbica \cite{kaya2014}, a
+detecção e o tratamento de outliers, e a normalização dos dados, possivelmente
+utilizando a escala Min-Max, serão implementadas.
+
+A próxima etapa consistirá na divisão dos dados em conjuntos de treinamento, validação
+e teste, que será realizada de forma sequencial para preservar a estrutura temporal
+inerente à série. Os 80\% iniciais dos dados serão utilizados para o treinamento do
+modelo LSTM. Os 10\% seguintes serão destinados à validação, com o objetivo de ajustar
+os hiperparâmetros da rede. Os 10\% finais serão reservados exclusivamente para o
+teste, permitindo uma avaliação do desempenho do modelo em dados completamente novos
+para ele.
+
+Após esta divisão, os dados serão reorganizados em um formato que é compatível com a
+estrutura de entrada esperada pela rede LSTM. O tamanho da janela (window size), um
+hiperparâmetro crucial que define quantas observações anteriores serão utilizadas para
+prever o próximo valor, será ajustado empiricamente com base nos resultados obtidos
+durante a fase de validação.
+
+O treinamento da rede LSTM envolverá a escolha da arquitetura do modelo, da função de
+ativação, do otimizador e da função de perda. Estas decisões serão tomadas através de
+experimentação e análise de desempenho no conjunto de validação. O número de épocas de
+treinamento será determinado monitorando o desempenho no conjunto de validação,
+utilizando técnicas como early stopping, para evitar o overfitting do modelo aos dados
+de treinamento.
+
+Em relação ao ambiente de treinamento para o modelo LSTM, a intenção inicial é
+utilizar a plataforma Google Colab, aproveitando seus recursos de GPU. No entanto,
+reconhece-se que, dependendo da complexidade final do modelo e do volume de dados
+processados, os recursos computacionais oferecidos nos planos gratuitos do Google
+Colab podem se mostrar insuficientes. Diante dessa possibilidade, o treinamento será
+realizado localmente em uma estação de trabalho equipada com uma GPU NVIDIA GeForce
+RTX 3050 (6GB VRAM), um processador Intel(R) 13th Gen i5-13450HX e 32GB de memória RAM.
+
+Caso mesmo esta configuração local apresente limitações para o treinamento do modelo
+desejado em um tempo viável, serão consideradas alternativas. Uma delas consiste na
+simplificação da arquitetura do modelo LSTM, aceitando um possível trade-off entre
+complexidade e capacidade preditiva para garantir a viabilidade do projeto.
+Alternativamente, será avaliada a aquisição de planos pagos com maior capacidade
+computacional em plataformas como o Google Colab, se o orçamento permitir e o ganho de
+desempenho justificar tal investimento.
+
+\section{Diagramas}
+
+\begin{figure}[htb]
+\centering
+\caption{Modelo Completo}
+\label{fig:modelo-completo}
+\includegraphics[width=0.45\textwidth]{fig08-modelo-completo.png}
+\fonte{Autoria própria.}
+\end{figure}
+
+\section{Critérios para Avaliação}
+
+Os testes das estratégias baseadas em Médias Móveis, cruzamento de Médias Móveis, e
+dos modelos ARIMA e GARCH, tanto de forma isolada, quanto em conjunto e combinados com
+o indicador RSI, serão realizados integralmente na plataforma MetaTrader 5 por meio do
+ambiente de backtesting.
+
+O desempenho dessas estratégias será quantitativamente avaliado por meio de métricas
+como a taxa de acerto das operações, o lucro ou prejuízo acumulado, o drawdown máximo
+observado e o fator de lucro. Todas estas métricas são fornecidas diretamente pela
+plataforma. Adicionalmente, um critério importante para a validação interna dos modelos
+estatísticos será a qualidade do ajuste dos modelos ARIMA e GARCH. Esta qualidade será
+aferida utilizando o critério de informação Akaike (AIC) e pela verificação da
+estacionariedade dos resíduos através do teste de raiz unitária de Dickey-Fuller
+Aumentado (ADF).
+
+O modelo LSTM, por sua vez, passará por uma fase inicial de treinamento e avaliação
+fora do ambiente MetaTrader 5. Para esta validação preliminar, será utilizado um
+conjunto de dados separado e obtido da plataforma. O desempenho do modelo LSTM durante
+esta fase de treinamento e teste externo será avaliado utilizando as métricas de Erro
+Absoluto Médio (MAE), Raiz do Erro Quadrático Médio (RMSE) e o coeficiente de
+determinação $R^2$. As singularidades de cada uma permitem analisar diferentes
+perspectivas do desempenho do modelo, viabilizando assim a comparação dos resultados
+obtidos neste projeto com outros estudos e benchmarks da área.
+
+Finalmente, após o treinamento e a validação iniciais, o modelo LSTM será integrado ao
+ambiente MetaTrader 5, materializado como um Expert Advisor. Nesta etapa crucial, o
+desempenho do modelo LSTM, agora operando como parte da ferramenta algorítmica, será
+avaliado através de backtesting extensivo em dados históricos do PETR4. Serão
+utilizadas exatamente as mesmas métricas de desempenho operacional fornecidas pela
+plataforma, que foram aplicadas às outras estratégias: taxa de acerto, lucro/prejuízo
+acumulado, drawdown máximo e fator de lucro.
+
+O objetivo desta etapa final de avaliação é permitir uma comparação direta e objetiva
+do desempenho do modelo LSTM em um ambiente de negociação simulado com os resultados
+das outras estratégias implementadas (Médias Móveis, ARIMA-GARCH e RSI). Esta análise
+comparativa visará identificar a abordagem ou combinação de abordagens mais promissora
+para a negociação do PETR4. Fundamentalmente, buscará validar as hipóteses do projeto
+sobre a efetividade da junção desses modelos na previsão de preços de ativos voláteis,
+fornecendo um termômetro claro do sucesso alcançado.
+
+\section{Resultados preliminares atingidos no PTG}
+
+Como mencionado anteriormente, este projeto busca revisitar e expandir as investigações
+de \citeonline{almeida2016}, que desenvolveu e testou um Expert Advisor (EA) baseado na
+estratégia de cruzamento de Médias Móveis (MM) para o ativo PETR4 na plataforma
+MetaTrader 5. O estudo original de \citeonline{almeida2016} observou que, embora sua
+estratégia pudesse gerar lucros em determinados períodos de mercado mais estáveis, ela
+enfrentava dificuldades e apresentava prejuízos durante crises financeiras,
+evidenciando a sensibilidade do algoritmo simples às condições de mercado.
+
+Para estabelecer um ponto de partida contemporâneo e avaliar o desempenho dessa
+estratégia no cenário de mercado mais recente, foi necessário adaptar e reimplementar a
+lógica central do EA proposto por \citeonline{almeida2016}.
+
+O código original fornecido por ele, embora conceitualmente claro, demandou
+atualizações para ser compatível com as versões mais recentes da linguagem MQL5 e da
+plataforma MetaTrader 5. Adicionalmente, \citeonline{almeida2016} mencionou o uso de
+bibliotecas externas para funcionalidades como gerenciamento de dinheiro e trailing
+stops, as quais não foram disponibilizadas em seu trabalho. Desta forma, para a presente
+análise preliminar, foi desenvolvido um EA em MQL5 utilizando a classe
+CTrade\footnote{Biblioteca padrão do MQL5 para as operações de negociação.} padrão para
+as operações de negociação e implementando a lógica de cruzamento de duas Médias Móveis
+Simples (MMS).
+
+A configuração do EA para este teste baseou-se nos seguintes parâmetros: Médias Móveis
+Simples com período de 10 para a rápida e 20 para a lenta, aplicadas ao preço de
+fechamento. A estratégia implementada inclui a reversão de posições, ou seja, ao ser
+gerado um novo sinal, qualquer posição oposta existente é primeiramente fechada.
+
+Os parâmetros de Stop Loss (SL) e Take Profit (TP) foram definidos por experimentação
+inicial em 50 pontos e 100 pontos e depois nulos, respectivamente, uma vez que
+\citeonline{almeida2016} não especificou os valores exatos utilizados em todos os seus
+testes para PETR4. Reconhece-se que esta escolha de SL/TP pode divergir da utilizada
+originalmente e constitui um ponto para otimizações e análises futuras.
+
+As operações foram configuradas para serem executadas apenas na abertura de uma nova
+barra no gráfico diário (D1), com a modelagem do backtest para ``Cada Tick'' para maior
+precisão na simulação dos preços de execução, alinhando-se com a abordagem de ``Every
+tick'' mencionada por \citeonline{almeida2016}.
+
+Visando uma comparação de desempenho sob condições financeiras similares às de um dos
+cenários de \citeonline{almeida2016}, o backtest foi conduzido com um depósito inicial
+de R\$ 50.000,00. O volume operacional foi definido como 1000 unidades do ativo PETR4
+por negociação. A alavancagem utilizada na simulação foi de 1:100. O período de teste
+compreendeu de 01 de janeiro de 2020 a 01 de maio de 2025.
+
+Os principais resultados obtidos neste backtest para o ativo PETR4 são apresentados e
+comparados qualitativamente com os achados de \citeonline{almeida2016} para PETR4 em
+períodos de crise:
+
+\begin{table}[htb]
+\centering
+\caption{Comparação modelo proposto x ALMEIDA (2016)}
+\label{tab:comparacao-almeida}
+\fontsize{10}{12}\selectfont
+\begin{tabular}{lcccc}
+\toprule
+& \textbf{Pereira (2025)} & \textbf{Pereira (2025)} & \textbf{Almeida (2016)} & \textbf{Almeida (2016)} \\
+& \textbf{1º teste} & \textbf{2º teste} & & \\
+\midrule
+\textbf{Período} & 2020-2025 (Crise) & 2020-2025 (Crise) & 2013-2016 & 2007-2011 (Crise) \\
+\addlinespace
+Volume por Operação & 1000 ações & 1000 ações & 1000 ações & 100 ações \\
+Lucro Líquido Total & R\$ -9.230,00 & R\$ -2.530,00 & R\$ +10.430,00 & R\$ -2.542,00 \\
+Retorno Percentual & -18,46\% & -5,06\% & +20,86\% & -5,08\% \\
+Fator de Lucro & 0,64 & 0,93 & \textgreater{} 1,0 (lucro) & \textless{} 1,0 (prejuízo) \\
+Total de Negociações & 64 & 58 & 38 & 52 \\
+\bottomrule
+\end{tabular}
+
+\vspace{2pt}
+\fonte{Elaboração própria com dados do MetaTrader 5 e pesquisa de \citeonline{almeida2016}.}
+\end{table}
+
+A análise destes resultados preliminares indica que, para o primeiro teste no período
+recente de janeiro de 2020 a maio de 2025, a estratégia base de cruzamento de Médias
+Móveis, operando com um volume de 1000 ações de PETR4, resultou em um prejuízo líquido
+substancial de R\$ 9.230,00, representando uma perda de 18,46\% sobre o capital inicial.
+O Fator de Lucro de 0,64 e a baixa taxa de acerto (apenas 25\% das 64 operações foram
+lucrativas) confirmam a ineficácia da estratégia neste intervalo de tempo.
+
+Em uma segunda rodada de testes preliminares para o período de janeiro de 2020 ao começo
+de 2025 e mantendo o volume de 1000 ações de PETR4, foram zerados os parâmetros de Stop
+Loss e Take Profit, resultando em um desempenho ligeiramente menos desfavorável. Neste
+segundo cenário, o prejuízo líquido total foi de R\$ 2.530,00, correspondendo a uma
+perda de 5,06\% sobre o capital inicial. Embora o Fator de Lucro tenha melhorado para
+0,93 e o número total de negociações tenha sido reduzido para 58, a estratégia ainda não
+demonstrou capacidade de gerar lucro. Este resultado, apesar de melhor que o anterior,
+ainda se alinha com as dificuldades encontradas por \citeonline{almeida2016} em períodos
+de crise e reforça a necessidade de abordagens mais robustas.
+
+\begin{figure}[htb]
+\centering
+\caption{Desempenho do modelo proposto (2º teste)}
+\label{fig:desempenho-2teste}
+\includegraphics[width=0.8\textwidth]{fig09-desempenho-2teste.png}
+\fonte{Elaboração própria com dados do MetaTrader 5.}
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+\caption{Gráfico de dispersão da correlação de lucro (2º teste)}
+\label{fig:dispersao-lucro}
+\includegraphics[width=0.9\textwidth]{fig10-dispersao-lucro.png}
+\fonte{Elaboração própria com dados do MetaTrader 5.}
+\end{figure}
+
+Este desempenho contrasta significativamente com os resultados obtidos por
+\citeonline{almeida2016} para o mesmo ativo e volume em um período anterior (2013-2016),
+onde foi reportado um lucro considerável. Por outro lado, o resultado negativo atual se
+assemelha, em natureza, aos prejuízos que Almeida também encontrou ao aplicar sua
+estratégia em PETR4 durante períodos de crise financeira, como a de 2008.
+
+O período de 2020-2025 foi caracterizado por uma volatilidade acentuada e por dinâmicas
+de mercado complexas, influenciadas por eventos globais como a pandemia de COVID-19 e
+suas repercussões econômicas. É plausível que tais condições tenham sido
+particularmente desfavoráveis para uma estratégia de seguimento de tendência simples
+como o cruzamento de médias. Adicionalmente, as necessárias adaptações do código
+original de \citeonline{almeida2016} e a definição experimental dos parâmetros de Stop
+Loss e Take Profit, na ausência dos valores exatos utilizados no estudo de referência,
+são fatores que podem ter influenciado os resultados.
+
+No entanto, a principal inferência destes testes preliminares é a clara demonstração de
+que a estratégia de cruzamento de Médias Móveis, mesmo com parâmetros de risco básicos
+e um volume operacional mais elevado, não se mostrou suficiente para gerar retornos
+positivos de forma consistente no mercado recente de PETR4. Este achado é fundamental,
+pois estabelece um baseline contemporâneo e valida de forma contundente a justificativa
+central deste trabalho de graduação: a necessidade premente de investigar, desenvolver
+e integrar modelos analíticos e preditivos mais sofisticados, como ARIMA para previsão
+de tendência, GARCH para modelagem da volatilidade e redes LSTM para a captura de
+padrões não lineares, com o objetivo de construir uma ferramenta algorítmica mais
+robusta, adaptável e com maior potencial de eficácia para a negociação de ativos
+voláteis no dinâmico cenário atual do mercado de ações brasileiro.
+
+\section{Resultados Esperados no TG}
+
+Espera-se, primordialmente, o desenvolvimento e a validação de um Expert Advisor (EA)
+funcional em MQL5 para MetaTrader 5. Esta ferramenta algorítmica integrará modelos
+ARIMA para previsão, GARCH para volatilidade, RSI como filtro e um modelo LSTM para
+análises não lineares, com foco no ativo PETR4 e uma análise inicial com Médias Móveis
+como baseline comparativo.
+
+O resultado central será a demonstração da superioridade da abordagem híbrida. Espera-se
+que a integração do modelo LSTM, cuja capacidade preditiva será rigorosamente aferida
+por métricas como MAE, RMSE e $R^2$ buscando valores que indiquem alta acurácia,
+contribua decisivamente para que o EA final apresente, nos backtests do MetaTrader 5, um
+desempenho otimizado. Este desempenho será refletido em indicadores como maior taxa de
+acerto, fator de lucro superior e drawdown máximo reduzido, superando os resultados
+obtidos por estratégias isoladas ou mais simples e, idealmente, a taxa Selic vigente.
+
+Finalmente, almeja-se que a pesquisa valide as hipóteses de complementaridade dos
+modelos e a eficácia da filtragem de sinais, resultando em uma ferramenta algorítmica
+com comprovada capacidade de gerar resultados superiores no mercado de ativos. Esta
+contribuição visa oferecer uma metodologia robusta e avançada para o trading
+algorítmico, consolidando as competências técnicas dos autores.
+
+\section{Cronograma}
+
+A execução deste projeto seguirá o cronograma proposto abaixo, distribuído ao longo de
+6 meses:
+
+\begin{table}[htb]
+\centering
+\caption{Cronograma de Atividades}
+\label{tab:cronograma}
+\fontsize{10}{12}\selectfont
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Etapa/Atividade} & \textbf{Mês 1} & \textbf{Mês 2} & \textbf{Mês 3} & \textbf{Mês 4} & \textbf{Mês 5} & \textbf{Mês 6} \\
+\midrule
+Revisão Bibliográfica Aprofundada & X & X &   &   &   &   \\
+Coleta e Preparação de Dados      & X & X &   &   &   &   \\
+Implementação Médias Móveis       & X & X &   &   &   &   \\
+Implementação ARIMA               &   & X & X & X &   &   \\
+Implementação GARCH               &   &   &   & X & X &   \\
+Implementação Indicador RSI       &   &   &   & X & X &   \\
+Análise de Pré-Processamento      &   & X & X & X &   &   \\
+Pré-Processamento de Dados        &   &   & X & X & X &   \\
+Implementação Modelo LSTM         &   &   &   & X & X &   \\
+Treinamento Modelo LSTM           &   &   &   & X & X & X \\
+Integração do Modelo LSTM         &   &   &   &   & X & X \\
+Backtesting e Validação           &   &   &   &   & X & X \\
+Análise dos Resultados            &   &   &   &   &   & X \\
+\bottomrule
+\end{tabular}
+
+\vspace{2pt}
+\fonte{Autoria própria.}
+\end{table}
