@@ -31,9 +31,19 @@
 
 % ----------------------- Ajustes de formatação -----------------------
 % Manual FATEC: recuo de primeira linha 1,25 cm; espaçamento 1,5;
-% sem afastamento entre parágrafos; margens 3/2/3/2 (padrão abnTeX2).
+% margens 3/2/3/2 (padrão abnTeX2).
 \setlength{\parindent}{1.25cm}
-\setlength{\parskip}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\baselineskip}{1.5\baselineskip}
+
+% Desabilitar remoção automática de parindent no primeiro parágrafo de seções
+\usepackage{indentfirst}
+
+% --- Notas de rodapé (ABNT NBR 6028 + Manual FATEC 1.3 e 1.4) ---
+% Conforme ABNT: linha próxima da nota, afastada do texto
+\renewcommand{\footnotesize}{\fontsize{10}{12}\selectfont}
+\setlength{\footnotesep}{0.3cm}  % espaço entre texto e linha
+\renewcommand{\footnoterule}{\hrule height 0.4pt width 3cm depth 0pt \vskip 2pt}  % linha com 3cm, próxima da nota
 
 % --- Estilo de títulos (Manual FATEC 1.3 e 4.2.2) --------------------
 % Capítulo: 14 pt, negrito, só inicial maiúscula, alinhado à esquerda.
@@ -113,7 +123,7 @@
 %     entradas à esquerda (sem identação progressiva) e em negrito;
 %     pontilhado denso em todos os níveis (Manual 1.5 + legibilidade).
 \makeatletter
-\renewcommand{\l@subsection}[2]{}              % omite 1.1.1 do sumário
+\renewcommand{\l@subsection}[2]{}               % omite 1.1.1 do sumário
 \renewcommand{\l@part}[2]{}                     % omite "APÊNDICES" do sumário
 \renewcommand{\l@appendix}[2]{}                 % omite "APÊNDICE A" do sumário
 \makeatother
@@ -127,6 +137,9 @@
 \cftsetindents{chapter}{0em}{1.4em}
 \cftsetindents{section}{0em}{2.6em}
 \setlength{\cftbeforepartskip}{0pt}            % apêndice omitido do sumário
+% Reduzir espaçamento no sumário conforme ABNT (espaçamento simples)
+\setlength{\cftbeforechapterskip}{0pt}         % sem espaço antes de capítulos
+\setlength{\cftbeforesectionskip}{0pt}         % sem espaço antes de seções
 
 % Garante nomes em caixa-alta no sumário (babel reescreve esses rótulos).
 \addto\captionsbrazil{%
@@ -182,13 +195,17 @@
     PositionGetString,PositionGetInteger,SeriesInfoInteger}
 }
 
-% Metadados PDF
+% Metadados PDF e navegação (links/marcadores não alteram a formatação
+% impressa: colorlinks=false + pdfborder={0 0 0} deixam o texto igual ao
+% padrão ABNT, só adicionam a navegação clicável).
 \usepackage{hyperref}
 \hypersetup{
   pdftitle={Previsão e Análise de Tendências no Mercado de Ativos},
   pdfauthor={Bruno Rocha Pereira e Giovanni Silva Loose},
   colorlinks=false, pdfborder={0 0 0}
 }
+\usepackage{bookmark}          % marcadores (bookmarks) do PDF mais confiáveis
+\usepackage[all]{hypcap}       % links de figura/tabela apontam para o topo, não a legenda
 
 % =====================================================================
 \begin{document}
@@ -200,10 +217,18 @@
 \input{conteudo/folharosto}
 % \input{conteudo/folha-aprovacao}  % obrigatória só na versão final
 
+% Elementos pré-textuais: espaçamento simples e sem parskip conforme Manual FATEC 1.4
+\SingleSpacing
+\setlength{\parskip}{0pt}
 \input{conteudo/resumo}
 \input{conteudo/abstract}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\OnehalfSpacing
 
 % Listas (mín. 5 itens cada -> listas próprias, Manual 4.1.12)
+% Elementos pré-textuais: espaçamento simples e sem parskip conforme Manual FATEC 1.4
+\SingleSpacing
+\setlength{\parskip}{0pt}
 \pdfbookmark[0]{Lista de figuras}{lof}
 \listoffigures*
 \cleardoublepage
@@ -215,9 +240,14 @@
 \input{conteudo/siglas}
 
 % Sumário (Manual 4.1.14: pré-textuais não constam)
+% Espaçamento simples e sem parskip conforme Manual FATEC 1.4
 \pdfbookmark[0]{Sumário}{toc}
 \tableofcontents*
 \cleardoublepage
+
+% Volta ao espaçamento 1,5 e parskip para elementos textuais
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\OnehalfSpacing
 
 % ------------------------- Elementos textuais ------------------------
 \textual
@@ -226,6 +256,7 @@
 \input{conteudo/cap0-introducao}
 \input{conteudo/cap1-fundamentacao}
 \input{conteudo/cap2-metodologia}
+\input{conteudo/cap3-conclusao}
 
 % ------------------------- Elementos pós-textuais --------------------
 \postextual

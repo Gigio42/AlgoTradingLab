@@ -14,7 +14,7 @@ em alguns níveis, a produção real, criando distorções gerais nos preços e 
 crescimento econômico.
 
 No Brasil, a microeconomia sofre os efeitos desse ambiente. A taxa Selic em 14,25\%
-(COPOM, 2025) desestimula investimentos em produção real, como comprovam os estudos
+\cite{bcbSelic} desestimula investimentos em produção real, como comprovam os estudos
 do \citeonline{bcbJuros}, que relacionam juros altos à migração do capital para
 aplicações financeiras, reduzindo posições no setor industrial.
 
@@ -170,10 +170,14 @@ indicadores técnicos e scripts, facilitando a análise e o acompanhamento do me
 \fonte{\citeonline{almeida2016}.}
 \end{figure}
 
-Um dos recursos mais poderosos do MT5 são os Expert Advisors (EAs), também conhecidos
-como robôs de negociação (FLÁVIO, 2023). EAs são programas que automatizam o processo
+% TODO: citação (FLÁVIO, 2023) removida das duas frases abaixo — não há
+% entrada correspondente em referencias.bib e a fonte não foi localizada.
+% Confirmar a referência real e reinserir com \citeonline, ou manter sem
+% citação caso a afirmação seja considerada conhecimento geral da área.
+Um dos recursos mais poderosos do MT5 são os \textit{Expert Advisor}s (EAs), também conhecidos
+como robôs de negociação. EAs são programas que automatizam o processo
 de negociação, permitindo que os usuários executem estratégias complexas sem a
-necessidade de intervenção manual (FLÁVIO, 2023). Esses robôs abrem, modificam e
+necessidade de intervenção manual. Esses robôs abrem, modificam e
 fecham ordens automaticamente, com base em algoritmos predefinidos, e podem ser
 criados tanto manualmente, para maior customização, quanto automaticamente, por meio
 do MQL5 \cite{almeida2016}.
@@ -435,7 +439,7 @@ Subsequentemente, para o ajuste do modelo ARIMA, um passo crucial é a definiç�
 suas ordens $p$ (autorregressiva) e $q$ (médias móveis). Dada a multiplicidade de
 combinações possíveis para estes parâmetros, como o intervalo de 0 a 4 testado por
 \citeonline{xing2024}, torna-se necessário um critério objetivo para a seleção do
-modelo mais apropriado. O Critério de Informação de Akaike (AIC) desempenha
+modelo mais apropriado. O \textit{Critério de Informação de Akaike} (\textit{AIC}) desempenha
 precisamente este papel, sendo uma métrica estatística consolidada para avaliar a
 qualidade relativa de diferentes modelos. O AIC permite selecionar a configuração que
 oferece o melhor compromisso entre a fidelidade do modelo aos dados históricos
@@ -499,6 +503,39 @@ A escolha entre o modelo SGARCH, EGARCH e TGARCH depende das características es
 dos dados e dos objetivos da análise. \citeonline{araya2024} destaca essa importância
 de selecionar o modelo mais adequado com base em métricas estatísticas.
 
+\subsection{Integração ARIMA-GARCH}
+
+A integração dos modelos ARIMA e GARCH representa uma abordagem robusta para a análise
+de séries temporais financeiras, permitindo capturar tanto a tendência condicional
+quanto a volatilidade condicional de um ativo. Conforme demonstrado por \citeonline{araya2024},
+quando ARIMA e GARCH são combinados, os resíduos gerados pelo modelo ARIMA (que
+representam os erros da previsão da média condicional) servem como série de entrada
+para o modelo GARCH, que modela a variância condicional desses resíduos.
+
+
+Essa integração é teoricamente fundamentada no trabalho seminal de \citeonline{bollerslev1986},
+que estendeu os modelos de heteroscedasticidade condicional autorregressiva (\textit{ARCH})
+inicialmente propostos por \citeonline{engle1982}. O modelo GARCH possibilita capturar
+a dinâmica da volatilidade, que é crítica para a gestão de risco em mercados voláteis,
+como no caso da ação PETR4, que apresenta elevadas flutuações de preço.
+
+
+Na prática, a integração ARIMA-GARCH pode ser implementada por meio de três abordagens
+estratégicas complementares. A primeira é o \textbf{Filtro de Volatilidade}, que restringe
+operações a períodos em que a volatilidade prevista pelo GARCH permanece abaixo de um
+limiar definido, reduzindo exposição a mercados instáveis. A segunda é a \textbf{Volatility Targeting}, que ajusta o tamanho da posição inversamente à volatilidade prevista,
+diminuindo o risco relativo quando a incerteza aumenta. A terceira é o \textbf{Intervalo de Confiança}, que utiliza a volatilidade do GARCH para estabelecer limites superior
+e inferior ao redor das previsões do ARIMA, criando uma zona de confiança para a entrada
+e saída de operações.
+
+
+Para aplicações em negociação de ativos voláteis, o \textbf{Filtro de Volatilidade}
+emerge como a abordagem mais prudente, já que permite ao sistema evitar períodos de
+heterocedasticidade elevada, alinhando-se ao objetivo de investimento seguro em ativos
+com elevada variabilidade de preço. Essa estratégia garante que as operações ocorram
+predominantemente em condições de mercado mais estáveis, reduzindo perdas relacionadas a
+movimentos abruptos de preço.
+
 \section{Trabalhos Relacionados}
 
 Nesta seção são apresentados estudos e pesquisas relacionados ao tema deste trabalho. O
@@ -524,12 +561,14 @@ Almeida é de fundamental importância para este TG, pois não apenas validou a 
 do MetaTrader 5 e MQL5 para a análise algorítmica de PETR4, mas também serviu como base
 para a ``revisitação e aplicação contemporânea'' que propomos, conforme mencionado na
 justificativa deste projeto. Sua recomendação para explorar modelos mais robustos, como
-o GARCH, alinhou-se diretamente com a nossa intenção de integrar ARIMA, GARCH e,
-adicionalmente, LSTM, permitindo-nos construir sobre seus achados iniciais e buscar uma
-ferramenta com maior capacidade preditiva e adaptabilidade às atuais e complexas
-condições do mercado brasileiro.
+o GARCH, alinhou-se com a intenção inicial deste trabalho de integrar também redes LSTM.
+Embora esse componente tenha sido posteriormente excluído do escopo por limitações de
+tempo e de ambiente de desenvolvimento (ver Capítulo 2, seção Obstáculos Encontrados), a
+abordagem ARIMA-GARCH efetivamente implementada permitiu construir sobre os achados
+iniciais de Almeida, buscando maior capacidade preditiva e adaptabilidade às atuais e
+complexas condições do mercado brasileiro.
 
-\citeonline{batista2024} desenvolveu um robô de investimento (Expert Advisor) para
+\citeonline{batista2024} desenvolveu um robô de investimento (\textit{Expert Advisor}) para
 automatizar operações na bolsa de valores brasileira (B3), utilizando uma combinação
 dos indicadores técnicos Média Móvel Exponencial, Convergência-Divergência de Médias
 Móveis e Índice de Força Relativa visando lucros automatizados a médio e longo prazo.
@@ -544,57 +583,57 @@ indicando potencial para lucros automatizados.
 Em 2022, \citeonline{silva2022} investigaram a previsão de tendências de preços de ações
 da Petrobras (PETR4) no mercado brasileiro, com foco em operações intraday de 15
 minutos, utilizando técnicas de inteligência artificial. Para isso, empregaram um
-extrator de variáveis baseado em eXtreme Gradient Boosting (XGBoost) para selecionar os
+extrator de variáveis baseado em \textit{eXtreme Gradient Boosting} (\textit{XGBoost}) para selecionar os
 indicadores técnicos mais relevantes dentre mais de 100 disponíveis, visando reduzir
-ruído na amostra. Em seguida, uma rede neural Long Short-Term Memory (LSTM) foi aplicada
+ruído na amostra. Em seguida, uma rede neural \textit{Long Short-Term Memory} (\textit{LSTM}) foi aplicada
 para prever a tendência de alta ou baixa dos preços no período de 2014 a 2020. Os
 resultados alcançaram uma acurácia de 56\%, superando estudos anteriores, com melhor
 desempenho na previsão de quedas (57\%) em comparação com altas (51\%), e destacando a
-eficácia da combinação de XGBoost para seleção de features e LSTM para previsão no
+eficácia da combinação de \textit{XGBoost} para seleção de \textit{features} e \textit{LSTM} para previsão no
 contexto do mercado financeiro brasileiro.
 
 Em 2024, \citeonline{xing2024} realizaram uma análise comparativa de quatro modelos de
-previsão -- ARIMA, Multilayer Perceptron (MLP), Long Short-Term Memory (LSTM) e um
+previsão -- ARIMA, \textit{Multilayer Perceptron} (\textit{MLP}), \textit{Long Short-Term Memory} (\textit{LSTM}) e um
 modelo híbrido ARIMA-GARCH -- para prever o preço de fechamento ajustado do dia
-seguinte das ações da NVIDIA. Utilizando dados diários da API do Yahoo Finance de abril
-de 2019 a abril de 2024, o estudo dividiu o dataset em 90\% para treino e 10\% para
-teste. Os modelos LSTM e MLP foram configurados com janelas deslizantes, enquanto os
+seguinte das ações da NVIDIA. Utilizando dados diários da \textit{API} do \textit{Yahoo Finance} de abril
+de 2019 a abril de 2024, o estudo dividiu o \textit{dataset} em 90\% para treino e 10\% para
+teste. Os modelos \textit{LSTM} e \textit{MLP} foram configurados com janelas deslizantes, enquanto os
 modelos ARIMA e ARIMA-GARCH utilizaram janelas expansivas e rolantes, com parâmetros
-otimizados para o menor AIC. Os resultados, avaliados por MAE, RMSE e R-quadrado,
-indicaram que o modelo ARIMA-GARCH apresentou o menor RMSE, sugerindo melhor precisão na
+otimizados para o menor \textit{AIC}. Os resultados, avaliados por \textit{MAE}, \textit{RMSE} e \textit{R}-quadrado,
+indicaram que o modelo ARIMA-GARCH apresentou o menor \textit{RMSE}, sugerindo melhor precisão na
 previsão de grandes erros e na explicação da variância. No entanto, o modelo ARIMA com
-janela expansiva demonstrou desempenho superior em geral, superando os modelos LSTM e
-MLP, possivelmente devido às características predominantemente lineares da série temporal
-e à sensibilidade dos modelos de deep learning à configuração e ao tamanho da amostra.
+janela expansiva demonstrou desempenho superior em geral, superando os modelos \textit{LSTM} e
+\textit{MLP}, possivelmente devido às características predominantemente lineares da série temporal
+e à sensibilidade dos modelos de \textit{deep learning} à configuração e ao tamanho da amostra.
 
-\citeonline{araya2024} propuseram um método híbrido GARCH e Deep Learning para predição
+\citeonline{araya2024} propuseram um método híbrido GARCH e \textit{Deep Learning} para predição
 de volatilidade de preços de ações, visando aumentar a acurácia das previsões ao
-integrar diversos modelos. O estudo combinou quatro abordagens: SARIMA (Seasonal
-Autoregressive Integrated Moving Average), modelos da família GARCH (Generalized
-Autoregressive Conditional Heteroskedasticity), CNN (Convolutional Neural Network) e
-BiLSTM (Bidirectional Long Short-Term Memory). Inicialmente, os resíduos gerados pelo
-modelo SARIMA foram utilizados como entrada para o modelo GARCH. Em seguida, a
-volatilidade estimada por essa combinação serviu como feature de entrada para os
-modelos híbridos CNN e BiLSTM. A performance do novo modelo híbrido proposto
-(SARIMA-GARCH-CNN-BiLSTM) foi avaliada utilizando métricas como MAE (Mean Absolute
-Error) e RMSE (Root Mean Squared Error), demonstrando uma redução média significativa
+integrar diversos modelos. O estudo combinou quatro abordagens: \textit{SARIMA} (\textit{Seasonal
+Autoregressive Integrated Moving Average}), modelos da família GARCH (\textit{Generalized
+Autoregressive Conditional Heteroskedasticity}), \textit{CNN} (\textit{Convolutional Neural Network}) e
+\textit{BiLSTM} (\textit{Bidirectional Long Short-Term Memory}). Inicialmente, os resíduos gerados pelo
+modelo \textit{SARIMA} foram utilizados como entrada para o modelo GARCH. Em seguida, a
+volatilidade estimada por essa combinação serviu como \textit{feature} de entrada para os
+modelos híbridos \textit{CNN} e \textit{BiLSTM}. A \textit{performance} do novo modelo híbrido proposto
+(\textit{SARIMA-GARCH-CNN-BiLSTM}) foi avaliada utilizando métricas como \textit{MAE} (\textit{Mean Absolute
+Error}) e \textit{RMSE} (\textit{Root Mean Squared Error}), demonstrando uma redução média significativa
 nesses erros (60,35\% e 60,61\%, respectivamente) em comparação com outros modelos
 híbridos. Os resultados experimentais indicaram que o modelo proposto apresentou bom
 desempenho e acurácia na predição da volatilidade de preços de ações, oferecendo
-insights valiosos para análise de dados financeiros e estratégias de gerenciamento de
+\textit{insights} valiosos para análise de dados financeiros e estratégias de gerenciamento de
 risco.
 
-\citeonline{tormin2024} realizou um estudo comparativo entre os modelos ARIMA e LSTM
+\citeonline{tormin2024} realizou um estudo comparativo entre os modelos ARIMA e \textit{LSTM}
 para prever os retornos do Bitcoin, investigando o impacto da integração de dados de
-tendências de busca do Google (PyTrends) na capacidade preditiva. Utilizando dados
+tendências de busca do Google (\textit{PyTrends}) na capacidade preditiva. Utilizando dados
 diários de preços do Bitcoin e tendências de busca para o termo ``Bitcoin'' de janeiro
-de 2018 a outubro de 2024, foram construídos três modelos: ARIMA, LSTM tradicional e
-LSTM integrado com PyTrends. O pré-processamento incluiu ajuste ao fuso horário UTC,
-tratamento de valores ausentes (fillna) e normalização (MinMaxScaler), com divisão de
-80\% dos dados para treino e 20\% para teste. A avaliação, baseada em RMSE, MAE e MAPE,
-mostrou que o ARIMA, apesar de simples, apresentou maior estabilidade em RMSE e MAE. O
-LSTM tradicional obteve RMSE levemente melhor que o ARIMA, mas com MAPE
-significativamente mais alto. A inclusão dos dados do Google Trends no modelo LSTM
+de 2018 a outubro de 2024, foram construídos três modelos: ARIMA, \textit{LSTM} tradicional e
+\textit{LSTM} integrado com \textit{PyTrends}. O pré-processamento incluiu ajuste ao fuso horário \textit{UTC},
+tratamento de valores ausentes (\textit{fillna}) e normalização (\textit{MinMaxScaler}), com divisão de
+80\% dos dados para treino e 20\% para teste. A avaliação, baseada em \textit{RMSE}, \textit{MAE} e \textit{MAPE},
+mostrou que o ARIMA, apesar de simples, apresentou maior estabilidade em \textit{RMSE} e \textit{MAE}. O
+\textit{LSTM} tradicional obteve \textit{RMSE} levemente melhor que o ARIMA, mas com \textit{MAPE}
+significativamente mais alto. A inclusão dos dados do \textit{Google Trends} no modelo \textit{LSTM}
 integrado não resultou em melhora significativa, sugerindo a necessidade de ajustes
 mais robustos ou a inclusão de outras variáveis para capturar a complexidade do mercado
 de criptomoedas.
@@ -611,10 +650,10 @@ de criptomoedas.
 (PEREIRA, 2025)         & X & X & X \\
 (ALMEIDA, 2016)         & X & X &   \\
 (BATISTA, 2024)         & X &   &   \\
-(HAILABE T. ARAYA, 2024) &   & X & X \\
+(ARAYA, 2024)           &   & X & X \\
 (SILVA, 2022)           & X &   & X \\
-(YILUAN XING, 2024)     &   & X & X \\
-(WILLIAN PINHEIRO TORMIN, 2024) & X & X & X \\
+(XING, 2024)            &   & X & X \\
+(TORMIN, 2024)          & X & X & X \\
 \bottomrule
 \end{tabular}
 
@@ -637,9 +676,9 @@ componentes cada uma utilizou para formular o modelo que elas propuseram.}
 (ALMEIDA, 2016) & PETR4 & MetaTrader 5 & D1 & MA & ARIMA, Encontro de Médias Móveis & -- & -- \\
 (BATISTA, 2024) & BBAS3F & MetaTrader 5 & M30 & RSI, MME, MACD, BB & -- & -- & -- \\
 (SILVA, 2022) & PETR4 & -- & M15 & 113 indicadores & -- & LSTM + XGBoost & Acurácia, Precision, Recall, F1-Score, Support \\
-(YILUAN XING, 2024) & NVIDIA (NVDA) & -- & -- & -- & ARIMA, GARCH & LSTM, MLP & MAE, RMSE, R Square \\
-(HAILABE T. ARAYA, 2024) & Apple Inc. (AAPL) & Yahoo Finance & D1 & -- & SARIMA, GARCH & CNN, Bi-LSTM & MAE, RMSE \\
-(WILLIAN PINHEIRO TORMIN, 2024) & Bitcoin (BTC-USD) & Google Trends & -- & -- & ARIMA & LSTM & MAE, RMSE, MAPE \\
+(XING, 2024) & NVIDIA (NVDA) & -- & -- & -- & ARIMA, GARCH & LSTM, MLP & MAE, RMSE, R Square \\
+(ARAYA, 2024) & Apple Inc. (AAPL) & Yahoo Finance & D1 & -- & SARIMA, GARCH & CNN, Bi-LSTM & MAE, RMSE \\
+(TORMIN, 2024) & Bitcoin (BTC-USD) & Google Trends & -- & -- & ARIMA & LSTM & MAE, RMSE, MAPE \\
 \bottomrule
 \end{tabular}
 

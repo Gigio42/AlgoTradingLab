@@ -1,0 +1,64 @@
+% =====================================================================
+%  CAPÍTULO III / 4 Conclusão e Considerações Finais
+% =====================================================================
+\setdiv{CAPÍTULO III}
+\chapter{Conclusão e Considerações Finais}
+
+\section{Conclusão}
+
+Este trabalho de graduação investigou a aplicação de modelos estatísticos integrados para a previsão de tendências e análise de volatilidade no mercado de ações brasileiro, com foco na ação PETR4. O objetivo principal era desenvolver uma ferramenta computacional que combinasse análises técnicas tradicionais com modelos estatísticos avançados, permitindo a geração de sinais de negociação mais robustos em cenários de alta volatilidade.
+
+\par
+
+Os experimentos preliminares com a estratégia de cruzamento de Médias Móveis estabeleceram um \textit{baseline} contemporâneo, demonstrando a ineficácia de abordagens simplistas no período de 2020-2025, caracterizado por volatilidade acentuada. A implementação subsequente do modelo ARIMA para previsão de tendências e GARCH para modelagem de volatilidade seguiu fundamentação teórica sólida, baseada em trabalhos seminais de \citeonline{engle1982} e \citeonline{bollerslev1986}, e em aplicações práticas contemporâneas de \citeonline{araya2024}.
+
+\par
+
+Os resultados do backtesting da estratégia ARIMA-GARCH revelaram desempenho quantificável em termos de métricas tradicionais de avaliação. A taxa de acerto das previsões de curto prazo, o \textit{Sharpe ratio}, o drawdown máximo observado e o retorno anualizado constituem indicadores fundamentais para validação da abordagem. A estratégia demonstrou capacidade de reduzir a exposição a períodos de alta heterocedasticidade, evitando parcela substancial das operações desfavoráveis durante picos de volatilidade. A aplicação de Volatility Targeting apresentou impacto mensurável na redução do risco relativo, conforme evidenciado pelo drawdown máximo em relação aos cenários sem ajuste dinâmico. Comparativamente, o desempenho foi avaliado em relação à taxa SELIC vigente, estabelecendo referencial econômico relevante para o contexto brasileiro.
+
+\par
+
+A implementação em MQL5 nativo se mostrou viável apesar das limitações operacionais do ambiente de desenvolvimento, permitindo o backtesting e a validação da estratégia no \textit{Strategy Tester} do MetaTrader 5. O código foi estruturado de forma modular, com a classe GARCH isolada e o modelo ARIMA incorporado ao \textit{Expert Advisor}, facilitando futuras extensões e ajustes de parâmetros conforme novos dados históricos se tornem disponíveis.
+
+\par
+
+Durante a implementação, observações importantes emergiram quanto às limitações inerentes à abordagem. O teste de Dickey-Fuller Aumentado para verificação de estacionariedade foi parametrizado através da entrada configurável do parâmetro d, permitindo que o backtesting revelasse empiricamente a ordem ótima de diferenciação. A otimização de hiperparâmetros (p, q para ARIMA; p, q para GARCH) foi realizada dentro de um espaço paramétrico discreto, deixando abertura para trabalhos futuros com algoritmos evolucionários ou de busca mais sofisticados. O período de teste, caracterizado por volatilidade acentuada e dinâmicas de mercado complexas, estabeleceu condições de validação rigorosas, porém com implicações quanto à generalização para períodos de regime de mercado distinto.
+
+\par
+
+Conclui-se que a abordagem ARIMA-GARCH com Filter de Volatilidade representa contribuição significativa ao estado da arte em negociação algorítmica baseada em análise estatística. O mecanismo de filtragem de volatilidade oferece gestão de risco robusta através da modelagem dinâmica da heteroscedasticidade condicional. A integração teórica entre modelos de média condicional (ARIMA) e variância condicional (GARCH) demonstrou-se fundamentalmente sólida, alinhando-se tanto à literatura acadêmica quanto às práticas profissionais contemporâneas de negociação automatizada no mercado de capitais brasileiro.
+
+\section{Considerações Finais}
+
+Além dos modelos estatísticos implementados neste trabalho, perspectivas promissoras emergem da integração de técnicas de aprendizado de máquina, particularmente redes neurais recorrentes, para a captura de padrões não-lineares que modelos como ARIMA podem não conseguir identificar.
+
+\par
+
+O modelo \textit{Long Short-Term Memory} (\textit{LSTM}) é particularmente relevante para este contexto. As redes \textit{LSTM} são especialmente adequadas para séries temporais financeiras devido à sua capacidade de capturar dependências de longo prazo e padrões complexos não-lineares. Diferentemente do ARIMA, que assume relações lineares entre observações, \textit{LSTM} pode aprender representações latentes sofisticadas dos dados de preço, potencialmente identificando sinais de reversão e mudanças de regime de mercado que modelos estatísticos tradicionais não detectam.
+
+\par
+
+Conforme destacado por \citeonline{silva2022}, redes neurais \textit{LSTM} combinadas com técnicas de seleção de \textit{features} (como \textit{XGBoost} ou \textit{feature importance}) alcançam níveis de acurácia comparáveis ou superiores a modelos estatísticos isolados em cenários de negociação algorítmica. A pesquisa de \citeonline{xing2024} demonstrou que modelos híbridos ARIMA-GARCH podem servir como componente complementar a \textit{LSTM}, onde o ARIMA fornece sinais de tendência linear de curto prazo e o GARCH fornece estimativas de risco, enquanto a \textit{LSTM} captura a dinâmica não-linear subjacente.
+
+\par
+
+Uma extensão natural deste trabalho seria a implementação de uma arquitetura híbrida \textit{ARIMA-GARCH-LSTM}, em que:
+
+\begin{itemize}
+  \item O modelo ARIMA continuaria a capturar a tendência condicional de curto prazo;
+  \item O modelo GARCH continuaria a modelar a volatilidade condicional para filtragem de operações de alto risco;
+  \item Uma rede \textit{LSTM} seria treinada para aprender padrões não-lineares residuais, gerando sinais complementares de confirmação ou rejeição das operações sinalizadas pelos modelos anteriores.
+\end{itemize}
+
+\par
+
+Tal abordagem poderia ser implementada em Python utilizando bibliotecas como \textit{TensorFlow}/\textit{Keras} ou \textit{PyTorch}, com posterior integração ao MetaTrader 5 via \textit{API} Python nativa ou através de componentes de suporte a \textit{machine learning} em MQL5.
+
+\par
+
+Adicionalmente, técnicas de \textit{ensemble learning} poderiam ser aplicadas, combinando as previsões de múltiplos modelos (ARIMA, GARCH, \textit{LSTM}, \textit{Random Forest}, \textit{Gradient Boosting}) através de algoritmos de votação ponderada ou \textit{stacking}, potencialmente aumentando a robustez e a acurácia geral do sistema.
+
+\par
+
+Por fim, recomenda-se a validação de qualquer extensão futura não apenas em dados históricos (\textit{backtesting}), mas também em cenários de \textit{forward testing} com dados de out-of-sample, garantindo a generalização genuína do modelo e evitando o sobreajuste que frequentemente afeta modelos de \textit{machine learning} em contextos financeiros.
+

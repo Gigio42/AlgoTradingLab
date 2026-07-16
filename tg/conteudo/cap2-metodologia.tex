@@ -28,7 +28,7 @@ Teórica.
 
 A plataforma MetaTrader 5 (MT5) foi empregada como o ambiente central para as fases
 de desenvolvimento e teste. A linguagem de programação MQL5, nativa do MT5, foi
-utilizada para a codificação dos Expert Advisors (EAs). Estes EAs são os algoritmos
+utilizada para a codificação dos \textit{Expert Advisors} (\textit{EAs}). Estes EAs são os algoritmos
 que efetivamente incorporaram a lógica dos modelos de análise de tendência,
 volatilidade e modelagem condicional para a execução automatizada de ordens
 de negociação.
@@ -77,7 +77,7 @@ Durante o desenvolvimento deste trabalho, foram enfrentados obstáculos signific
 
 \textbf{Incompatibilidade da corretora Rico:} Durante a fase de coleta de dados e execução de backtests com ativos de ações, a corretora Rico cessou a disponibilização de ações em sua plataforma MetaTrader 5, inviabilizando o acesso ao ativo PETR4 através dessa conta. Foi necessário abrir uma nova conta na corretora Clear, que mantém compatibilidade com a plataforma, para dar continuidade à pesquisa. Esse processo causou atrasos e exigiu a reconfiguração do ambiente de testes.
 
-Esses fatores combinados contribuíram para a redução do escopo original — que previa a integração de modelos de Machine Learning — concentrando o trabalho nos modelos ARIMA e GARCH.
+Esses fatores combinados contribuíram para a redução do eescopo original (que previa a integração de modelos de \textit{Machine Learning}) concentrando o trabalho nos modelos ARIMA e GARCH.
 
 \section{Experimento de Pesquisa}
 
@@ -95,7 +95,7 @@ integração `d' do modelo ARIMA $(p, d, q)$ foi realizada através da aplicaç�
 sequencial do teste de raiz unitária ADF sobre a série. Para a definição das ordens
 autorregressiva `p' e de médias móveis `q', foi adotado um procedimento sistemático
 de testar múltiplas combinações de 0 a 4. A seleção da especificação final foi
-baseada no critério de informação Akaike Information Criterion (AIC).
+baseada no critério de informação \textit{Akaike Information Criterion} (\textit{AIC}).
 
 Na sequência, os resíduos obtidos a partir do modelo ARIMA ajustado foram utilizados
 como série de entrada para a modelagem da volatilidade condicional, por meio de um
@@ -168,7 +168,7 @@ testes para PETR4. Reconhece-se que esta escolha de SL/TP pode divergir da utili
 originalmente e constitui um ponto para otimizações e análises futuras.
 
 As operações foram configuradas para serem executadas apenas na abertura de uma nova
-barra no gráfico diário (D1), com a modelagem do backtest para ``Cada Tick'' para maior
+barra no gráfico diário (D1), com a modelagem do backtest para \textit{Cada Tick} para maior
 precisão na simulação dos preços de execução, alinhando-se com a abordagem de ``Every
 tick'' mencionada por \citeonline{almeida2016}.
 
@@ -261,10 +261,9 @@ positivos de forma consistente no mercado recente de PETR4. Este achado é funda
 pois estabelece um baseline contemporâneo e valida de forma contundente a justificativa
 central deste trabalho de graduação: a necessidade premente de investigar, desenvolver
 e integrar modelos analíticos e preditivos mais sofisticados, como ARIMA para previsão
-de tendência, GARCH para modelagem da volatilidade e redes LSTM para a captura de
-padrões não lineares, com o objetivo de construir uma ferramenta algorítmica mais
-robusta, adaptável e com maior potencial de eficácia para a negociação de ativos
-voláteis no dinâmico cenário atual do mercado de ações brasileiro.
+de tendência e GARCH para modelagem da volatilidade, com o objetivo de construir uma
+ferramenta algorítmica mais robusta, adaptável e com maior potencial de eficácia para a
+negociação de ativos voláteis no dinâmico cenário atual do mercado de ações brasileiro.
 
 \section{Limitações e Trabalhos Futuros}
 

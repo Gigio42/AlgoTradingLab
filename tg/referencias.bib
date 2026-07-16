@@ -5,14 +5,17 @@
 %  - ANDERSON (1993) é citado no corpo ("Gary Anderson") mas não consta
 %    na lista de referências do PDF; entrada reconstruída a partir da
 %    citação. Confirmar dados.
-%  - Citações a (BCB, ...), (COPOM, ...) no texto precisam ser mapeadas
-%    às entradas BRASIL. Banco Central do Brasil abaixo.
+%  - Citações a (BCB, ...) mapeadas às entradas BRASIL. Banco Central do
+%    Brasil abaixo; (COPOM, ...) mapeada para bcbSelic. Ano adicionado
+%    (2025) a essas 4 entradas institucionais, ausente até então, o que
+%    fazia a citação em texto imprimir a letra de desambiguação (a/b/c/d)
+%    no lugar do ano.
 % =====================================================================
 
-@mastersthesis{almeida2016,
+@monography{almeida2016,
   author       = {Almeida, F. L.},
   title        = {Análise da ação PETR4 na Bolsa de Valores de São Paulo com MetaTrader 5},
-  type         = {Monografia (Graduação em Banco de Dados)},
+  type         = {Graduação em Banco de Dados},
   school       = {Faculdade de Tecnologia Dr. Archimedes Lammoglia},
   address      = {Indaiatuba},
   year         = {2016},
@@ -71,10 +74,10 @@
   urlaccessdate = {30 mar. 2025},
 }
 
-@mastersthesis{batista2024,
+@monography{batista2024,
   author        = {Batista, C. B.},
   title         = {Desenvolvimento de robô para automação de investimentos na bolsa de valores utilizando indicadores técnicos},
-  type          = {Monografia (Graduação em Engenharia de Computação)},
+  type          = {Graduação em Engenharia de Computação},
   school        = {Pontifícia Universidade Católica de Goiás},
   address       = {Goiânia},
   year          = {2024},
@@ -86,6 +89,7 @@
   author        = {{BRASIL. Banco Central do Brasil}},
   title         = {Bolsas de Valores},
   address       = {Brasília, DF},
+  year          = {2025},
   url           = {https://www.bcb.gov.br/pre/composicao/bv.asp?frame=1},
   urlaccessdate = {22 abr. 2025},
 }
@@ -94,6 +98,7 @@
   author        = {{BRASIL. Banco Central do Brasil}},
   title         = {Corretoras e Distribuidoras},
   address       = {Brasília, DF},
+  year          = {2025},
   url           = {https://www.bcb.gov.br/acessoinformacao/legado?url=https:%2F%2Fwww.bcb.gov.br%2Fpre%2Fcomposicao%2Fcorretoras_distribuidoras.asp},
   urlaccessdate = {22 abr. 2025},
 }
@@ -102,6 +107,7 @@
   author        = {{BRASIL. Banco Central do Brasil}},
   title         = {Histórico de Taxas de Juros},
   address       = {Brasília, DF},
+  year          = {2025},
   url           = {https://www.bcb.gov.br/controleinflacao/historicotaxasjuros},
   urlaccessdate = {30 mar. 2025},
 }
@@ -110,6 +116,7 @@
   author        = {{BRASIL. Banco Central do Brasil}},
   title         = {Taxa Selic},
   address       = {Brasília, DF},
+  year          = {2025},
   url           = {https://www.bcb.gov.br/estatisticas/detalhamentoGrafico/graficoshome/selic},
   urlaccessdate = {22 abr. 2025},
 }
@@ -125,12 +132,38 @@
   urlaccessdate = {02 abr. 2025},
 }
 
+@article{bollerslev1986,
+  author    = {Bollerslev, Tim},
+  title     = {Generalized autoregressive conditional heteroskedasticity},
+  journal   = {Journal of Econometrics},
+  volume    = {31},
+  number    = {3},
+  pages     = {307--327},
+  address   = {Amsterdam},
+  publisher = {Elsevier},
+  year      = {1986},
+  doi       = {10.1016/0304-4076(86)90063-1},
+}
+
 @book{elder2002,
   author    = {Elder, A.},
   title     = {Come Into My Trading Room: a complete guide to trading},
   address   = {Nova Iorque, EUA},
   publisher = {Wiley},
   year      = {2002},
+}
+
+@article{engle1982,
+  author    = {Engle, Robert F.},
+  title     = {Autoregressive conditional heteroskedasticity with estimates of the variance of the {U}nited {K}ingdom inflation},
+  journal   = {Econometrica},
+  volume    = {50},
+  number    = {4},
+  pages     = {987--1008},
+  address   = {New Jersey, EUA},
+  publisher = {The Econometric Society},
+  year      = {1982},
+  doi       = {10.2307/1912773},
 }
 
 @book{fernandes2014,
@@ -153,7 +186,10 @@
   urlaccessdate = {22 abr. 2025},
 }
 
-@article{kaya2014,
+% NÃO CITADA no texto (NBR 6023 exige que a lista traga só obras citadas).
+% Mantida comentada em vez de apagada — descomentar ao usá-la, ou remover
+% de vez se ficar confirmado que não entra no TG.
+@Comment{kaya2014,
   author    = {Kaya, E.},
   title     = {Spline Interpolation Techniques},
   journal   = {Journal of Science and Technology (JTST)},
@@ -179,7 +215,7 @@
 @mastersthesis{silva2022,
   author        = {Silva, M. F.},
   title         = {Previsão de preços no mercado de ações brasileiro por meio de técnicas de inteligência artificial},
-  type          = {Dissertação (Mestrado em Ciências Contábeis)},
+  type          = {Mestrado em Ciências Contábeis},
   school        = {Universidade Federal de Uberlândia},
   address       = {Uberlândia},
   year          = {2022},
@@ -206,10 +242,10 @@
   year      = {2014},
 }
 
-@mastersthesis{tormin2024,
+@monography{tormin2024,
   author        = {Tormin, W. P.},
   title         = {Previsão de Retornos do Bitcoin: Uma Abordagem Comparativa Entre Modelos ARIMA e LSTM Integrados com Dados de Tendências do Google},
-  type          = {Trabalho de Conclusão de Curso (Graduação em Economia)},
+  type          = {Graduação em Economia},
   school        = {Instituto Brasileiro de Ensino, Desenvolvimento e Pesquisa (IDP)},
   address       = {Brasília},
   year          = {2024},
