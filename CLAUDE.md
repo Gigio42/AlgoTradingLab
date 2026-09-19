@@ -152,26 +152,138 @@ histórico do git) tinha:
 Ligar `RelatorioInicial=true` faz o EA imprimir a sequência do ADF e a grade de
 AIC completa no log — é o material das tabelas do TG.
 
-## Compilar e testar pela linha de comando
+## MetaTrader sob Wine: onde as coisas estão
 
 O MetaTrader roda sob Wine (o ambiente Windows foi perdido — está documentado
 como obstáculo em `cap2-metodologia.tex`).
 
+**Existem DOIS prefixos Wine com MT5. Conferir qual antes de mexer em qualquer
+coisa.** Em 2026-09-12 um conserto de som foi aplicado no prefixo errado porque
+isso foi suposto em vez de verificado.
+
+| Prefixo | Papel |
+|---|---|
+| `~/.wine-mt5-novo` | **O que está em uso.** Instalação refeita em 2026-08-04. É o que `~/.local/bin/launch-mt5.sh` e todos os atalhos `.desktop` abrem. Tem **um clone próprio deste repositório** em `MQL5/Experts/AlgoTradingLab`. |
+| `~/.wine-mt5` | O antigo, mantido como reserva (build 6090). É onde **este** clone do repositório fica. |
+
+Consequência: editar aqui não muda o que o MT5 em uso executa. É preciso
+`git pull` no clone do prefixo novo e recompilar lá. Para saber o prefixo de um
+MT5 aberto: `tr '\0' '\n' < /proc/<pid>/environ | grep WINEPREFIX`.
+
+Outros fatos do ambiente:
+
+- **O MT5 se atualiza sozinho** (LiveUpdate) ao abrir com internet. Em
+  2026-09-12 passou de 6093 para 6182 sem ninguém pedir. Os executáveis
+  mudam de data; o log do terminal registra `LiveUpdate ... new version`.
+- **Som desligado** nos dois prefixos, por pedido do autor:
+  `HKCU\Software\Wine\Drivers` com `Audio=""`. Não usar `PlaySound()` nem
+  alerta sonoro no código.
+- Logs do terminal, do tester e do agente saem em **UTF-16LE**. Sem
+  `iconv -f UTF-16LE -t UTF-8` parecem binários. Ficam em `logs/`,
+  `Tester/logs/` e `Tester/Agent-127.0.0.1-3000/logs/` da raiz do MT5.
+
+## Compilar e testar pela linha de comando
+
 **Compilar** (caminho relativo à raiz do MT5, `/log` sem argumento):
 
 ```bash
-cd "/home/dark/.wine-mt5/drive_c/Program Files/MetaTrader 5"
-wine MetaEditor64.exe /compile:"MQL5\Experts\AlgoTradingLab\ARIMA-GARCH\ARIMA_GARCH_EA.mq5" /log
+cd "/home/dark/.wine-mt5-novo/drive_c/Program Files/MetaTrader 5"
+WINEPREFIX=~/.wine-mt5-novo wine MetaEditor64.exe /compile:"MQL5\Experts\AlgoTradingLab\ARIMA-GARCH\ARIMA_GARCH_EA.mq5" /log
 iconv -f UTF-16LE -t UTF-8 "MQL5/Experts/AlgoTradingLab/ARIMA-GARCH/ARIMA_GARCH_EA.log" | grep -i "error\|Result:"
 ```
 
-O log sai em **UTF-16LE** — sem o `iconv` parece binário.
+**Rodar pelo `/config:`** (script ou backtest). O `.ini` pode ficar em qualquer
+lugar: `wine terminal64.exe '/config:Z:\caminho\arquivo.ini'`. Armadilhas, todas
+já pagas:
 
-**Rodar um script**: usar `/config:` com `[StartUp]`, mas **sem**
-`ShutdownTerminal=1` — sob Wine ele mata o script antes do `OnStart`. Rodar em
-background, esperar, e depois `pkill -f terminal64.exe`.
+- **`[Common]` com `Login=` e `Server=` é obrigatório.** Sem ele o terminal loga
+  `tester not started because the account is not specified`. Sem `Password=`
+  ele usa a senha gravada.
+- **`ShutdownTerminal=1` não**: sob Wine ele derruba o terminal antes do
+  `OnStart` do script. Rodar em background e encerrar depois com
+  `WINEPREFIX=... wineserver -k`.
+- **Script com `#property script_show_inputs` trava pelo `[StartUp]`**: a janela
+  de parâmetros abre e espera um clique que ninguém dá, e o `OnStart` nunca roda.
+  Por isso o `Import_B3_Custom` ficou meses sem importar nada.
+- **`[StartUp]` precisa de `Symbol=` e `Period=`** para ter um gráfico onde
+  anexar o script.
+- O `launch-mt5.sh` testa `pgrep -f terminal64.exe`. Se o **seu** comando de
+  shell contém esse texto, o launcher acha que o MT5 já está aberto e sai sem
+  abrir nada.
 
-**Backtest**: `/config:` com seção `[Tester]` e `[TesterInputs]`.
+**Símbolos personalizados da B3.** `MQL5/Scripts/B3_Setup/Import_B3_Custom`
+lê `MQL5/Files/B3_Historical/*.csv` e cria `PETR4_B3`, `VALE3_B3`... (14
+papéis, D1, 26/04/2021 a 24/04/2026, 1248 barras) em `Bases/Custom`. O
+resultado sai em `MQL5/Files/import_b3_resultado.txt`. Foi importado no prefixo
+novo em 2026-09-12. O sufixo `_B3` evita colisão com o `PETR4` da corretora.
+
+## Strategy Tester travado ("Waiting For Update") — diagnóstico de 2026-09-12
+
+**Sintoma.** Clicar em Iniciar abre a janela de visualização com "Waiting For
+Update" e nada acontece, nem com o modo visual desligado. Terminal e agente
+ficam com 0% de CPU.
+
+**Causa: o terminal não autenticava em nenhum servidor de negociação.** A conta
+demo `1199505191` da `ClearInvestimentos-DEMO` autenticou até 17/06/2026 e passou
+a dar `Invalid account` em 03/08/2026. **Não era a conta que tinha morrido, era a
+senha**: em 12/09/2026 a senha foi trocada pelo site da Clear e a mesma conta
+voltou a autenticar (`authorized on ClearInvestimentos-DEMO ... 57830 symbols`).
+Todos os travamentos do tester nos logs são do período sem autenticação. Sem
+servidor, o tester se comporta assim:
+
+| Situação (sem autenticação) | O que o log mostra | O que acontece |
+|---|---|---|
+| Símbolo da corretora (EURUSD), teste iniciado pela interface | `common synchronization completed` na hora, e depois silêncio | Espera o servidor por **exatamente 0:08:20 (500 s)** e então segue com o histórico local: `EURUSD: load 477 bytes of history data to synchronize in 0:08:20.309` (12/09) e `0:08:20.480` (05/08). É um timeout fixo. Ninguém espera 8 min olhando "Waiting For Update", e por isso parecia travado para sempre. |
+| Símbolo da corretora, teste pelo `/config` ou em modo visual | `testing of ...` e **nem** `common synchronization completed` | Ficou parado por 6 a 9 min até ser encerrado; o terminal envia ~83 KB ao agente e para. **Causa exata não determinada.** Só aconteceu sem autenticação. |
+| Símbolo personalizado (`PETR4_B3`) | `tester not started because terminal is not synchronized with the trade server [connect status 0, 100]` | Recusa na hora. Com a rede cortada dá `[connect status 1, 100]`, a mesma recusa. |
+
+Com a conta autenticada, o mesmo teste EURUSD sincroniza em `0:00:00.030`. As
+mensagens de recusa existem nos executáveis 6090 e 6182, então isso não é
+novidade de build. A anotação antiga de "Wine lento em loopback, ~2 KB/s" estava
+errada: eram os 500 s de timeout divididos pelos poucos bytes transferidos.
+
+**O que NÃO é a causa** (cada item testado em 2026-09-12 com o mesmo config,
+e em todos o terminal parou no mesmo ponto). Não reabrir essas pistas:
+
+| Suspeita | Teste | Resultado |
+|---|---|---|
+| Rede/loopback lento sob Wine | `ss -tni dst 127.0.0.1:3000` durante o travamento | RTT 0,2 ms, fila vazia, `app_limited`: o socket fica ocioso esperando o terminal enviar. |
+| Modo visual | Mesmo teste com `Visual=0` | Trava igual. |
+| ntsync (`/dev/ntsync`, que chegou com o pacote `ntsync-autoload` junto do wine-staging 11.16 em 28/08) | MT5 dentro de `bwrap --bind <arquivo-sem-permissão> /dev/ntsync`; o `wineserver` ficou com 0 descritores de ntsync | Trava igual; as threads só trocam `ntsync_schedule` por `anon_pipe_read`. |
+| Wine 11.16 | Wine 11.9 oficial (Arch Linux Archive) extraído localmente, rodando numa cópia do prefixo | Trava igual. |
+| Build 6182 | Prefixo antigo, build 6090 | Trava também. |
+
+**Conserto: manter a conta autenticada.** O `Invalid account` da Clear era
+senha expirada. Para trocar: site da Clear → Plataformas e serviços → Contratos
+ativos → Automações → MetaTrader 5 (Simulador) → **Recuperar senha**. O
+"Resetar limite" ao lado só zera o saldo fictício e não resolve. Depois, no MT5:
+Arquivo → Conectar-se à conta de negociação, com o mesmo login. Se a Clear falhar
+de vez, uma demo da MetaQuotes (Arquivo → Abrir uma Conta) também serve.
+
+- Os símbolos da corretora (EURUSD, PETR4 etc.) baixam o histórico do servidor.
+- O backtest do TG pode usar `PETR4_B3`: histórico local vindo do CSV, que não
+  muda se a corretora mexer nos dados. Mas ele também exige terminal
+  autenticado.
+
+**Se o tester voltar a travar, a primeira coisa a olhar é o log do terminal**:
+`authorized on ...` significa que a conexão está ok; `authorization ... failed`
+significa que a senha expirou de novo.
+
+```bash
+iconv -f UTF-16LE -t UTF-8 "$HOME/.wine-mt5-novo/drive_c/Program Files/MetaTrader 5/logs/$(date +%Y%m%d).log" | grep -E "authoriz|not synchronized|tester not started"
+```
+
+**Armadilhas da interface do tester** (vistas em 12/09/2026):
+
+- **A janela de execução em tempo real só abre com a caixa "modo visual"
+  marcada** (aba Configurações, embaixo). O estado fica em `Config/terminal.ini`,
+  seção `[Tester]`, `Visualization=`. Estava em `0` depois dos reinícios. Pelo
+  log dá para conferir: teste visual aparece como `visual testing of`, o normal
+  como `testing of`.
+- **A lista de símbolos do tester mostra os 57 830 símbolos do servidor da
+  Clear** (ações, BDRs como `A1AP34`, opções...) e não tem filtro. Digitar o
+  código direto no campo (ex.: `PETR4`). Os personalizados ficam em
+  `Custom\B3` (`PETR4_B3`).
 
 ## Validação numérica já feita
 
@@ -247,6 +359,12 @@ Se forem úteis a longo prazo, mover para dentro do repositório.
 
 ## Pendências
 
+- O `config-backtest.ini` da raiz do MT5 (prefixo novo) não tem `[Common]`.
+  Pelo `/config` isso dá "account is not specified". Acrescentar
+  `Login=1199505191` e `Server=ClearInvestimentos-DEMO` antes de usá-lo.
+- Rodar o backtest do ARIMA-GARCH em `PETR4_B3` com a conta autenticada. Ainda
+  não foi executado: em 12/09 o símbolo foi importado, mas o teste só chegou até
+  a recusa por falta de autenticação.
 - Decidir o benchmark da comparação final: **Selic** ou **ARIMA puro vs
   ARIMA-GARCH**. Ainda em aberto. O EA já suporta o segundo caso via
   `UsarGARCH`; para a Selic seria preciso uma série externa de referência.

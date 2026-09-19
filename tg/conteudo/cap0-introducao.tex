@@ -1,19 +1,25 @@
 % =====================================================================
-%  INTRODUÇÃO / 1 Contextualização
+%  INTRODUÇÃO (texto corrido)
+%
+%  Manual de Normas FATEC-ID (2021), item 4.2.1: "a introdução não deve
+%  conter subdivisões com os nomes dos tópicos, os itens listados devem
+%  ser de forma textual, apresentados em um texto corrido". Por isso
+%  este capítulo não tem seções nem título proprio: o cabeçalho é a
+%  própria palavra INTRODUÇÃO, e a numeração de capítulos começa na
+%  Fundamentação Teórica (CAPÍTULO I).
 % =====================================================================
-\setdiv{INTRODUÇÃO}
-\chapter{Contextualização}
+\phantomsection
+\addcontentsline{toc}{chapter}{INTRODUÇÃO}
+\chapter*{Introdução}
 
 Nos últimos anos, a economia brasileira tem enfrentado um cenário desafiador,
 marcado por instabilidade macroeconômica e oscilações no mercado financeiro. Para
 tentar controlar a inflação pressionada pela alta do dólar e pelos desafios nas
 contas públicas, o Banco Central tem buscado contê-la por meio do aumento da taxa
-Selic, que alcançou 14,25\% ao ano e pode ultrapassar 15\%.
-
-Definida periodicamente pelo Comitê de Política Monetária (Copom), essa taxa
-reflete as condições macroeconômicas do país e as expectativas para a inflação em
-2025, segundo previsões de instituições financeiras como Citi, Itaú e XP
-\cite{ayres2025}.
+Selic, que alcançou 14,25\% ao ano e pode ultrapassar 15\%. Definida periodicamente
+pelo Comitê de Política Monetária (Copom), essa taxa reflete as condições
+macroeconômicas do país e as expectativas para a inflação em 2025, segundo previsões
+de instituições financeiras como Citi, Itaú e XP \cite{ayres2025}.
 
 Esse aumento da Selic reflete preocupações com a inflação, que vem subindo não só
 pelo custo maior de produtos importados, consequência direta da desvalorização do
@@ -50,24 +56,23 @@ investimentos.
 \end{table}
 
 Apesar do cenário desafiador, a economia brasileira continua crescendo, com um
-avanço de 3,3\% em 2024 e previsão de 2,5\% para 2025 no PIB \cite{ayres2024}. No
-entanto, esse crescimento acontece em meio a desafios. A alta dos juros torna o
-crédito mais caro e dificulta novos investimentos, enquanto a queda do Real, apesar
-de favorecer exportadores, encarece produtos e reduz o poder de compra da
+avanço de 3,3\% em 2024 e previsão de 2,5\% para 2025 no PIB \cite{ayres2024}. Esse
+crescimento, porém, acontece em meio a dificuldades: a alta dos juros torna o
+crédito mais caro e desestimula novos investimentos, enquanto a queda do Real, ainda
+que favoreça os exportadores, encarece produtos e reduz o poder de compra da
 população.
 
 Por outro lado, a crescente digitalização e modernização do mercado financeiro
 impulsiona o desenvolvimento de soluções tecnológicas que visam otimizar o processo
 de tomada de decisão e mitigar os riscos inerentes ao mercado, como o surgimento do
 trading algorítmico\footnote{Negociação de ativos automatizada por algoritmos.}
-\cite{almeida2016,silva2022}. Nesse contexto, essa ferramenta, que se configura como
-uma forma automatizada de investir por meio de algoritmos, ganha relevância na
-execução de operações com modelos matemáticos e estatísticos. Essa abordagem busca
-proporcionar maior eficiência operacional ao identificar padrões de tendência nos
-ativos financeiros. Embora o estudo de \citeonline{almeida2016} aponte desafios em
-relação à lucratividade em períodos de crise, os resultados de ambos os trabalhos
-demonstram o potencial do trading algorítmico para otimizar a tomada de decisões e
-buscar resultados consistentes, sobretudo em cenários de mercado mais estáveis.
+\cite{almeida2016,silva2022}. Essa forma automatizada de investir ganha relevância ao
+executar operações a partir de modelos matemáticos e estatísticos, buscando maior
+eficiência operacional na identificação de padrões de tendência nos ativos
+financeiros. Embora o estudo de \citeonline{almeida2016} aponte desafios quanto à
+lucratividade em períodos de crise, os resultados demonstram o potencial do trading
+algorítmico para apoiar a tomada de decisões e buscar resultados consistentes,
+sobretudo em cenários de mercado mais estáveis.
 
 Conforme apontado em artigo da Forbes \cite{cojocaru2024}, essa tendência digital,
 que já automatiza entre 60\% e 73\% das negociações de ações nos EUA, está se
@@ -76,197 +81,130 @@ Execution utilizam inteligência artificial para analisar grandes volumes de dad
 prevendo tendências de mercado e padrões, e plataformas como TD Ameritrade,
 Interactive Brokers e TradeStation oferecem ferramentas e APIs para que
 investidores, inclusive de varejo, desenvolvam e implementem estratégias
-algorítmicas.
+algorítmicas. Diante desse cenário, este trabalho desenvolveu uma ferramenta baseada
+em trading algorítmico e modelos estatísticos para analisar padrões de tendência no
+mercado de ativos, explorando as oportunidades geradas pela volatilidade.
 
-Diante desse cenário, este trabalho desenvolveu uma ferramenta baseada em trading
-algorítmico e modelos estatísticos para analisar padrões de tendência no mercado de
-ativos, explorando as oportunidades geradas pela volatilidade.
+Desse contexto decorre o problema investigado. A alta inflação é constante no
+mercado brasileiro da atualidade, amplamente estudada e divulgada pelo BCB, mais
+especificamente pelo órgão COPOM, que regula e configura a taxa mais adequada para
+os níveis inflacionários no país. Os sucessivos aumentos da taxa básica de juros
+tornam investimentos menos favoráveis e comprometem o poder de compra, o que
+representa um desafio central para a manutenção de patrimônio. Sobre isso pesa a
+instabilidade inerente aos ativos financeiros, que dificulta previsões confiáveis,
+enquanto a inflação persistente desvaloriza a moeda nacional e exige do investidor
+estratégias voltadas primordialmente à proteção do capital e, secundariamente, à
+obtenção de retornos reais positivos.
 
-\section{Problema}
+Nesse ambiente adverso, torna-se essencial buscar modalidades de investimento que
+sejam adaptadas à inflação vigente e resilientes às oscilações frequentes e, por
+vezes, abruptas do mercado. Os modelos tradicionais de análise de investimento se
+mostram complexos diante da dinâmica atual, o que amplia o desafio. Emerge, portanto,
+a necessidade de ferramentas analíticas avançadas, capazes de auxiliar na
+identificação de padrões de tendência e em decisões de investimento mais informadas
+e potencialmente mais seguras neste contexto econômico particular.
 
-A alta inflação é constante no mercado brasileiro da atualidade, amplamente estudada
-e divulgada pelo BCB, mais especificamente pelo órgão COPOM, que regula e configura
-a taxa mais adequada para os níveis inflacionários no país. Os sucessivos aumentos
-da taxa básica de juros tornam investimentos menos favoráveis e comprometem o poder
-de compra, representando um desafio central para a manutenção de patrimônio.
+Para responder a esse problema, o trabalho partiu de uma premissa central: a
+integração metodológica entre a previsão de séries temporais com o modelo ARIMA e a
+modelagem de volatilidade condicional com o modelo GARCH, em uma ferramenta
+algorítmica unificada desenvolvida em MQL5, permite gerar sinais de negociação com
+maior eficácia, aferida em termos de potencial de acerto e adequação ao risco, do que
+abordagens que empregam essas técnicas de forma isolada ou incompleta. A viabilidade
+de combinar diferentes ferramentas de análise para obter resultados superiores
+encontra respaldo em trabalhos como o de \citeonline{batista2024}, que demonstrou
+resultados positivos ao integrar indicadores técnicos em um modelo de negociação.
 
-A instabilidade inerente aos ativos financeiros dificulta a realização de previsões
-confiáveis, enquanto a persistente inflação desvaloriza a moeda nacional, exigindo
-dos investidores a adoção de estratégias que visem primordialmente a proteção do
-capital e, secundariamente, a obtenção de retornos reais positivos.
+Dessa premissa central decorreram outras duas. A primeira é a de que a combinação
+sequencial dos modelos ARIMA e GARCH constitui um avanço significativo em relação a
+análises baseadas em Médias Móveis, como as exploradas por \citeonline{almeida2016}:
+esperava-se que o ARIMA capturasse a dinâmica temporal e fornecesse previsões de
+curto prazo da direção dos preços com maior refinamento do que as médias, e que o
+GARCH, aplicado aos resíduos gerados pelo ARIMA, detalhasse a volatilidade e o risco
+associados a essas previsões, permitindo uma avaliação mais ampla do cenário de
+mercado. A segunda é a de que a modelagem estatística da volatilidade, complementada
+por métricas quantitativas de risco, assegura uma leitura mais robusta das condições
+de mercado, de modo que a análise integrada de tendência e risco reduz a
+probabilidade de decisões inadequadas em momentos desfavoráveis e aumenta a
+seletividade e a segurança das operações identificadas pela ferramenta.
 
-Diante desse cenário macroeconômico adverso, torna-se essencial a busca e adoção de
-modalidades de investimento que sejam não apenas adaptadas à inflação vigente, mas
-também resilientes às frequentes e, por vezes, abruptas oscilações do mercado. A
-complexidade observada nos modelos tradicionais de análise de investimento, quando
-confrontados com a dinâmica atual do mercado, amplia o desafio. Emerge, portanto, a
-necessidade premente do desenvolvimento de ferramentas analíticas avançadas que
-possam auxiliar na identificação de padrões de tendência e na tomada de decisões de
-investimento mais informadas e potencialmente mais seguras neste contexto econômico
-particular.
+Com base nessas premissas, o objetivo geral deste trabalho foi desenvolver e avaliar
+uma ferramenta algorítmica integrada, utilizando a linguagem de programação MQL5 e a
+plataforma MetaTrader 5, para análise e previsão de tendências no mercado de ativos,
+com o propósito de gerar retornos superiores à taxa Selic, com foco na economia
+brasileira. Para alcançá-lo, buscou-se aprofundar conceitos teóricos do mercado
+financeiro, com ampla ênfase em volatilidade e tendências; compreender e aplicar
+esses conhecimentos na plataforma MetaTrader em junção com MQL5 na automação de
+estratégias; implementar modelos estatísticos, ARIMA e GARCH, para previsão de séries
+temporais e modelagem de volatilidade; comparar os resultados obtidos com a taxa
+Selic vigente; e documentar os obstáculos encontrados e as lições aprendidas durante
+a execução do projeto.
 
-\section{Hipóteses}
+A pesquisa se justifica, inicialmente, pela revisitação e aplicação contemporânea do
+conceito explorado por \citeonline{almeida2016}, cujo estudo demonstrou a viabilidade
+do uso de robôs de investimento via MetaTrader em diferentes períodos sobre o ativo
+PETR4. Desde então, houve evolução significativa nos cenários econômicos e nas
+tecnologias disponíveis, o que motiva esta nova abordagem, alinhada às recomendações
+do próprio autor para aplicação em mercados de alta volatilidade.
 
-\subsection{Hipótese Central}
-Este trabalho partiu da premissa de que a integração metodológica de previsão de séries temporais com modelo
-ARIMA e modelagem de volatilidade condicional com modelo GARCH em uma ferramenta algorítmica unificada, desenvolvida em MQL5, permite a geração
-de sinais de negociação para ativos com maior eficácia, aferida em termos de
-potencial de acerto e adequação ao risco, do que abordagens que empregam estas
-técnicas de forma isolada ou incompleta. A viabilidade de combinar diferentes
-ferramentas de análise para obter resultados superiores encontra respaldo em
-trabalhos como o de \citeonline{batista2024}, que demonstrou resultados positivos ao
-integrar indicadores técnicos em um modelo de negociação.
+Justifica-se, ainda, pela necessidade de identificar e avaliar alternativas de
+investimento viáveis e potencialmente lucrativas diante da inflação persistente e dos
+juros elevados no Brasil, contribuindo para mitigar os efeitos do congelamento
+financeiro que pode afetar investidores nesse contexto e oferecendo análises que
+embasem decisões de quem deseja diversificar seus portfólios. Por fim, o estudo busca
+agregar valor ao conhecimento acadêmico na área de finanças quantitativas e trading
+algorítmico no contexto brasileiro, podendo servir de base ou inspiração para futuros
+projetos relacionados.
 
-\subsection{Hipótese da Complementaridade Preditiva e de Risco}
-Partiu-se da premissa que a combinação sequencial dos modelos ARIMA e GARCH constitui um avanço
-significativo em relação a análises baseadas em Médias Móveis, como as exploradas
-por \citeonline{almeida2016}. Especificamente, esperava-se que: o modelo ARIMA capturasse
-a dinâmica temporal e fornecesse previsões de curto prazo da direção dos preços com
-maior refinamento do que as Médias Móveis. A subsequente aplicação do modelo GARCH
-aos resíduos gerados pelo ARIMA incorpora com maior detalhe a modelagem da
-volatilidade e do risco associado às previsões, permitindo uma avaliação mais ampla
-do cenário de mercado.
+Quanto à natureza e ao tipo, esta pesquisa é empírica e aplicada. É empírica porque
+se dedica à investigação de fenômenos observáveis do mundo real: conforme
+\citeonline{wazlawick2014}, a ciência empírica busca o conhecimento através da
+experiência e da observação, o que aqui se manifesta na análise de dados históricos
+de preços de ações para a identificação de padrões e tendências, cuja coleta e
+tratamento são fundamentais para a construção e a validação da ferramenta. É
+aplicada porque, ainda segundo o autor, a ciência aplicada se preocupa com a
+utilização prática do conhecimento científico na solução de problemas específicos, e
+o desenvolvimento de uma ferramenta para auxiliar investidores atende a uma demanda
+concreta de tomada de decisão e de gestão de riscos.
 
-\subsection{Hipótese da Adequação ao Risco}
-Partiu-se da premissa que a modelagem estatística da volatilidade via GARCH, complementada por métricas quantitativas de risco, assegura uma avaliação mais robusta das condições de mercado. A análise integrada de tendência (ARIMA) e risco (GARCH) reduz a probabilidade de decisões inadequadas em momentos de mercado desfavorável, aumentando a seletividade e a segurança das operações identificadas pela ferramenta.
+A pesquisa também se aproxima das ciências exatas, ainda que com ressalvas, e se
+alinha ao rigor metodológico das ciências hard. O uso de modelos estatísticos como
+ARIMA e GARCH e a adoção de métricas quantitativas para avaliar o desempenho da
+ferramenta refletem a busca por precisão e objetividade; já a definição de métricas
+de avaliação e a validação empírica por meio de backtesting demonstram a preocupação
+com a solidez e a replicabilidade dos resultados, características que
+\citeonline{wazlawick2014} atribui às ciências hard. É preciso reconhecer, porém, que
+o mercado financeiro é intrinsecamente marcado pela incerteza e pela volatilidade,
+elemento de inexatidão que o distingue dos sistemas puramente determinísticos com os
+quais as ciências exatas tradicionalmente lidam.
 
-\section{Objetivo}
+Há, por fim, um componente nomotético e um caráter explicativo. As ciências
+nomotéticas buscam estabelecer leis gerais ou princípios que expliquem classes de
+fenômenos \cite{wazlawick2014}, e a análise de tendências e volatilidade procura
+identificar padrões que, dentro de certas limitações, auxiliem na previsão do
+comportamento futuro dos ativos. A pesquisa explicativa, por sua vez, busca as causas
+dos fenômenos e as relações entre variáveis: neste caso, procurou-se explicar como a
+combinação de diferentes modelos estatísticos influencia a capacidade preditiva e a
+gestão de riscos no mercado de ações. Quanto aos procedimentos técnicos, o estudo
+combinou pesquisa bibliográfica, que forneceu a base teórica e conceitual sobre
+modelos estatísticos e trading algorítmico, e pesquisa experimental, conduzida por
+meio de backtesting na plataforma MetaTrader 5, com a manipulação dos parâmetros dos
+modelos e a observação dos resultados de taxa de acerto e de lucro ou prejuízo.
 
-\subsection{Objetivo Geral}
-Desenvolver e avaliar uma ferramenta algorítmica integrada, utilizando a linguagem de programação
-MQL5 e a plataforma MetaTrader 5, para análise e previsão de tendências no mercado
-de ativos, com o propósito de gerar retornos superiores à taxa Selic, com foco na economia brasileira.
+Quanto à organização do texto, o Capítulo 1 apresenta a Fundamentação Teórica. Ele
+parte de conceitos introdutórios de economia e do mercado financeiro, como o
+funcionamento de corretoras, as bolsas de valores e as características dos ativos
+negociados, e avança para os temas técnicos: as diferentes abordagens da análise
+técnica, com foco nos métodos estatísticos, a plataforma MetaTrader 5 e a linguagem
+MQL5, os indicadores de mercado e os modelos estatísticos de séries temporais e de
+volatilidade. O capítulo se encerra com a revisão de pesquisas anteriores, que
+posiciona este estudo em relação ao que já existe na área.
 
-\subsection{Objetivos Específicos}
-\begin{itemize}
-  \item Aprofundar conceitos teóricos do mercado financeiro, com ampla ênfase em
-        volatilidade e tendências;
-  \item Compreender e aplicar os conhecimentos na plataforma MetaTrader em junção
-        com MQL5 na automação de estratégias;
-  \item Implementar modelos estatísticos (ARIMA e GARCH) para previsão de séries
-        temporais e modelagem de volatilidade;
-  \item Comparar resultados obtidos com a taxa Selic vigente;
-  \item Documentar obstáculos encontrados e lições aprendidas durante a execução do projeto.
-\end{itemize}
-
-\section{Justificativa}
-
-Esta pesquisa se justifica inicialmente pela revisitação e aplicação contemporânea
-do conceito explorado por \citeonline{almeida2016}. Seu estudo demonstrou a
-viabilidade do uso de robôs de investimento via MetaTrader em diferentes períodos
-sobre o ativo PETR4. Contudo, houve uma evolução significativa nos cenários
-econômicos e nas tecnologias disponíveis desde então, o que motiva esta nova
-abordagem, alinhada às suas próprias recomendações futuras para aplicação em
-mercados de alta volatilidade.
-
-Ademais, por consequência direta do presente cenário econômico de inflação
-persistente e juros elevados no Brasil, outro ponto central que justifica este
-trabalho é a necessidade de identificar e avaliar alternativas de investimento que
-possam se mostrar viáveis e potencialmente lucrativas. Este estudo visa contribuir
-para mitigar os efeitos do congelamento financeiro que pode afetar investidores
-nesse contexto, oferecendo análises que possam embasar decisões para aqueles
-interessados em diversificar seus portfólios.
-
-Além disso, a pesquisa busca agregar valor ao conhecimento acadêmico na área de
-finanças quantitativas e trading algorítmico no contexto brasileiro, podendo servir
-de base ou inspiração para futuros projetos relacionados.
-
-\section{Natureza e Tipo da pesquisa a ser desenvolvido}
-
-A presente pesquisa se enquadra, inicialmente, na classificação de ciência empírica,
-uma vez que se dedica à investigação de fenômenos observáveis do mundo real.
-Conforme \citeonline{wazlawick2014}, a ciência empírica se caracteriza pela busca de
-conhecimento através da experiência e da observação, o que se manifesta neste estudo
-na análise de dados históricos de preços de ações para a identificação de padrões e
-tendências. A coleta e o tratamento desses dados são fundamentais para a construção
-e validação da ferramenta algorítmica.
-
-Adicionalmente, a pesquisa possui um caráter aplicado. \citeonline{wazlawick2014}
-destaca que a ciência aplicada se preocupa com a utilização prática do conhecimento
-científico para a solução de problemas específicos. Neste contexto, o
-desenvolvimento de uma ferramenta para auxiliar investidores no mercado de ativos
-demonstra claramente a intenção de aplicar os conhecimentos gerados para atender a
-uma demanda concreta, buscando otimizar o processo de tomada de decisão e a gestão
-de riscos.
-
-No que tange à sua natureza, a pesquisa se aproxima de uma ciência exata, embora com
-ressalvas. A utilização de modelos estatísticos como ARIMA e GARCH, bem como a
-adoção de métricas quantitativas para avaliar o desempenho da ferramenta, refletem a
-busca por precisão e objetividade, características marcantes das ciências exatas. No
-entanto, é fundamental reconhecer que o mercado financeiro, objeto de estudo desta
-pesquisa, é intrinsecamente marcado pela incerteza e pela volatilidade. Essa
-característica introduz um elemento de inexatidão que diferencia este campo de
-investigação de sistemas puramente determinísticos, nos quais as ciências exatas
-tradicionalmente se concentram.
-
-Sob a perspectiva do rigor metodológico, a pesquisa busca alinhamento com uma ciência
-hard. Segundo \citeonline{wazlawick2014}, as ciências hard se caracterizam pela
-utilização de métodos formais e quantitativos, pela busca de leis gerais e pela
-ênfase na objetividade e na replicabilidade. A aplicação de métodos estatísticos, a
-definição de métricas de avaliação e a validação empírica por meio de backtesting
-demonstram a preocupação em conferir solidez e validade aos resultados obtidos.
-
-Por fim, a pesquisa possui um componente nomotético. \citeonline{wazlawick2014}
-explica que as ciências nomotéticas buscam estabelecer leis gerais ou princípios que
-expliquem classes de fenômenos. Neste estudo, a análise de tendências e volatilidade
-no mercado de ações tem como objetivo identificar padrões que possam, dentro de
-certas limitações, auxiliar na previsão do comportamento futuro dos ativos. Embora a
-previsão no mercado financeiro seja inerentemente complexa, a busca por
-regularidades e a tentativa de formular generalizações demonstram o caráter
-nomotético da investigação.
-
-Em relação aos objetivos, a pesquisa se classifica como explicativa. Conforme
-\citeonline{wazlawick2014}, a pesquisa explicativa busca identificar as causas ou
-razões de determinados fenômenos, aprofundando o conhecimento sobre as relações
-entre variáveis. Neste caso, o estudo buscou explicar como a combinação de diferentes
-modelos estatísticos pode influenciar a capacidade preditiva e a gestão de riscos no mercado de ações, investigando os mecanismos pelos
-quais essa integração otimiza o desempenho da ferramenta algorítmica.
-
-No que concerne aos procedimentos técnicos, a pesquisa se desenvolveu por meio de
-pesquisa bibliográfica e pesquisa experimental. A pesquisa bibliográfica foi
-fundamental para a revisão da literatura existente sobre modelos estatísticos
-e trading algorítmico, fornecendo a base teórica e conceitual
-para o estudo. A pesquisa experimental, por sua vez, foi realizada por meio de
-backtesting na plataforma MetaTrader 5, envolvendo a manipulação de variáveis
-(parâmetros dos modelos) e a observação dos resultados (taxa
-de acerto, lucro/prejuízo) para validar a eficácia da ferramenta desenvolvida.
-
-\section{Organização dos capítulos}
-
-O Capítulo 1 apresenta a Fundamentação Teórica, oferecendo a base de conhecimento
-necessária para a compreensão do projeto.
-
-Inicialmente, foram abordados conceitos introdutórios que contextualizam a pesquisa.
-Isso inclui partes sobre economia e princípios básicos do mercado
-financeiro, como o funcionamento de corretoras, bolsas de valores e as
-características dos ativos negociados.
-
-Mais adiante, o capítulo se aprofunda em conceitos mais técnicos, importantes para a
-análise e modelagem. Foram discutidas as diferentes abordagens da análise técnica de
-ativos, com foco nos métodos estatísticos. A plataforma MetaTrader 5 e sua linguagem
-MQL5, utilizadas no desenvolvimento, foram apresentadas, assim como os tipos de
-indicadores de mercado e os modelos estatísticos para análise de séries temporais e
-volatilidade.
-
-Por fim, o capítulo apresenta uma revisão de pesquisas anteriores. Esta seção
-relaciona o presente estudo com trabalhos já existentes na área,
-identificando como esta pesquisa se posiciona e contribui para o campo.
-
-O Capítulo 2 detalha a Metodologia utilizada, explicando o processo de construção e
-validação da ferramenta algorítmica.
-
-Este capítulo começa descrevendo a natureza da pesquisa e o ambiente para os
-experimentos. Foram especificadas as ferramentas de software,
-linguagens de programação e as fontes de dados para o ativo financeiro em estudo,
-incluindo como os dados do mercado brasileiro foram acessados.
-
-Em seguida, é descrito como o experimento de pesquisa foi conduzido, com a descrição
-das etapas para a implementação dos diferentes componentes da ferramenta. O processo
-iniciou com as análises baseadas em indicadores de tendência, avançando para a modelagem
-estatística dos preços e a análise da volatilidade dos resíduos via ARIMA e GARCH.
-
-O capítulo apresenta também os obstáculos encontrados durante a execução, conclui
-estabelecendo os critérios para a avaliação dos modelos desenvolvidos e da ferramenta
-como um todo, detalhando as métricas de desempenho utilizadas nos testes.
-Adicionalmente, são apresentados os resultados preliminares obtidos e as limitações
-bem como perspectivas para trabalhos futuros.
+O Capítulo 2 detalha a Metodologia, explicando como a ferramenta foi construída e
+validada. Nele são descritos a natureza da pesquisa, o ambiente dos experimentos, as
+ferramentas de software e as fontes de dados do ativo em estudo, bem como a condução
+do experimento, que começou pelas análises baseadas em indicadores de tendência e
+avançou para a modelagem estatística dos preços e da volatilidade dos resíduos por
+meio dos modelos ARIMA e GARCH. O capítulo traz ainda os obstáculos encontrados
+durante a execução, os critérios de avaliação dos modelos e da ferramenta, os
+resultados preliminares, as limitações e as perspectivas de trabalhos futuros. Por
+fim, o Capítulo 3 reúne a conclusão e as considerações finais.
