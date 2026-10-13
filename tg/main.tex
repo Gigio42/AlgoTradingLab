@@ -1,6 +1,6 @@
 % =====================================================================
 %  Trabalho de Graduação (TG) — FATEC Indaiatuba / ADS
-%  Hierarquia de normas: Manual de Normas FATEC-ID (2021) > ABNT.
+%  Hierarquia de normas: Manual de Normas FATEC-ID (2026-2027) > ABNT.
 %  Compilar com: make   (pdflatex + bibtex + pdflatex x2)
 % =====================================================================
 \documentclass[
@@ -29,11 +29,30 @@
 
 \graphicspath{{figuras/}}
 
+% --- Tipos de ilustração (Manual FATEC-ID, item 3) --------------------
+% Quadro = dado qualitativo; Tabela = dado numérico; Gráfico = representação
+% geométrica de dados; Figura = o resto. O abnTeX2 só traz figura e tabela.
+% Quadro e gráfico escrevem no mesmo arquivo da lista de figuras (.lof):
+% como têm menos de 5 itens cada, o Manual (4.1.1.10) manda fazer uma lista
+% única, chamada LISTA DE ILUSTRAÇÕES. A lista de tabelas é separada.
+% Modelos do Manual (3.1 e 3.2): tabela com laterais abertas e linhas entre as
+% linhas; quadro fechado, em grade. Um pouco de altura nas linhas para as
+% réguas não encostarem no texto.
+\renewcommand{\arraystretch}{1.2}
+\newfloat{quadro}{lof}{Quadro}
+\newlistentry{quadro}{lof}{0}
+\renewcommand{\cftquadroname}{Quadro\space}
+\renewcommand*{\cftquadroaftersnum}{\hfill\textendash\hfill}
+\newfloat{grafico}{lof}{Gráfico}
+\newlistentry{grafico}{lof}{0}
+\renewcommand{\cftgraficoname}{Gráfico\space}
+\renewcommand*{\cftgraficoaftersnum}{\hfill\textendash\hfill}
+
 % ----------------------- Ajustes de formatação -----------------------
 % Manual FATEC: recuo de primeira linha 1,25 cm; espaçamento 1,5;
 % margens 3/2/3/2 (padrão abnTeX2).
 \setlength{\parindent}{1.25cm}
-\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\parskip}{0pt}
 \setlength{\baselineskip}{1.5\baselineskip}
 
 % Desabilitar remoção automática de parindent no primeiro parágrafo de seções
@@ -75,6 +94,7 @@
   \renewcommand{\chapterheadstart}{%
     \chapnumberedfalse
     \ifhasdiv
+      \thispagestyle{empty}%  abertura de capítulo: contada, sem número
       \phantomsection
       \addcontentsline{toc}{chapter}{\divlabel}%
       {\centering\chaptitlefont\divlabel\par}%
@@ -123,9 +143,7 @@
 %     entradas à esquerda (sem identação progressiva) e em negrito;
 %     pontilhado denso em todos os níveis (Manual 1.5 + legibilidade).
 \makeatletter
-\renewcommand{\l@subsection}[2]{}               % omite 1.1.1 do sumário
 \renewcommand{\l@part}[2]{}                     % omite "APÊNDICES" do sumário
-\renewcommand{\l@appendix}[2]{}                 % omite "APÊNDICE A" do sumário
 \makeatother
 \renewcommand{\cftdotsep}{1}                    % pontilhado populado
 \renewcommand{\cftchapterdotsep}{\cftdotsep}    % pontilhado também nos capítulos
@@ -136,6 +154,11 @@
 \renewcommand*{\cftsectionpagefont}{\normalfont}
 \cftsetindents{chapter}{0em}{1.4em}
 \cftsetindents{section}{0em}{2.6em}
+\cftsetindents{subsection}{0em}{3.4em}         % Manual 4.1.1.14: indicativos à esquerda
+\renewcommand*{\cftsubsectionfont}{\normalfont}
+\renewcommand*{\cftsubsectionpagefont}{\normalfont}
+\renewcommand{\cftsubsectiondotsep}{\cftdotsep}
+\setlength{\cftbeforesubsectionskip}{0pt}
 \setlength{\cftbeforepartskip}{0pt}            % apêndice omitido do sumário
 % Reduzir espaçamento no sumário conforme ABNT (espaçamento simples)
 \setlength{\cftbeforechapterskip}{0pt}         % sem espaço antes de capítulos
@@ -146,10 +169,10 @@
   \renewcommand{\bibname}{REFERÊNCIAS}%
   \renewcommand{\apendicesname}{APÊNDICES}%
   \renewcommand{\anexosname}{ANEXOS}%
-  \renewcommand{\listfigurename}{LISTA DE FIGURAS}%
+  \renewcommand{\listfigurename}{LISTA DE ILUSTRAÇÕES}%
   \renewcommand{\listtablename}{LISTA DE TABELAS}%
 }
-\renewcommand{\listfigurename}{LISTA DE FIGURAS}
+\renewcommand{\listfigurename}{LISTA DE ILUSTRAÇÕES}
 \renewcommand{\listtablename}{LISTA DE TABELAS}
 
 % --- Legendas de ilustrações/tabelas (Manual FATEC 1.3 e seção 3) -----
@@ -198,9 +221,10 @@
 % Metadados PDF e navegação (links/marcadores não alteram a formatação
 % impressa: colorlinks=false + pdfborder={0 0 0} deixam o texto igual ao
 % padrão ABNT, só adicionam a navegação clicável).
+\usepackage{xurl}           % URLs longas nas referências quebram em qualquer ponto
 \usepackage{hyperref}
 \hypersetup{
-  pdftitle={Previsão e Análise de Tendências no Mercado de Ativos},
+  pdftitle={Previsão e análise de tendências no mercado de ativos},
   pdfauthor={Bruno Rocha Pereira e Giovanni Silva Loose},
   colorlinks=false, pdfborder={0 0 0}
 }
@@ -222,14 +246,14 @@
 \setlength{\parskip}{0pt}
 \input{conteudo/resumo}
 \input{conteudo/abstract}
-\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\parskip}{0pt}
 \OnehalfSpacing
 
-% Listas (mín. 5 itens cada -> listas próprias, Manual 4.1.12)
+% Listas: ilustrações (figuras, quadros e gráficos juntos) e tabelas (Manual 4.1.1.10 e 4.1.1.11)
 % Elementos pré-textuais: espaçamento simples e sem parskip conforme Manual FATEC 1.4
 \SingleSpacing
 \setlength{\parskip}{0pt}
-\pdfbookmark[0]{Lista de figuras}{lof}
+\pdfbookmark[0]{Lista de ilustrações}{lof}
 \listoffigures*
 \cleardoublepage
 
@@ -246,20 +270,50 @@
 \cleardoublepage
 
 % Volta ao espaçamento 1,5 e parskip para elementos textuais
-\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\parskip}{0pt}
 \OnehalfSpacing
 
 % ------------------------- Elementos textuais ------------------------
 \textual
 \pagestyle{numtopright}
+% Tem de vir depois do \textual, que redefine o estilo. O número aparece a partir
+% da introdução (Manual 1.5) em todas as páginas, inclusive Considerações finais,
+% Referências e Apêndice. Só a abertura de CAPÍTULO I, II e III fica sem número
+% (Manual 1.5 e 4.1.2.10, "entradas de capítulos", e o modelo da Figura 8):
+% isso é feito no \chapterheadstart, quando há rótulo de divisão (\setdiv).
+\aliaspagestyle{chapter}{numtopright}
 
 \input{conteudo/cap0-introducao}
 \input{conteudo/cap1-fundamentacao}
 \input{conteudo/cap2-metodologia}
-\input{conteudo/cap3-conclusao}
+\input{conteudo/cap3-resultados}
+\input{conteudo/cap4-consideracoes}
 
 % ------------------------- Elementos pós-textuais --------------------
 \postextual
+
+% ---------------------------------------------------------------------
+% NBR 6023:2025 / Manual FATEC-ID 2026-2027, item 2.3.1:
+% "seu sobrenome será escrito apenas com a primeira letra maiúscula e as
+%  demais minúsculas, INCLUSIVE quando for apresentado dentro dos
+%  parênteses".
+% O estilo alf do abntex2cite grava duas formas por referência: a explícita
+% (caixa mista, usada por \citeonline) e a implícita (caixa alta, usada por
+% \cite). A redefinição abaixo faz a implícita usar a mesma forma da
+% explícita, de modo que (Almeida, 2016) substitui (ALMEIDA, 2016).
+% A LISTA de referências continua com o sobrenome em caixa alta, como a
+% norma exige.
+% ---------------------------------------------------------------------
+% Manual FATEC-ID 2.3.5.2 a 2.3.5.4: dentro do parêntese os autores são
+% separados por ponto e vírgula, "(Rieck; Lee, 1999)", e fora dele por "e",
+% "Rieck e Lee (1999)". "et al." vai sempre em itálico. Isso é feito no .bbl,
+% logo depois do bibtex, pelo Makefile (ver ../ferramentas/scripts/citacoes_abnt.pl):
+% a forma implícita passa a ser a explícita com "; " no lugar de " e " e de ", ".
+% Se o .bbl não passou pelo script, a linha abaixo ao menos garante caixa mista.
+\makeatletter
+\let\abntrefinfo@orig\abntrefinfo
+\renewcommand{\abntrefinfo}[3]{\abntrefinfo@orig{#1}{#2}{#3}}
+\makeatother
 
 \bibliography{referencias}
 
@@ -272,6 +326,9 @@
   \renewcommand{\printchapternum}{\chapnumberedtrue\appchapfont\thechapter}%
   \renewcommand{\afterchapternum}{\appchapfont\space\textendash\space}%
   \renewcommand{\printchaptertitle}[1]{\appchapfont #1}%
+  % Sumário: "APÊNDICE A – Título" (Manual FATEC-ID 4.1.3.3)
+  \addtocontents{toc}{\protect\renewcommand*{\protect\cftchapteraftersnum}{~\textendash~}}%
+  \addtocontents{toc}{\protect\cftsetindents{chapter}{0em}{1.6em}}%
   \input{conteudo/apendice-a}
 \end{apendicesenv}
 

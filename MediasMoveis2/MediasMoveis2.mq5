@@ -7,7 +7,20 @@
 #property description "Cruzamento de MM com SL/TP e reversão"
 
 #include <Trade\Trade.mqh>
+#include "..\Include\Estrategia.mqh"
+#include "..\Include\Desempenho.mqh"
+
+//--- Mesma avaliacao do ARIMA_GARCH_EA (Selic, buy-and-hold, Sharpe...),
+//--- para os tres modelos serem comparados com a mesma regua.
+#property tester_file "selic_diaria.csv"
+#property tester_file "proventos_PETR4.csv"
+#property tester_file "proventos_VALE3.csv"
+#property tester_file "proventos_USIM5.csv"
+#property tester_file "proventos_POMO4.csv"
+
 CTrade Trade;
+CDesempenho g_desempenho;
+bool g_no_testador = false;
 
 input group "Parâmetros das Médias Móveis"
 input int                RapidaMM_Periodo   = 10;
@@ -27,6 +40,13 @@ input int                TakeProfit_Points  = 100;
 input ulong              MagicNumber        = 12349; 
 input int                Slippage_Points    = 10;
 input bool               TradeOnNewBarOnly  = true;
+input double             Fracao_Capital     = 0.0;    // >0: volume = fracao do patrimonio (ignora Volume_Fixo_Input)
+input bool               SomenteCompra      = false;  // Sinal de venda apenas zera a compra (sem venda a descoberto)
+
+input group "Avaliação (Strategy Tester)"
+input double             Custo_Por_Lado     = 0.0003; // Custo B3 por execucao (fracao do valor negociado)
+input string             Arquivo_Proventos  = "proventos_PETR4.csv"; // Proventos por data-ex (so avaliacao)
+input string             Rotulo             = "";     // Nome da curva diaria exportada (vazio = nao exporta)
 
 int      h_RapidaMM;
 int      h_DevagarMM;
@@ -73,6 +93,16 @@ int OnInit()
    }
    if(g_VolumeOperacional < min_volume) g_VolumeOperacional = min_volume;
 
+   g_no_testador = (bool)MQLInfoInteger(MQL_TESTER);
+   if(g_no_testador)
+   {
+      g_desempenho.Definir(_Symbol, MagicNumber, Custo_Por_Lado);
+      if(!g_desempenho.CarregarSelic("selic_diaria.csv"))
+         Print("AVISO: selic_diaria.csv nao encontrado - caixa parado rendera 0");
+      if(!g_desempenho.CarregarProventos(Arquivo_Proventos))
+         Print("AVISO: ", Arquivo_Proventos, " nao encontrado - camada de proventos = 0");
+   }
+
    return(INIT_SUCCEEDED);
 }
 //+------------------------------------------------------------------+
@@ -116,8 +146,22 @@ bool FecharPosicaoAtual(ENUM_POSITION_TYPE tipoPosicaoParaFechar) {
     return true; 
 }
 //+------------------------------------------------------------------+
+double VolumeAtual(const double preco)
+{
+   if(Fracao_Capital <= 0.0) return g_VolumeOperacional;
+   return VolumePorCapital(_Symbol, Fracao_Capital, preco);
+}
+//+------------------------------------------------------------------+
 void OnTick()
 {
+   //--- Registro na abertura de cada barra, antes de qualquer ordem
+   static datetime barraRegistrada = 0;
+   datetime barraAtual = (datetime)SeriesInfoInteger(_Symbol, _Period, SERIES_LASTBAR_DATE);
+   if(g_no_testador && barraAtual != barraRegistrada)
+   {
+      barraRegistrada = barraAtual;
+      g_desempenho.RegistrarAgora(barraAtual);
+   }
 
    if(TradeOnNewBarOnly)
    {
@@ -171,7 +215,7 @@ void OnTick()
               if (tp <= askPrice && TakeProfit_Points > 0) tp = 0;
           }
           
-          Trade.Buy(g_VolumeOperacional, _Symbol, askPrice, sl, tp, "Compra MM Rev");
+          Trade.Buy(VolumeAtual(askPrice), _Symbol, askPrice, sl, tp, "Compra MM Rev");
       }
       return; 
    }
@@ -184,6 +228,7 @@ void OnTick()
           Sleep(1);
           tipoPosicaoAtual = ObterTipoPosicaoAtual(); 
       }
+      if(SomenteCompra) return;
       
       if(tipoPosicaoAtual != POSITION_TYPE_SELL) { 
           double sl = 0, tp = 0;
@@ -205,9 +250,29 @@ void OnTick()
               if (tp >= bidPrice && TakeProfit_Points > 0) tp = 0;
           }
 
-          Trade.Sell(g_VolumeOperacional, _Symbol, bidPrice, sl, tp, "Venda MM Rev");
+          Trade.Sell(VolumeAtual(bidPrice), _Symbol, bidPrice, sl, tp, "Venda MM Rev");
       }
       return;
    }
+}
+//+------------------------------------------------------------------+
+//+------------------------------------------------------------------+
+//| Fim do teste: metricas contra a Selic e o buy-and-hold           |
+//+------------------------------------------------------------------+
+double OnTester()
+{
+   g_desempenho.RegistrarAgora(TimeCurrent());
+
+   ResultadoDesempenho r;
+   if(!g_desempenho.Calcular(r)) return 0.0;
+
+   g_desempenho.Imprimir(r);
+
+   string cab = "modelo;MM_rapida;MM_lenta;StopLoss;TakeProfit;Volume_Fixo;Fracao_Capital;SomenteCompra";
+   string val = StringFormat("MM;%d;%d;%d;%d;%.0f;%.2f;%d", RapidaMM_Periodo, DevagarMM_Periodo,
+                             StopLoss_Points, TakeProfit_Points, g_VolumeOperacional,
+                             Fracao_Capital, SomenteCompra);
+   g_desempenho.Gravar(Rotulo, cab, val, r);
+   return r.excesso * 100.0;
 }
 //+------------------------------------------------------------------+

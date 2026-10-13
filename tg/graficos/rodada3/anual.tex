@@ -1,0 +1,32 @@
+% Lê a refação de 05/10/2026 (EA corrigido); antes lia rodada3_b3_oficial/testes.
+% Retorno por ano civil (camada 3: custos + caixa na Selic), por modelo.
+% Compilar: pdflatex -jobname=anual_T1 "\def\periodo{T1}\input{anual}"
+\documentclass[border=4pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}  % Times, como o texto (Manual FATEC-ID, item 1.3)
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\providecommand{\periodo}{T1}
+\definecolor{cgs}{RGB}{0,90,181}
+\definecolor{cgc}{RGB}{120,40,160}
+\definecolor{car}{RGB}{220,50,32}
+\definecolor{cmm}{RGB}{120,120,120}
+\definecolor{cbh}{RGB}{26,133,55}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[ybar, bar width=5pt, width=14.6cm, height=7cm, ylabel={Retorno no ano (\%)},
+  xtick=data, xticklabel style={/pgf/number format/1000 sep=}, table/col sep=comma,
+  enlarge x limits=0.12, grid=major, grid style={gray!20}, ymajorgrids, xmajorgrids=false,
+  legend style={font=\normalsize, cells={anchor=west}, at={(0.5,1.03)}, anchor=south, legend columns=3, column sep=10pt, draw=none},
+  extra y ticks={0}, extra y tick style={grid style={black, thin}}]
+\addplot[fill=cbh, draw=none]   table[x=ano, y=BH]{../../../dados/resultados/refeito_2026-10-05/testes/anual_R3_\periodo.csv};
+\addplot[fill=black!70, draw=none] table[x=ano, y=Selic]{../../../dados/resultados/refeito_2026-10-05/testes/anual_R3_\periodo.csv};
+\addplot[fill=cmm, draw=none]   table[x=ano, y=MM]{../../../dados/resultados/refeito_2026-10-05/testes/anual_R3_\periodo.csv};
+\addplot[fill=car, draw=none]   table[x=ano, y=AS]{../../../dados/resultados/refeito_2026-10-05/testes/anual_R3_\periodo.csv};
+\addplot[fill=cgs, draw=none]   table[x=ano, y=GS]{../../../dados/resultados/refeito_2026-10-05/testes/anual_R3_\periodo.csv};
+\addplot[fill=cgc, draw=none]   table[x=ano, y=GC]{../../../dados/resultados/refeito_2026-10-05/testes/anual_R3_\periodo.csv};
+\legend{PETR4, Selic, Médias móveis (Almeida), ARIMA, ARIMA-GARCH (Sharpe), ARIMA-GARCH (Calmar)}
+\end{axis}
+\end{tikzpicture}
+\end{document}

@@ -157,7 +157,11 @@ void CArima::Definir(const int p, const int d, const int q, const bool com_const
    m_p = MathMax(0, p);
    m_d = MathMax(0, MathMin(2, d));
    m_q = MathMax(0, q);
-   m_com_constante = com_constante;
+   //--- Com d = 0 o modelo descreve o NIVEL da serie (o log-preco, ~3),
+   //--- que nao tem media zero: sem a constante, o ajuste puxa a previsao
+   //--- sistematicamente para baixo. A constante e obrigatoria nesse caso.
+   //--- (Corrigido em 05/10/2026; ver notas/INCERTEZAS.md.)
+   m_com_constante = com_constante || (m_d == 0);
 
    ArrayResize(m_phi, m_p);
    ArrayResize(m_theta, m_q);

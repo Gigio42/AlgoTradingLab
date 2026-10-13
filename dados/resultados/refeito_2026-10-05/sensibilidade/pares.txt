@@ -1,0 +1,4 @@
+L1;L1_GFant;L1_ARant
+L1;L1_GTant;L1_ARant
+L2;L2_GFant;L2_ARant
+L2;L2_GTant;L2_ARant

@@ -1,0 +1,84 @@
+Texto copiado pelo autor do site da FATEC-ID e repassado em 28/09/2026.
+"MÉTODOS DA PRODUÇÃO DO CONHECIMENTO E METODOLOGIA DA PESQUISA CIENTÍFICO-TECNOLÓGICA —
+DELINEAMENTOS DE PESQUISAS PARA O CAP. II DE TG". Autoria: professores responsáveis pelas
+disciplinas de Métodos da Producao do Conhecimento e Projeto de Trabalho de Graduacao,
+Fatec-Indaiatuba, maio de 2016. URL exata nao registrada (ver INCERTEZAS.md).
+Referencias citadas pelo caderno: ECO (2010); GIL (2010); LAKATOS e MARCONI (2009);
+MARTINS e THEOPHILO (2009).
+-------------------------------------------------------------------------------
+Quanto aos objetivos: Exploratórias / Descritivas / Explicativas
+
+Objetivos do caderno:
+a) Delinear os principais tipos de pesquisa realizados pelos alunos dos Cursos da
+   Fatec-Indaiatuba.
+b) Organizar um passo a passo para a concretização dessas pesquisas nos Trabalhos de
+   Graduação (TGs).
+
+PESQUISA BIBLIOGRÁFICA
+ Desenvolvida com base em material já elaborado, principalmente livros e artigos
+ científicos. Boa parte dos estudos exploratórios pode ser definida como pesquisa
+ bibliográfica. (Muito pouco realizada na FATEC-ID.)
+
+PESQUISA DE LEVANTAMENTO
+ a) Especificação dos objetivos. b) Operacionalização dos conceitos e variáveis.
+ c) Elaboração do instrumento de coleta de dados. d) Pré-teste do instrumento.
+ e) Seleção da amostra. f) Coleta e verificação dos dados. g) Análise e interpretação dos
+ dados. h) Apresentação dos resultados.
+ (Difere da Documental por analisar dados levantados pelo próprio pesquisador.)
+ Casos comuns: pesquisa de comportamento; levantamento de dados referentes a processos e
+ produtos; levantamento de dados de mercado; planos de ação para empresas fictícias em
+ comparação com reais.
+
+ESTUDO DE CASO
+ a) Formulação do problema. b) Definição da unidade-caso. c) Determinação do número de
+ casos. d) Elaboração do protocolo. e) Coleta de dados. f) Avaliação e análise dos dados e
+ preparação do relatório.
+ Casos comuns: planos de ação para empresas reais; estudo analítico e aprofundado sobre uma
+ empresa; propostas de intervenção; proposição de planos e programas; planos de negócios,
+ marketing, finanças, logística, comunicação, recursos humanos.
+
+PESQUISA-AÇÃO
+ a) Fase exploratória. b) Formulação do problema. c) Construção de hipóteses.
+ d) Realização do seminário. e) Seleção da amostra. f) Coleta de dados. g) Análise e
+ interpretação dos dados. h) Elaboração do plano de ação. i) Divulgação dos resultados.
+ Casos comuns: pesquisas com intervenção realizada em benefício dos envolvidos; mudanças de
+ comportamento organizacional; mudanças realizadas com ajuda dos envolvidos.
+
+PESQUISA QUASE EXPERIMENTAL
+ a) Formulação do problema. b) Construção das hipóteses. c) Operacionalização das variáveis.
+ d) Definição do plano experimental. e) Determinação dos sujeitos. f) Determinação do
+ ambiente. g) Coleta de dados. h) Análise e interpretação dos dados. i) Apresentação das
+ conclusões.
+ Casos comuns na FATEC:
+ a) Desenvolvimento de softwares.
+ b) Análise de algoritmos.
+ c) Pesquisas em Tecnologias da Informação e da Comunicação.
+ d) Pesquisas de diagnósticos em Tecnologias da Informação e em Sistemas da Informação.
+
+PESQUISA DE AVALIAÇÃO
+ a) Definição do problema. b) Fundamentação teórica. c) Documentação detalhada do programa a
+ ser avaliado. d) Registros de diagnósticos prévios. e) Caracterização precisa do que será
+ avaliado. f) Escolha de técnicas de levantamento e coleta de dados. g) Plano de análise dos
+ resultados da avaliação. h) Estabelecimento dos critérios de avaliação, procedimentos,
+ comparações.
+ Casos comuns: avaliação de volume de vendas depois de uma campanha; de desempenho de
+ funcionários; de processos empresariais; de políticas de terceirização; de processos
+ logísticos; de investimentos em geral.
+
+PESQUISA PARTICIPANTE
+ a) Identificação do problema. b) Fundamentação teórica elaborada em conjunto com os
+ participantes. c) Conscientização do grupo envolvido. d) Observação participante do lugar de
+ investigação. e) Observação das necessidades básicas dos envolvidos. f) Definição de
+ procedimentos e técnicas de entrevistas, de coleta e de análise. g) Os envolvidos
+ necessariamente devem auxiliar na pesquisa como participantes dela.
+ (Difere da Pesquisa-Ação porque os participantes são também pesquisadores, sujeitos e
+ objetos da pesquisa. Muito pouco realizada na FATEC.)
+
+PESQUISA DOCUMENTAL
+ a) Definição do problema. b) Fundamentação teórica. c) Elaboração do plano de trabalho.
+ d) Identificação das fontes. e) Localização das fontes e obtenção do material. f) Análise e
+ interpretação dos dados. g) Redação do relatório final.
+ (Difere da de Levantamento por analisar dados prontos, já existentes e disponíveis para
+ consulta.)
+ Casos comuns: pesquisa de dados disponíveis em livros, sites e outros gêneros específicos;
+ pesquisa em documentos, leis, normas, regimentos, regulamentos, prerrogativas.

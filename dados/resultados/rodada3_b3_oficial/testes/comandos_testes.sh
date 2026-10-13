@@ -1,0 +1,23 @@
+#!/bin/bash
+S=$(dirname "$0")
+bash $S/rodar.sh R3_T1_GS 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2007.01.02 2011.12.30 100000 1:1 $S/in_r3_base.txt UsarGARCH=true Estrategia=3 ModoLimiar=1 Limiar_Percentil=90 Vol_Alvo=0.01 ZerarNoVeto=true Janela_Estimacao=120 IncluirConstante=false Limiar_Sinal=0 >> $S/r3.log
+bash $S/rodar.sh R3_T1_GSgemeo 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2007.01.02 2011.12.30 100000 1:1 $S/in_r3_base.txt Janela_Estimacao=120 IncluirConstante=false Limiar_Sinal=0 UsarGARCH=false >> $S/r3.log
+bash $S/rodar.sh R3_T1_GC 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2007.01.02 2011.12.30 100000 1:1 $S/in_r3_base.txt UsarGARCH=true Estrategia=3 ModoLimiar=1 Limiar_Percentil=90 Vol_Alvo=0.01 ZerarNoVeto=true Janela_Estimacao=120 IncluirConstante=false Limiar_Sinal=0 >> $S/r3.log
+bash $S/rodar.sh R3_T1_GCgemeo 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2007.01.02 2011.12.30 100000 1:1 $S/in_r3_base.txt Janela_Estimacao=120 IncluirConstante=false Limiar_Sinal=0 UsarGARCH=false >> $S/r3.log
+bash $S/rodar.sh R3_T1_AS 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2007.01.02 2011.12.30 100000 1:1 $S/in_r3_base.txt UsarGARCH=false Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0 >> $S/r3.log
+bash $S/rodar.sh R3_T1_AC 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2007.01.02 2011.12.30 100000 1:1 $S/in_r3_base.txt UsarGARCH=false Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0 >> $S/r3.log
+bash $S/rodar.sh R3_T1_MM 'MediasMoveis2\MediasMoveis2' PETR4_OFICIAL 2007.01.02 2011.12.30 100000 1:1 $S/in_mm.txt >> $S/r3.log
+bash $S/rodar.sh R3_T2_GS 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2013.01.02 2016.12.30 100000 1:1 $S/in_r3_base.txt UsarGARCH=true Estrategia=0 ModoLimiar=1 Limiar_Percentil=50 ZerarNoVeto=false Janela_Estimacao=120 IncluirConstante=false Limiar_Sinal=0 >> $S/r3.log
+bash $S/rodar.sh R3_T2_GSgemeo 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2013.01.02 2016.12.30 100000 1:1 $S/in_r3_base.txt Janela_Estimacao=120 IncluirConstante=false Limiar_Sinal=0 UsarGARCH=false >> $S/r3.log
+bash $S/rodar.sh R3_T2_GC 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2013.01.02 2016.12.30 100000 1:1 $S/in_r3_base.txt UsarGARCH=true Estrategia=3 ModoLimiar=1 Limiar_Percentil=50 Vol_Alvo=0.01 ZerarNoVeto=true Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0 >> $S/r3.log
+bash $S/rodar.sh R3_T2_GCgemeo 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2013.01.02 2016.12.30 100000 1:1 $S/in_r3_base.txt Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0 UsarGARCH=false >> $S/r3.log
+bash $S/rodar.sh R3_T2_AS 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2013.01.02 2016.12.30 100000 1:1 $S/in_r3_base.txt UsarGARCH=false Janela_Estimacao=120 IncluirConstante=false Limiar_Sinal=0 >> $S/r3.log
+bash $S/rodar.sh R3_T2_AC 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2013.01.02 2016.12.30 100000 1:1 $S/in_r3_base.txt UsarGARCH=false Janela_Estimacao=120 IncluirConstante=false Limiar_Sinal=0 >> $S/r3.log
+bash $S/rodar.sh R3_T2_MM 'MediasMoveis2\MediasMoveis2' PETR4_OFICIAL 2013.01.02 2016.12.30 100000 1:1 $S/in_mm.txt >> $S/r3.log
+bash $S/rodar.sh R3_T3_GS 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2025.01.02 2026.09.19 100000 1:1 $S/in_r3_base.txt UsarGARCH=true Estrategia=3 ModoLimiar=1 Limiar_Percentil=90 Vol_Alvo=0.02 ZerarNoVeto=true Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0.001 >> $S/r3.log
+bash $S/rodar.sh R3_T3_GSgemeo 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2025.01.02 2026.09.19 100000 1:1 $S/in_r3_base.txt Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0.001 UsarGARCH=false >> $S/r3.log
+bash $S/rodar.sh R3_T3_GC 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2025.01.02 2026.09.19 100000 1:1 $S/in_r3_base.txt UsarGARCH=true Estrategia=3 ModoLimiar=1 Limiar_Percentil=90 Vol_Alvo=0.01 ZerarNoVeto=true Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0.001 >> $S/r3.log
+bash $S/rodar.sh R3_T3_GCgemeo 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2025.01.02 2026.09.19 100000 1:1 $S/in_r3_base.txt Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0.001 UsarGARCH=false >> $S/r3.log
+bash $S/rodar.sh R3_T3_AS 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2025.01.02 2026.09.19 100000 1:1 $S/in_r3_base.txt UsarGARCH=false Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0.001 >> $S/r3.log
+bash $S/rodar.sh R3_T3_AC 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL 2025.01.02 2026.09.19 100000 1:1 $S/in_r3_base.txt UsarGARCH=false Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0.001 >> $S/r3.log
+bash $S/rodar.sh R3_T3_MM 'MediasMoveis2\MediasMoveis2' PETR4_OFICIAL 2025.01.02 2026.09.19 100000 1:1 $S/in_mm.txt >> $S/r3.log

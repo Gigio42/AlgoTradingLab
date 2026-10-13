@@ -1,0 +1,17 @@
+RapidaMM_Periodo=10
+RapidaMM_Metodo=0
+RapidaMM_Preco=1
+RapidaMM_Shift=0
+DevagarMM_Periodo=20
+DevagarMM_Metodo=0
+DevagarMM_Preco=1
+DevagarMM_Shift=0
+Volume_Fixo_Input=1000
+StopLoss_Points=0
+TakeProfit_Points=0
+MagicNumber=12349
+Slippage_Points=10
+TradeOnNewBarOnly=true
+Fracao_Capital=0.95
+SomenteCompra=true
+Custo_Por_Lado=0.0003

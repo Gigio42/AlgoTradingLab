@@ -1,28 +1,33 @@
-% Resumo — Manual FATEC 4.1.10 (parágrafo único, espaçamento simples,
-% palavras-chave separadas e finalizadas por ponto).
+% Resumo — Manual FATEC-ID, item 4.1.1.8 e NBR 6028: parágrafo único,
+% espaçamento simples, de 150 a 500 palavras, com contexto, objetivo,
+% procedimentos e resultados. Palavras-chave: no máximo três, separadas por
+% ponto e vírgula e finalizadas por ponto. Rótulo sem negrito.
+% Versão de 2026-10-05, em tom narrativo e sem porcentagens, a pedido do autor
+% ("mais literário", "que todas as partes consigam entender"). Os números ficam
+% no Capítulo III. A versão com números está em notas/rascunhos/.
 \begin{resumo}
-O cenário econômico brasileiro recente, caracterizado por instabilidade
-macroeconômica, inflação elevada e consequente aumento da taxa Selic, impõe
-desafios significativos aos investidores. A volatilidade do mercado financeiro,
-intensificada por fatores internos e externos, dificulta a tomada de decisões de
-investimento, especialmente em ativos como ações. Diante desse contexto e da
-crescente digitalização do setor financeiro, o trading algorítmico apresenta-se como
-uma alternativa promissora. Este trabalho apresenta o desenvolvimento de um algoritmo de
-negociaÃ§Ã£o, escrito na linguagem MQL5 para a plataforma MetaTrader 5, para
-análise de padrões de tendência e volatilidade no mercado de ações brasileiro,
-tomando como base o ativo PETR4. O algoritmo integra análises técnicas
-estatísticas, combinando o uso de Médias Móveis para identificação de tendências
-e os modelos ARIMA para previsão de séries temporais de preços e GARCH para
-modelagem da volatilidade condicional dos resíduos do ARIMA. A premissa central
-deste trabalho é que essa abordagem integrada permite a geração de sinais de
-negociação com maior eficácia (potencial de acerto e adequação ao risco) em
-comparação com o uso isolado ou incompleto dessas técnicas. O estudo explorou
-modelos com dados atualizados, fornecendo análises que possam embasar estratégias de
-investimento adaptadas ao cenário de juros altos e investigando a robustez da
-combinação de modelos ARIMA e GARCH frente às flutuações do mercado, contribuindo para o
-conhecimento na área e oferecendo uma alternativa prática para investidores.
+Este trabalho retoma um estudo desenvolvido na Faculdade de Tecnologia de
+Indaiatuba em 2016, no qual um robô de negociação para a plataforma MetaTrader 5,
+guiado pelo cruzamento de médias móveis, obteve bons resultados em períodos de
+mercado estável, mas acumulou prejuízo no período que inclui a crise financeira
+de 2008. Ao final daquele estudo, o autor sugeriu que modelos capazes de medir a
+volatilidade poderiam ajudar a contornar essa limitação. Partindo dessa sugestão,
+desenvolveu-se um novo robô que reúne dois modelos estatísticos com papéis
+distintos. O primeiro, chamado ARIMA, procura antecipar a direção dos preços. O
+segundo, chamado GARCH, estima o quanto o mercado deve oscilar e decide se vale a
+pena operar. Os dois modelos foram programados na própria linguagem da plataforma,
+conferidos em dados com resposta conhecida e testados sobre o histórico oficial
+da bolsa brasileira, em períodos de crise e de calma, sempre em comparação com a
+estratégia original e com uma versão do robô sem o controle de volatilidade. Os
+resultados mostram que esse controle tornou o robô mais seguro. As perdas nos
+piores momentos foram menores em todos os períodos analisados, e em boa parte
+deles o ganho final também foi maior. A capacidade de acertar a direção do
+mercado, porém, continuou próxima do acaso, e, diante das médias móveis e da taxa
+Selic, os ganhos variaram conforme o período, dentro da margem que o próprio acaso
+também explicaria. Conclui-se que o
+modelo de volatilidade funciona como um instrumento de proteção, especialmente
+útil nos períodos de crise, e não como uma forma de prever melhor o mercado.
 
 \vspace{\onelineskip}
-\noindent\textbf{Palavras-chave:} Trading Algorítmico. Modelos Estatísticos. ARIMA.
-GARCH. Mercado de Ações. Bolsa de Valores. Volatilidade. MetaTrader 5.
+\noindent Palavras-chave: ARIMA-GARCH; negociação algorítmica; MetaTrader 5.
 \end{resumo}

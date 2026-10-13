@@ -1,0 +1,129 @@
+/tmp/claude-1000/-home-dark--wine-mt5-drive-c-Program-Files-MetaTrader-5-MQL5-Experts-AlgoTradingLab/33e97f7f-4389-440f-9bb0-c2175f9d0e9b/scratchpad/analise3.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  M["cfg"] = M.apply(rotulo, axis=1)
+/tmp/claude-1000/-home-dark--wine-mt5-drive-c-Program-Files-MetaTrader-5-MQL5-Experts-AlgoTradingLab/33e97f7f-4389-440f-9bb0-c2175f9d0e9b/scratchpad/analise3.py:63: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  G["dSR"] = G.sharpe_t - G.sharpe_t_arima; G["dDD"] = G.dd_selic_t - G.dd_selic_t_arima
+/tmp/claude-1000/-home-dark--wine-mt5-drive-c-Program-Files-MetaTrader-5-MQL5-Experts-AlgoTradingLab/33e97f7f-4389-440f-9bb0-c2175f9d0e9b/scratchpad/analise3.py:64: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  G["dRet"] = G.ret_selic_t - G.ret_selic_t_arima
+/tmp/claude-1000/-home-dark--wine-mt5-drive-c-Program-Files-MetaTrader-5-MQL5-Experts-AlgoTradingLab/33e97f7f-4389-440f-9bb0-c2175f9d0e9b/scratchpad/analise3.py:65: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  G["grupo"] = G.apply(lambda r: ["filtro", "targeting", "IC", "filtro+targ"][int(r.Estrategia)] + (" zera" if r.ZerarNoVeto == 1 else "") +
+/tmp/claude-1000/-home-dark--wine-mt5-drive-c-Program-Files-MetaTrader-5-MQL5-Experts-AlgoTradingLab/33e97f7f-4389-440f-9bb0-c2175f9d0e9b/scratchpad/analise3.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  M["cfg"] = M.apply(rotulo, axis=1)
+/tmp/claude-1000/-home-dark--wine-mt5-drive-c-Program-Files-MetaTrader-5-MQL5-Experts-AlgoTradingLab/33e97f7f-4389-440f-9bb0-c2175f9d0e9b/scratchpad/analise3.py:63: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  G["dSR"] = G.sharpe_t - G.sharpe_t_arima; G["dDD"] = G.dd_selic_t - G.dd_selic_t_arima
+/tmp/claude-1000/-home-dark--wine-mt5-drive-c-Program-Files-MetaTrader-5-MQL5-Experts-AlgoTradingLab/33e97f7f-4389-440f-9bb0-c2175f9d0e9b/scratchpad/analise3.py:64: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  G["dRet"] = G.ret_selic_t - G.ret_selic_t_arima
+/tmp/claude-1000/-home-dark--wine-mt5-drive-c-Program-Files-MetaTrader-5-MQL5-Experts-AlgoTradingLab/33e97f7f-4389-440f-9bb0-c2175f9d0e9b/scratchpad/analise3.py:65: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  G["grupo"] = G.apply(lambda r: ["filtro", "targeting", "IC", "filtro+targ"][int(r.Estrategia)] + (" zera" if r.ZerarNoVeto == 1 else "") +
+/tmp/claude-1000/-home-dark--wine-mt5-drive-c-Program-Files-MetaTrader-5-MQL5-Experts-AlgoTradingLab/33e97f7f-4389-440f-9bb0-c2175f9d0e9b/scratchpad/analise3.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  M["cfg"] = M.apply(rotulo, axis=1)
+/tmp/claude-1000/-home-dark--wine-mt5-drive-c-Program-Files-MetaTrader-5-MQL5-Experts-AlgoTradingLab/33e97f7f-4389-440f-9bb0-c2175f9d0e9b/scratchpad/analise3.py:63: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  G["dSR"] = G.sharpe_t - G.sharpe_t_arima; G["dDD"] = G.dd_selic_t - G.dd_selic_t_arima
+/tmp/claude-1000/-home-dark--wine-mt5-drive-c-Program-Files-MetaTrader-5-MQL5-Experts-AlgoTradingLab/33e97f7f-4389-440f-9bb0-c2175f9d0e9b/scratchpad/analise3.py:64: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  G["dRet"] = G.ret_selic_t - G.ret_selic_t_arima
+/tmp/claude-1000/-home-dark--wine-mt5-drive-c-Program-Files-MetaTrader-5-MQL5-Experts-AlgoTradingLab/33e97f7f-4389-440f-9bb0-c2175f9d0e9b/scratchpad/analise3.py:65: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  G["grupo"] = G.apply(lambda r: ["filtro", "targeting", "IC", "filtro+targ"][int(r.Estrategia)] + (" zera" if r.ZerarNoVeto == 1 else "") +
+
+====================================================================================================
+C1 2004.01.02..2006.12.28  ->  T1 2007.01.02..2011.12.29   (344 configuracoes distintas)
+  teste: Selic +68.1% | B&H so preco -14.0% (DD 67.2%, Sharpe -0.10) | B&H c/ prov -1.2%
+
+  ESCOLHIDAS NA CALIBRACAO -> resultado no teste (camada 3):
+                                                    cfg sharpe_c calmar_c dd_selic_c negocios_t ret_selic_t cagr_selic_camada_t dd_selic_t vol_selic_t sharpe_t sharpe_p_t calmar_t taxa_acerto_t fator_lucro_t exposicao_t
+GARCH_sharpe  GARCH filtro+targ p90 alvo 1% zera | J120   1.6401   8.3551   0.041448        255    0.172483            0.032975   0.193466    0.107704  -0.6284     0.9179   0.1704        0.4941        0.8362       0.224
+GARCH_calmar  GARCH filtro+targ p90 alvo 1% zera | J120   1.6401   8.3551   0.041448        255    0.172483            0.032975   0.193466    0.107704  -0.6284     0.9179   0.1704        0.4941        0.8362       0.224
+ARIMA_sharpe                               ARIMA | J240   0.8017   1.4156   0.250515        310   -0.114058           -0.024389   0.445926    0.280265  -0.3247     0.7639  -0.0547        0.4968        0.8881      0.4766
+ARIMA_calmar                               ARIMA | J240   0.8017   1.4156   0.250515        310   -0.114058           -0.024389   0.445926    0.280265  -0.3247     0.7639  -0.0547        0.4968        0.8881      0.4766
+
+  TODAS as configuracoes no teste (mediana | fracao Sharpe>0 | fracao DD < DD do B&H):
+   ARIMA puro         n=  8  Sharpe -0.33  DD 49.9%  ret -17.4%  Sharpe>0 12%  DD<B&H 100%  oper 140
+   GARCH filtro       n= 96  Sharpe -0.31  DD 43.8%  ret +0.2%  Sharpe>0 8%  DD<B&H 99%  oper 94
+   GARCH targeting    n= 16  Sharpe -0.37  DD 33.4%  ret +12.4%  Sharpe>0 12%  DD<B&H 100%  oper 140
+   GARCH IC           n= 32  Sharpe -0.39  DD 46.4%  ret -6.6%  Sharpe>0 3%  DD<B&H 78%  oper 68
+   GARCH filtro+targ  n=192  Sharpe -0.37  DD 29.6%  ret +19.4%  Sharpe>0 6%  DD<B&H 99%  oper 94
+
+  EFEITO PAREADO DO GARCH no teste (GARCH - ARIMA com a mesma base): mediana e fracao que melhorou
+                             n    dSR  SR_melhor    dDD  DD_melhor   dRet
+grupo                                                                    
+IC                          16 -0.096      0.250  0.070      0.125 -0.132
+IC zera                     16 -0.176      0.250 -0.172      0.875  0.067
+filtro lim.fixo             24  0.080      0.792 -0.025      0.583  0.166
+filtro percentil            24 -0.035      0.458  0.010      0.417  0.015
+filtro zera lim.fixo        24 -0.059      0.292 -0.081      0.875  0.128
+filtro zera percentil       24 -0.285      0.208 -0.158      0.917  0.012
+filtro+targ lim.fixo        48  0.025      0.604 -0.137      0.771  0.243
+filtro+targ percentil       48 -0.043      0.396 -0.131      0.833  0.202
+filtro+targ zera lim.fixo   48 -0.065      0.271 -0.236      0.958  0.294
+filtro+targ zera percentil  48 -0.358      0.167 -0.280      1.000  0.172
+targeting                   16 -0.050      0.188 -0.155      0.938  0.158
+
+  Spearman calibracao x teste: Sharpe 0.03 | Calmar 0.41
+
+====================================================================================================
+C2 2010.01.04..2012.12.28  ->  T2 2013.01.02..2016.12.29   (344 configuracoes distintas)
+  teste: Selic +53.9% | B&H so preco -25.6% (DD 83.1%, Sharpe -0.02) | B&H c/ prov -17.7%
+
+  ESCOLHIDAS NA CALIBRACAO -> resultado no teste (camada 3):
+                                                    cfg sharpe_c calmar_c dd_selic_c negocios_t ret_selic_t cagr_selic_camada_t dd_selic_t vol_selic_t sharpe_t sharpe_p_t calmar_t taxa_acerto_t fator_lucro_t exposicao_t
+GARCH_sharpe                    GARCH filtro p50 | J120  -0.2625   0.1085   0.220995        130    3.252577            0.444971   0.261108    0.434984   0.8035     0.0556   1.7042        0.5154        1.7696      0.5024
+GARCH_calmar  GARCH filtro+targ p50 alvo 1% zera | J240  -0.3507   0.7907   0.085637        141    0.339595            0.077179   0.067606     0.07142  -0.4594     0.8188   1.1416        0.4214        0.8541       0.091
+ARIMA_sharpe                               ARIMA | J120  -0.6558  -0.2247   0.246959        266   -0.304822           -0.088311   0.519129    0.377956  -0.3462     0.7538  -0.1701        0.4774        0.8482      0.4635
+ARIMA_calmar                               ARIMA | J120  -0.6558  -0.2247   0.246959        266   -0.304822           -0.088311   0.519129    0.377956  -0.3462     0.7538  -0.1701        0.4774        0.8482      0.4635
+
+  TODAS as configuracoes no teste (mediana | fracao Sharpe>0 | fracao DD < DD do B&H):
+   ARIMA puro         n=  8  Sharpe -0.25  DD 51.4%  ret -13.8%  Sharpe>0 25%  DD<B&H 100%  oper 82
+   GARCH filtro       n= 96  Sharpe -0.14  DD 42.2%  ret +18.9%  Sharpe>0 27%  DD<B&H 100%  oper 30
+   GARCH targeting    n= 16  Sharpe -0.41  DD 21.0%  ret +19.1%  Sharpe>0 0%  DD<B&H 100%  oper 82
+   GARCH IC           n= 32  Sharpe -0.32  DD 45.7%  ret -0.3%  Sharpe>0 16%  DD<B&H 100%  oper 20
+   GARCH filtro+targ  n=192  Sharpe -0.27  DD 19.0%  ret +33.6%  Sharpe>0 19%  DD<B&H 100%  oper 30
+
+  EFEITO PAREADO DO GARCH no teste (GARCH - ARIMA com a mesma base): mediana e fracao que melhorou
+                             n    dSR  SR_melhor    dDD  DD_melhor   dRet
+grupo                                                                    
+IC                          16 -0.305      0.312  0.083      0.188 -0.215
+IC zera                     16 -0.094      0.375 -0.256      0.875  0.248
+filtro lim.fixo             24 -0.031      0.333  0.016      0.458  0.029
+filtro percentil            24  0.051      0.583  0.056      0.292  0.045
+filtro zera lim.fixo        24  0.077      0.542 -0.218      1.000  0.363
+filtro zera percentil       24  0.104      0.542 -0.091      0.875  0.248
+filtro+targ lim.fixo        48 -0.153      0.312 -0.239      0.896  0.306
+filtro+targ percentil       48 -0.137      0.417 -0.226      0.917  0.227
+filtro+targ zera lim.fixo   48 -0.084      0.417 -0.371      1.000  0.459
+filtro+targ zera percentil  48 -0.043      0.438 -0.320      1.000  0.311
+targeting                   16 -0.125      0.062 -0.256      1.000  0.250
+
+  Spearman calibracao x teste: Sharpe -0.06 | Calmar 0.28
+
+====================================================================================================
+C3 2022.01.03..2024.12.30  ->  T3 2025.01.02..2026.09.18   (344 configuracoes distintas)
+  teste: Selic +25.7% | B&H so preco +33.2% (DD 25.1%, Sharpe 0.26) | B&H c/ prov +57.6%
+
+  ESCOLHIDAS NA CALIBRACAO -> resultado no teste (camada 3):
+                                                        cfg sharpe_c calmar_c dd_selic_c negocios_t ret_selic_t cagr_selic_camada_t dd_selic_t vol_selic_t sharpe_t sharpe_p_t calmar_t taxa_acerto_t fator_lucro_t exposicao_t
+GARCH_sharpe  GARCH filtro+targ p90 alvo 2% zera | J240 ls1   0.9231   2.5773    0.09913         48    0.146937            0.083863     0.2008    0.207104  -0.1557     0.5805   0.4176        0.4375        1.0406      0.4969
+GARCH_calmar  GARCH filtro+targ p90 alvo 1% zera | J240 ls1   0.8902   4.2854   0.043505         48    0.188787            0.106922   0.120732    0.129044  -0.1889     0.5973   0.8856        0.4375        1.0454      0.3164
+ARIMA_sharpe                               ARIMA | J240 ls1   0.1869   0.4192   0.329322         46    0.232053            0.130412   0.203346    0.226748   0.0617     0.4679   0.6413         0.413        1.1807      0.5659
+ARIMA_calmar                               ARIMA | J240 ls1   0.1869   0.4192   0.329322         46    0.232053            0.130412   0.203346    0.226748   0.0617     0.4679   0.6413         0.413        1.1807      0.5659
+
+  TODAS as configuracoes no teste (mediana | fracao Sharpe>0 | fracao DD < DD do B&H):
+   ARIMA puro         n=  8  Sharpe -0.09  DD 22.5%  ret +16.0%  Sharpe>0 25%  DD<B&H 75%  oper 48
+   GARCH filtro       n= 96  Sharpe -0.14  DD 20.7%  ret +15.5%  Sharpe>0 26%  DD<B&H 79%  oper 43
+   GARCH targeting    n= 16  Sharpe -0.15  DD 18.7%  ret +16.3%  Sharpe>0 19%  DD<B&H 88%  oper 48
+   GARCH IC           n= 32  Sharpe -0.05  DD 22.5%  ret +19.3%  Sharpe>0 44%  DD<B&H 91%  oper 32
+   GARCH filtro+targ  n=192  Sharpe -0.18  DD 16.3%  ret +16.8%  Sharpe>0 22%  DD<B&H 87%  oper 43
+
+  EFEITO PAREADO DO GARCH no teste (GARCH - ARIMA com a mesma base): mediana e fracao que melhorou
+                             n    dSR  SR_melhor    dDD  DD_melhor   dRet
+grupo                                                                    
+IC                          16  0.092      0.688  0.000      0.312  0.042
+IC zera                     16 -0.088      0.125  0.000      0.438 -0.015
+filtro lim.fixo             24  0.000      0.167  0.000      0.167  0.000
+filtro percentil            24 -0.050      0.458  0.005      0.292 -0.025
+filtro zera lim.fixo        24  0.000      0.250  0.000      0.417  0.000
+filtro zera percentil       24 -0.229      0.417 -0.098      0.833 -0.022
+filtro+targ lim.fixo        48 -0.035      0.354 -0.023      0.542 -0.001
+filtro+targ percentil       48 -0.043      0.417 -0.019      0.583  0.001
+filtro+targ zera lim.fixo   48 -0.002      0.500 -0.061      0.646  0.011
+filtro+targ zera percentil  48 -0.238      0.417 -0.109      0.896 -0.008
+targeting                   16 -0.028      0.375 -0.024      0.562  0.000
+
+  Spearman calibracao x teste: Sharpe -0.07 | Calmar 0.34

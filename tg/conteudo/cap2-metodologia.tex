@@ -1,282 +1,368 @@
 % =====================================================================
-%  CAPÍTULO II / 3 Metodologia
+%  CAPÍTULO II — PERCURSO METODOLÓGICO
+%
+%  Numeração 2.1 a 2.3.2 dada pela FATEC-ID (caderno de delineamentos e
+%  Manual, item 4.1.2.8). As seções seguintes (implementação, arquitetura,
+%  validação, protocolo, obstáculos) detalham os procedimentos.
+%
+%  Revisado em 2026-10-05: texto corrido, sem listas e sem negrito no meio
+%  do texto. Versão anterior em notas/rascunhos/antes_revisao_2026-10-05/.
+%
+%  % REFERÊNCIA: marcações assim indicam onde uma citação deve entrar
+%  depois que o autor ler a obra. Nenhuma foi inserida sem leitura.
+%
+%  Procedência dos números deste capítulo:
+%   - 5.881 pregões, 02/01/2003 a 21/09/2026: dados/series/PETR4_OFICIAL.csv
+%   - Tabela de validação e ADF: dados/verificacao/validacao_numerica_2026-10-05.txt
+%     (série PETR4_OFICIAL, 500 pregões até 18/09/2026; refeita com o EA corrigido)
+%   - 344 configurações: dados/resultados/rodada3_b3_oficial/grades/*.txt
 % =====================================================================
 \setdiv{CAPÍTULO II}
-\chapter{Metodologia}
+\chapter{Percurso metodológico}
 
-A metodologia deste trabalho foi estruturada em etapas sequenciais, visando o
-desenvolvimento, implementação e validação do algoritmo proposto para a
-negociação de ativos financeiros. O objetivo foi descrever os passos para construir e
-testar a solução, desde a escolha do ambiente até a avaliação de seu desempenho.
+Este capítulo descreve como a pesquisa foi conduzida. Apresenta a caracterização
+do estudo, o ambiente e os dados utilizados, a forma como os modelos foram
+implementados e validados, o plano experimental e os obstáculos que influenciaram
+as decisões metodológicas.
 
-\section{Natureza da Pesquisa}
+\section{Caracterização da pesquisa}
 
-Este trabalho, como mencionado na introdução, adota uma natureza de pesquisa
-experimental. A pesquisa experimental, no contexto de desenvolvimento de sistemas e
-algoritmos, envolve a manipulação controlada de variáveis que, neste caso, foram os
-parâmetros dos modelos, as combinações de indicadores técnicos, para observar e analisar
-os efeitos resultantes em um ambiente controlado. Foram conduzidos experimentos para testar
-diferentes configurações do algoritmo, buscando identificar as abordagens
-mais eficazes para a negociação do ativo financeiro selecionado \cite{wazlawick2014}.
+\subsection{Quanto aos objetivos}
 
-\section{Padrões para Pesquisa Experimental}
+Quanto aos objetivos, a pesquisa é explicativa, com uma parte descritiva. É
+descritiva ao registrar como cada algoritmo se comportou em diferentes períodos do
+mercado, e explicativa ao investigar por que a inclusão de um modelo de
+volatilidade altera o desempenho de uma estratégia cuja previsão de direção
+permanece a mesma. O interesse está em medir a diferença entre os modelos e também
+em identificar o mecanismo que a produz.
 
-Para a condução dos experimentos e o desenvolvimento do algoritmo
-proposto, foi utilizado um conjunto definido de padrões e ferramentas, cujas
-funcionalidades e conceitos foram detalhados no capítulo anterior de Fundamentação
-Teórica.
+\subsection{Quanto ao delineamento}
 
-A plataforma MetaTrader 5 (MT5) foi empregada como o ambiente central para as fases
-de desenvolvimento e teste. A linguagem de programação MQL5, nativa do MT5, foi
-utilizada para a codificação dos \textit{Expert Advisors} (\textit{EAs}). Estes EAs são os algoritmos
-que efetivamente incorporaram a lógica dos modelos de análise de tendência,
-volatilidade e modelagem condicional para a execução automatizada de ordens
-de negociação.
+Quanto ao delineamento, trata-se de uma pesquisa quase experimental. Esse
+delineamento abrange, entre seus casos mais frequentes, o desenvolvimento de
+softwares e a análise de algoritmos, que é a natureza deste trabalho. Ele se
+caracteriza pela manipulação controlada de variáveis e pela observação dos efeitos
+resultantes, sem que haja distribuição aleatória dos sujeitos, uma vez que a série
+histórica de um ativo é única e não pode ser sorteada.
+% REFERÊNCIA: caderno de delineamentos da FATEC-ID, Gil (2010)
 
-O testador de estratégias integrado ao MT5 foi uma ferramenta crucial, permitindo a
-realização de backtests. Esses testes simularam o desempenho operacional das
-estratégias desenvolvidas ao longo de períodos históricos, utilizando os dados de
-cotações passadas para avaliar a viabilidade e a rentabilidade potencial.
+O percurso seguiu as etapas previstas para esse delineamento. O problema e as
+hipóteses foram formulados na introdução. As variáveis foram operacionalizadas na
+forma dos parâmetros configuráveis do algoritmo, descritos na
+seção~\ref{sec:implementacao}, e o plano experimental, descrito na
+seção~\ref{sec:protocolo}, foi definido antes da observação dos resultados. Os sujeitos são as séries históricas dos ativos, e o ambiente é a
+plataforma de simulação. A coleta e a análise dos dados ocupam o Capítulo III, e as
+conclusões são apresentadas nas considerações finais.
 
-Como fonte primária de dados, foi utilizado o banco de dados histórico de cotações
-fornecido pela própria plataforma MetaTrader 5 com integração a corretoras
-brasileiras. Inicialmente, a conta era integrada à corretora Rico, que permitia acessar
-ações da B3. No entanto, durante o desenvolvimento, essa corretora cessou o fornecimento
-de ativos para a plataforma MetaTrader 5, necessitando uma migração para a corretora
-Clear, que mantém compatibilidade com a plataforma. Esta escolha metodológica simplificou
-significativamente o processo de aquisição de dados, seu tratamento inicial e a
-subsequente manipulação, uma vez que os dados se encontram em um formato padronizado
-e são diretamente acessíveis via MQL5. Os dados extraídos e utilizados incluíram os
-preços de abertura, máximo, mínimo e fechamento, bem como o volume de negociação para
-cada período do timeframe definido para a análise, que foi diário (D1) para capturar
-tendências mais longas.
+\section{Caracterização do lugar e da amostra de pesquisa}
 
-O ativo referente às ações preferenciais da Petrobras (PETR4) foi o objeto de estudo
-principal. Sua notória volatilidade histórica é um aspecto central para a aplicação
-dos modelos subsequentes, em particular o modelo GARCH, que é projetado
-especificamente para capturar e modelar a variância condicional em séries temporais
-que exibem tais flutuações. A liquidez e a representatividade do PETR4 no Ibovespa
-foram consideradas para assegurar a disponibilidade de dados robustos para esta
-análise de volatilidade e para contextualizar os resultados no mercado acionário
-nacional.
+O lugar da pesquisa é computacional. Todos os experimentos foram conduzidos no
+testador de estratégias da plataforma MetaTrader 5, executada em ambiente Linux por
+meio da camada de compatibilidade Wine. A plataforma simula a execução de ordens
+sobre séries históricas, aplicando as mesmas regras de negociação que usaria em
+tempo real, e foi escolhida por ser a mesma utilizada no estudo que este trabalho
+continua \cite{almeida2016}.
 
-Para uma caracterização inicial e visualização dessa volatilidade inerente ao PETR4,
-foram calculadas e analisadas as Bandas de Bollinger. Este indicador técnico, que
-constrói um canal em torno de uma média móvel utilizando o desvio padrão dos preços,
-foi aplicado à série histórica de preços do ativo. A observação da largura das bandas e
-do comportamento do preço em relação a elas forneceu insights valiosos sobre os
-diferentes regimes de variação dos preços (períodos de alta ou baixa volatilidade) e
-contribuiu para a compreensão do ambiente de mercado no qual o algoritmo
-operaria.
+A amostra é composta por séries históricas diárias de ações negociadas na B3. O
+ativo principal é a PETR4, ação preferencial da Petrobras, escolhida por três
+motivos. É o ativo estudado por \citeonline{almeida2016}, o que permite a
+comparação direta. Apresenta volatilidade acentuada, característica que dá sentido
+à aplicação de um modelo de variância condicional. E possui série longa e contínua
+no arquivo histórico da bolsa. A série utilizada cobre 5.881 pregões, de 2 de
+janeiro de 2003 a 21 de setembro de 2026.
 
-\section{Obstáculos Encontrados}
+Para verificar se os resultados se repetem fora do ativo principal, foram
+incluídas outras três ações de setores distintos, VALE3, da mineração, USIM5, da
+siderurgia, e POMO4, de bens de capital. O critério de escolha foi a existência de
+série contínua no mesmo período e a ausência de mudanças de fator de cotação que
+impedissem a reconstrução dos preços.
 
-Durante o desenvolvimento deste trabalho, foram enfrentados obstáculos significativos que impactaram o escopo e a execução da pesquisa.
+O recorte temporal foi dividido em janelas, e não tratado como um período único,
+porque o comportamento de uma estratégia depende do regime de mercado. Foram
+examinadas uma janela de crise, de 2007 a 2011, uma de queda prolongada seguida de
+recuperação, de 2013 a 2016, o intervalo de 2017 a 2024, o período mais recente,
+de 2025 a 2026, e o período mais longo disponível, de 2005 a 2026.
 
-\textbf{Perda do ambiente Windows e limitações no Linux:} O ambiente primário de desenvolvimento era uma máquina Windows, equipada com o MetaTrader 5 instalado nativamente. A perda desse equipamento obrigou a migração para um ambiente Linux (EndeavourOS), no qual o MetaTrader 5 não possui suporte oficial. A solução adotada foi executar a plataforma via Wine, o que, embora funcional, impõe limitações operacionais, como instabilidades ocasionais e restrições de compatibilidade com algumas APIs nativas da plataforma.
+\section{Procedimentos para coleta e análise de dados}
 
-\textbf{Incompatibilidade da corretora Rico:} Durante a fase de coleta de dados e execução de backtests com ativos de ações, a corretora Rico cessou a disponibilização de ações em sua plataforma MetaTrader 5, inviabilizando o acesso ao ativo PETR4 através dessa conta. Foi necessário abrir uma nova conta na corretora Clear, que mantém compatibilidade com a plataforma, para dar continuidade à pesquisa. Esse processo causou atrasos e exigiu a reconfiguração do ambiente de testes.
+\subsection{Técnicas para coleta de dados}
+\label{sec:coleta}
 
-Esses fatores combinados contribuíram para a redução do eescopo original (que previa a integração de modelos de \textit{Machine Learning}) concentrando o trabalho nos modelos ARIMA e GARCH.
+Os dados principais foram obtidos de fontes públicas oficiais, e não do servidor da
+corretora. O servidor consultado disponibiliza cotações apenas a partir de
+setembro de 2021, enquanto os experimentos exigem séries que retrocedem a 2003.
+Além disso, o histórico fornecido por uma corretora pode ser alterado sem aviso, o
+que comprometeria a reprodutibilidade do estudo.
 
-\section{Experimento de Pesquisa}
+As cotações vieram do arquivo COTAHIST, série histórica publicada pela própria B3,
+que registra, para cada pregão e cada papel, os preços de abertura, máximo, mínimo
+e fechamento e o volume negociado.
+% REFERÊNCIA: manual de layout do COTAHIST (B3)
+A taxa Selic diária foi obtida da série 11 do Sistema Gerenciador de Séries
+Temporais \cite{bcbSgs11}.
 
-O experimento de pesquisa iniciou-se com a implementação de abordagens para análise
-de tendência utilizando Médias Móveis. Foram programados em MQL5 diferentes tipos de
-médias móveis, como a Simples e a Exponencial. Estratégias baseadas em cruzamentos
-dessas médias foram implementadas para gerar indicações preliminares sobre a direção
-potencial do mercado, ou seja, sinais de compra ou venda. Estas estratégias também
-serviram para verificar o desempenho de modelos baseados apenas em médias no mercado
-mais recente.
+Sobre as cotações foi aplicada uma única transformação, a correção por
+desdobramentos. Quando uma ação é desdobrada, o preço de tela cai na proporção do
+número de novas ações, sem que o investidor tenha perdido nada. Sem a correção, o
+modelo interpretaria o evento como uma queda abrupta. Na PETR4 há dois
+desdobramentos no período, em setembro de 2005 e em abril de 2008, e os preços
+anteriores a cada um foram divididos pelo fator correspondente. Os dois eventos
+aparecem como saltos de preço no próprio arquivo da bolsa e foram confirmados no
+registro de eventos corporativos da B3 e, para o de 2005, que esse registro não
+alcança, na base do Yahoo Finance \cite{yahooPetr4}. Os proventos não foram
+incorporados à série que os modelos observam. Eles foram usados apenas em duas
+verificações, a da reprodução do estudo de \citeonline{almeida2016} e a do efeito
+de deixá-los fora da medida de desempenho, também a partir do Yahoo Finance,
+fonte não oficial.
 
-Posteriormente, o experimento avançou para uma modelagem estatística mais sofisticada
-da série temporal de preços, utilizando o modelo ARIMA. A determinação da ordem de
-integração `d' do modelo ARIMA $(p, d, q)$ foi realizada através da aplicação
-sequencial do teste de raiz unitária ADF sobre a série. Para a definição das ordens
-autorregressiva `p' e de médias móveis `q', foi adotado um procedimento sistemático
-de testar múltiplas combinações de 0 a 4. A seleção da especificação final foi
-baseada no critério de informação \textit{Akaike Information Criterion} (\textit{AIC}).
+As séries preparadas foram importadas para a plataforma como símbolos
+personalizados, recurso que permite ao testador operar sobre dados próprios em vez
+dos dados da corretora. A conferência consistiu em comparar a quantidade de barras
+processadas pela plataforma com a quantidade de pregões da série de origem e em
+reconstruir preços isolados a partir das linhas originais do arquivo da bolsa.
 
-Na sequência, os resíduos obtidos a partir do modelo ARIMA ajustado foram utilizados
-como série de entrada para a modelagem da volatilidade condicional, por meio de um
-modelo GARCH. Esta abordagem combinada, ARIMA-GARCH, visou capturar a dinâmica da
-variância dos erros que não foi explicada pelo modelo de média condicional ARIMA.
-Foram estimados modelos GARCH, com foco inicial e principal na especificação GARCH
-(1,1), dada a sua prevalência e bom desempenho demonstrado na literatura para séries
-temporais financeiras. O objetivo foi modelar e prever a volatilidade futura de curto
-prazo dos resíduos, fornecendo uma medida do risco associado às previsões de preço do
-ARIMA.
+\subsection{Natureza da análise de dados}
 
-\section{Diagramas}
+A análise é quantitativa. O desempenho de cada algoritmo foi medido sobre a série
+diária de patrimônio produzida pela simulação, e não apenas sobre o resultado
+final, o que permite calcular medidas de risco e aplicar testes estatísticos.
 
-\begin{figure}[htb]
-\centering
-\caption{Modelo Completo}
-\label{fig:modelo-completo}
-\includegraphics[width=0.45\textwidth]{fig08-modelo-completo.png}
-\fonte{Autoria própria.}
-\end{figure}
+No cenário principal, as simulações partiram de um capital de R\$ 100 mil e
+aplicaram a cada operação 95\% do patrimônio, operando apenas na ponta
+compradora. As exceções, que são a reprodução do estudo de \citeonline{almeida2016}
+e o teste da venda a descoberto, são indicadas no Capítulo III onde aparecem. A cada execução
+de ordem foi descontado um custo de 0,03\% do valor negociado, adotado como
+aproximação das taxas praticadas, e o capital fora do mercado foi remunerado pela
+taxa Selic diária. Essa remuneração não é uma meta a ser superada. Ela existe para
+que a comparação seja justa entre algoritmos que passam tempos diferentes fora do
+mercado, já que um capital parado sem rendimento penalizaria justamente as
+estratégias mais seletivas. Os proventos ficaram fora dessa medida, tanto para os
+algoritmos quanto para a compra e manutenção do ativo, que foi medida apenas pela
+variação do preço. O efeito dessa escolha é discutido nas limitações dos
+resultados, no Capítulo III.
+% REFERÊNCIA: tabela de tarifas da B3 (não consultada, ver limitações)
 
-\section{Critérios para Avaliação}
+Sobre essa série de patrimônio foram calculados o retorno acumulado e o
+anualizado, a volatilidade, a queda máxima e os índices de Sharpe e de Calmar,
+apresentados na seção~\ref{sec:medidas}. No índice de Sharpe, a referência foi a
+taxa Selic, e não o rendimento nulo que o testador da plataforma adota, de modo
+que o índice indica quanto a estratégia rendeu além da Selic por unidade de
+oscilação. A Selic, por definição, tem índice zero. O índice foi calculado sobre
+os retornos diários e anualizado, prática comum para permitir a comparação entre
+estratégias \cite{sharpe1994},
+\begin{equation}
+S = \frac{\bar{d}}{\sigma_d}\sqrt{252},
+\label{eq:sharpe}
+\end{equation}
+em que $d$ é a diferença diária entre o retorno da estratégia e o da Selic e 252 é
+o número aproximado de pregões em um ano. Cada índice foi acompanhado do valor-p
+do teste de que ele é maior que zero.
 
-Os testes das estratégias baseadas em Médias Móveis, cruzamento de Médias Móveis, e
-dos modelos ARIMA e GARCH foram realizados integralmente na plataforma MetaTrader 5
-por meio do ambiente de backtesting.
+Foram registrados ainda a quantidade de operações e a taxa de acerto, isto é, a
+proporção das operações encerradas com lucro, já descontados os custos. A
+comparação entre dois algoritmos sobre os mesmos dias foi feita pelo teste de
+diferença entre índices de Sharpe e pelo teste $t$ pareado dos retornos diários.
+% REFERÊNCIA: Sharpe (1994), Lo (2002), Jobson e Korkie (1981), Memmel (2003)
+% (não indexado, ver notas/INCERTEZAS.md item 28), Ledoit e Wolf (2008)
 
-O desempenho dessas estratégias foi quantitativamente avaliado por meio de métricas
-como a taxa de acerto das operações, o lucro ou prejuízo acumulado, o drawdown máximo
-observado e o fator de lucro. Estas métricas foram fornecidas diretamente pela
-plataforma. Adicionalmente, um critério importante para a validação interna dos modelos
-estatísticos foi a qualidade do ajuste dos modelos ARIMA e GARCH. Esta qualidade foi
-aferida utilizando o critério de informação Akaike (AIC) e pela verificação da
-estacionariedade dos resíduos através do teste de raiz unitária de Dickey-Fuller
-Aumentado (ADF).
+\section{Implementação e validação dos modelos}
+\label{sec:implementacao}
 
-\section{Resultados preliminares atingidos no PTG}
+A biblioteca padrão da linguagem MQL5 oferece médias móveis, osciladores e demais
+indicadores de análise técnica, mas não traz modelos de séries temporais como o
+ARIMA e o GARCH. Ambos foram escritos para este trabalho. Da biblioteca numérica
+ALGLIB, que acompanha a instalação da plataforma, foram aproveitadas apenas as
+rotinas de álgebra linear e de otimização com restrições.
 
-Como mencionado anteriormente, este projeto busca revisitar e expandir as investigações
-de \citeonline{almeida2016}, que desenvolveu e testou um Expert Advisor (EA) baseado na
-estratégia de cruzamento de Médias Móveis (MM) para o ativo PETR4 na plataforma
-MetaTrader 5. O estudo original de \citeonline{almeida2016} observou que, embora sua
-estratégia pudesse gerar lucros em determinados períodos de mercado mais estáveis, ela
-enfrentava dificuldades e apresentava prejuízos durante crises financeiras,
-evidenciando a sensibilidade do algoritmo simples às condições de mercado.
+O ARIMA da equação~(\ref{eq:arima}) foi estimado pelo método de Hannan-Rissanen,
+que resolve o problema em dois estágios de mínimos quadrados. A dificuldade de
+estimar um modelo com termos de médias móveis é que os erros passados não são
+observáveis, pois dependem dos coeficientes que se quer estimar. O primeiro
+estágio contorna essa dificuldade ajustando um modelo autorregressivo longo, cujos
+resíduos servem de estimativa para os erros. O segundo estágio regride a série
+contra seus próprios valores defasados e contra os erros estimados.
+% REFERÊNCIA: Hannan e Rissanen (1982)
 
-Para estabelecer um ponto de partida contemporâneo e avaliar o desempenho dessa
-estratégia no cenário de mercado mais recente, foi necessário adaptar e reimplementar a
-lógica central do EA proposto por \citeonline{almeida2016}.
+Esse método foi preferido a um procedimento iterativo de descida de gradiente,
+que exige a definição de uma taxa de aprendizado. Como o gradiente de uma
+regressão cresce com o quadrado da escala dos dados, a mesma taxa que converge
+para um ativo cotado a trinta reais pode divergir para um cotado a cinco. O método
+de Hannan-Rissanen é exato em cada estágio, dispensa taxa de aprendizado e
+número de iterações e não depende da escala dos preços.
 
-O código original fornecido por ele, embora conceitualmente claro, demandou
-atualizações para ser compatível com as versões mais recentes da linguagem MQL5 e da
-plataforma MetaTrader 5. Adicionalmente, \citeonline{almeida2016} mencionou o uso de
-bibliotecas externas para funcionalidades como gerenciamento de dinheiro e trailing
-stops, as quais não foram disponibilizadas em seu trabalho. Desta forma, para a presente
-análise preliminar, foi desenvolvido um EA em MQL5 utilizando a classe
-CTrade\footnote{Biblioteca padrão do MQL5 para as operações de negociação.} padrão para
-as operações de negociação e implementando a lógica de cruzamento de duas Médias Móveis
-Simples (MMS).
+O modelo foi aplicado ao logaritmo do preço. Com uma diferenciação, a série
+modelada passa a ser o retorno logarítmico diário, e a volatilidade estimada pelo
+GARCH sai em proporção do preço. Uma volatilidade de 0,02 significa uma oscilação
+típica de 2\% ao dia, qualquer que seja o nível de preço do ativo.
 
-A configuração do EA para este teste baseou-se nos seguintes parâmetros: Médias Móveis
-Simples com período de 10 para a rápida e 20 para a lenta, aplicadas ao preço de
-fechamento. A estratégia implementada inclui a reversão de posições, ou seja, ao ser
-gerado um novo sinal, qualquer posição oposta existente é primeiramente fechada.
+A ordem de integração $d$ foi determinada pela aplicação sequencial do teste ADF.
+Testa-se a série original e, se a hipótese de raiz unitária não for rejeitada,
+testa-se a série diferenciada, e assim por diante.
+% REFERÊNCIA: Dickey e Fuller (1979), valores críticos de MacKinnon (2010)
+As ordens $p$ e $q$ foram escolhidas por busca em grade, variando ambas de zero a
+quatro e selecionando a combinação de menor AIC, procedimento semelhante ao de
+\citeonline{xing2024}.
+% REFERÊNCIA: Akaike (1974)
+Na busca, todos os candidatos foram avaliados sobre exatamente a mesma amostra.
+Isso foi necessário porque modelos de ordem mais alta consomem mais observações
+iniciais, e o AIC soma uma parcela por observação avaliada. Comparados sem esse
+ajuste, os modelos mais simples teriam mais parcelas somadas e venceriam por
+construção.
 
-Os parâmetros de Stop Loss (SL) e Take Profit (TP) foram definidos por experimentação
-inicial em 50 pontos e 100 pontos e depois nulos, respectivamente, uma vez que
-\citeonline{almeida2016} não especificou os valores exatos utilizados em todos os seus
-testes para PETR4. Reconhece-se que esta escolha de SL/TP pode divergir da utilizada
-originalmente e constitui um ponto para otimizações e análises futuras.
+O GARCH da equação~(\ref{eq:garch}) foi estimado por máxima verossimilhança. As
+restrições do modelo, isto é, $\omega$ positivo, $\alpha$ e $\beta$ não negativos e
+$\alpha + \beta$ menor que um, foram informadas ao otimizador como limites da
+região de busca, e não aplicadas como correção depois de cada passo. Corrigir o
+valor depois do passo faz o otimizador empurrar o parâmetro contra o limite sem
+convergir, enquanto a restrição declarada mantém a busca dentro da região válida
+desde o início.
+% REFERÊNCIA: Engle (1982), Bollerslev (1986)
 
-As operações foram configuradas para serem executadas apenas na abertura de uma nova
-barra no gráfico diário (D1), com a modelagem do backtest para \textit{Cada Tick} para maior
-precisão na simulação dos preços de execução, alinhando-se com a abordagem de ``Every
-tick'' mencionada por \citeonline{almeida2016}.
+Os dois modelos foram reunidos em um único \textit{Expert Advisor}, com um
+parâmetro que liga e desliga o componente GARCH. A escolha tem motivo
+metodológico. Com o componente desligado, o programa percorre o mesmo caminho de
+previsão, a mesma janela de estimação e a mesma rotina de envio de ordens, de modo
+que qualquer diferença observada entre as duas execuções só pode ter origem no
+GARCH.
 
-Visando uma comparação de desempenho sob condições financeiras similares às de um dos
-cenários de \citeonline{almeida2016}, o backtest foi conduzido com um depósito inicial
-de R\$ 50.000,00. O volume operacional foi definido como 1000 unidades do ativo PETR4
-por negociação. A alavancagem utilizada na simulação foi de 1:100. O período de teste
-compreendeu de 01 de janeiro de 2020 a 01 de maio de 2025.
+A divisão de papéis entre os dois modelos é estrita. O ARIMA estima a média
+condicional e é o único responsável por indicar o lado da operação. O GARCH estima
+a variância condicional dos resíduos do ARIMA e nunca gera sinal de direção. Sua
+função é vetar a operação ou redimensioná-la, de acordo com a forma de uso
+escolhida entre as descritas no Capítulo I.
 
-Os principais resultados obtidos neste backtest para o ativo PETR4 são apresentados e
-comparados qualitativamente com os achados de \citeonline{almeida2016} para PETR4 em
-períodos de crise:
+A cada novo pregão, o algoritmo carrega a janela de preços já encerrados, ajusta o
+ARIMA, obtém a previsão do retorno do dia, extrai os resíduos, ajusta o GARCH
+sobre eles e obtém a volatilidade prevista. Na forma de filtro, se a volatilidade
+prevista ultrapassa o limiar, a operação é vetada. O limiar pode ser um valor fixo
+ou um percentil da volatilidade estimada dentro da própria janela. No segundo
+caso, o limiar vem da volatilidade ajustada aos pregões passados da janela,
+enquanto a comparação é feita com a previsão para o dia, que reflete as condições
+mais recentes. Por isso, em períodos agitados, a proporção de sinais vetados pode
+ser bem maior do que o percentil sugere. Quando não há
+veto, o sinal da previsão do ARIMA determina a direção, e a ordem é executada na
+abertura do pregão. A janela de dados nunca inclui a barra em formação, o que
+evita que o modelo utilize, na decisão de hoje, uma informação que só estaria
+disponível ao final do dia.
+
+Um detalhe da implementação tem efeito direto nos resultados. Por padrão, o veto
+impede a abertura de uma nova posição, mas não encerra a posição já aberta. Da
+mesma forma, nas formas de uso que ajustam o tamanho da posição à volatilidade, o
+ajuste é feito no momento da entrada, e uma posição já aberta não é reduzida se a
+volatilidade aumentar depois. Uma
+opção do algoritmo permite que o veto também encerre a posição, retirando o
+capital do mercado enquanto a volatilidade prevista estiver alta. As duas
+alternativas foram testadas, e o Capítulo III mostra que elas se comportam de
+maneira diferente quanto ao risco.
+
+Antes dos experimentos com dados reais, as implementações foram submetidas a um
+teste de recuperação de parâmetros. O procedimento consiste em gerar séries
+sintéticas a partir de parâmetros conhecidos e verificar se o estimador os
+recupera. Como a resposta correta é conhecida de antemão, o teste distingue um
+estimador correto de um que apenas produz números plausíveis. Os resultados estão
+na Tabela~\ref{tab:validacao}.
 
 \begin{table}[htb]
 \centering
-\caption{Comparação modelo proposto x ALMEIDA (2016)}
-\label{tab:comparacao-almeida}
+\caption{Recuperação de parâmetros em séries sintéticas}
+\label{tab:validacao}
 \fontsize{10}{12}\selectfont
-\begin{tabular}{lcccc}
-\toprule
-& \textbf{Pereira (2025)} & \textbf{Pereira (2025)} & \textbf{Almeida (2016)} & \textbf{Almeida (2016)} \\
-& \textbf{1º teste} & \textbf{2º teste} & & \\
-\midrule
-\textbf{Período} & 2020-2025 (Crise) & 2020-2025 (Crise) & 2013-2016 & 2007-2011 (Crise) \\
-\addlinespace
-Volume por Operação & 1000 ações & 1000 ações & 1000 ações & 100 ações \\
-Lucro Líquido Total & R\$ -9.230,00 & R\$ -2.530,00 & R\$ +10.430,00 & R\$ -2.542,00 \\
-Retorno Percentual & -18,46\% & -5,06\% & +20,86\% & -5,08\% \\
-Fator de Lucro & 0,64 & 0,93 & \textgreater{} 1,0 (lucro) & \textless{} 1,0 (prejuízo) \\
-Total de Negociações & 64 & 58 & 38 & 52 \\
-\bottomrule
+\begin{tabular}{l|c|c}
+\hline
+Parâmetro & Valor verdadeiro & Valor estimado \\
+\hline
+ARMA(1,1), $\phi_1$ & 0,600 & 0,5799 \\
+\hline
+ARMA(1,1), $\theta_1$ & 0,400 & 0,4105 \\
+\hline
+AR(2), $\phi_1$ & 0,500 & 0,4815 \\
+\hline
+AR(2), $\phi_2$ & $-0{,}300$ & $-0{,}2891$ \\
+\hline
+GARCH, $\omega$ & $1{,}00\times10^{-5}$ & $1{,}17\times10^{-5}$ \\
+\hline
+GARCH, $\alpha$ & 0,090 & 0,0825 \\
+\hline
+GARCH, $\beta$ & 0,890 & 0,8941 \\
+\hline
 \end{tabular}
-
-\vspace{2pt}
-\fonte{Elaboração própria com dados do MetaTrader 5 e pesquisa de \citeonline{almeida2016}.}
+\fonte{Elaboração própria, a partir da execução do script de validação, com
+semente fixa.}
 \end{table}
 
-A análise destes resultados preliminares indica que, para o primeiro teste no período
-recente de janeiro de 2020 a maio de 2025, a estratégia base de cruzamento de Médias
-Móveis, operando com um volume de 1000 ações de PETR4, resultou em um prejuízo líquido
-substancial de R\$ 9.230,00, representando uma perda de 18,46\% sobre o capital inicial.
-O Fator de Lucro de 0,64 e a baixa taxa de acerto (apenas 25\% das 64 operações foram
-lucrativas) confirmam a ineficácia da estratégia neste intervalo de tempo.
+Os coeficientes do ARIMA foram recuperados com desvio inferior a 4\%. No GARCH,
+o parâmetro $\beta$, que responde pela persistência da volatilidade, ficou a menos
+de 1\% do valor verdadeiro, enquanto $\omega$ e $\alpha$ se afastaram mais, cerca
+de 17\% e 8\%. Ainda assim, a soma $\alpha + \beta$, que determina quanto tempo um
+choque de volatilidade leva para se dissipar, foi estimada em 0,9765, contra 0,98
+do valor verdadeiro.
 
-Em uma segunda rodada de testes preliminares para o período de janeiro de 2020 ao começo
-de 2025 e mantendo o volume de 1000 ações de PETR4, foram zerados os parâmetros de Stop
-Loss e Take Profit, resultando em um desempenho ligeiramente menos desfavorável. Neste
-segundo cenário, o prejuízo líquido total foi de R\$ 2.530,00, correspondendo a uma
-perda de 5,06\% sobre o capital inicial. Embora o Fator de Lucro tenha melhorado para
-0,93 e o número total de negociações tenha sido reduzido para 58, a estratégia ainda não
-demonstrou capacidade de gerar lucro. Este resultado, apesar de melhor que o anterior,
-ainda se alinha com as dificuldades encontradas por \citeonline{almeida2016} em períodos
-de crise e reforça a necessidade de abordagens mais robustas.
+O teste ADF passou pela mesma verificação. Aplicado a um passeio aleatório,
+produziu estatística de $-1{,}41$ e não rejeitou a hipótese de raiz unitária, como
+esperado. Aplicado a uma série autorregressiva estacionária, produziu $-26{,}87$ e
+rejeitou. Aplicado à primeira diferença do passeio aleatório, produziu $-46{,}19$ e
+também rejeitou. O teste, portanto, distinguiu corretamente os três casos.
 
-\begin{figure}[htb]
-\centering
-\caption{Desempenho do modelo proposto (2º teste)}
-\label{fig:desempenho-2teste}
-\includegraphics[width=0.8\textwidth]{fig09-desempenho-2teste.png}
-\fonte{Elaboração própria com dados do MetaTrader 5.}
-\end{figure}
+Os
+procedimentos foram aplicados também aos 500 pregões da PETR4 encerrados até 18
+de setembro de 2026, na mesma série da B3 usada nos experimentos, e se comportaram
+de forma coerente com a teoria. O teste ADF não rejeitou a hipótese de raiz
+unitária para o logaritmo do preço, com estatística de $-0{,}95$, e a rejeitou para
+o retorno logarítmico, com estatística de $-6{,}14$, o que é compatível com a ordem
+de integração $d = 1$.
 
-\begin{figure}[htb]
-\centering
-\caption{Gráfico de dispersão da correlação de lucro (2º teste)}
-\label{fig:dispersao-lucro}
-\includegraphics[width=0.9\textwidth]{fig10-dispersao-lucro.png}
-\fonte{Elaboração própria com dados do MetaTrader 5.}
-\end{figure}
+Os resíduos dos dois modelos foram examinados pelo teste de Ljung-Box, que
+verifica se ainda há autocorrelação nos erros de um modelo, isto é, se restou nos
+dados algum padrão que ele não capturou. Seguindo o diagnóstico de modelos
+ARMA-GARCH feito por \citeonline{thomaz2019} em ações brasileiras, o teste foi
+aplicado em duas etapas, considerando dez defasagens. Nos resíduos do ARIMA, ele
+verifica se a previsão da média aproveitou a dependência entre os retornos. No
+quadrado dos resíduos padronizados pelo GARCH, verifica se ainda há agrupamento
+de volatilidade, ou seja, se os dias agitados continuam vindo em sequência depois
+que o modelo de volatilidade foi aplicado. Com um ARIMA(1,1,1) de ordens fixas, o
+teste nos resíduos resultou em valor-p de 0,009, o que indica autocorrelação
+remanescente e reforça a escolha das ordens por busca em grade, em vez de
+fixá-las. No quadrado dos resíduos padronizados pelo GARCH ajustado a esses
+resíduos, o valor-p foi de 0,75, sem indício de autocorrelação remanescente, o que
+indica que a variação da volatilidade presente nos resíduos do ARIMA foi
+capturada pelo modelo.
 
-Este desempenho contrasta significativamente com os resultados obtidos por
-\citeonline{almeida2016} para o mesmo ativo e volume em um período anterior (2013-2016),
-onde foi reportado um lucro considerável. Por outro lado, o resultado negativo atual se
-assemelha, em natureza, aos prejuízos que Almeida também encontrou ao aplicar sua
-estratégia em PETR4 durante períodos de crise financeira, como a de 2008.
+\section{Plano experimental}
+\label{sec:protocolo}
 
-O período de 2020-2025 foi caracterizado por uma volatilidade acentuada e por dinâmicas
-de mercado complexas, influenciadas por eventos globais como a pandemia de COVID-19 e
-suas repercussões econômicas. É plausível que tais condições tenham sido
-particularmente desfavoráveis para uma estratégia de seguimento de tendência simples
-como o cruzamento de médias. Adicionalmente, as necessárias adaptações do código
-original de \citeonline{almeida2016} e a definição experimental dos parâmetros de Stop
-Loss e Take Profit, na ausência dos valores exatos utilizados no estudo de referência,
-são fatores que podem ter influenciado os resultados.
+O algoritmo tem parâmetros ajustáveis, como o limiar de veto e o tamanho da janela
+de estimação, e, olhando para o passado, sempre seria possível encontrar a
+combinação que teria dado o melhor resultado. Para que a escolha não fosse feita
+no mesmo período em que o desempenho é medido, cada período de teste foi
+precedido por um período de calibração de três anos. Na calibração foram
+simuladas 344 combinações de parâmetros, das quais foram escolhidas a de maior
+índice de Sharpe e a de maior índice de Calmar, e só então elas foram aplicadas ao
+período de teste.
 
-No entanto, a principal inferência destes testes preliminares é a clara demonstração de
-que a estratégia de cruzamento de Médias Móveis, mesmo com parâmetros de risco básicos
-e um volume operacional mais elevado, não se mostrou suficiente para gerar retornos
-positivos de forma consistente no mercado recente de PETR4. Este achado é fundamental,
-pois estabelece um baseline contemporâneo e valida de forma contundente a justificativa
-central deste trabalho de graduação: a necessidade premente de investigar, desenvolver
-e integrar modelos analíticos e preditivos mais sofisticados, como ARIMA para previsão
-de tendência e GARCH para modelagem da volatilidade, com o objetivo de construir uma
-algoritmo mais robusto, adaptável e com maior potencial de eficácia para a
-negociação de ativos voláteis no dinâmico cenário atual do mercado de ações brasileiro.
+Cada configuração escolhida foi comparada a uma versão gêmea, com o mesmo ARIMA e
+o GARCH desligado, de modo que a diferença entre as duas pode ser atribuída ao
+GARCH. Também foram avaliadas configurações fixas, mantidas sem nova escolha ao
+longo de períodos longos, e a estratégia de \citeonline{almeida2016} foi
+executada nos mesmos períodos e nas mesmas condições, para a comparação. Como o
+algoritmo decide uma vez por dia e executa na abertura, as simulações usaram os
+preços de abertura de cada pregão.
 
-\section{Limitações e Trabalhos Futuros}
+\section{Obstáculos encontrados}
 
-Os resultados finais de backtesting com os modelos ARIMA e GARCH ainda estão sendo consolidados e analisados. Os resultados preliminares obtidos com estratégias de Médias Móveis demonstraram a ineficácia de abordagens simplistas em cenários de mercado volátil, validando a necessidade de modelos mais sofisticados.
+O desenvolvimento enfrentou dois obstáculos que alteraram o cronograma original e
+influenciaram decisões metodológicas.
 
-As limitações encontradas durante este trabalho incluem a restrição computacional e operacional do ambiente Linux via Wine, bem como as interrupções causadas pela mudança de corretora. Adicionalmente, o escopo reduzido — concentrado em ARIMA e GARCH — significa que componentes originalmente planejados, como a integração de Machine Learning (LSTM) para análises não lineares, não foram implementados neste ciclo.
+O primeiro foi a perda do ambiente Windows. O desenvolvimento começou em uma
+máquina com Windows e MetaTrader 5 instalado nativamente, e a perda desse
+equipamento obrigou a migração para Linux, onde a plataforma não tem suporte
+oficial e precisa ser executada por camada de compatibilidade. A solução funcionou,
+mas trouxe instabilidades ocasionais e exigiu que a automação dos experimentos
+fosse refeita em linha de comando.
 
-Como perspectivas para trabalhos futuros, recomenda-se:
-
-\begin{itemize}
-  \item Implementação do modelo LSTM em um ambiente de desenvolvimento dedicado (Python com TensorFlow/Keras), seguido de integração ao MetaTrader 5 como componente complementar aos modelos ARIMA e GARCH;
-  \item Incorporação de indicadores técnicos como filtro de confirmação (RSI, MACD) para validar sinais gerados pelos modelos estatísticos;
-  \item Expansão da análise para outros ativos brasileiros de alta liquidez (ex., BBDC4, PETR3, VALE3) para validar a generalização da metodologia;
-  \item Otimização de hiperparâmetros dos modelos ARIMA e GARCH através de algoritmos evolucionários (Genetic Algorithm, PSO);
-  \item Implementação de técnicas robustas de gerenciamento de risco (trailing stops, position sizing dinâmico) para mitigação de drawdowns.
-\end{itemize}
+O segundo foi o acesso aos dados históricos pela corretora. A corretora utilizada
+inicialmente, a Rico, deixou de oferecer suporte ao MetaTrader 5, o que exigiu a
+abertura de conta em outra instituição. A segunda corretora, a Clear, oferece a
+plataforma, mas disponibiliza cotações apenas a partir de setembro de 2021, o que
+não atendia aos períodos de teste, que retrocedem a 2003. Esse obstáculo levou à
+adoção do arquivo oficial da bolsa como fonte, o que tornou a série pública,
+verificável e livre de alterações posteriores.

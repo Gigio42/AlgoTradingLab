@@ -172,6 +172,57 @@ double ADF_PValorAproximado(const double estatistica,
   }
 
 //+------------------------------------------------------------------+
+//| Regressao auxiliar do ADF com k defasagens, a partir de t_ini    |
+//+------------------------------------------------------------------+
+//|  dy(t) = gamma*y(t-1) + [a] + [b*t] + SOMA_j c_j*dy(t-j) + e     |
+//|  com t = t_ini .. n-1 (t_ini >= k+1). Devolve a estatistica t de |
+//|  gamma, o AIC da regressao e o numero de observacoes.            |
+//+------------------------------------------------------------------+
+bool RegressaoADF(const double &y[], const ENUM_ADF_DETERMINISTICO det,
+                  const int k, const int t_ini,
+                  double &estatistica, double &aic, int &n_obs)
+  {
+   int n = ArraySize(y);
+   int t0 = MathMax(t_ini, k + 1);
+   n_obs = n - t0;
+   if(n_obs < k + 5)
+      return(false);
+
+   int n_det = 0;
+   if(det == ADF_CONSTANTE)             n_det = 1;
+   if(det == ADF_CONSTANTE_TENDENCIA)   n_det = 2;
+
+   int n_par = 1 + n_det + k;   // gamma + deterministicos + defasagens
+   if(n_obs <= n_par)
+      return(false);
+
+   CMatrixDouble X(n_obs, n_par);
+   double dep[];
+   ArrayResize(dep, n_obs);
+
+   for(int t = t0, linha = 0; t <= n - 1; t++, linha++)
+     {
+      dep[linha] = y[t] - y[t - 1];
+      int col = 0;
+      X.Set(linha, col++, y[t - 1]);                 // nivel defasado (gamma)
+      if(n_det >= 1) X.Set(linha, col++, 1.0);
+      if(n_det >= 2) X.Set(linha, col++, (double)t);
+      for(int j = 1; j <= k; j++)
+         X.Set(linha, col++, y[t - j] - y[t - j - 1]);
+     }
+
+   double coef[], se[], ssr = 0.0;
+   if(!MQO(X, dep, n_obs, n_par, coef, se, ssr, true))
+      return(false);
+   if(se[0] <= 0.0 || ssr <= 0.0)
+      return(false);
+
+   estatistica = coef[0] / se[0];
+   aic = (double)n_obs * MathLog(ssr / (double)n_obs) + 2.0 * (double)n_par;
+   return(true);
+  }
+
+//+------------------------------------------------------------------+
 //| TESTE ADF — Dickey-Fuller Aumentado                              |
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -229,69 +280,40 @@ bool TesteADF(const double &y[], const ENUM_ADF_DETERMINISTICO det,
       k_fim = k_max;
      }
 
+   //--- Escolha das defasagens por AIC sobre AMOSTRA COMUM: todas as
+   //--- regressoes candidatas usam as mesmas observacoes (t > k_fim), como
+   //--- no adfuller do statsmodels. Antes cada k usava n-1-k observacoes,
+   //--- e o AIC, que soma uma parcela por observacao, favorecia k pequeno
+   //--- (o mesmo vies ja corrigido na selecao do ARIMA). Escolhido k, a
+   //--- estatistica e recalculada com toda a amostra disponivel para ele.
+   //--- (Corrigido em 05/10/2026.)
    double melhor_aic = DBL_MAX;
-   bool   achou = false;
+   int    k_melhor = -1;
 
    for(int k = k_ini; k <= k_fim; k++)
      {
-      //--- ── Monta a regressao para esta quantidade de defasagens ──
-      //--- dy tem n-1 elementos: dy[i] = y[i+1] - y[i]
-      //--- A observacao no tempo t usa dy[t-1] como dependente,
-      //--- y[t-1] como nivel e dy[t-1-j] como defasagens.
-      //--- t varre de (k+1) ate (n-1).
-      int n_obs = n - 1 - k;
-      if(n_obs < k + 5)
+      double stat_k = 0.0, aic_k = 0.0;
+      int    nobs_k = 0;
+      if(!RegressaoADF(y, det, k, k_fim + 1, stat_k, aic_k, nobs_k))
          continue;
-
-      int n_det = 0;
-      if(det == ADF_CONSTANTE)             n_det = 1;
-      if(det == ADF_CONSTANTE_TENDENCIA)   n_det = 2;
-
-      int n_par = 1 + n_det + k;   // gamma + deterministicos + defasagens
-      if(n_obs <= n_par)
-         continue;
-
-      CMatrixDouble X(n_obs, n_par);
-      double dep[];
-      ArrayResize(dep, n_obs);
-
-      for(int t = k + 1, linha = 0; t <= n - 1; t++, linha++)
+      if(aic_k < melhor_aic)
         {
-         dep[linha] = y[t] - y[t - 1];
-
-         int col = 0;
-         //--- nivel defasado (o coeficiente de interesse, gamma)
-         X.Set(linha, col++, y[t - 1]);
-
-         if(n_det >= 1)
-            X.Set(linha, col++, 1.0);
-         if(n_det >= 2)
-            X.Set(linha, col++, (double)t);
-
-         //--- defasagens da primeira diferenca
-         for(int j = 1; j <= k; j++)
-            X.Set(linha, col++, y[t - j] - y[t - j - 1]);
+         melhor_aic = aic_k;
+         k_melhor = k;
         }
+     }
 
-      double coef[], se[], ssr = 0.0;
-      if(!MQO(X, dep, n_obs, n_par, coef, se, ssr, true))
-         continue;
-
-      //--- Sem erro-padrao nao ha estatistica t
-      if(se[0] <= 0.0)
-         continue;
-
-      //--- AIC da regressao auxiliar, usado apenas para escolher k
-      double aic = (double)n_obs * MathLog(ssr / (double)n_obs) + 2.0 * (double)n_par;
-
-      if(aic < melhor_aic)
+   bool achou = false;
+   if(k_melhor >= 0)
+     {
+      double stat = 0.0, aic = 0.0;
+      int    nobs = 0;
+      if(RegressaoADF(y, det, k_melhor, k_melhor + 1, stat, aic, nobs))
         {
-         melhor_aic = aic;
+         res.estatistica = stat;
+         res.lags = k_melhor;
+         res.n_obs = nobs;
          achou = true;
-
-         res.estatistica = coef[0] / se[0];
-         res.lags = k;
-         res.n_obs = n_obs;
         }
      }
 

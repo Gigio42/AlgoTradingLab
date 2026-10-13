@@ -1,0 +1,103 @@
+% =====================================================================
+%  CONSIDERAÇÕES FINAIS
+%
+%  Revisado em 2026-10-05. A estrutura da FATEC-ID é Introdução, Capítulos
+%  I a III e Considerações Finais, então esta parte não é "Capítulo IV":
+%  fica sem número, como a introdução, e em texto corrido.
+%  O Manual (item 4.1.2) exige que ela (a) responda à pergunta-problema,
+%  (b) revisite cada hipótese confirmando ou refutando e (c) diga se os
+%  objetivos foram alcançados. Os parágrafos seguem essa ordem.
+%  Todos os números já aparecem no Capítulo III, com a procedência anotada lá.
+%  Revisto em 2026-10-06 depois da refação dos experimentos (EA corrigido).
+%  Versão anterior em notas/rascunhos/antes_revisao_2026-10-05/.
+% =====================================================================
+\chapter*{Considerações finais}
+\phantomsection
+\addcontentsline{toc}{chapter}{CONSIDERAÇÕES FINAIS}
+
+Este trabalho investigou o efeito de acrescentar um modelo de volatilidade
+condicional a uma estratégia automatizada de negociação cuja previsão de direção
+permanece a mesma. A questão norteadora foi em que medida a integração dos modelos
+ARIMA e GARCH em um único algoritmo de negociação altera o desempenho e o risco
+das operações, em comparação com o uso do ARIMA isolado e com uma estratégia de
+cruzamento de médias móveis.
+
+Quanto ao risco, a resposta é clara. Em todos os períodos analisados, a versão do
+algoritmo com o GARCH sofreu quedas menores que a sua gêmea, que usa o mesmo ARIMA
+sem o modelo de volatilidade, e o efeito se repetiu nas outras três ações
+estudadas, sobretudo nos períodos de turbulência. O ano de 2008 resume bem esse
+comportamento. Enquanto a PETR4 perdia quase metade do seu valor, o ARIMA-GARCH
+encerrou o ano com um pequeno ganho.
+
+Quanto ao desempenho, o efeito foi menos claro. Na maior parte dos testes, a
+versão com GARCH terminou com retorno maior que o da gêmea, mas essa vantagem só
+foi confirmada estatisticamente em uma das comparações, e em nenhuma delas o
+GARCH piorou o resultado de forma significativa. Em relação às médias
+móveis de \citeonline{almeida2016}, o ARIMA-GARCH protegeu melhor nos momentos de
+queda, mas ganhou em alguns períodos e perdeu em outros, por diferenças que ficaram
+dentro da margem do acaso. Em relação à taxa Selic, o ARIMA-GARCH só rendeu mais
+no período de 2017 a 2024, e por uma margem que o acaso também explicaria. Nos
+demais períodos, rendeu menos.
+
+A primeira hipótese afirmava que a integração entre ARIMA e GARCH gera sinais
+mais eficazes que o ARIMA isolado, tanto em acerto direcional quanto em adequação
+ao risco. Ela foi parcialmente confirmada. A adequação ao risco foi confirmada
+pelas quedas menores em todos os períodos, ainda que o desempenho ajustado ao
+risco, medido em relação à Selic, só tenha melhorado de forma significativa em
+uma das comparações. O acerto direcional, por outro lado, não
+melhorou e permaneceu próximo do acaso. Esse resultado é coerente com a teoria,
+pois o GARCH descreve o tamanho das oscilações, e não a direção dos preços. O ganho
+veio da seletividade. Ao deixar de operar nos dias de maior volatilidade prevista,
+o algoritmo agiu menos vezes e em condições mais regulares.
+
+A segunda hipótese afirmava que a combinação representa um avanço em relação às
+análises baseadas em médias móveis. Ela foi confirmada apenas quanto ao risco. Em
+todos os períodos, houve uma variante com GARCH que protegeu mais do que as médias
+móveis, e a diferença foi grande sobretudo nos períodos de crise. Ainda assim,
+nem toda variante protegeu mais, e as que mantêm a posição aberta durante o veto
+chegaram a ter quedas maiores. Quanto ao retorno, as diferenças entre os dois
+algoritmos ficaram dentro da margem do acaso.
+
+O objetivo geral, desenvolver em MQL5 um \textit{Expert Advisor} que integra os
+modelos ARIMA e GARCH e avaliar experimentalmente o efeito da inclusão do GARCH,
+foi alcançado. Os dois modelos foram implementados na própria linguagem da
+plataforma e validados por recuperação de parâmetros em séries com resposta
+conhecida. A escolha das ordens do ARIMA foi automatizada pelo teste ADF e pelo
+critério de Akaike. A estratégia de \citeonline{almeida2016} foi reimplementada,
+e a reprodução dos seus testes confirmou o comportamento do algoritmo original,
+embora não os seus valores em reais, que dependem de informações que o estudo
+original não registra. Por fim, o protocolo com períodos de calibração e de teste
+separados foi definido antes da observação dos resultados e executado sobre dados
+oficiais, e os três algoritmos foram comparados quanto a retorno, risco e
+desempenho ajustado ao risco, com testes estatísticos.
+
+Os resultados têm as limitações discutidas ao final do Capítulo III. A maior parte
+das diferenças não atinge significância estatística, a configuração que se sai
+melhor em um período não tende a repetir o desempenho no seguinte, os ganhos se
+concentram em poucos anos, a análise se restringe a quatro ativos de um único
+mercado e a medida de desempenho não inclui os proventos, que, quando incluídos,
+favorecem as estratégias que permanecem mais tempo compradas. Além disso, os experimentos foram realizados por simulação sobre dados
+históricos, com execução no preço de abertura e sem considerar a falta de liquidez
+ou a diferença entre o preço pedido e o executado, condições que só podem ser
+verificadas em operação real.
+
+Como continuação, o resultado indica que o caminho mais promissor está no
+controle de risco, que foi onde o modelo mostrou efeito. Uma possibilidade é
+empregar variações assimétricas do GARCH, que reagem mais às quedas do que às
+altas, comportamento comum nas séries de ações e não capturado pela especificação
+simétrica utilizada.
+% REFERÊNCIA: Glosten, Jagannathan e Runkle (1993), Nelson (1991)
+Outra é aplicar o mesmo protocolo a um conjunto maior de ativos e acompanhar o
+algoritmo em conta de demonstração, em tempo real, o que permitiria também avaliar
+as ordens de limite de perda e de realização de lucro que
+\citeonline{almeida2016} previu em seu algoritmo, mas não utilizou em seus testes.
+
+No eixo da previsão, a próxima etapa é a que estava prevista no projeto original
+deste trabalho e foi deixada de lado para que a implementação do ARIMA e do GARCH
+pudesse ser concluída e validada: substituir o ARIMA por uma rede neural
+recorrente do tipo LSTM, do inglês \textit{Long Short-Term Memory}, capaz de representar relações não lineares, mantendo o
+GARCH como filtro de risco. A arquitetura do algoritmo, que separa a previsão da
+direção da avaliação do risco, permite essa troca sem alterar o restante. Os
+resultados deste trabalho, porém, recomendam cautela na expectativa, já que a
+taxa de acerto direcional do ARIMA ficou próxima do acaso e o ganho observado veio
+do controle de risco, e não da previsão.

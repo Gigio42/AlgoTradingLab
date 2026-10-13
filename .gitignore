@@ -1,4 +1,38 @@
+# Bibliografia
+# PDFs e páginas salvas têm direitos autorais e não podem ser publicados.
+bibliografia/
+
+# Partes escritas q n foram pra frente
+notas/rascunhos/
+
+# LaTeX
+tg/*.aux
+tg/*.bbl
+tg/*.blg
+tg/*.fdb_latexmk
+tg/*.fls
+tg/*.lof
+tg/*.lot
+tg/*.toc
+tg/*.out
+tg/*.brf
+tg/*.synctex.gz
+tg/conteudo/*.aux
+tg/main?*.pdf
+tg/codigo/
+
+# Artefatos de compilação do MetaEditor
+*.ex5
+*.log
+
+# Temporários e ambiente
 *.bak
 *.tmp
-*.log
 *.venv
+.venv/
+__pycache__/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*~

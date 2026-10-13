@@ -1,30 +1,31 @@
-% Abstract — Manual FATEC 4.1.11 (versão do resumo em língua estrangeira).
-% No original, o texto do abstract é apresentado em itálico.
+% Abstract — Manual FATEC-ID, item 4.1.1.9: versão do resumo em inglês.
+% Texto em itálico por ser língua estrangeira. Mesma versão narrativa do resumo.
 \begin{resumo}[ABSTRACT]
 \begin{otherlanguage}{english}
 \itshape
-The recent Brazilian economic scenario, characterized by macroeconomic
-instability, high inflation, and a consequent increase in the Selic interest rate,
-poses significant challenges for investors. Financial market volatility,
-intensified by internal and external factors, hinders investment decision-making,
-especially in assets such as stocks. Given this context and the increasing
-digitalization of the financial sector, algorithmic trading presents itself as a promising
-alternative. This paper presents the development of a trading algorithm, written
-in the MQL5 language for the MetaTrader 5 platform, for analyzing trend and volatility
-patterns in the Brazilian stock market, focusing on the PETR4 asset. The algorithm integrates
-statistical technical analyses, combining the use of Moving Averages for
-trend identification with the ARIMA model for forecasting price time series and the GARCH
-model for modeling the conditional volatility of ARIMA residuals. The central
-premise of this work is that this integrated approach allows the generation of trading
-signals with greater effectiveness (potential accuracy and risk suitability)
-compared to the isolated or incomplete use of these techniques. The study explored
-models with updated data, providing analyses that can support investment
-strategies adapted to the high-interest-rate scenario, and investigated the
-robustness of the combined ARIMA and GARCH models against market fluctuations, contributing to
-knowledge in the field and offering a practical alternative for investors.
+This work revisits a study carried out at the Faculdade de Tecnologia de
+Indaiatuba in 2016, in which a trading robot for the MetaTrader 5 platform,
+guided by moving average crossovers, performed well in stable market periods but
+accumulated losses over the period that includes the 2008 financial crisis. At the
+end of that study, the author suggested that models able to measure volatility
+could help overcome this limitation. Building on that suggestion, a new robot was
+developed that brings together two statistical models with distinct roles. The
+first, called ARIMA, tries to anticipate the direction of prices. The second,
+called GARCH, estimates how much the market is likely to fluctuate and decides
+whether it is worth trading. Both models were programmed in the platform's own
+language, checked on data with known answers and tested on the official history
+of the Brazilian stock exchange, in periods of crisis and of calm, always in
+comparison with the original strategy and with a version of the robot without the
+volatility control. The results show that this control made the robot safer.
+Losses in the worst moments were smaller in every period analysed, and in many of
+them the final gain was also larger. The ability to predict market direction,
+however, remained close to chance, and, against the moving averages and the Selic
+rate, gains varied from period to period, within the margin that chance alone
+would also explain. The conclusion is that
+the volatility model works as a protective instrument, especially useful in times
+of crisis, and not as a way of predicting the market better.
 
 \vspace{\onelineskip}
-\noindent\textbf{Keywords:} Algorithmic Trading. Statistical Models. ARIMA. GARCH.
-Stock Market. Volatility. MetaTrader 5.
+\noindent Keywords: ARIMA-GARCH; algorithmic trading; MetaTrader 5.
 \end{otherlanguage}
 \end{resumo}
