@@ -1,8 +1,21 @@
 % =====================================================================
-%  APÊNDICE A — Código do Expert Advisor
+%  APÊNDICE A — código do Expert Advisor ARIMA-GARCH
+%  O arquivo listado é gerado pelo Makefile a partir de
+%  ARIMA-GARCH/ARIMA_GARCH_EA.mq5 por ferramentas/scripts/codigo_apendice.sh:
+%  sem comentários e sem os trechos marcados //@omitir (log, diagnóstico,
+%  traço e avaliação no testador). Pedidos do autor em 2026-10-05: "mais
+%  enxuto sem comentários" e "sem logs tbm, só o modelo puro".
+%  A listagem reduzida compila sozinha (0 erros, 0 avisos).
 % =====================================================================
-\chapter{Algoritmo do Expert Advisor no MetaTrader 5}
+\chapter{Código do \textit{Expert Advisor}}
 
-Este apêndice apresenta o código fonte do \textit{Expert Advisor} baseado na estratégia de cruzamento de Médias Móveis, implementado conforme o trabalho de graduação de \citeonline{almeida2016} e as documentações oficiais do MetaTrader 5.
+Este apêndice apresenta o código do \textit{Expert Advisor} desenvolvido neste
+trabalho. Para facilitar a leitura, foram retirados os comentários e as rotinas
+que não participam da decisão de operar, isto é, as mensagens de registro, o
+diagnóstico por pregão e o cálculo das medidas de desempenho no testador de
+estratégias. A versão reduzida continua sendo um programa completo e compila
+sem erros. As rotinas de estimação do ARIMA e do GARCH, de seleção das ordens e
+das formas de uso do GARCH estão em arquivos de inclusão próprios, chamados
+pelas diretivas \texttt{\#include} do início do código.
 
-\lstinputlisting[style=mql5]{../MediasMoveis2/MediasMoveis2.mq5}
+\lstinputlisting[style=mql5]{codigo/ARIMA_GARCH_EA.mq5}

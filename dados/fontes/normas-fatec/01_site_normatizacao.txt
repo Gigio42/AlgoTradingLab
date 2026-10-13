@@ -1,0 +1,29 @@
+Texto copiado pelo autor do site da FATEC-ID e repassado em 28/09/2026.
+URL exata nao registrada (ver INCERTEZAS.md).
+-------------------------------------------------------------------------------
+Normatização
+
+Os trabalhos da FATEC-ID devem apresentar uma padronização mínima de estruturação e
+apresentação, de acordo com as mais recentes normas vigentes:
+
+O objetivo deste documento é estabelecer normas para a apresentação escrita dos Trabalhos
+Científicos da Faculdade de Tecnologia de Indaiatuba (FATEC-ID), sejam eles Artigos
+Científicos, Projetos de Trabalho de Graduação (PTG), Trabalhos de Graduação (TG), entre
+outros.
+
+Esses trabalhos devem seguir as normas estabelecidas pela instituição, que são orientadas a
+partir da ABNT - Associação Brasileira de Normas Técnicas. A ABNT é o Fórum Nacional de
+Normalização, representante da ISO (International Organization for Standardization) no Brasil
+e que determina o conteúdo das Normas Brasileiras (NBR).
+
+NBR 6027 / 2012 - Sumário
+NBR 6034 / 2004 - Índice
+NBR 6024 / 2012 - Numeração progressiva das seções de um documento
+NBR 6028 / 2003 - Resumo
+NBR 10520 / 2002 / 2023 - Citações em documentos
+NBR 14724 / 2011 / 2024 - Trabalhos Acadêmicos
+NBR 6023 / 2018 / 2025 - Referências
+
+O conjunto de normas apresentado neste manual substitui todos os anteriores. Assim, ao longo
+do biênio 2026-2027, constituirá referencial normativo acadêmico/científico da Faculdade de
+Tecnologia de Indaiatuba.

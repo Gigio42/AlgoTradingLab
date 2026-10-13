@@ -2,6 +2,10 @@
 % Referências do TG
 % Formato: BibTeX clássico para uso com abntex2cite (estilo alf, autor-data).
 % Notas:
+%  - almeida2016: o "de" do nome foi omitido no campo author porque o estilo
+%    abrevia os prenomes e ele sairia como "d.". ABNT admite omitir.
+%  - Entidades (Banco Central, MetaQuotes) em organization, e não em author:
+%    assim a lista sai em caixa alta e a citação em caixa mista (NBR 6023:2025).
 %  - ANDERSON (1993) é citado no corpo ("Gary Anderson") mas não consta
 %    na lista de referências do PDF; entrada reconstruída a partir da
 %    citação. Confirmar dados.
@@ -13,14 +17,17 @@
 % =====================================================================
 
 @monography{almeida2016,
-  author       = {Almeida, F. L.},
-  title        = {Análise da ação PETR4 na Bolsa de Valores de São Paulo com MetaTrader 5},
-  type         = {Graduação em Banco de Dados},
-  school       = {Faculdade de Tecnologia Dr. Archimedes Lammoglia},
+  author       = {Almeida, Flávio Leite Ribeiro},
+  title        = {Técnicas de previsão da bolsa com MetaTrader 5},
+  type         = {Graduação em Tecnologia em Banco de Dados},
+  school       = {Faculdade de Tecnologia de Indaiatuba},
   address      = {Indaiatuba},
   year         = {2016},
   url          = {https://ric.cps.sp.gov.br/handle/123456789/24287},
   urlaccessdate = {20 fev. 2025},
+  note         = {No Repositório Institucional do Centro Paula Souza o trabalho
+                  está catalogado sob o título ``Análise da ação PETR4 na Bolsa
+                  de Valores de São Paulo com MetaTrader 5''},
 }
 
 @book{anderson1993,
@@ -43,7 +50,7 @@
 
 @article{araya2024,
   author    = {Araya, Temesgen Hailabe and Araya, Jemal Abdu},
-  title     = {A Hybrid GARCH and Deep Learning Method for Volatility Prediction},
+  title     = {A Hybrid {GARCH} and Deep Learning Method for Volatility Prediction},
   journal   = {Journal of Mathematics},
   address   = {Londres, Reino Unido},
   volume    = {2024},
@@ -86,8 +93,8 @@
 }
 
 @misc{bcbBolsas,
-  author        = {{BRASIL. Banco Central do Brasil}},
-  title         = {Bolsas de Valores},
+  organization  = {Banco Central do Brasil},
+  title         = {Bolsas de valores},
   address       = {Brasília, DF},
   year          = {2025},
   url           = {https://www.bcb.gov.br/pre/composicao/bv.asp?frame=1},
@@ -95,8 +102,8 @@
 }
 
 @misc{bcbCorretoras,
-  author        = {{BRASIL. Banco Central do Brasil}},
-  title         = {Corretoras e Distribuidoras},
+  organization  = {Banco Central do Brasil},
+  title         = {Corretoras e distribuidoras},
   address       = {Brasília, DF},
   year          = {2025},
   url           = {https://www.bcb.gov.br/acessoinformacao/legado?url=https:%2F%2Fwww.bcb.gov.br%2Fpre%2Fcomposicao%2Fcorretoras_distribuidoras.asp},
@@ -104,7 +111,7 @@
 }
 
 @misc{bcbJuros,
-  author        = {{BRASIL. Banco Central do Brasil}},
+  organization  = {Banco Central do Brasil},
   title         = {Histórico de Taxas de Juros},
   address       = {Brasília, DF},
   year          = {2025},
@@ -112,8 +119,17 @@
   urlaccessdate = {30 mar. 2025},
 }
 
+@misc{bcbSgs11,
+  organization  = {Banco Central do Brasil},
+  title         = {Sistema Gerenciador de Séries Temporais: série 11, taxa de juros Selic, \% ao dia},
+  address       = {Brasília, DF},
+  year          = {2026},
+  url           = {https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados},
+  urlaccessdate = {21 set. 2026},
+}
+
 @misc{bcbSelic,
-  author        = {{BRASIL. Banco Central do Brasil}},
+  organization  = {Banco Central do Brasil},
   title         = {Taxa Selic},
   address       = {Brasília, DF},
   year          = {2025},
@@ -147,7 +163,7 @@
 
 @book{elder2002,
   author    = {Elder, A.},
-  title     = {Come Into My Trading Room: a complete guide to trading},
+  title     = {Come into my trading room: a complete guide to trading},
   address   = {Nova Iorque, EUA},
   publisher = {Wiley},
   year      = {2002},
@@ -168,7 +184,7 @@
 
 @book{fernandes2014,
   author    = {Fernandes, A.},
-  title     = {Fundamentos de Análise Técnica de Ações},
+  title     = {Fundamentos de análise técnica de ações},
   edition   = {1},
   address   = {Rio de Janeiro},
   publisher = {Campus},
@@ -176,7 +192,7 @@
 }
 
 @misc{fmi2024,
-  author        = {{FUNDO MONETÁRIO INTERNACIONAL (FMI)}},
+  author        = {{Fundo Monetário Internacional}},
   title         = {World Economic Outlook: Navigating Global Divergences},
   address       = {Washington, D.C.},
   publisher     = {FMI},
@@ -203,13 +219,24 @@
 }
 
 @misc{metaquotes2024,
-  author        = {{METAQUOTES LTD.}},
-  title         = {MetaTrader 5: Plataforma de Negociação para Forex, Ações e Futuros},
+  organization  = {MetaQuotes Ltd.},
+  title         = {{MetaTrader} 5: plataforma de negociação para Forex, ações e futuros},
   address       = {Limassol},
   publisher     = {MetaQuotes Ltd.},
   year          = {2024},
   url           = {https://www.metatrader5.com/pt},
   urlaccessdate = {01 mar. 2025},
+}
+
+@mastersthesis{thomaz2019,
+  author        = {Thomaz, Paulo Siga},
+  title         = {Modelos {ARMA-GARCH} na modelagem da volatilidade de ações financeiras},
+  type          = {Mestrado em Modelagem Computacional},
+  school        = {Universidade Federal do Rio Grande},
+  address       = {Rio Grande},
+  year          = {2019},
+  url           = {http://repositorio.furg.br/handle/1/10204},
+  urlaccessdate = {12 out. 2026},
 }
 
 @mastersthesis{silva2022,
@@ -224,7 +251,7 @@
 }
 
 @misc{warren2025,
-  author        = {{WARREN MAGAZINE}},
+  author        = {{Warren Magazine}},
   title         = {Conheça as fraquezas e vantagens dos investimentos ativos e passivos},
   howpublished  = {Warren Magazine},
   year          = {2025},
@@ -235,7 +262,7 @@
 
 @book{wazlawick2014,
   author    = {Wazlawick, R. S.},
-  title     = {Metodologia de Pesquisa para Ciência da Computação},
+  title     = {Metodologia de pesquisa para ciência da computação},
   edition   = {2},
   address   = {Rio de Janeiro},
   publisher = {Elsevier},
@@ -254,11 +281,118 @@
 
 @misc{xing2024,
   author        = {Xing, Yiluan and Yang, Chengyu and Li, Qinyu and Li, Bingzheng and Zhao, Tianyi},
-  title         = {Predicting NVIDIA's Next-Day Stock Price: A Comparative Analysis of LSTM, MLP, ARIMA, and ARIMA-GARCH Models},
+  title         = {Predicting {NVIDIA}'s next-day stock price: a comparative analysis of {LSTM}, {MLP}, {ARIMA}, and {ARIMA-GARCH} models},
   howpublished  = {arXiv},
   year          = {2024},
   note          = {Preprint},
   doi           = {10.48550/arXiv.2405.08284},
   url           = {https://arxiv.org/abs/2405.08284},
   urlaccessdate = {09 abr. 2025},
+}
+
+@misc{b3Investidores2026,
+  organization  = {B3},
+  title         = {Avanço dos {ETFs} destaca evolução do investidor pessoa física na {B3}},
+  address       = {São Paulo},
+  year          = {2026},
+  note          = {Notícia de 6 jul. 2026},
+  url           = {https://www.b3.com.br/pt_br/noticias/avanco-dos-etfs-destacam-evolucao-do-investidor-pessoa-fisica-na-b3.htm},
+  urlaccessdate = {05 out. 2026},
+}
+
+@misc{b3Cotahist,
+  organization  = {B3},
+  title         = {Séries históricas de cotações ({COTAHIST}): arquivos anuais de 2003 a 2026},
+  address       = {São Paulo},
+  year          = {2026},
+  url           = {https://bvmf.bmfbovespa.com.br/InstDados/SerHist/},
+  urlaccessdate = {21 set. 2026},
+}
+
+@article{maximo2020,
+  author        = {M{\'a}ximo, Wellton},
+  title         = {Bolsa cai 30\%, e dólar sobe 16\% em março com pandemia de coronavírus},
+  journal       = {Agência Brasil},
+  address       = {Brasília},
+  year          = {2020},
+  month         = {31 mar.},
+  url           = {https://agenciabrasil.ebc.com.br/economia/noticia/2020-03/bolsa-cai-30-e-dolar-sobe-16-em-marco-com-pandemia-de-coronavirus},
+  urlaccessdate = {05 out. 2026},
+}
+
+@article{diniz2025,
+  author        = {Diniz, Augusto},
+  title         = {60\% das negociações na {B3} já utilizam algum modelo de algoritmo, diz superintendente},
+  journal       = {InfoMoney},
+  address       = {São Paulo},
+  year          = {2025},
+  month         = {28 jan.},
+  url           = {https://www.infomoney.com.br/mercados/60-das-negociacoes-na-b3-ja-utilizam-algum-modelo-de-algoritmo-diz-superintendente/},
+  urlaccessdate = {05 out. 2026},
+}
+
+@article{maximo2026,
+  author        = {M{\'a}ximo, Wellton},
+  title         = {Bolsa tem pior mês desde 2023, e dólar sobe 1,82\% em maio},
+  journal       = {Agência Brasil},
+  address       = {Brasília},
+  year          = {2026},
+  month         = {29 maio},
+  url           = {https://agenciabrasil.ebc.com.br/economia/noticia/2026-05/bolsa-tem-pior-mes-desde-2023-e-dolar-sobe-182-em-maio},
+  urlaccessdate = {05 out. 2026},
+}
+
+@article{boehm2019,
+  author        = {Boehm, Camila},
+  title         = {Bolsa de Valores atinge 1 milhão de investidores pessoa física},
+  journal       = {Agência Brasil},
+  address       = {São Paulo},
+  year          = {2019},
+  month         = {18 maio},
+  url           = {https://agenciabrasil.ebc.com.br/economia/noticia/2019-05/bolsa-de-valores-atinge-1-milhao-de-investidores-pessoa-fisica},
+  urlaccessdate = {05 out. 2026},
+}
+
+@misc{cvm2018,
+  organization  = {Comiss{\~a}o de Valores Mobili{\'a}rios},
+  title         = {Introdução aos investimentos},
+  address       = {Rio de Janeiro},
+  year          = {2018},
+  note          = {Programa Bem-Estar Financeiro, módulo 6},
+  url           = {https://www.gov.br/investidor/pt-br/educacional/programa-bem-estar-financeiro/programa-bem-estar-financeiro-arquivos/apostila-06.pdf},
+  urlaccessdate = {05 out. 2026},
+}
+
+
+
+@misc{yahooPetr4,
+  organization  = {Yahoo Finance},
+  title         = {{PETR4.SA}: histórico de dividendos e desdobramentos},
+  year          = {2026},
+  url           = {https://finance.yahoo.com/quote/PETR4.SA/history/},
+  urlaccessdate = {21 set. 2026},
+}
+
+@misc{metaquotesRelatorio,
+  organization  = {MetaQuotes Ltd.},
+  title         = {Relatório de teste},
+  howpublished  = {Ajuda para o MetaTrader 5},
+  address       = {Limassol},
+  year          = {2026},
+  note          = {Página da ajuda da plataforma, sem data de publicação},
+  url           = {https://www.metatrader5.com/pt/terminal/help/algotrading/testing_report},
+  urlaccessdate = {05 out. 2026},
+}
+
+@article{sharpe1994,
+  author        = {Sharpe, William F.},
+  title         = {The {Sharpe} ratio},
+  journal       = {The Journal of Portfolio Management},
+  address       = {Nova Iorque},
+  volume        = {21},
+  number        = {1},
+  pages         = {49--58},
+  year          = {1994},
+  url           = {https://web.stanford.edu/~wfsharpe/art/sr/sr.htm},
+  urlaccessdate = {05 out. 2026},
 }

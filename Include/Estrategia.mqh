@@ -22,6 +22,14 @@
 //|     fundamentacao aponta como mais prudente para ativos          |
 //|     volateis.                                                    |
 //|                                                                  |
+//|     O veto bloqueia a ORDEM, nao a posicao. Com o EA em          |
+//|     ZerarNoVeto=false, a posicao aberta e mantida: em dia        |
+//|     agitado o filtro congela a carteira e ignora os sinais do    |
+//|     ARIMA, que nesses dias sao os mais ruidosos. No backtest de  |
+//|     PETR4 (21/09/2026) foi esse efeito - menos giro, nao fugir   |
+//|     da turbulencia - que produziu o ganho; zerar no veto deu     |
+//|     resultado pior fora da amostra.                              |
+//|                                                                  |
 //|  2) VOLATILITY TARGETING                                         |
 //|     Sempre opera, mas dimensiona a posicao para manter o RISCO   |
 //|     constante:  volume = volume_base * (vol_alvo / vol_prevista) |
@@ -240,6 +248,31 @@ void DecidirOperacao(const double previsao,
    d.sinal = direcao;
    d.motivo = StringFormat("FILTRO: vol prevista %.6f <= limiar %.6f - operacao liberada",
                            vol_prevista, limiar);
+  }
+
+//+------------------------------------------------------------------+
+//| Volume (acoes) que corresponde a uma fracao do patrimonio        |
+//+------------------------------------------------------------------+
+//|  Arredonda PARA BAIXO ao lote: arredondar para cima poderia      |
+//|  passar do capital e a ordem seria recusada por margem. Teto de  |
+//|  98%: conta de acoes nao tem alavancagem.                        |
+//+------------------------------------------------------------------+
+double VolumePorCapital(const string simbolo, const double fracao, const double preco)
+  {
+   double contrato = SymbolInfoDouble(simbolo, SYMBOL_TRADE_CONTRACT_SIZE);
+   if(contrato <= 0.0)
+      contrato = 1.0;
+   if(preco <= 0.0)
+      return(0.0);
+
+   double f = MathMax(0.0, MathMin(fracao, 0.98));
+   double volume = AccountInfoDouble(ACCOUNT_EQUITY) * f / (preco * contrato);
+
+   double v_step = SymbolInfoDouble(simbolo, SYMBOL_VOLUME_STEP);
+   if(v_step > 0.0)
+      volume = MathFloor(volume / v_step) * v_step;
+
+   return(volume);
   }
 
 #endif // ALGOTRADINGLAB_ESTRATEGIA_MQH

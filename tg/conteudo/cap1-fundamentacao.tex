@@ -1,296 +1,91 @@
 % =====================================================================
-%  CAPÍTULO I / 2 Fundamentação Teórica
+%  CAPÍTULO I — FUNDAMENTAÇÃO TEÓRICA
+%
+%  Revisado em 2026-10-05, a pedido do autor: o escopo é ARIMA, ARIMA-GARCH
+%  e as médias móveis de Almeida (2016). Saíram os indicadores que o
+%  trabalho não usa (IFR, MME, Bandas de Bollinger, MACD) e tudo o que era
+%  de aprendizado de máquina (LSTM, SARIMA, integração com Python). A
+%  versão anterior está em notas/rascunhos/antes_revisao_2026-10-05/.
+%
+%  Títulos só com a inicial maiúscula (Manual FATEC-ID, item 4.1.2.10).
 % =====================================================================
 \setdiv{CAPÍTULO I}
-\chapter{Fundamentação Teórica}
+\chapter{Fundamentação teórica}
 
-\section{Macro, Microeconomia e Inflação}
+Este capítulo reúne os conceitos sobre os quais o trabalho se apoia. Parte do
+ambiente em que as operações acontecem, isto é, a bolsa de valores e a plataforma
+de negociação, passa pela análise técnica e pelas médias móveis empregadas por
+\citeonline{almeida2016} e chega aos modelos estatísticos ARIMA e GARCH e às medidas usadas para avaliar uma estratégia. Ao
+final, são apresentados os trabalhos relacionados.
 
-O cenário econômico global recente tem sido impactado por choques simultâneos:
-conflitos geopolíticos, problemas gerais nas cadeias produtivas e pressões
-inflacionárias de alto risco. Conforme o \citeonline{fmi2024}, esse cenário
-evidencia um problema estrutural do sistema internacional: a liquidez global supera,
-em alguns níveis, a produção real, criando distorções gerais nos preços e no
-crescimento econômico.
+\section{Mercado de ações}
 
-No Brasil, a microeconomia sofre os efeitos desse ambiente. A taxa Selic em 14,25\%
-\cite{bcbSelic} desestimula investimentos em produção real, como comprovam os estudos
-do \citeonline{bcbJuros}, que relacionam juros altos à migração do capital para
-aplicações financeiras, reduzindo posições no setor industrial.
+De acordo com o \citeonline{bcbBolsas}, as bolsas de valores são sociedades
+anônimas ou associações civis que mantêm local ou sistema adequado à realização de
+operações de compra e venda de títulos e valores mobiliários, em mercado livre e
+aberto, organizado e fiscalizado por seus membros e pela Comissão de Valores
+Mobiliários. No Brasil, esse papel é exercido pela B3.
 
-A inflação, por fim, é um desafio em especial. O \citeonline{fmi2024} alertou que as
-economias emergentes, assim como a brasileira, enfrentam o ``trade-off'' perverso:
-políticas monetárias com grande enfoque restritivo controlam os preços, mas
-sacrificam, no curto prazo, o crescimento do PIB.
+Para a empresa, a abertura de capital é uma forma de obter recursos de terceiros.
+Em troca do capital recebido, ela cede aos acionistas uma participação no negócio
+proporcional ao valor investido. Para o investidor, a ação passa a ser um ativo
+cujo preço varia a cada pregão conforme a oferta e a procura, e é essa variação
+que as estratégias de negociação procuram aproveitar.
 
-Diante desse cenário geral, alternativas economicamente viáveis tornam-se uma
-prioridade, especialmente as menos atreladas às variáveis macroeconômicas. Essa
-contextualização servirá de pano de fundo para o estudo de estratégias de análise
-econômica, que serão detalhadas no decorrer do projeto.
+O investidor não negocia diretamente na bolsa. O acesso se dá por meio de
+corretoras, instituições que intermediam as operações e oferecem serviços como
+plataformas de negociação pela internet, custódia dos títulos e financiamento para
+a compra de ações, cobrando por isso comissões e taxas \cite{bcbCorretoras}. É
+pela corretora que uma plataforma como o MetaTrader 5 se conecta ao mercado.
 
-\section{Corretora}
+Toda decisão de investimento envolve um compromisso entre risco e retorno, uma vez
+que os recursos são limitados e precisam ser distribuídos entre alternativas
+\cite{elder2002}. No Brasil, a principal referência para essa comparação é a taxa
+Selic, a taxa básica de juros da economia, que serve de base para as demais taxas
+praticadas no mercado e influencia tanto o custo do crédito quanto o retorno das
+aplicações financeiras \cite{bcbSelic}. Por esse motivo, o capital que uma
+estratégia mantém fora do mercado costuma ser comparado ao que renderia se
+estivesse aplicado a essa taxa.
 
-De acordo com o BCB (Banco Central do Brasil), as corretoras e distribuidoras, na
-atividade de intermediação, oferecem serviços como plataformas de investimento pela
-internet (home broker), consultoria financeira, clubes de investimentos,
-financiamento para compra de ações (conta margem) e administração e custódia de
-títulos e valores mobiliários dos clientes. Na remuneração pelos serviços, essas
-instituições podem cobrar comissões e taxas \cite{bcbCorretoras}.
+\section{Análise técnica}
 
-Portanto, a substancial necessidade de um serviço mediador para representação em
-ativos de capital aberto, ou seja, ativos que possuem participação em mercado
-anunciadas para o acesso do grande público. Além disso, existem séries de medidas
-formais que se demonstram necessárias para o processo burocrático da parte fiscal e
-jurídica na transação de participações em empresas, medidas essas que são assumidas
-por serviços de corretagem.
+A análise técnica busca antecipar o comportamento dos preços a partir do estudo do
+seu próprio histórico, procurando padrões e tendências que possam indicar o
+movimento seguinte. Sua origem remonta ao comércio de arroz, e hoje ela é aplicada
+a ações, moedas e outros ativos. Para essa abordagem, o que importa é o
+comportamento do preço, sem considerar notícias ou outros fatores que possam
+influenciar o mercado \cite{fernandes2014}.
 
-\section{Bolsa de Valores}
+\citeonline{fernandes2014} distingue duas vertentes. A empírica, ou clássica, é a
+mais antiga: o analista observa o gráfico e identifica tendências, suportes,
+resistências e padrões que, segundo essa abordagem, tendem a se repetir. Por
+depender da interpretação de quem observa, ela é sujeita a conclusões diferentes
+sobre o mesmo ativo. A estatística, ou moderna, substitui a interpretação visual
+por cálculos aplicados à série de preços, o que torna a análise reproduzível e
+permite que ela seja executada por um programa de computador.
 
-De acordo com o BCB (Banco Central do Brasil), as bolsas de valores são sociedades
-anônimas ou associações civis, com o objetivo de manter local ou sistema adequado ao
-encontro de seus membros e à realização entre eles de transações de compra e venda
-de títulos e valores mobiliários, em mercado livre e aberto, especialmente
-organizado e fiscalizado por seus membros e pela Comissão de Valores Mobiliários.
-Possuem autonomia financeira, patrimonial e administrativa (Resolução CMN 2.690, de
-2000) \cite{bcbBolsas}.
+É na segunda vertente que este trabalho se insere. Tanto a estratégia de médias
+móveis de \citeonline{almeida2016} quanto os modelos ARIMA e GARCH são regras
+matemáticas aplicadas ao histórico de preços, e por isso podem ser programados,
+testados sobre dados passados e comparados entre si sob as mesmas condições.
 
-Diante da necessidade de capital exógeno, as empresas possuem o mecanismo de capital
-aberto que possibilita a entrada de capital de fora da empresa por parte de
-investidores; em contrapartida, a empresa cede porcentagens do negócio proporcionais
-aos montantes investidos por parte dos acionistas. Concluindo, a prática é
-extremamente relevante para fomentar e financiar o escalonamento da empresa, mesmo
-que sejam cedidos percentuais do empreendimento, o montante geral escalonado é,
-geralmente, maior que o montante de capital fechado.
+\subsection{Médias móveis}
 
-\section{Ativos}
+A média móvel é um dos instrumentos mais utilizados da análise técnica. Ela
+calcula o preço médio de um ativo nos últimos $n$ períodos e é recalculada a cada
+novo período, descartando o valor mais antigo e incorporando o mais recente. Com
+isso, suaviza as oscilações de curto prazo e evidencia a direção predominante dos
+preços \cite{fernandes2014}. Na média móvel simples, todos os preços da janela
+recebem o mesmo peso, de modo que a média de dez períodos atribui peso de um
+décimo a cada um dos dez últimos fechamentos.
 
-De acordo com a Warren Magazine, os ativos são todos aqueles que possuem expectativa
-de superar o desempenho do mercado ou de um índice de referência. Utilizando-se de
-análises detalhadas, pesquisas de mercado e previsões econômicas, os gestores se
-alinham para decisões por posições em investimentos \cite{warren2025}.
-
-Por fim, os gestores buscam por oportunidades de investimento que possam gerar
-retornos acima da média do ativo e do mercado, alinhando-se ao princípio de alocação
-eficiente de capital. Assim como destacado por \citeonline{elder2002}, cada decisão
-de investimento requer uma análise minuciosa do trade-off, escolha com custo de
-oportunidade, entre risco e retorno, uma vez que os recursos são limitados e devem
-ser distribuídos de forma otimizada. Todavia, em cenários adversos, pode-se demonstrar
-necessário o rebalanceamento da carteira, estrategicamente mitigando perdas de
-capital, prática comum em mercados voláteis, assim como foi apontado por
-\citeonline{ayres2025}.
-
-\section{Tipos de Análise Técnica}
-
-Uma forma de tentar prever o que vai acontecer com os preços dos ativos no mercado
-financeiro é usar a análise técnica. Essa análise estuda o histórico dos preços para
-encontrar padrões e tendências que possam indicar o que pode acontecer no futuro.
-Essa ideia surgiu há muito tempo, com o comércio de arroz, e hoje é usada para
-analisar ações, moedas e outros ativos. O importante é olhar para os preços, sem se
-preocupar com notícias ou outras coisas que possam influenciar o mercado
-\cite{fernandes2014}.
-
-A análise técnica pode ser usada em quase todos os mercados e mistura ciência com a
-forma como as pessoas pensam e agem nesses mercados. Para ter mais chances de
-sucesso, é bom se especializar em um mercado e escolher as ferramentas certas para
-analisar os dados. Existem dois jeitos principais de fazer análise técnica: a mais
-antiga, chamada empírica ou clássica, e a mais moderna, chamada estatística
-\cite{fernandes2014}.
-
-\subsection{Análise Técnica Empírica ou Clássica}
-A análise técnica empírica, ou clássica, é o método mais tradicional de analisar o
-mercado financeiro. Nessa abordagem, os analistas usavam seus gráficos impressos,
-observando cuidadosamente o movimento dos preços manualmente, com ferramentas mais
-simples e rudimentares como réguas e lápis \cite{fernandes2014}.
-
-O objetivo dela é identificar tendências de alta ou de baixa nos preços, assim como
-encontrar áreas onde os preços geralmente encontram dificuldades para ultrapassar
-(resistências) ou onde encontram apoio e param de cair (suportes). Além disso, esse
-analista busca por padrões gráficos, que se repetem ao longo do tempo e que, segundo
-essa abordagem, podem sinalizar movimentos futuros dos preços \cite{fernandes2014}.
-
-Apesar de sua tradição, essa análise pode ser um tanto subjetiva. A interpretação dos
-gráficos, a identificação dos padrões e a definição das áreas de suporte e resistência
-dependem muito da experiência e da percepção de cada analista, o que pode levar a
-conclusões diferentes sobre o mesmo ativo \cite{fernandes2014}.
-
-\subsection{Análise Técnica Estatística ou Moderna}
-A análise técnica estatística, ou moderna, representa uma abordagem mais científica
-para analisar o mercado financeiro. Em vez de depender da interpretação visual e
-subjetiva dos gráficos, os analistas utilizam modelos matemáticos e estatísticos para
-analisar os preços dos ativos \cite{fernandes2014}.
-
-Para isso, utilizam programas de computador que calculam uma variedade de indicadores
-técnicos, como médias móveis (que suavizam os movimentos dos preços e ajudam a
-identificar tendências), osciladores (como o Índice de Força Relativa -- RSI, que
-indica se um ativo está ``sobrecomprado'' ou ``sobrevendido'') e muitos outros. Esses
-indicadores fornecem informações objetivas sobre o comportamento do mercado,
-auxiliando na tomada de decisões \cite{fernandes2014}.
-
-Essa abordagem é considerada mais objetiva, pois minimiza a influência da
-subjetividade na interpretação dos dados, utilizando métodos quantitativos e modelos
-matemáticos para auxiliar na tomada de decisões \cite{fernandes2014}.
-
-Neste trabalho, adotaremos a análise técnica estatística para criar uma ferramenta
-que utilize modelos avançados para identificar oportunidades de negociação no
-mercado. Essa abordagem se adequa à utilização de modelos complexos e algoritmos que
-buscam aumentar a precisão e a eficiência na identificação de padrões e na avaliação
-de riscos, permitindo a criação de estratégias de negociação mais sofisticadas e
-adaptáveis às diferentes condições do mercado.
-
-\section{MetaTrader 5}
-
-O MetaTrader 5 (MT5) é plataforma de negociação multimercado avançada, projetada para
-atender às crescentes demandas dos mercados financeiros globais. Oferecendo um
-ambiente integrado para a negociação de Forex, ações, futuros e commodities, o MT5
-proporciona uma experiência completa, que abrange desde a execução de ordens até a
-análise técnica avançada e o desenvolvimento de sistemas automatizados
-\cite{metaquotes2024}.
-
-\begin{figure}[htb]
-\centering
-\caption{Interface MetaTrader}
-\label{fig:interface-mt}
-\includegraphics[width=0.85\textwidth]{fig01-interface-metatrader.png}
-\fonte{\citeonline{metaquotes2024}.}
-\end{figure}
-
-A plataforma MetaTrader 5 (MT5), como se observa na imagem acima, oferece uma
-interface personalizável que permite aos usuários organizarem múltiplas janelas de
-acordo com suas preferências. A janela de Cotações exibe os preços em tempo real dos
-instrumentos financeiros selecionados, e os Gráficos de Preços permitem visualizar a
-evolução dos preços ao longo do tempo. O Navegador oferece acesso rápido a contas,
-indicadores técnicos e scripts, facilitando a análise e o acompanhamento do mercado
-\cite{metaquotes2024}.
-
-\begin{figure}[htb]
-\centering
-\caption{Fluxograma do Funcionamento do EA}
-\label{fig:fluxograma-ea}
-\includegraphics[width=0.55\textwidth]{fig02-fluxograma-ea.png}
-\fonte{\citeonline{almeida2016}.}
-\end{figure}
-
-% TODO: citação (FLÁVIO, 2023) removida das duas frases abaixo — não há
-% entrada correspondente em referencias.bib e a fonte não foi localizada.
-% Confirmar a referência real e reinserir com \citeonline, ou manter sem
-% citação caso a afirmação seja considerada conhecimento geral da área.
-Um dos recursos mais poderosos do MT5 são os \textit{Expert Advisor}s (EAs), também conhecidos
-como robôs de negociação. EAs são programas que automatizam o processo
-de negociação, permitindo que os usuários executem estratégias complexas sem a
-necessidade de intervenção manual. Esses robôs abrem, modificam e
-fecham ordens automaticamente, com base em algoritmos predefinidos, e podem ser
-criados tanto manualmente, para maior customização, quanto automaticamente, por meio
-do MQL5 \cite{almeida2016}.
-
-A análise técnica é um componente fundamental do MT5, com um conjunto abrangente de
-ferramentas para a identificação de padrões e sinais de mercado. A plataforma oferece
-uma variedade de indicadores técnicos integrados, abrangendo todas as principais
-categorias, bem como objetos gráficos e ferramentas de desenho para uma análise
-visual detalhada dos gráficos. A capacidade de analisar dados em múltiplos períodos,
-desde M1 (1 minuto) até MN1 (1 mês), permite capturar padrões que podem não ser
-evidentes em uma única escala temporal, resultando em algoritmos de previsão mais
-robustos \cite{metaquotes2024}.
-
-A negociação algorítmica é um dos pilares do MT5, devido à linguagem MQL5, que
-permite criar EAs para a análise automatizada de dados de mercado, a geração de sinais
-de negociação e a execução de ordens. O MetaEditor oferece um ambiente de
-desenvolvimento completo, com recursos como destaque de sintaxe, compilador integrado
-e depurador. O Testador de Estratégias possibilita a validação e otimização de
-algoritmos utilizando dados históricos, com opções para testar em diferentes períodos
-para simulação precisa e analisar estatísticas de desempenho detalhadas
-\cite{metaquotes2024}.
-
-A integração com Python, através de uma API dedicada, amplia as capacidades do MT5,
-permitindo a utilização de bibliotecas de aprendizado de máquina e a criação de
-modelos preditivos sofisticados. Essa integração possibilita a combinação das
-funcionalidades nativas da plataforma com o poder analítico do ecossistema Python,
-resultando em algoritmos de previsão mais precisos e adaptáveis. Adicionalmente, o
-MT5 oferece suporte nativo para redes neurais em MQL5 e computação paralela com
-OpenCL, fornecendo recursos avançados para o desenvolvimento de algoritmos
-computacionalmente intensivos \cite{metaquotes2024}.
-
-Em suma, o MetaTrader 5 se consolida como uma plataforma versátil e poderosa para o
-desenvolvimento e a implementação de algoritmos de previsão de mercado. Sua
-combinação de recursos nativos, integração com tecnologias externas e ecossistema
-maduro o tornam uma escolha estratégica para pesquisadores, desenvolvedores e traders
-que buscam criar sistemas preditivos sofisticados e eficientes para os mercados
-financeiros.
-
-\section{Indicadores}
-
-Indicadores Técnicos são ferramentas fundamentais na análise estatística de mercados
-financeiros, pois traduzem fórmulas matemáticas e gráficos de forma que auxiliam os
-traders na tomada de decisões. Utilizando dados históricos de preço, volume, ou a
-combinação de ambos, os indicadores buscam revelar padrões e tendências que, de outra
-forma, seriam difíceis de discernir. Seu propósito principal é identificar potenciais
-pontos de entrada e saída em negociações, sinalizar a força ou fraqueza de uma
-tendência estabelecida, e demarcar zonas de suporte e resistência onde o preço tende
-a encontrar dificuldades em romper \cite{fernandes2014}.
-
-Embora baseados em cálculos estatísticos, os sinais gerados por indicadores técnicos
-não devem ser interpretados como previsões infalíveis. Pelo contrário, eles funcionam
-como alertas ou confirmações, que exigem uma análise cuidadosa e contextualizada por
-parte do trader. A eficácia de um indicador pode variar significativamente entre
-diferentes ativos e ao longo do tempo, exigindo um processo contínuo de adaptação e
-ajuste de parâmetros \cite{fernandes2014}.
-
-Em seguimento, alguns indicadores específicos serão explorados neste trabalho,
-visando a identificação de tendências e a confirmação de sinais de negociação. A
-escolha e a aplicação desses indicadores serão detalhadas nas seções subsequentes.
-
-\subsection{Índice de Força Relativa}
-De acordo com \citeonline{anderson1993}, o RSI é um dos mais conhecidos indicadores
-de análise técnica e amplamente utilizado, não somente no mercado financeiro, mas
-para medir a consolidação de uma tendência em diversas áreas. O índice é base para
-diversos outros índices que necessitam de um norte para onde a tendência do ativo
-aponta, sendo assim, uma ferramenta imprescindível para fomentar uma decisão
-estratégica de entrada e saída de um ativo com maior segurança.
-
-Diante do exposto, o Índice de Força Relativa tem como objetivo estudar posições
-estratégicas no preço dos ativos para aproveitar-se de uma brecha de compra ou venda.
-
-Sendo assim, as classificações de ativos por RSI são basicamente sobrevalorizados ou
-supervalorizados; quando supervalorizado a melhor posição no ativo é de venda pois o
-ativo vem esgotando sua força compradora devido ao preço inflado, em contrapartida, o
-sobrevalorizado indica uma posição forte de compra pois, devido ao preço baixo, não
-será recompensador para o investidor vender o ativo, criando-se uma resistência que
-não propicia a vendas e sim compras.
-
-\begin{figure}[htb]
-\centering
-\caption{Tendência de Alta com RSI}
-\label{fig:rsi}
-\includegraphics[width=0.8\textwidth]{fig03-tendencia-alta-rsi.png}
-\fonte{\citeonline{fernandes2014}.}
-\end{figure}
-
-As margens de operação do RSI para compra e venda são frequentemente revisitadas; a
-estrutura clássica diz que, abaixo de 30 pontos no índice, o ativo tende a subir pois
-esgotou sua força vendedora, ao mesmo passo que, acima de 70 pontos no índice, o ativo
-tende a cair pois esgotou sua força compradora. Levando em consideração todo o
-contexto, o RSI não representa uma determinante que afirma o momento de compra ou
-venda, o índice tem como objetivo ser uma ferramenta a mais para o consenso de
-entradas e saídas em investimentos.
-
-\subsection{Médias Móveis}
-As Médias Móveis (MM) são um dos indicadores técnicos mais amplamente utilizados na
-análise estatística de mercados financeiros, oferecendo uma maneira eficaz de suavizar
-as flutuações de preço e identificar tendências predominantes. Ao calcular o preço
-médio de um ativo durante um período específico, as Médias Móveis reduzem o ruído
-gerado por movimentos de preço aleatórios, permitindo que os analistas visualizem a
-direção geral do mercado com maior clareza, fornecendo pontos de referência válidos ao
-longo do tempo, possibilitando a comparação entre níveis atuais e passados
-\cite{fernandes2014}.
-
-Existem diferentes tipos de Médias Móveis, sendo as mais comuns a Média Móvel Simples
-(MMS) e a Média Móvel Exponencial (MME). A MMS atribui o mesmo peso a todos os preços
-dentro do período, enquanto a MME pondera os preços mais recentes de forma mais
-significativa, tornando-a mais sensível às mudanças de preço. A escolha entre MMS e
-MME depende do objetivo da análise e da sensibilidade desejada. Períodos mais curtos
-resultam em Médias Móveis mais sensíveis, que reagem rapidamente às mudanças de preço,
-mas também geram mais sinais falsos. Períodos mais longos, por outro lado, resultam em
-Médias Móveis mais suaves, que filtram o ruído, mas podem atrasar a identificação de
-novas tendências \cite{fernandes2014}.
+O tamanho da janela determina o comportamento da média. Janelas curtas reagem
+rapidamente a mudanças de preço, mas produzem mais sinais falsos, enquanto janelas
+longas filtram melhor o ruído, à custa de reconhecer uma nova tendência com
+atraso \cite{fernandes2014}. A estratégia de cruzamento combina as duas: utiliza
+uma média rápida, de janela curta, e uma lenta, de janela longa, e interpreta o
+cruzamento entre elas como sinal de compra ou de venda, como ilustra a
+Figura~\ref{fig:cruzamento-mm}.
 
 \begin{figure}[htb]
 \centering
@@ -300,390 +95,325 @@ novas tendências \cite{fernandes2014}.
 \fonte{Elaboração própria com dados e interface do MetaTrader 5.}
 \end{figure}
 
-Uma aplicação comum das Médias Móveis, como é possível observar na imagem acima, é a
-identificação de cruzamentos, interpretados como sinais de compra ou venda.
-\citeonline{almeida2016}, em sua pesquisa, utilizou essa técnica com duas médias, uma
-``rápida'' e outra ``lenta'', gerando sinais de negociação com base em seus
-cruzamentos. Para um controle de risco mais refinado, implementou também StopLoss e
-TakeProfit. Entretanto, \citeonline{almeida2016} alerta para as limitações de se usar
-apenas essa técnica, especialmente em mercados com alta volatilidade, reforçando a
-necessidade de ferramentas que confirmem o sinal para evitar falsos positivos.
+Foi essa a estratégia adotada por \citeonline{almeida2016}. O autor utilizou duas
+médias móveis simples, uma de dez e outra de vinte períodos, calculadas sobre o
+preço de fechamento, e operou nos dois sentidos, comprando quando a média rápida
+cruzava a lenta para cima e vendendo no cruzamento inverso. Seu algoritmo previa
+ainda parâmetros de limite de perda e de realização de lucro, embora os testes
+relatados tenham sido conduzidos com ambos nulos. O próprio autor alertou para as
+limitações de se usar apenas essa técnica em mercados de alta volatilidade
+\cite{almeida2016}.
 
-\subsection{Médias Móveis Exponenciais}
-As Médias Móveis Exponenciais (MME) constituem uma ferramenta amplamente conhecida na
-análise técnica geral, destacando-se no mesmo sentido das médias móveis (MM), sendo
-principalmente utilizada para suavizar alterações bruscas de curto prazo nos preços
-dos ativos; além disso, atribui pesos mais acentuados para dados recentes. A diferença
-entre os indicadores MM e MME é fundamentalmente velocidade: devido à fórmula adaptada
-da MME, os resultados são mais velozes nas comparações utilizadas, contudo, o
-processamento requisitado é maior. Por esse motivo, a MME é significativamente
-utilizada em mercados de volatilidade pois é de suma importância identificar padrões
-de reversões ou de continuidade num espaço de tempo consideravelmente curto para
-tomadas de decisões.
+\section{MetaTrader 5}
 
-Como já afirmado, a relevância da MME é ampla na área de análise técnica.
-\citeonline{elder2002}, por exemplo, destaca o seu valor para análise de um mercado
-atual, característica essa que é contrária em outros indicadores onde suas fórmulas não
-consideram as datas dos dados extraídos. Segundo o autor, ``a média móvel exponencial
-permite que o trader veja o mercado como ele é agora, e não como era semanas atrás''
-\cite[p.~145]{elder2002}. Seguindo sua linha de pensamento, o cruzamento de médias
-possui a capacidade de demonstrar sinais de entrada ou saída de forma eficaz.
+O MetaTrader 5 é uma plataforma de negociação multimercado desenvolvida pela
+MetaQuotes, que reúne em um mesmo ambiente a execução de ordens, a análise gráfica
+e o desenvolvimento de sistemas automatizados para ações, futuros, moedas e outros
+instrumentos \cite{metaquotes2024}. Sua interface, mostrada na
+Figura~\ref{fig:interface-mt}, organiza em janelas as cotações em tempo real, os
+gráficos de preços e o navegador, que dá acesso às contas, aos indicadores e aos
+programas instalados.
 
-Apesar de tantas vantagens, a MME também possui seus pontos de consideração. A
-principal característica da MME é resultante da sua velocidade em extrair informações
-que, em mercados de lateralização, gera sinais que podem ser interpretados como
-falsos, levando a entradas e saídas em momentos desinteressantes. Uma forma de
-diminuir esta influência é a complementação com outros indicadores, como por exemplo,
-Índice de Força Relativa (IFR) ou Bandas de Bollinger; essa complementação cria dados
-cruzados que confirmam uma incerteza ou uma compra, facilitando decisões.
+\begin{figure}[htb]
+\centering
+\caption{Interface do MetaTrader 5}
+\label{fig:interface-mt}
+\includegraphics[width=0.85\textwidth]{fig01-interface-metatrader.png}
+\fonte{\citeonline{metaquotes2024}.}
+\end{figure}
 
-\subsection{Bandas de Bollinger}
-As Bandas de Bollinger (BB), um indicador técnico de volatilidade desenvolvido por
-John Bollinger, oferecem uma perspectiva sobre a dinâmica dos preços em um mercado. As
-BB são construídas a partir de uma Média Móvel Aritmética (MM20, por exemplo) aplicada
-aos preços, traçando duas curvas que representam os limites superior e inferior da
-volatilidade esperada para o ativo. Essas bandas são calculadas utilizando o desvio
-padrão da média móvel, de modo que quanto maior a volatilidade do ativo, maior será a
-distância entre as bandas \cite{fernandes2014}.
+Os programas que negociam de forma automática na plataforma são chamados de
+\textit{Expert Advisors} (EAs), também conhecidos como robôs de negociação. Um EA
+abre, modifica e encerra posições segundo regras programadas, sem intervenção
+manual \cite{almeida2016}. A Figura~\ref{fig:fluxograma-ea} apresenta o ciclo de
+funcionamento de um EA.
 
-Ao contrário de uma interpretação simplista que considera a banda superior como uma
-resistência e a banda inferior como um suporte, a teoria de Bollinger enfatiza a
-importância de analisar o comportamento dos preços em relação aos seus limites de
-volatilidade esperados. Se, em um movimento de alta, o preço atinge a banda superior,
-isso indica força e sugere que o movimento deve prosseguir. Por outro lado, se o preço
-não consegue alcançar a banda superior, isso pode ser um sinal de fraqueza. Da mesma
-forma, a distância do preço em relação às bandas pode revelar informações importantes
-sobre a intensidade dos movimentos de alta ou baixa \cite{fernandes2014}.
+\begin{figure}[htb]
+\centering
+\caption{Ciclo de funcionamento de um \textit{Expert Advisor}}
+\label{fig:fluxograma-ea}
+\includegraphics[width=0.55\textwidth]{fig02-fluxograma-ea.png}
+\fonte{\citeonline{almeida2016}.}
+\end{figure}
 
-As Bandas de Bollinger (BB) permitem, adicionalmente, a avaliação da volatilidade do
-mercado. Através do indicador BandWidth, derivado das BBs, é possível quantificar a
-distância entre as bandas, oferecendo uma medida direta da volatilidade do ativo. A
-ocorrência de períodos de baixa volatilidade, caracterizados pela aproximação das
-bandas (squeeze), pode indicar um potencial transição para um período de alta
-volatilidade (expansão), sinalizando oportunidades de negociação \cite{fernandes2014}.
-Em sua pesquisa, Bertini (2024) empregou as Bandas de Bollinger para avaliar a
-volatilidade de ativos, demonstrando a utilidade do indicador na seleção de ativos
-para estratégias de negociação baseadas na identificação de períodos de variação
-acentuada de preços.
+Os EAs são escritos em MQL5, linguagem própria da plataforma, de sintaxe próxima à
+do C++. O ambiente de desenvolvimento, chamado MetaEditor, oferece editor,
+compilador e depurador integrados. Para avaliar uma estratégia antes de usá-la, a
+plataforma dispõe do testador de estratégias, o \textit{Strategy Tester}, que
+executa o EA sobre dados históricos, simulando as ordens como se o mercado
+estivesse aberto, e produz relatórios de desempenho \cite{metaquotes2024}. Esse
+procedimento é conhecido como \textit{backtesting}, e foi por meio dele que todos
+os experimentos deste trabalho foram conduzidos.
 
-\subsection{MACD}
-O indicador MACD foi desenvolvido por Gerald Appel na década de 1970; sua proposta é
-identificar mudanças no momentum do mercado \cite{appel2005}. Composto por duas
-linhas, o MACD (Moving Average Convergence Divergence) representa a diferença entre
-duas linhas de médias móveis exponenciais, respectivamente, 12 e 26 períodos; em
-seguida, a linha que fornece sinal, média de 9 períodos, o indicador age no cruzamento
-de todas as três médias.
+\section{Modelos estatísticos de séries temporais}
 
-Como destacado por \citeonline{elder2002}, o MACD é uma ferramenta interessante na
-confirmação de tendências e em identificar pontos específicos de reversão. Geralmente
-é utilizado em mercados com tendência mais previsível, mas por derivar da MME, pode
-gerar falsos sinais em mercados de lateralidade. Por fim, outra característica
-interessante é a capacidade de observar diferenças dos resultados MACD e da
-movimentação nos preços, é outra aplicação interessante para a criação de Appel.
-
-\section{Modelos Estatísticos}
-
-Os modelos estatísticos representam uma abordagem fundamental na análise de dados,
-especialmente em contextos em que se busca compreender padrões, relações e tendências.
-Eles oferecem fórmulas estruturadas para interpretar informações históricas e, em
-muitos casos, para projetar comportamentos futuros. Ao aplicar princípios matemáticos
-e probabilísticos, esses modelos buscam simplificar a complexidade inerente aos
-fenômenos observados, permitindo a extração de insights e a tomada de decisões baseada
-em evidências quantitativas.
+Uma série temporal é uma sequência de observações ordenadas no tempo, como os
+preços de fechamento diários de uma ação. Os modelos de séries temporais procuram
+descrever a estrutura dessa sequência, isto é, de que forma cada observação se
+relaciona com as anteriores, e utilizam essa descrição para projetar valores
+futuros. Neste trabalho são empregados dois desses modelos, com funções
+diferentes. O ARIMA descreve o valor esperado da série, e o GARCH descreve o
+tamanho esperado dos erros em torno desse valor.
 
 \subsection{ARIMA}
-O modelo Autoregressive Integrated Moving Average (ARIMA) é um modelo estatístico
-utilizado para análise de séries temporais. O ARIMA permite modelar dados que exibem
-tendências e flutuações ao longo do tempo, sendo amplamente aplicado em áreas
-financeiras para prever valores futuros com base em dados passados.
 
-A estrutura do ARIMA é composta por três elementos: o componente Autoregressivo (AR),
-que modela a influência dos valores passados da série no valor presente; a Média Móvel
-(MA), que suaviza os ruídos e flutuações aleatórias presentes nos dados; e o Integrado
-(I), responsável por tornar a série estacionária. Uma série estacionária apresenta
-propriedades estatísticas constantes ao longo do tempo, ou seja, sua média e variância
-não se alteram significativamente. Cada um desses componentes é definido por um
-parâmetro: o parâmetro $p$ representa a ordem da autocorrelação, o parâmetro $q$ define
-a ordem da média móvel, e o parâmetro $d$ determina o grau de diferenciação
-\cite{xing2024}.
+O modelo autorregressivo integrado de médias móveis, conhecido pela sigla ARIMA,
+do inglês \textit{Autoregressive Integrated Moving Average}, é um dos modelos mais
+empregados na previsão de séries temporais, inclusive em séries financeiras
+\cite{xing2024}. Ele é composto por três partes, cada uma associada a uma ordem.
+
+A parte autorregressiva, de ordem $p$, expressa o valor atual da série como
+combinação dos seus $p$ valores anteriores. A parte de médias móveis, de ordem
+$q$, acrescenta a influência dos $q$ erros de previsão anteriores, isto é, das
+diferenças entre o que o modelo previu e o que de fato ocorreu. A parte integrada,
+de ordem $d$, indica quantas vezes a série precisa ser diferenciada, ou seja,
+substituída pela variação entre uma observação e a anterior, para se tornar
+estacionária \cite{xing2024}. Uma série é estacionária quando sua média e sua
+variância não se alteram ao longo do tempo, condição exigida pelas partes
+autorregressiva e de médias móveis.
+
+Convém registrar que a média móvel do ARIMA não é a mesma média móvel da análise
+técnica. Na análise técnica, a média é calculada sobre os preços. No ARIMA, o
+termo de médias móveis é uma combinação dos erros de previsão passados. Os dois
+conceitos têm o mesmo nome, mas descrevem coisas diferentes.
+
+Representando por $y_t$ a série já diferenciada $d$ vezes, o modelo pode ser
+escrito como
+\begin{equation}
+y_t = c + \phi_1 y_{t-1} + \cdots + \phi_p y_{t-p}
+        + \varepsilon_t + \theta_1 \varepsilon_{t-1} + \cdots + \theta_q \varepsilon_{t-q},
+\label{eq:arima}
+\end{equation}
+em que $c$ é uma constante, os coeficientes $\phi$ ponderam os valores passados da
+série, os coeficientes $\theta$ ponderam os erros passados e $\varepsilon_t$ é o
+erro do período atual, que o modelo não consegue prever.
+
+Há uma relação direta entre essa equação e a estratégia de
+\citeonline{almeida2016}. A média móvel simples de dez períodos é um filtro linear
+que atribui pesos fixos, iguais a um décimo, aos últimos preços. A parte
+autorregressiva do ARIMA também é um filtro linear sobre os valores passados, mas
+seus pesos $\phi$ são estimados a partir dos dados, em vez de fixados por
+convenção. Nesse sentido, o ARIMA pode ser visto como uma generalização da média
+móvel: mantém a mesma família de operação e ajusta os coeficientes ao ativo e ao
+período analisados.
 
 \begin{figure}[htb]
 \centering
-\caption{Fluxo ARIMA}
+\caption{Etapas de aplicação do modelo ARIMA}
 \label{fig:fluxo-arima}
 \includegraphics[width=0.4\textwidth]{fig05-fluxo-arima.png}
-\fonte{Autoria própria.}
+\fonte{Elaboração própria.}
 \end{figure}
 
-Como é possível observar na figura acima, o processo de aplicação do modelo ARIMA
-inicia-se com a coleta do histórico de preços do ativo. Em seguida, verifica-se a
-estacionariedade da série; se não estiver estável, aplica-se a diferenciação
-repetidamente até que a estabilidade seja alcançada. Com a série pronta, o modelo
-ARIMA é ajustado, definindo-se suas ordens $p$, $d$ e $q$. Por fim, o modelo treinado
-gera as previsões de preço e os resíduos, que representam os erros da previsão e são
-importantes para análises futuras.
+As etapas de aplicação do modelo estão representadas na
+Figura~\ref{fig:fluxo-arima}. A primeira é verificar se a série é estacionária e,
+caso não seja, diferenciá-la até que se torne. Essa verificação é feita, em geral,
+pelo teste de Dickey-Fuller aumentado (ADF), que tem como hipótese nula a
+existência de uma raiz unitária, isto é, a não estacionariedade da série. No
+estudo de \citeonline{xing2024} sobre as ações da NVIDIA, o teste aplicado aos
+preços resultou em valor-p de 0,998773, o que impediu a rejeição da hipótese nula.
+Após uma diferenciação, o valor-p ficou próximo de zero, e a ordem de integração
+foi definida como $d = 1$.
 
-A verificação da estacionariedade e o subsequente ajuste dos parâmetros $p$, $d$ e $q$
-são metodologicamente embasados em testes e critérios estatísticos. A etapa de
-verificar a estacionariedade da série é formalmente conduzida por meio do teste de
-Dickey-Fuller Aumentado (ADF). Este teste avalia a hipótese nula de que a série
-temporal possui uma raiz unitária, sendo o p-valor resultante um indicador crucial: um
-p-valor elevado, como o de 0,998773 encontrado inicialmente por
-\citeonline{xing2024} para os dados da NVIDIA, impede a rejeição da hipótese nula,
-confirmando a não estacionariedade. Já a aplicação da diferenciação repetidamente até
-que a estabilidade seja alcançada é, portanto, guiada pelos resultados sequenciais do
-teste ADF. No referido estudo, após a primeira diferenciação, um p-valor próximo de
-zero indicou que a estacionariedade foi atingida, definindo assim $d=1$.
+Definido $d$, resta escolher $p$ e $q$. Como várias combinações são possíveis,
+\citeonline{xing2024} testaram valores de zero a quatro para cada ordem e
+selecionaram a combinação de menor critério de informação de Akaike (AIC). O AIC
+mede o equilíbrio entre a qualidade do ajuste e a quantidade de parâmetros do
+modelo, penalizando especificações com parâmetros em excesso, que tenderiam a
+reproduzir o ruído dos dados passados sem melhorar a previsão. Com o modelo
+ajustado, obtêm-se a previsão para o período seguinte e os resíduos, que são os
+erros de previsão observados na amostra.
 
-Subsequentemente, para o ajuste do modelo ARIMA, um passo crucial é a definição de
-suas ordens $p$ (autorregressiva) e $q$ (médias móveis). Dada a multiplicidade de
-combinações possíveis para estes parâmetros, como o intervalo de 0 a 4 testado por
-\citeonline{xing2024}, torna-se necessário um critério objetivo para a seleção do
-modelo mais apropriado. O \textit{Critério de Informação de Akaike} (\textit{AIC}) desempenha
-precisamente este papel, sendo uma métrica estatística consolidada para avaliar a
-qualidade relativa de diferentes modelos. O AIC permite selecionar a configuração que
-oferece o melhor compromisso entre a fidelidade do modelo aos dados históricos
-(qualidade do ajuste) e sua complexidade (parcimônia), penalizando modelos com excesso
-de parâmetros que poderiam levar a overfitting. Assim, a configuração ARIMA que
-resulta no menor valor de AIC é a escolhida, pois representa a estrutura mais eficiente
-e generalizável, antes que o modelo treinado seja utilizado para gerar as previsões e
-os resíduos \cite{xing2024}.
-
-Uma outra variação do modelo ARIMA é o Seasonal Autoregressive Integrated Moving
-Average, ou SARIMA, ideal para dados que exibem padrões sazonais. Ao contrário de
-séries aleatórias, dados com sazonalidade apresentam comportamentos previsíveis que se
-repetem em intervalos regulares, como vendas que aumentam no Natal ou no verão. O
-SARIMA, além dos componentes AR, MA e I, incorpora componentes sazonais para capturar
-esses padrões recorrentes, tornando-se uma ferramenta mais dimensionada para modelar
-fenômenos com sazonalidade intrínseca \cite{araya2024}.
-
-Apesar de sua utilidade, ambos os modelos apresentam limitações importantes. Sua
-eficácia é maior na captura de relações lineares, o que dificulta lidar com padrões não
-lineares complexos. Além disso, a escolha dos parâmetros ideais é um desafio, exigindo
-análise criteriosa e experimentação. Em cenários complexos e não lineares, modelos de
-aprendizado de máquina podem ser mais adequados \cite{araya2024,xing2024}.
+A principal limitação do ARIMA é tratar apenas relações lineares e supor que a
+variância dos erros é constante \cite{xing2024,araya2024}. Em séries financeiras
+essa segunda suposição raramente se verifica, e é dela que trata o modelo GARCH.
 
 \subsection{GARCH}
-O modelo Generalized Autoregressive Conditional Heteroskedasticity (GARCH) é uma
-ferramenta estatística para a análise de séries temporais financeiras, com foco na
-modelagem da volatilidade. A volatilidade, como apontado por \citeonline{araya2024},
-reflete o grau de variação dos preços de um ativo financeiro ao longo do tempo e é
-fundamental para a gestão de riscos e a precificação de derivativos.
 
-O objetivo principal do modelo GARCH é capturar a dependência temporal da
-volatilidade, permitindo que ela varie dinamicamente em resposta às condições do
-mercado. O modelo padrão, denominado SGARCH (Standard GARCH), considera que a
-volatilidade atual é influenciada tanto pelos choques passados quanto pela própria
-volatilidade passada, em um processo de retroalimentação como mostrado na imagem
-abaixo \cite{araya2024}.
+Nas séries de retornos de ações, períodos de grande oscilação tendem a ser
+seguidos por outros de grande oscilação, e períodos calmos por outros calmos. A
+volatilidade, que mede o grau de variação dos preços ao longo do tempo, não é
+constante, e conhecê-la é fundamental para a gestão de risco \cite{araya2024}.
+\citeonline{engle1982} propôs o modelo ARCH, em que a variância do erro de cada
+período depende dos erros dos períodos anteriores. \citeonline{bollerslev1986}
+generalizou essa proposta no modelo GARCH, do inglês \textit{Generalized
+Autoregressive Conditional Heteroskedasticity}, em que a variância passa a
+depender também das próprias variâncias anteriores.
+
+Na especificação GARCH(1,1), adotada neste trabalho, a variância condicional $\sigma^2_t$ do erro no período $t$ é dada por
+\begin{equation}
+\sigma^2_t = \omega + \alpha\,\varepsilon^2_{t-1} + \beta\,\sigma^2_{t-1},
+\label{eq:garch}
+\end{equation}
+em que $\varepsilon_{t-1}$ é o erro do período anterior, $\sigma^2_{t-1}$ é a
+variância estimada para o período anterior e $\omega$, $\alpha$ e $\beta$ são os
+parâmetros do modelo. O termo com $\alpha$ representa a reação da volatilidade a
+um choque recente, e o termo com $\beta$ representa a persistência da
+volatilidade passada \cite{bollerslev1986}. A Figura~\ref{fig:fluxo-garch}
+ilustra esse processo de retroalimentação.
 
 \begin{figure}[htb]
 \centering
-\caption{Fluxo GARCH}
+\caption{Retroalimentação da variância no modelo GARCH}
 \label{fig:fluxo-garch}
 \includegraphics[width=0.7\textwidth]{fig06-fluxo-garch.png}
-\fonte{Autoria própria.}
+\fonte{Elaboração própria.}
 \end{figure}
 
-No entanto, o modelo SGARCH assume que a resposta da volatilidade aos choques é
-simétrica, ou seja, choques positivos e negativos de igual magnitude têm o mesmo
-impacto na volatilidade. Essa premissa nem sempre se verifica nos mercados
-financeiros, onde choques negativos (más notícias) frequentemente têm um impacto maior
-do que choques positivos (boas notícias). Para lidar com essa assimetria, foram
-desenvolvidas variações do modelo GARCH, como o EGARCH (Exponential GARCH) e o TGARCH
-(Threshold GARCH) \cite{araya2024}.
+Para que o modelo faça sentido, os parâmetros precisam respeitar restrições:
+$\omega$ deve ser positivo, $\alpha$ e $\beta$ não podem ser negativos e a soma
+$\alpha + \beta$ deve ser menor que um. A última condição garante que a
+variância tenha um valor de longo prazo finito, igual a
+$\omega / (1 - \alpha - \beta)$, para o qual a volatilidade retorna depois de um
+choque \cite{bollerslev1986}.
 
-O modelo EGARCH, por exemplo, permite que a volatilidade responda de forma diferente a
-choques positivos e negativos, capturando o chamado efeito alavancagem. Já o modelo
-TGARCH utiliza variáveis binárias (dummy variables) para identificar diferentes regimes
-de volatilidade, permitindo que o modelo se adapte a diferentes condições de mercado
-\cite{araya2024}.
+O GARCH padrão trata de forma simétrica os choques positivos e os negativos de
+mesma magnitude. Nos mercados de ações, porém, as quedas costumam elevar a
+volatilidade mais do que as altas. Para representar essa assimetria foram
+propostas variações do modelo, como o EGARCH e o TGARCH, que acrescentam à
+equação termos capazes de fazer a volatilidade reagir de forma diferente a
+choques positivos e negativos \cite{araya2024}. Este trabalho emprega a especificação simétrica, e as variações
+assimétricas são retomadas nas considerações finais como possibilidade de
+continuação.
 
-A escolha entre o modelo SGARCH, EGARCH e TGARCH depende das características específicas
-dos dados e dos objetivos da análise. \citeonline{araya2024} destaca essa importância
-de selecionar o modelo mais adequado com base em métricas estatísticas.
+\subsection{Integração entre ARIMA e GARCH}
 
-\subsection{Integração ARIMA-GARCH}
+Os dois modelos se complementam. O ARIMA estima a média condicional da série, ou
+seja, o valor esperado para o período seguinte. O GARCH estima a variância
+condicional dos erros desse valor esperado. Na forma combinada, os resíduos
+gerados pelo ARIMA servem de entrada para o GARCH, que modela a variância desses
+resíduos ao longo do tempo \cite{araya2024}.
 
-A integração dos modelos ARIMA e GARCH representa uma abordagem robusta para a análise
-de séries temporais financeiras, permitindo capturar tanto a tendência condicional
-quanto a volatilidade condicional de um ativo. Conforme demonstrado por \citeonline{araya2024},
-quando ARIMA e GARCH são combinados, os resíduos gerados pelo modelo ARIMA (que
-representam os erros da previsão da média condicional) servem como série de entrada
-para o modelo GARCH, que modela a variância condicional desses resíduos.
+Em uma estratégia de negociação, essa combinação permite separar duas perguntas. A
+direção da operação é dada pelo sinal da previsão do ARIMA, e o risco associado a
+ela é dado pela volatilidade prevista pelo GARCH. Como o GARCH não fornece nenhuma
+informação sobre a direção dos preços, ele não pode, sozinho, gerar uma ordem de
+compra ou de venda. O que ele pode fazer é condicionar a operação indicada pelo
+ARIMA ao nível de risco esperado.
 
+Há três formas de fazer esse condicionamento. Na primeira, chamada de filtro de
+volatilidade, a operação só é realizada quando a volatilidade prevista está
+abaixo de um limiar. Na segunda, conhecida como \textit{volatility targeting}, o
+tamanho da posição é ajustado de forma inversamente proporcional à volatilidade
+prevista, de modo que a posição diminui quando a incerteza aumenta. Na terceira, a
+volatilidade prevista é usada para construir um intervalo de confiança em torno
+da previsão do ARIMA, e a operação só é realizada quando a previsão se afasta de
+zero o suficiente para sair desse intervalo. As três formas foram implementadas
+neste trabalho, além de uma quarta que combina o filtro com o ajuste do tamanho da
+posição. Como se verá no Capítulo III, a diferença que mais pesou nos resultados
+foi entre as variantes que reduzem a posição diante de uma volatilidade alta e as
+que apenas impedem novas entradas.
 
-Essa integração é teoricamente fundamentada no trabalho seminal de \citeonline{bollerslev1986},
-que estendeu os modelos de heteroscedasticidade condicional autorregressiva (\textit{ARCH})
-inicialmente propostos por \citeonline{engle1982}. O modelo GARCH possibilita capturar
-a dinâmica da volatilidade, que é crítica para a gestão de risco em mercados voláteis,
-como no caso da ação PETR4, que apresenta elevadas flutuações de preço.
+\section{Medidas de desempenho e risco}
+\label{sec:medidas}
 
+Avaliar uma estratégia de negociação apenas pelo lucro final esconde o caminho
+percorrido até ele. Duas estratégias com o mesmo retorno podem ter exposto o
+investidor a riscos muito diferentes. Por isso, o relatório do testador de
+estratégias do MetaTrader 5 apresenta, ao lado do lucro, medidas de risco e
+índices que relacionam as duas coisas \cite{metaquotesRelatorio}.
 
-Na prática, a integração ARIMA-GARCH pode ser implementada por meio de três abordagens
-estratégicas complementares. A primeira é o \textbf{Filtro de Volatilidade}, que restringe
-operações a períodos em que a volatilidade prevista pelo GARCH permanece abaixo de um
-limiar definido, reduzindo exposição a mercados instáveis. A segunda é a \textbf{Volatility Targeting}, que ajusta o tamanho da posição inversamente à volatilidade prevista,
-diminuindo o risco relativo quando a incerteza aumenta. A terceira é o \textbf{Intervalo de Confiança}, que utiliza a volatilidade do GARCH para estabelecer limites superior
-e inferior ao redor das previsões do ARIMA, criando uma zona de confiança para a entrada
-e saída de operações.
+O risco pode ser medido de duas formas complementares. A volatilidade é o
+desvio-padrão dos retornos e mede o quanto o patrimônio oscila no dia a dia. A
+queda máxima, que o relatório da plataforma chama de rebaixamento relativo, é a
+maior queda percentual entre um máximo local do patrimônio e o mínimo local
+seguinte \cite{metaquotesRelatorio}. Ela responde a outra pergunta, a de qual
+foi o pior tombo que um investidor que seguisse a estratégia teria sofrido.
 
+O índice de Sharpe relaciona o retorno de uma estratégia à sua volatilidade. Ele
+divide o retorno diferencial, isto é, a diferença entre o retorno da estratégia
+e o de uma referência, pelo desvio-padrão dessa diferença \cite{sharpe1994},
+\begin{equation}
+S = \frac{\bar{d}}{\sigma_d},
+\label{eq:sharpe-geral}
+\end{equation}
+em que $\bar{d}$ é a média do retorno diferencial e $\sigma_d$ o seu
+desvio-padrão. O índice indica quanto se ganhou além da referência por unidade
+de oscilação, e quanto maior, melhor a relação. Um índice negativo indica que a
+estratégia rendeu menos que a referência. O testador do MetaTrader 5 usa como
+referência um rendimento livre de risco igual a zero \cite{metaquotesRelatorio}.
+O próprio autor observa que o índice está ligado à estatística $t$ da média do
+retorno diferencial, que é igual a ele multiplicado pela raiz do número de
+observações \cite{sharpe1994}. Por isso, um mesmo valor de índice é
+estatisticamente mais forte quando medido em um período mais longo.
 
-Para aplicações em negociação de ativos voláteis, o \textbf{Filtro de Volatilidade}
-emerge como a abordagem mais prudente, já que permite ao sistema evitar períodos de
-heterocedasticidade elevada, alinhando-se ao objetivo de investimento seguro em ativos
-com elevada variabilidade de preço. Essa estratégia garante que as operações ocorram
-predominantemente em condições de mercado mais estáveis, reduzindo perdas relacionadas a
-movimentos abruptos de preço.
+O índice de Calmar relaciona o retorno à queda máxima. Ele divide o retorno
+anualizado pela queda máxima do período,
+\begin{equation}
+C = \frac{\text{retorno anualizado}}{\text{queda máxima}},
+\label{eq:calmar}
+\end{equation}
+e segue a mesma ideia do fator de recuperação do relatório da plataforma, que
+divide o lucro obtido pelo rebaixamento máximo \cite{metaquotesRelatorio}, com
+a diferença de usar o retorno anualizado, o que permite comparar períodos de
+durações diferentes. O índice indica quanto se ganhou por unidade do pior tombo
+e, por isso, favorece estratégias que evitam perdas grandes. Os dois índices
+medem coisas diferentes. O Sharpe penaliza toda oscilação, para cima ou para
+baixo, e o Calmar considera apenas a pior queda.
 
-\section{Trabalhos Relacionados}
+\section{Trabalhos relacionados}
 
-Nesta seção são apresentados estudos e pesquisas relacionados ao tema deste trabalho. O
-levantamento realizado foi orientado pela busca de pesquisas científicas e tecnológicas
-que têm em seus objetivos o desenvolvimento, implementação e análise de ferramentas e
-tecnologias para a previsão de séries temporais financeiras, análise de volatilidade e
-desenvolvimento de estratégias de negociação algorítmica, com ênfase na aplicação de
-modelos estatísticos e de aprendizado de máquina no mercado de ativos. A ferramenta que
-serviu de referência para isso foi o Google Acadêmico e Publish or Perish 8, por meio
-do qual se buscou mapear as pesquisas dessa natureza circunscritas nos últimos anos.
+Os trabalhos relacionados foram selecionados entre pesquisas sobre o
+desenvolvimento de robôs de negociação na plataforma MetaTrader 5 e sobre a
+aplicação dos modelos ARIMA e GARCH à previsão de séries de preços de ações.
 
-O estudo de \citeonline{almeida2016} figura como um precursor direto e ponto de partida
-conceitual para o presente trabalho. Almeida investigou a aplicação de métodos
-matemáticos e estatísticos no desenvolvimento de um robô de negociação, utilizando a
-plataforma MetaTrader 5 e a linguagem MQL5, com foco específico no ativo PETR4. Sua
-abordagem centrou-se na estratégia de cruzamento de médias móveis e na análise de
-séries temporais com dados históricos, validando o robô através de backtests em
-diferentes cenários, incluindo períodos de crise, e com o objetivo de alcançar um
-retorno superior à taxa SELIC. O robô demonstrou viabilidade, apresentando
-lucratividade em ativos de proteção e superando a SELIC com PETR4 fora de cenários de
-crise, além de sugerir a exploração futura de modelos como o GARCH. A pesquisa de
-Almeida é de fundamental importância para este TG, pois não apenas validou a utilização
-do MetaTrader 5 e MQL5 para a análise algorítmica de PETR4, mas também serviu como base
-para a ``revisitação e aplicação contemporânea'' que propomos, conforme mencionado na
-justificativa deste projeto. Sua recomendação para explorar modelos mais robustos, como
-o GARCH, alinhou-se com a intenção inicial deste trabalho de integrar também redes LSTM.
-Embora esse componente tenha sido posteriormente excluído do escopo por limitações de
-tempo e de ambiente de desenvolvimento (ver Capítulo 2, seção Obstáculos Encontrados), a
-abordagem ARIMA-GARCH efetivamente implementada permitiu construir sobre os achados
-iniciais de Almeida, buscando maior capacidade preditiva e adaptabilidade às atuais e
-complexas condições do mercado brasileiro.
+O estudo de \citeonline{almeida2016}, desenvolvido na FATEC Indaiatuba, é o ponto
+de partida deste trabalho. O autor desenvolveu em MQL5 um robô de negociação para
+a PETR4 baseado no cruzamento de médias móveis simples de dez e vinte períodos e o
+avaliou por \textit{backtesting} em períodos de crise, entre 2007 e 2011, e fora
+de crise, entre 2013 e 2016. A estratégia apresentou lucro no período fora de
+crise e prejuízo no período de crise. Ao discutir os limites do
+trabalho, o autor indicou a investigação de modelos de volatilidade, entre eles o
+GARCH, como continuidade da pesquisa. É essa indicação que o presente trabalho
+retoma, mantendo o ativo, a plataforma e a linguagem.
 
-\citeonline{batista2024} desenvolveu um robô de investimento (\textit{Expert Advisor}) para
-automatizar operações na bolsa de valores brasileira (B3), utilizando uma combinação
-dos indicadores técnicos Média Móvel Exponencial, Convergência-Divergência de Médias
-Móveis e Índice de Força Relativa visando lucros automatizados a médio e longo prazo.
-Para isso, empregou a plataforma MetaTrader 5 e a linguagem MQL5, implementando uma
-estratégia que integrava os sinais dos três indicadores para decisões de compra e
-venda. A validação ocorreu por meio de backtests com dados históricos do ativo BBAS3F
-de 2023, comparando o desempenho dos indicadores isoladamente, em pares e em conjunto.
-Os resultados mostraram que a combinação dos três indicadores superou as abordagens com
-menos indicadores, demonstrando a eficiência e consistência do EA nos testes e
-indicando potencial para lucros automatizados.
+\citeonline{batista2024} também desenvolveu um \textit{Expert Advisor} em MQL5
+para a B3, combinando três indicadores técnicos, a média móvel exponencial, a
+convergência e divergência de médias móveis e o índice de força relativa. Os testes,
+realizados sobre o ativo BBAS3F em 2023, compararam os indicadores isoladamente,
+em pares e em conjunto, e a combinação dos três apresentou o melhor resultado. O
+estudo mostra que a integração de técnicas com funções distintas em um mesmo
+algoritmo pode melhorar a decisão, ideia que este trabalho aplica aos modelos
+estatísticos.
 
-Em 2022, \citeonline{silva2022} investigaram a previsão de tendências de preços de ações
-da Petrobras (PETR4) no mercado brasileiro, com foco em operações intraday de 15
-minutos, utilizando técnicas de inteligência artificial. Para isso, empregaram um
-extrator de variáveis baseado em \textit{eXtreme Gradient Boosting} (\textit{XGBoost}) para selecionar os
-indicadores técnicos mais relevantes dentre mais de 100 disponíveis, visando reduzir
-ruído na amostra. Em seguida, uma rede neural \textit{Long Short-Term Memory} (\textit{LSTM}) foi aplicada
-para prever a tendência de alta ou baixa dos preços no período de 2014 a 2020. Os
-resultados alcançaram uma acurácia de 56\%, superando estudos anteriores, com melhor
-desempenho na previsão de quedas (57\%) em comparação com altas (51\%), e destacando a
-eficácia da combinação de \textit{XGBoost} para seleção de \textit{features} e \textit{LSTM} para previsão no
-contexto do mercado financeiro brasileiro.
+\citeonline{xing2024} compararam o ARIMA, o ARIMA-GARCH e dois modelos de redes
+neurais na previsão do preço de fechamento das ações da NVIDIA, com dados diários
+de abril de 2019 a abril de 2024. As ordens dos modelos ARIMA foram definidas pelo
+teste ADF e pelo menor AIC, com $p$ e $q$ variando de zero a quatro, procedimento
+semelhante ao adotado neste trabalho. O ARIMA-GARCH apresentou a menor raiz do erro
+quadrático médio, e o ARIMA com janela expansiva teve o melhor desempenho geral,
+superando as redes neurais. Os autores atribuem esse resultado, possivelmente, ao
+comportamento predominantemente linear da série.
 
-Em 2024, \citeonline{xing2024} realizaram uma análise comparativa de quatro modelos de
-previsão -- ARIMA, \textit{Multilayer Perceptron} (\textit{MLP}), \textit{Long Short-Term Memory} (\textit{LSTM}) e um
-modelo híbrido ARIMA-GARCH -- para prever o preço de fechamento ajustado do dia
-seguinte das ações da NVIDIA. Utilizando dados diários da \textit{API} do \textit{Yahoo Finance} de abril
-de 2019 a abril de 2024, o estudo dividiu o \textit{dataset} em 90\% para treino e 10\% para
-teste. Os modelos \textit{LSTM} e \textit{MLP} foram configurados com janelas deslizantes, enquanto os
-modelos ARIMA e ARIMA-GARCH utilizaram janelas expansivas e rolantes, com parâmetros
-otimizados para o menor \textit{AIC}. Os resultados, avaliados por \textit{MAE}, \textit{RMSE} e \textit{R}-quadrado,
-indicaram que o modelo ARIMA-GARCH apresentou o menor \textit{RMSE}, sugerindo melhor precisão na
-previsão de grandes erros e na explicação da variância. No entanto, o modelo ARIMA com
-janela expansiva demonstrou desempenho superior em geral, superando os modelos \textit{LSTM} e
-\textit{MLP}, possivelmente devido às características predominantemente lineares da série temporal
-e à sensibilidade dos modelos de \textit{deep learning} à configuração e ao tamanho da amostra.
+\citeonline{araya2024} estudaram a previsão da volatilidade das ações da Apple.
+No modelo proposto, os resíduos de um modelo SARIMA, versão do ARIMA com
+componentes sazonais, alimentam um modelo GARCH, e a volatilidade estimada por essa combinação é depois utilizada como
+entrada de redes neurais. A etapa que interessa a este trabalho é a primeira, em
+que os resíduos do modelo de média servem de entrada para o modelo de variância,
+mesma arquitetura adotada no algoritmo aqui desenvolvido.
 
-\citeonline{araya2024} propuseram um método híbrido GARCH e \textit{Deep Learning} para predição
-de volatilidade de preços de ações, visando aumentar a acurácia das previsões ao
-integrar diversos modelos. O estudo combinou quatro abordagens: \textit{SARIMA} (\textit{Seasonal
-Autoregressive Integrated Moving Average}), modelos da família GARCH (\textit{Generalized
-Autoregressive Conditional Heteroskedasticity}), \textit{CNN} (\textit{Convolutional Neural Network}) e
-\textit{BiLSTM} (\textit{Bidirectional Long Short-Term Memory}). Inicialmente, os resíduos gerados pelo
-modelo \textit{SARIMA} foram utilizados como entrada para o modelo GARCH. Em seguida, a
-volatilidade estimada por essa combinação serviu como \textit{feature} de entrada para os
-modelos híbridos \textit{CNN} e \textit{BiLSTM}. A \textit{performance} do novo modelo híbrido proposto
-(\textit{SARIMA-GARCH-CNN-BiLSTM}) foi avaliada utilizando métricas como \textit{MAE} (\textit{Mean Absolute
-Error}) e \textit{RMSE} (\textit{Root Mean Squared Error}), demonstrando uma redução média significativa
-nesses erros (60,35\% e 60,61\%, respectivamente) em comparação com outros modelos
-híbridos. Os resultados experimentais indicaram que o modelo proposto apresentou bom
-desempenho e acurácia na predição da volatilidade de preços de ações, oferecendo
-\textit{insights} valiosos para análise de dados financeiros e estratégias de gerenciamento de
-risco.
+O Quadro~\ref{qua:comparativa} resume as características desses estudos e as
+deste trabalho.
 
-\citeonline{tormin2024} realizou um estudo comparativo entre os modelos ARIMA e \textit{LSTM}
-para prever os retornos do Bitcoin, investigando o impacto da integração de dados de
-tendências de busca do Google (\textit{PyTrends}) na capacidade preditiva. Utilizando dados
-diários de preços do Bitcoin e tendências de busca para o termo ``Bitcoin'' de janeiro
-de 2018 a outubro de 2024, foram construídos três modelos: ARIMA, \textit{LSTM} tradicional e
-\textit{LSTM} integrado com \textit{PyTrends}. O pré-processamento incluiu ajuste ao fuso horário \textit{UTC},
-tratamento de valores ausentes (\textit{fillna}) e normalização (\textit{MinMaxScaler}), com divisão de
-80\% dos dados para treino e 20\% para teste. A avaliação, baseada em \textit{RMSE}, \textit{MAE} e \textit{MAPE},
-mostrou que o ARIMA, apesar de simples, apresentou maior estabilidade em \textit{RMSE} e \textit{MAE}. O
-\textit{LSTM} tradicional obteve \textit{RMSE} levemente melhor que o ARIMA, mas com \textit{MAPE}
-significativamente mais alto. A inclusão dos dados do \textit{Google Trends} no modelo \textit{LSTM}
-integrado não resultou em melhora significativa, sugerindo a necessidade de ajustes
-mais robustos ou a inclusão de outras variáveis para capturar a complexidade do mercado
-de criptomoedas.
-
-\begin{table}[htb]
+\begin{quadro}[htb]
 \centering
-\caption{Tabela Comparativa}
-\label{tab:comparativa}
+\caption{Características dos estudos relacionados}
+\label{qua:comparativa}
 \fontsize{10}{12}\selectfont
-\begin{tabular}{lccc}
-\toprule
-\textbf{Estudo} & \textbf{Indicadores} & \textbf{Modelo estatístico} & \textbf{Machine Learning} \\
-\midrule
-(PEREIRA, 2025)         & X & X & X \\
-(ALMEIDA, 2016)         & X & X &   \\
-(BATISTA, 2024)         & X &   &   \\
-(ARAYA, 2024)           &   & X & X \\
-(SILVA, 2022)           & X &   & X \\
-(XING, 2024)            &   & X & X \\
-(TORMIN, 2024)          & X & X & X \\
-\bottomrule
+\begin{tabular}{|>{\raggedright\arraybackslash}p{2.6cm}|>{\raggedright\arraybackslash}p{2.2cm}|>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}p{2.1cm}|>{\raggedright\arraybackslash}p{4.0cm}|}
+\hline
+Estudo & Ativo & Fonte de dados & Periodicidade & Método \\
+\hline
+\citeonline{almeida2016} & PETR4 & MetaTrader 5 & diário & Cruzamento de médias móveis simples (10 e 20) \\
+\hline
+\citeonline{batista2024} & BBAS3F & MetaTrader 5 & 30 minutos & Combinação de três indicadores técnicos \\
+\hline
+\citeonline{xing2024} & NVIDIA & Yahoo Finance & diário & ARIMA e ARIMA-GARCH, comparados a redes neurais \\
+\hline
+\citeonline{araya2024} & Apple & Yahoo Finance & diário & Resíduos do SARIMA como entrada do GARCH, seguidos de redes neurais \\
+\hline
+Este trabalho & PETR4 e outras três ações & B3 (COTAHIST) & diário & ARIMA e ARIMA-GARCH, comparados às médias móveis de \citeonline{almeida2016} \\
+\hline
 \end{tabular}
-
-\vspace{2pt}
-{\fontsize{10}{12}\selectfont Comparação entre as pesquisas, evidenciando quais
-componentes cada uma utilizou para formular o modelo que elas propuseram.}
-\fonte{Autoria própria.}
-\end{table}
-
-\begin{table}[htb]
-\centering
-\caption{Tabela Comparativa (Detalhada)}
-\label{tab:comparativa-det}
-\fontsize{9}{11}\selectfont
-\begin{tabular}{p{2.0cm}cccp{1.6cm}p{1.8cm}p{1.4cm}p{1.8cm}}
-\toprule
-\textbf{Autor} & \textbf{Ativo Principal} & \textbf{Fonte de Dados} & \textbf{Tempo Gráfico} & \textbf{Indicadores} & \textbf{Modelo(s) Estatístico(s)} & \textbf{Modelo(s) de ML} & \textbf{Métricas para ML} \\
-\midrule
-(PEREIRA, 2025) & PETR4 & MetaTrader 5 & D1 & RSI, MME, MACD, BB & ARIMA, GARCH & LSTM & MAE, RMSE, R Square \\
-(ALMEIDA, 2016) & PETR4 & MetaTrader 5 & D1 & MA & ARIMA, Encontro de Médias Móveis & -- & -- \\
-(BATISTA, 2024) & BBAS3F & MetaTrader 5 & M30 & RSI, MME, MACD, BB & -- & -- & -- \\
-(SILVA, 2022) & PETR4 & -- & M15 & 113 indicadores & -- & LSTM + XGBoost & Acurácia, Precision, Recall, F1-Score, Support \\
-(XING, 2024) & NVIDIA (NVDA) & -- & -- & -- & ARIMA, GARCH & LSTM, MLP & MAE, RMSE, R Square \\
-(ARAYA, 2024) & Apple Inc. (AAPL) & Yahoo Finance & D1 & -- & SARIMA, GARCH & CNN, Bi-LSTM & MAE, RMSE \\
-(TORMIN, 2024) & Bitcoin (BTC-USD) & Google Trends & -- & -- & ARIMA & LSTM & MAE, RMSE, MAPE \\
-\bottomrule
-\end{tabular}
-
-\vspace{2pt}
-{\fontsize{10}{12}\selectfont Comparação entre as pesquisas, evidenciando as
-características de cada uma em diversos aspectos.}
-\fonte{Autoria própria.}
-\end{table}
+\fonte{Elaboração própria.}
+\end{quadro}

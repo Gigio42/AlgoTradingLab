@@ -1,0 +1,22 @@
+VALIDACAO DO GARCH(1,1) COM ERROS t DE STUDENT (semente 20261013)
+Verdade: omega=1.00e-05 alpha=0.09 beta=0.89 persist=0.98
+
+A) erros t com nu=5, n=2000
+  ajuste normal        omega=4.247e-06 alpha=0.0560 beta=0.9366 persist=0.9926 nu=   0.00 logL=  5006.72 AIC=-10007.45
+  ajuste t             omega=3.538e-06 alpha=0.0539 beta=0.9417 persist=0.9957 nu=   4.55 logL=  5101.07 AIC=-10194.15
+
+B) erros normais, n=2000 (o ajuste t deve dar nu grande)
+  ajuste normal        omega=7.652e-06 alpha=0.0882 beta=0.8952 persist=0.9834 nu=   0.00 logL=  5012.70 AIC=-10019.39
+  ajuste t             omega=7.658e-06 alpha=0.0878 beta=0.8955 persist=0.9833 nu= 173.12 logL=  5012.75 AIC=-10017.51
+
+C) replicas nos tamanhos de janela do EA (residuos de 240 e 120 barras)
+  n=236, 100 replicas (verdade: alpha=0.09 beta=0.89 nu=5)
+    t:      ajustou 100 | nu mediana 5.71 (quartis 4.47 a 7.39) | nu no teto (200) 0 | no piso 0
+    t:      alpha mediana 0.0992 (0.0588 a 0.1388) | beta mediana 0.8573 (0.7996 a 0.8934)
+    normal: ajustou 100 | alpha mediana 0.1027 (0.0621 a 0.1488) | beta mediana 0.8467 (0.7710 a 0.8871)
+    AIC menor com a t em 93 de 100
+  n=116, 100 replicas (verdade: alpha=0.09 beta=0.89 nu=5)
+    t:      ajustou 100 | nu mediana 6.82 (quartis 4.78 a 11.04) | nu no teto (200) 9 | no piso 1
+    t:      alpha mediana 0.0748 (0.0051 a 0.1563) | beta mediana 0.8421 (0.7777 a 0.9390)
+    normal: ajustou 100 | alpha mediana 0.0856 (0.0110 a 0.1694) | beta mediana 0.8184 (0.7326 a 0.9229)
+    AIC menor com a t em 66 de 100

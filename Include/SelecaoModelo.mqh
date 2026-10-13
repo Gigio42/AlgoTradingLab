@@ -78,8 +78,11 @@ int DeterminarOrdemD(const double &serie[], const int d_max,
 
       if(!TesteADF(atual, det, -1, r))
         {
+         //--- Sem ADF nao ha base para escolher d. Antes devolvia o d
+         //--- corrente (0 na primeira volta) em silencio; agora a selecao
+         //--- falha e o EA adia a escolha. (Corrigido em 05/10/2026.)
          relatorio += StringFormat("  d=%d: ADF nao pode ser calculado (dados insuficientes)\n", d);
-         return(d);
+         return(-1);
         }
 
       relatorio += StringFormat("  d=%d: ADF=%8.4f  VC5%%=%8.4f  lags=%d  n=%d  -> %s\n",
@@ -158,8 +161,9 @@ bool BuscarMelhorPQ(const double &serie[], const int d,
         {
          res.modelos_testados++;
 
-         //--- ARIMA(0,d,0) sem constante nao tem nada a estimar
-         if(p == 0 && q == 0 && !com_constante)
+         //--- ARIMA(0,d,0) sem constante nao tem nada a estimar.
+         //--- (Com d = 0 a constante e sempre incluida pelo CArima.)
+         if(p == 0 && q == 0 && !com_constante && d != 0)
             continue;
 
          CArima m;
@@ -223,6 +227,12 @@ bool SelecionarModelo(const double &serie[],
 
    relatorio += "[1] Ordem de integracao 'd' por ADF sequencial:\n";
    relatorio += rel_adf;
+   if(d < 0)
+     {
+      relatorio += "    => d indeterminado; selecao adiada\n";
+      res.valido = false;
+      return(false);
+     }
    relatorio += StringFormat("    => d = %d\n\n", d);
 
    //--- ── Etapa 2: ordens p e q ──

@@ -1,0 +1,7 @@
+# passagens: ARIMA-GARCH 672, ARIMA 16
+GS sharpe=1.1229 calmar=3.0000 negocios=81 dd=0.150561 ret=2.005419 | UsarGARCH=true Estrategia=2 ModoLimiar=0 Limiar_Percentil=50.0 Limiar_Absoluto=0.0200 K_Confianca=0.150 Vol_Alvo=0.0100 ZerarNoVeto=false Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0.00000 SomenteCompra=true
+GC sharpe=0.8197 calmar=9.6377 negocios=82 dd=0.022735 ret=0.794869 | UsarGARCH=true Estrategia=3 ModoLimiar=1 Limiar_Percentil=50.0 Limiar_Absoluto=0.0200 K_Confianca=0.050 Vol_Alvo=0.0100 ZerarNoVeto=true Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0.00100 SomenteCompra=true
+AS sharpe=0.6436 calmar=1.5606 negocios=160 dd=0.203817 ret=1.260034 | UsarGARCH=false Janela_Estimacao=120 IncluirConstante=false Limiar_Sinal=0.00100 SomenteCompra=true
+AC sharpe=0.5574 calmar=1.5976 negocios=227 dd=0.176819 ret=1.084525 | UsarGARCH=false Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0.00000 SomenteCompra=true
+GSgemeo | UsarGARCH=false Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0.00000 SomenteCompra=true
+GCgemeo | UsarGARCH=false Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0.00100 SomenteCompra=true

@@ -1,0 +1,47 @@
+% Curvas de patrimonio (base 100) e drawdown, lidas das curvas diarias que o
+% EA exporta no fim do backtest (Include/Desempenho.mqh, input Rotulo).
+% Compilar:  pdflatex -jobname=curva_CAL "\def\periodo{CAL}\input{curvas}"
+% Periodos: A0711 A1316 CAL VAL TOT  ->  gera um PDF por periodo.
+\documentclass[border=4pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{pgfplots}
+\usepgfplotslibrary{dateplot,groupplots}
+\pgfplotsset{compat=1.18}
+\providecommand{\periodo}{CAL}
+
+\definecolor{cgarch}{RGB}{0,90,181}
+\definecolor{carima}{RGB}{220,50,32}
+\definecolor{cmm}{RGB}{120,120,120}
+\definecolor{cbh}{RGB}{26,133,55}
+\definecolor{cselic}{RGB}{0,0,0}
+
+\newcommand{\arq}[1]{dados/curva_B_\periodo_#1.csv}
+
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=1 by 2, vertical sep=0.6cm, xticklabels at=edge bottom},
+  width=15cm, date coordinates in=x, xticklabel style={font=\small},
+  xticklabel={\month/\year}, yticklabel style={font=\small},
+  max space between ticks=80,
+  table/col sep=comma, grid=major, grid style={gray!20},
+  every axis plot/.append style={line width=0.9pt},
+]
+\nextgroupplot[height=7.5cm, ylabel={Patrimônio (base 100)},
+  legend style={font=\small, at={(0.5,1.03)}, anchor=south, legend columns=5, column sep=6pt, draw=none}]
+\addplot[cbh]            table[x=data, y expr=\thisrow{buyhold}*100]{\arq{GARCH}};
+\addplot[cselic, dashed] table[x=data, y expr=\thisrow{selic}*100]{\arq{GARCH}};
+\addplot[cmm]            table[x=data, y expr=\thisrow{estrategia}*100]{\arq{MM}};
+\addplot[carima]         table[x=data, y expr=\thisrow{estrategia}*100]{\arq{ARIMA}};
+\addplot[cgarch]         table[x=data, y expr=\thisrow{estrategia}*100]{\arq{GARCH}};
+\legend{Buy-and-hold PETR4, Selic, Médias Móveis, ARIMA, ARIMA-GARCH}
+
+\nextgroupplot[height=4.5cm, ylabel={Drawdown (\%)}, ymax=0]
+\addplot[cbh]    table[x=data, y expr=-\thisrow{dd_bh}*100]{\arq{GARCH}};
+\addplot[cmm]    table[x=data, y expr=-\thisrow{dd}*100]{\arq{MM}};
+\addplot[carima] table[x=data, y expr=-\thisrow{dd}*100]{\arq{ARIMA}};
+\addplot[cgarch] table[x=data, y expr=-\thisrow{dd}*100]{\arq{GARCH}};
+\end{groupplot}
+\end{tikzpicture}
+\end{document}

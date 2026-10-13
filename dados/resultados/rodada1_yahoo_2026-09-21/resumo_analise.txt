@@ -1,0 +1,99 @@
+passagens IS/OOS: 13824 13824
+configuracoes distintas IS/OOS: 1920 1920
+
+[IS] 2022.05.02 a 2024.12.30: Selic +36.13%  buy-and-hold +178.83%
+  ordens selecionadas (modo automatico, inicio):
+                                                p         q
+IncluirConstante Barras_Entre_Reselecao                    
+0                0                       {1: 240}  {0: 240}
+                 21                      {0: 240}  {1: 240}
+1                0                       {0: 240}  {0: 240}
+                 21                      {0: 240}  {1: 240}
+
+[OOS] 2025.01.02 a 2026.04.24: Selic +19.12%  buy-and-hold +46.24%
+  ordens selecionadas (modo automatico, inicio):
+                                                p         q
+IncluirConstante Barras_Entre_Reselecao                    
+0                0                       {0: 240}  {1: 240}
+                 21                      {4: 240}  {0: 240}
+1                0                       {0: 240}  {0: 240}
+                 21                      {0: 240}  {0: 240}
+
+pareadas IS x OOS: 1920
+
+=== TOP 10 na calibracao por excesso sobre a Selic (e o que fizeram na validacao) ===
+                                              cfg  negocios_is excesso_is sharpe_is dd_max_is  negocios_oos excesso_oos sharpe_oos dd_max_oos
+          filtro p50 | auto J120 ls0 long resel21           77     +176.7      1.76     +10.7            36       +55.9       1.46      +10.2
+          filtro p90 | auto J120 ls0 long resel21           83     +171.7      1.78     +11.2            47       +39.3       1.14      +10.3
+        filtro p90 zera | (1,1,1)+c J120 ls1 long           35     +166.3      1.57     +18.1            11        -7.7      -0.37      +15.0
+filtro p90 zera | (1,1,1)+c J120 ls1 long resel21           35     +166.3      1.57     +18.1            11        -7.7      -0.37      +15.0
+                filtro p70 zera | auto+c J240 ls0           33     +156.8      1.24     +15.7            58       -27.4      -0.89      +23.8
+           filtro p70 zera | auto+c J240 ls0 long           33     +156.8      1.24     +15.7            26       -15.9      -0.55      +19.8
+filtro p50 zera | (1,1,1)+c J120 ls1 long resel21           34     +154.2      1.56     +19.2             8        -5.2      -0.25      +14.1
+        filtro p50 zera | (1,1,1)+c J120 ls1 long           34     +154.2      1.56     +19.2             8        -5.2      -0.25      +14.1
+          filtro p70 | auto J120 ls0 long resel21           78     +154.0      1.63     +10.7            42       +49.0       1.30      +10.3
+                filtro p50 zera | auto+c J240 ls0           41     +147.3      1.20     +15.8            61       -12.3      -0.36      +15.6
+
+=== TOP 10 na calibracao por Sharpe ===
+                                              cfg  negocios_is excesso_is sharpe_is dd_max_is  negocios_oos excesso_oos sharpe_oos dd_max_oos
+     filtro+targ p90 | auto J120 ls0 long resel21           83     +122.6      1.87      +7.5            47       +40.2       1.14      +10.5
+     filtro+targ p50 | auto J120 ls0 long resel21           77     +121.5      1.78      +8.5            36       +58.6       1.46      +10.6
+          filtro p90 | auto J120 ls0 long resel21           83     +171.7      1.78     +11.2            47       +39.3       1.14      +10.3
+          filtro p50 | auto J120 ls0 long resel21           77     +176.7      1.76     +10.7            36       +55.9       1.46      +10.2
+     filtro+targ p70 | auto J120 ls0 long resel21           78     +106.9      1.65      +8.5            42       +50.6       1.31      +10.5
+          filtro p70 | auto J120 ls0 long resel21           78     +154.0      1.63     +10.7            42       +49.0       1.30      +10.3
+   filtro p70 zera | auto+c J120 ls1 long resel21           34     +145.0      1.60     +14.4            16        -7.1      -0.29      +14.4
+             filtro+targ p90 | auto J120 ls0 long           89      +97.0      1.59     +13.8            51       +35.7       1.43       +7.5
+filtro p90 zera | (1,1,1)+c J120 ls1 long resel21           35     +166.3      1.57     +18.1            11        -7.7      -0.37      +15.0
+        filtro p90 zera | (1,1,1)+c J120 ls1 long           35     +166.3      1.57     +18.1            11        -7.7      -0.37      +15.0
+
+=== TOP 10 na VALIDACAO (so para referencia; nao pode ser usado para escolher) ===
+                                    cfg  negocios_is excesso_is sharpe_is dd_max_is  negocios_oos excesso_oos sharpe_oos dd_max_oos
+         targeting | (1,1,1)+c J120 ls0          123      -28.2     -0.25     +30.8            66       +72.7       1.49      +13.2
+ targeting | (1,1,1)+c J120 ls0 resel21          123      -28.2     -0.25     +30.8            66       +72.7       1.49      +13.2
+        ARIMA puro | (1,1,1)+c J120 ls0          123      -55.8     -0.39     +56.3            66       +72.6       1.49      +12.8
+ARIMA puro | (1,1,1)+c J120 ls0 resel21          123      -55.8     -0.39     +56.3            66       +72.6       1.49      +12.8
+filtro+targ p50 | auto J120 ls0 resel21          154      +64.2      0.74     +19.7            71       +68.1       1.42      +14.4
+        filtro+targ p70 | auto J240 ls1           26      -41.6     -0.44     +35.2             3       +67.4       1.44      +10.5
+             filtro p70 | auto J240 ls1           26      -47.8     -0.28     +46.5             3       +65.6       1.43      +10.3
+           targeting | (1,1,1) J120 ls2           69      -30.3     -0.29     +24.4            15       +65.4       1.52      +11.5
+   targeting | (1,1,1) J120 ls2 resel21           69      -30.3     -0.29     +24.4            15       +65.4       1.52      +11.5
+     filtro p50 | auto J120 ls0 resel21          154      +96.5      0.80     +27.7            71       +65.2       1.41      +13.9
+
+Spearman(excesso IS, excesso OOS) = 0.180
+Spearman(Sharpe IS, Sharpe OOS)   = 0.202
+[is] configs que bateram a Selic: 62.1%   que bateram buy-and-hold: 0.7%   mediana excesso +23.63%
+[oos] configs que bateram a Selic: 61.5%   que bateram buy-and-hold: 25.2%   mediana excesso +8.67%
+
+=== Por familia (mediana e fracao > Selic) ===
+             exc_is  exc_oos  win_is  win_oos  dd_is  dd_oos  vol_is  vol_oos  expo_is  expo_oos    n
+familia                                                                                              
+ARIMA puro     13.8     21.9    65.6     75.0   37.2    15.2    33.5     23.5     92.5      61.1   96
+IC              3.0      9.6    51.7     57.8   24.4    11.7    20.9     20.0     45.8      42.2  576
+filtro         46.9      6.2    67.4     60.6   33.3    12.6    26.2     18.0     62.0      43.9  576
+filtro+targ    29.4      6.3    66.3     61.3   23.3    12.8    18.3     18.3     46.8      44.7  576
+targeting      20.9     21.4    64.6     77.1   28.7    13.4    23.0     21.6     67.6      57.2   96
+
+=== Efeito PAREADO do GARCH (mesma config de ARIMA, GARCH ligado - desligado) ===
+familia              IC  filtro  filtro+targ  targeting
+d_is             100.00  100.00       100.00     100.00
+d_oos            100.00  100.00       100.00     100.00
+d_excesso_is       0.00   11.62         4.34      -4.78
+d_dd_max_is      -14.85   -9.68       -19.02     -13.82
+d_vol_anual_is    -7.56   -5.49       -12.46      -9.49
+d_sharpe_is        0.00    0.13         0.05      -0.03
+d_excesso_oos      0.00  -10.27       -10.09       2.50
+d_dd_max_oos      -1.03   -1.68        -1.24      -1.11
+d_vol_anual_oos   -1.29   -3.24        -3.24      -0.98
+d_sharpe_oos       0.00   -0.21        -0.21       0.08
+fracao dos pares em que o GARCH REDUZIU o drawdown: IS 86.7%  OOS 60.7%
+fracao dos pares em que o GARCH REDUZIU a volatilidade: IS 86.6%  OOS 69.1%
+fracao dos pares em que o GARCH AUMENTOU o excesso: IS 53.2%  OOS 34.4%
+
+=== Efeito de cada fator do ARIMA (mediana do excesso, ARIMA puro) ===
+Janela_Estimacao {120: {'excesso_is': 13.2, 'excesso_oos': 33.1, 'dd_max_is': 40.4, 'dd_max_oos': 14.6, 'negocios_is': 52.0}, 240: {'excesso_is': 31.7, 'excesso_oos': 9.7, 'dd_max_is': 37.1, 'dd_max_oos': 16.2, 'negocios_is': 31.0}}
+Limiar_Sinal {0.0: {'excesso_is': 5.2, 'excesso_oos': 17.0, 'dd_max_is': 38.7, 'dd_max_oos': 16.5, 'negocios_is': 141.0}, 0.001: {'excesso_is': 22.4, 'excesso_oos': 16.5, 'dd_max_is': 38.0, 'dd_max_oos': 17.6, 'negocios_is': 44.5}, 0.002: {'excesso_is': 46.1, 'excesso_oos': 32.7, 'dd_max_is': 37.1, 'dd_max_oos': 13.6, 'negocios_is': 23.0}}
+SomenteCompra {0: {'excesso_is': -32.9, 'excesso_oos': 14.1, 'dd_max_is': 55.2, 'dd_max_oos': 20.1, 'negocios_is': 67.0}, 1: {'excesso_is': 56.4, 'excesso_oos': 26.3, 'dd_max_is': 36.6, 'dd_max_oos': 12.4, 'negocios_is': 34.0}}
+ModoOrdens {0: {'excesso_is': 47.1, 'excesso_oos': 21.9, 'dd_max_is': 37.1, 'dd_max_oos': 15.4, 'negocios_is': 28.0}, 1: {'excesso_is': 11.4, 'excesso_oos': 22.4, 'dd_max_is': 41.5, 'dd_max_oos': 14.6, 'negocios_is': 56.5}}
+IncluirConstante {0: {'excesso_is': -22.7, 'excesso_oos': 26.1, 'dd_max_is': 38.3, 'dd_max_oos': 14.6, 'negocios_is': 70.0}, 1: {'excesso_is': 69.0, 'excesso_oos': 20.8, 'dd_max_is': 37.2, 'dd_max_oos': 16.1, 'negocios_is': 24.5}}
+Barras_Entre_Reselecao {0: {'excesso_is': 13.8, 'excesso_oos': 20.9, 'dd_max_is': 39.6, 'dd_max_oos': 15.1, 'negocios_is': 34.5}, 21: {'excesso_is': 21.8, 'excesso_oos': 23.8, 'dd_max_is': 37.1, 'dd_max_oos': 15.2, 'negocios_is': 50.0}}
