@@ -27,11 +27,6 @@
 #property copyright "TG - FATEC Indaiatuba (ADS)"
 #property link      "https://www.fatec.sp.gov.br"
 #property version   "2.00"
-#property description "ARIMA(p,d,q) + GARCH(p,q) para negociacao automatizada"
-#property description "ARIMA estimado por Hannan-Rissanen (MQO exato)"
-#property description "GARCH estimado por maxima verossimilhanca com restricoes"
-#property description "Ordens (p,d,q) selecionadas por ADF + AIC"
-#property description "UsarGARCH=false roda o modelo ARIMA puro"
 //@omitir-fim
 
 //--- Marcadores //@omitir e //@apendice: (comentarios, nao mudam o programa)
@@ -132,6 +127,8 @@ input int                Max_d                = 2;                 // d maximo n
 input int                Janela_Selecao       = 240;               // Barras usadas para selecionar as ordens
 input int                Barras_Entre_Reselecao = 21;              // Reavaliar ordens a cada N barras (0 = so no inicio)
 input bool               IncluirConstante     = false;             // Incluir constante (drift) no ARIMA
+input ENUM_ESTIMACAO_ARIMA MetodoARIMA        = EST_ARIMA_HR;      // Estimacao do ARIMA: Hannan-Rissanen ou max. verossimilhanca (15/10/2026)   //@omitir
+input bool               SelecaoPorBIC        = false;             // Escolher (p,q) pelo BIC em vez do AIC (15/10/2026, exploratorio)   //@omitir
 
 input group "=== Estimacao a cada barra ==="
 input int                Janela_Estimacao     = 120;               // Barras da janela movel de estimacao
@@ -380,6 +377,15 @@ int OnInit()
    g_trade.SetExpertMagicNumber(MagicNumber);
    g_trade.SetDeviationInPoints(Slippage);
    g_trade.SetTypeFillingBySymbol(_Symbol);
+
+   //@omitir-inicio
+   //--- Metodo de estimacao do ARIMA: vale para o modelo do dia e para
+   //--- todos os candidatos da selecao de ordens. Opcao experimental de
+   //--- 15/10/2026, desligada (padrao Hannan-Rissanen); fora do Apendice A.
+   CArima::DefinirMetodoPadrao(MetodoARIMA);
+   g_arima.DefinirMetodo(MetodoARIMA);
+   g_selecao_por_bic = SelecaoPorBIC;
+   //@omitir-fim
 
    //--- Validacoes basicas
    if(Janela_Estimacao < 80)
@@ -835,7 +841,8 @@ double OnTester()
    string cab = "modelo;UsarGARCH;Estrategia;ModoLimiar;Limiar_Percentil;"
                 "Limiar_Absoluto;K_Confianca;Vol_Alvo;Limiar_Sinal;Janela_Estimacao;"
                 "SomenteCompra;ZerarNoVeto;ModoVolume;Fracao_Capital;Volume_Base;ModoOrdens;"
-                "IncluirConstante;Barras_Entre_Reselecao;p;d;q;vetos;sinais;DistribuicaoGARCH;nu_medio";
+                "IncluirConstante;Barras_Entre_Reselecao;p;d;q;vetos;sinais;DistribuicaoGARCH;nu_medio;"
+                "MetodoARIMA;mv_tentativas;mv_fallback;fator_recuperacao_mt5;lucro_mt5;dd_capital_mt5;SelecaoPorBIC";
 
    string val = StringFormat("%s;%d;%d;%d;%.1f;%.4f;%.3f;%.4f;%.5f;%d;%d;%d;%d;%.2f;%.0f;%d;%d;%d;%d;%d;%d;%d;%d;%d;%.3f",
                              UsarGARCH ? "ARIMA-GARCH" : "ARIMA",
@@ -846,6 +853,15 @@ double OnTester()
                              Barras_Entre_Reselecao, g_p, g_d, g_q,
                              g_bloqueios_garch, g_sinais_arima, DistribuicaoGARCH,
                              (g_n_nu > 0) ? g_soma_nu / (double)g_n_nu : 0.0);
+   //--- Medidas do proprio relatorio do testador (15/10/2026): o fator de
+   //--- recuperacao e o criterio de escolha da bateria de 15/10. Nao
+   //--- incluem custo nem caixa na Selic (camada "pura").
+   val += StringFormat(";%d;%d;%d;%.6f;%.2f;%.6f", MetodoARIMA,
+                       CArima::s_mv_tentativas, CArima::s_mv_fallback,
+                       TesterStatistics(STAT_RECOVERY_FACTOR),
+                       TesterStatistics(STAT_PROFIT),
+                       TesterStatistics(STAT_EQUITY_DDREL_PERCENT));
+   val += StringFormat(";%d", SelecaoPorBIC);
 
    g_desempenho.Gravar(Rotulo, cab, val, r);
    return(r.excesso * 100.0);

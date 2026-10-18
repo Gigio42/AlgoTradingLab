@@ -1,0 +1,30 @@
+% Volatilidade anualizada por janela de teste (14/10/2026): ARIMA-GARCH nas
+% versões A e B, cada uma ao lado da sua gêmea sem GARCH, e as médias móveis.
+% Lê dados/resultados/refeito_2026-10-05/volatilidade_grafico.csv, gerado por
+% ferramentas/scripts/resumo_volatilidade.sh a partir das métricas dos testes.
+% Compilar: pdflatex -jobname=volatilidade volatilidade
+\documentclass[border=4pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}  % Times, como o texto (Manual FATEC-ID, item 1.3)
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\definecolor{cgs}{RGB}{0,90,181}
+\definecolor{cgc}{RGB}{120,40,160}
+\definecolor{cmm}{RGB}{120,120,120}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[ybar, bar width=9pt, width=14.6cm, height=7cm, ylabel={Volatilidade anual (\%)},
+  symbolic x coords={2007-2011,2013-2016,2017-2024,2025-2026}, xtick=data,
+  xticklabels={2007 a 2011, 2013 a 2016, 2017 a 2024, 2025 a 2026},
+  table/col sep=comma, ymin=0, enlarge x limits=0.15, ymajorgrids, grid style={gray!20},
+  legend style={font=\normalsize, cells={anchor=west}, at={(0.5,1.03)}, anchor=south, legend columns=2, column sep=14pt, draw=none}]
+\addplot[fill=cgs, draw=none]         table[x=janela, y=A]{../../../dados/resultados/refeito_2026-10-05/volatilidade_grafico.csv};
+\addplot[fill=cgs!35, draw=none]      table[x=janela, y=gemeaA]{../../../dados/resultados/refeito_2026-10-05/volatilidade_grafico.csv};
+\addplot[fill=cgc, draw=none]         table[x=janela, y=B]{../../../dados/resultados/refeito_2026-10-05/volatilidade_grafico.csv};
+\addplot[fill=cgc!35, draw=none]      table[x=janela, y=gemeaB]{../../../dados/resultados/refeito_2026-10-05/volatilidade_grafico.csv};
+\addplot[fill=cmm, draw=none]         table[x=janela, y=MM]{../../../dados/resultados/refeito_2026-10-05/volatilidade_grafico.csv};
+\legend{{ARIMA-GARCH, versão A}, {versão A sem GARCH}, {ARIMA-GARCH, versão B}, {versão B sem GARCH}, {Médias móveis reproduzidas}}
+\end{axis}
+\end{tikzpicture}
+\end{document}

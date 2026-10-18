@@ -31,12 +31,192 @@
 //|  e invariante a escala. A versao com gradiente exigia recalibrar |
 //|  a taxa de aprendizado para cada ativo e cada periodo.           |
 //|                                                                  |
+//|  OPCAO (15/10/2026): MAXIMA VEROSSIMILHANCA CONDICIONAL.         |
+//|  Com EST_ARIMA_MV, as estimativas do Hannan-Rissanen sao o ponto |
+//|  de partida de um otimizador (MinBLEIC da ALGLIB, o mesmo do     |
+//|  GARCH) que MINIMIZA a soma dos residuos ao quadrado da recursao |
+//|  exata (CalcularResiduos), somada a partir de m_t0_ll. Com sigma2|
+//|  concentrado, isso e maximizar a log-verossimilhanca gaussiana   |
+//|  condicional (Thomaz, 2019, p. 42-43), a mesma que vai para o    |
+//|  AIC. Assim o AIC compara candidatos no seu melhor ajuste, como  |
+//|  a teoria do criterio supoe. Estacionariedade (AR) e             |
+//|  invertibilidade (MA) sao garantidas por construcao: o otimizador|
+//|  trabalha com autocorrelacoes parciais r = tanh(u) em (-1,1),    |
+//|  convertidas em coeficientes pela recursao de Durbin-Levinson.   |
+//|  Se o otimizador falhar ou nao melhorar o ajuste, ficam as       |
+//|  estimativas do Hannan-Rissanen (contador s_mv_fallback). O      |
+//|  caminho EST_ARIMA_HR (padrao) nao foi alterado.                 |
+//|                                                                  |
 //+------------------------------------------------------------------+
 #ifndef ALGOTRADINGLAB_ARIMA_MQH
 #define ALGOTRADINGLAB_ARIMA_MQH
 
 #include "Numerico.mqh"
 #include "Estatistica.mqh"
+
+//+------------------------------------------------------------------+
+//| Metodo de estimacao dos coeficientes                             |
+//+------------------------------------------------------------------+
+enum ENUM_ESTIMACAO_ARIMA
+  {
+   EST_ARIMA_HR = 0,   // Hannan-Rissanen (dois estagios de MQO)
+   EST_ARIMA_MV = 1    // Maxima verossimilhanca condicional (parte do HR)
+  };
+
+//--- tanh e atanh com protecao numerica
+double ArimaTanh(const double x)
+  {
+   if(x > 20.0)  return(1.0);
+   if(x < -20.0) return(-1.0);
+   double e2 = MathExp(2.0 * x);
+   return((e2 - 1.0) / (e2 + 1.0));
+  }
+
+double ArimaAtanh(const double r)
+  {
+   double v = MathMax(-0.999, MathMin(0.999, r));
+   return(0.5 * MathLog((1.0 + v) / (1.0 - v)));
+  }
+
+//+------------------------------------------------------------------+
+//| Durbin-Levinson: autocorrelacoes parciais -> coeficientes        |
+//+------------------------------------------------------------------+
+//|  Com |r_k| < 1 para todo k, o polinomio 1 - a1 B - ... - ak B^k  |
+//|  tem todas as raizes fora do circulo unitario (estacionario).    |
+//+------------------------------------------------------------------+
+void ArimaPacfParaCoef(const double &r[], const int k, double &a[])
+  {
+   ArrayResize(a, k);
+   double ant[];
+   ArrayResize(ant, k);
+   for(int j = 0; j < k; j++)
+     {
+      a[j] = r[j];
+      for(int i = 0; i < j; i++)
+         a[i] = ant[i] - r[j] * ant[j - 1 - i];
+      for(int i = 0; i <= j; i++)
+         ant[i] = a[i];
+     }
+  }
+
+//--- Inversa da anterior. Falha se o polinomio nao for estacionario.
+bool ArimaCoefParaPacf(const double &a_in[], const int k, double &r[])
+  {
+   ArrayResize(r, k);
+   double a[], ant[];
+   ArrayResize(a, k);
+   ArrayResize(ant, k);
+   for(int i = 0; i < k; i++)
+      a[i] = a_in[i];
+   for(int j = k - 1; j >= 0; j--)
+     {
+      double rk = a[j];
+      if(!MathIsValidNumber(rk) || MathAbs(rk) >= 0.999)
+         return(false);
+      r[j] = rk;
+      double den = 1.0 - rk * rk;
+      for(int i = 0; i < j; i++)
+         ant[i] = (a[i] + rk * a[j - 1 - i]) / den;
+      for(int i = 0; i < j; i++)
+         a[i] = ant[i];
+     }
+   return(true);
+  }
+
+//+------------------------------------------------------------------+
+//| Dados e funcao objetivo da maxima verossimilhanca condicional    |
+//+------------------------------------------------------------------+
+class CArimaDados : public CObject
+  {
+public:
+   double            z[];        // serie diferenciada
+   int               N;
+   int               p;
+   int               q;
+   bool              com_c;
+   int               t0_rec;     // inicio da recursao (= CalcularResiduos)
+   int               t0_ll;      // inicio da soma (= CalcularVerossimilhanca)
+   double            escala_c;   // desvio-padrao de z: c = x * escala_c
+   double            ssr_ref;    // SSR do Hannan-Rissanen (normaliza a funcao)
+
+                     CArimaDados(void) : N(0), p(0), q(0), com_c(false), t0_rec(0), t0_ll(0),
+                                         escala_c(1.0), ssr_ref(1.0) {}
+                    ~CArimaDados(void) { ArrayFree(z); }
+  };
+
+//--- Converte o vetor do otimizador em (c, phi, theta)
+void ArimaParametros(const CArimaDados *d, const double &par[], double &c, double &phi[], double &theta[])
+  {
+   int k = 0;
+   c = d.com_c ? par[k++] * d.escala_c : 0.0;
+   double r[];
+   if(d.p > 0)
+     {
+      ArrayResize(r, d.p);
+      for(int i = 0; i < d.p; i++)
+         r[i] = ArimaTanh(par[k++]);
+      ArimaPacfParaCoef(r, d.p, phi);
+     }
+   else
+      ArrayResize(phi, 0);
+   if(d.q > 0)
+     {
+      ArrayResize(r, d.q);
+      for(int j = 0; j < d.q; j++)
+         r[j] = ArimaTanh(par[k++]);
+      //--- 1 + SOMA theta_j B^j invertivel <=> -theta estacionario
+      ArimaPacfParaCoef(r, d.q, theta);
+      for(int j = 0; j < d.q; j++)
+         theta[j] = -theta[j];
+     }
+   else
+      ArrayResize(theta, 0);
+  }
+
+//--- Soma dos residuos ao quadrado (mesma recursao de CalcularResiduos)
+double ArimaSSR(const CArimaDados *d, const double &c, const double &phi[], const double &theta[])
+  {
+   double e[];
+   ArrayResize(e, d.N);
+   ArrayInitialize(e, 0.0);
+   double ssr = 0.0;
+   for(int t = d.t0_rec; t < d.N; t++)
+     {
+      double ajuste = c;
+      for(int i = 0; i < d.p; i++)
+         ajuste += phi[i] * d.z[t - 1 - i];
+      for(int j = 0; j < d.q; j++)
+         ajuste += theta[j] * e[t - 1 - j];
+      e[t] = d.z[t] - ajuste;
+      if(t >= d.t0_ll)
+         ssr += e[t] * e[t];
+     }
+   return(ssr);
+  }
+
+class CArimaObjetivo : public CNDimensional_Func
+  {
+public:
+   virtual void      Func(CRowDouble &x, double &func, CObject &obj);
+  };
+
+void CArimaObjetivo::Func(CRowDouble &x, double &func, CObject &obj)
+  {
+   CArimaDados *d = dynamic_cast<CArimaDados *>(GetPointer(obj));
+   if(d == NULL)
+     {
+      func = 1.0e10;
+      return;
+     }
+   int k = x.Size();
+   double par[], c, phi[], theta[];
+   ArrayResize(par, k);
+   for(int i = 0; i < k; i++)
+      par[i] = x[i];
+   ArimaParametros(d, par, c, phi, theta);
+   double ssr = ArimaSSR(d, c, phi, theta);
+   func = (MathIsValidNumber(ssr) && d.ssr_ref > 0.0) ? ssr / d.ssr_ref : 1.0e10;
+  }
 
 //+------------------------------------------------------------------+
 //| CArima                                                           |
@@ -67,6 +247,7 @@ private:
    int      m_n_efetivo;         // observacoes usadas na verossimilhanca
    bool     m_ajustado;
    string   m_erro;
+   ENUM_ESTIMACAO_ARIMA m_metodo; // HR (padrao) ou MV
 
    //--- Metodos internos
    void     Diferenciar(const double &origem[], double &destino[], const int ordem);
@@ -74,8 +255,18 @@ private:
    bool     HannanRissanen(void);
    void     CalcularResiduos(void);
    void     CalcularVerossimilhanca(void);
+   bool     MaximaVerossimilhanca(void);
 
 public:
+   //--- Metodo padrao para os objetos criados depois (a selecao de ordens
+   //--- cria um CArima por candidato). O EA define no OnInit.
+   static ENUM_ESTIMACAO_ARIMA s_metodo_padrao;
+   static int                  s_mv_tentativas;  // ajustes por MV tentados
+   static int                  s_mv_fallback;    // em quantos ficou o HR
+   static void DefinirMetodoPadrao(const ENUM_ESTIMACAO_ARIMA m) { s_metodo_padrao = m; }
+   void     DefinirMetodo(const ENUM_ESTIMACAO_ARIMA m) { m_metodo = m; }
+   ENUM_ESTIMACAO_ARIMA Metodo(void) const { return(m_metodo); }
+
                      CArima(void);
                     ~CArima(void);
 
@@ -137,9 +328,14 @@ public:
 CArima::CArima(void) : m_p(1), m_d(1), m_q(1), m_com_constante(true),
                        m_c(0.0), m_sigma2(0.0), m_logL(0.0),
                        m_t0_rec(0), m_t0_ll(0), m_t0_min(0),
-                       m_n_efetivo(0), m_ajustado(false), m_erro("")
+                       m_n_efetivo(0), m_ajustado(false), m_erro(""),
+                       m_metodo(s_metodo_padrao)
   {
   }
+
+ENUM_ESTIMACAO_ARIMA CArima::s_metodo_padrao = EST_ARIMA_HR;
+int                  CArima::s_mv_tentativas = 0;
+int                  CArima::s_mv_fallback   = 0;
 
 //+------------------------------------------------------------------+
 CArima::~CArima(void)
@@ -501,6 +697,11 @@ bool CArima::Ajustar(const double &serie[])
         }
 
    CalcularResiduos();
+   if(m_metodo == EST_ARIMA_MV)
+     {
+      MaximaVerossimilhanca();   // se falhar, ficam as estimativas do HR
+      CalcularResiduos();
+     }
    CalcularVerossimilhanca();
 
    if(m_logL == -DBL_MAX)
@@ -510,6 +711,132 @@ bool CArima::Ajustar(const double &serie[])
      }
 
    m_ajustado = true;
+   return(true);
+  }
+
+//+------------------------------------------------------------------+
+//| Maxima verossimilhanca condicional a partir do Hannan-Rissanen   |
+//+------------------------------------------------------------------+
+//|  Pre-condicao: CalcularResiduos() ja rodou com os coeficientes   |
+//|  do HR (m_t0_rec e m_t0_ll definidos). Troca os coeficientes so  |
+//|  se o otimizador terminar normalmente E a soma dos residuos ao   |
+//|  quadrado ficar menor ou igual a do HR.                          |
+//+------------------------------------------------------------------+
+bool CArima::MaximaVerossimilhanca(void)
+  {
+   int k = (m_com_constante ? 1 : 0) + m_p + m_q;
+   if(k == 0)
+      return(true);
+   s_mv_tentativas++;
+
+   CArimaDados dados;
+   dados.N = ArraySize(m_z);
+   ArrayResize(dados.z, dados.N);
+   for(int t = 0; t < dados.N; t++)
+      dados.z[t] = m_z[t];
+   dados.p = m_p;
+   dados.q = m_q;
+   dados.com_c = m_com_constante;
+   dados.t0_rec = m_t0_rec;
+   dados.t0_ll = m_t0_ll;
+   double dp = MathSqrt(Variancia(m_z));
+   dados.escala_c = (dp > 0.0 && MathIsValidNumber(dp)) ? dp : 1.0;
+
+   double ssr_hr = ArimaSSR(GetPointer(dados), m_c, m_phi, m_theta);
+   if(!MathIsValidNumber(ssr_hr) || ssr_hr <= 0.0)
+     {
+      s_mv_fallback++;
+      return(false);
+     }
+   dados.ssr_ref = ssr_hr;
+
+   //--- Ponto de partida: o HR. Se o HR estiver fora da regiao
+   //--- estacionaria/invertivel, encolhe ate entrar (ou parte do zero).
+   double x[], r[], a[];
+   ArrayResize(x, k);
+   int j = 0;
+   if(m_com_constante)
+      x[j++] = m_c / dados.escala_c;
+   if(m_p > 0)
+     {
+      ArrayResize(a, m_p);
+      double f = 1.0;
+      bool ok = false;
+      for(int it = 0; it < 30 && !ok; it++, f *= 0.9)
+        {
+         for(int i = 0; i < m_p; i++)
+            a[i] = m_phi[i] * f;
+         ok = ArimaCoefParaPacf(a, m_p, r);
+        }
+      for(int i = 0; i < m_p; i++)
+         x[j++] = ok ? ArimaAtanh(r[i]) : 0.0;
+     }
+   if(m_q > 0)
+     {
+      ArrayResize(a, m_q);
+      double f = 1.0;
+      bool ok = false;
+      for(int it = 0; it < 30 && !ok; it++, f *= 0.9)
+        {
+         for(int i = 0; i < m_q; i++)
+            a[i] = -m_theta[i] * f;
+         ok = ArimaCoefParaPacf(a, m_q, r);
+        }
+      for(int i = 0; i < m_q; i++)
+         x[j++] = ok ? ArimaAtanh(r[i]) : 0.0;
+     }
+
+   double bndl[], bndu[];
+   ArrayResize(bndl, k);
+   ArrayResize(bndu, k);
+   for(int i = 0; i < k; i++)
+     {
+      bndl[i] = -3.8;          // tanh(3,8) = 0,999
+      bndu[i] = 3.8;
+     }
+   if(m_com_constante)
+     {
+      bndl[0] = -50.0;
+      bndu[0] = 50.0;
+     }
+   for(int i = 0; i < k; i++)
+      x[i] = MathMax(bndl[i], MathMin(bndu[i], x[i]));
+
+   CMinBLEICStateShell estado;
+   CMinBLEICReportShell relatorio;
+   CArimaObjetivo objetivo;
+   CNDimensional_Rep repositor;
+
+   CAlglib::MinBLEICCreateF(k, x, 1.0e-6, estado);
+   CAlglib::MinBLEICSetBC(estado, bndl, bndu);
+   CAlglib::MinBLEICSetInnerCond(estado, 0.0, 0.0, 1.0e-8);
+   CAlglib::MinBLEICSetOuterCond(estado, 1.0e-8, 1.0e-8);
+   CAlglib::MinBLEICSetMaxIts(estado, 200);
+   CAlglib::MinBLEICOptimize(estado, objetivo, repositor, false, dados);
+
+   double x_final[];
+   CAlglib::MinBLEICResults(estado, x_final, relatorio);
+   int cod = relatorio.GetTerminationType();
+   if(cod <= 0 || ArraySize(x_final) < k)
+     {
+      s_mv_fallback++;
+      return(false);
+     }
+
+   double c, phi[], theta[];
+   ArimaParametros(GetPointer(dados), x_final, c, phi, theta);
+   double ssr_mv = ArimaSSR(GetPointer(dados), c, phi, theta);
+   if(!MathIsValidNumber(ssr_mv) || ssr_mv > ssr_hr)
+     {
+      s_mv_fallback++;
+      return(false);
+     }
+
+   m_c = c;
+   for(int i = 0; i < m_p; i++)
+      m_phi[i] = phi[i];
+   for(int i = 0; i < m_q; i++)
+      m_theta[i] = theta[i];
    return(true);
   }
 

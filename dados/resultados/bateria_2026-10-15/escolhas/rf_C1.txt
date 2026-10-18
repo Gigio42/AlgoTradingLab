@@ -1,0 +1,4 @@
+# passagens: ARIMA-GARCH 336 (com >= 12 negociacoes: 336), ARIMA 8 (com >= 12: 8)
+GR fr=7.193503 saidas=130 negocios=130 ret_puro=0.664320 dd_puro=0.060512 | UsarGARCH=true Estrategia=3 ModoLimiar=1 Limiar_Percentil=90.0 Limiar_Absoluto=0.0200 K_Confianca=0.050 Vol_Alvo=0.0100 ZerarNoVeto=true Janela_Estimacao=120 IncluirConstante=false Limiar_Sinal=0.00000 SomenteCompra=true
+AR fr=2.932090 saidas=197 negocios=197 ret_puro=0.999520 dd_puro=0.263418 | UsarGARCH=false Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0.00000 SomenteCompra=true
+GRgemeo | UsarGARCH=false Janela_Estimacao=120 IncluirConstante=false Limiar_Sinal=0.00000 SomenteCompra=true

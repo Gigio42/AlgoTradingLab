@@ -592,6 +592,13 @@ void CDesempenho::Gravar(const string rotulo, const string cab_modelo,
 //|     (Jobson-Korkie com correcao de Memmel, 2003)                 |
 //|   - diferenca media de retorno diario (A - B), anualizada, com   |
 //|     teste t pareado: "A rendeu mais que B, dia a dia?"           |
+//|   - volatilidade anualizada de cada um e o teste de Pitman-Morgan|
+//|     para variancias pareadas (13/10/2026): "A oscilou menos que  |
+//|     B nos mesmos dias?". Com u = rA + rB e v = rA - rB,          |
+//|     cov(u,v) = var(A) - var(B); testa-se a correlacao r(u,v) = 0 |
+//|     com t = r*raiz(n-2)/raiz(1-r2). r < 0: A oscilou menos.      |
+//|     Supoe retornos independentes no tempo, o que a propria       |
+//|     volatilidade em blocos viola: o p sai otimista.              |
 //|                                                                  |
 //|  O pareamento e o que torna o teste justo: os dois modelos       |
 //|  enfrentaram exatamente os mesmos dias de mercado.               |
@@ -604,6 +611,8 @@ struct ComparacaoModelos
    double   z_sharpe, p_sharpe;// Memmel, p bilateral
    double   dif_anual;         // media(r_a - r_b) x 252
    double   t_dif, p_dif;      // t pareado, p bilateral
+   double   vol_a, vol_b;      // desvio dos retornos diarios x raiz(252)
+   double   r_pm, t_pm, p_pm;  // Pitman-Morgan, p bilateral
   };
 
 bool LerCurva(const string arquivo, string &datas[], double &r[], double &s[])
@@ -682,6 +691,29 @@ bool CompararCurvas(const string arq_a, const string arq_b, ComparacaoModelos &c
      {
       c.t_dif = md / MathSqrt(vd / n);
       c.p_dif = 2.0 * (1.0 - MathCumulativeDistributionNormal(MathAbs(c.t_dif), 0.0, 1.0, erro));
+     }
+
+   //--- Volatilidade e Pitman-Morgan sobre os retornos diarios brutos
+   double mra = 0, mrb = 0;
+   for(int i = 0; i < n; i++) { mra += ra[i]; mrb += rb[i]; }
+   mra /= n; mrb /= n;
+   double sa2 = 0, sb2 = 0, suu = 0, svv = 0, suv = 0;
+   for(int i = 0; i < n; i++)
+     {
+      double xa = ra[i] - mra, xb = rb[i] - mrb;
+      double u = xa + xb, v = xa - xb;
+      sa2 += xa * xa; sb2 += xb * xb; suu += u * u; svv += v * v; suv += u * v;
+     }
+   c.vol_a = MathSqrt(sa2 / (n - 1)) * MathSqrt(252.0);
+   c.vol_b = MathSqrt(sb2 / (n - 1)) * MathSqrt(252.0);
+   if(suu > 0.0 && svv > 0.0)
+     {
+      c.r_pm = suv / MathSqrt(suu * svv);
+      if(MathAbs(c.r_pm) < 1.0)
+        {
+         c.t_pm = c.r_pm * MathSqrt(n - 2.0) / MathSqrt(1.0 - c.r_pm * c.r_pm);
+         c.p_pm = 2.0 * (1.0 - MathCumulativeDistributionNormal(MathAbs(c.t_pm), 0.0, 1.0, erro));
+        }
      }
    return(true);
   }

@@ -14,6 +14,8 @@
 #  4. Ruina (patrimonio zerado: ret_selic <= -99%).
 #  5. Persistencia: correlacao de postos (Spearman) entre a calibracao e o
 #     teste, do Sharpe e do Calmar, so-compra e todas.
+#  6. Volatilidade pareada (vol_selic, anualizada): GARCH - gemea, mesma
+#     separacao do bloco 2 (acrescentado em 13/10/2026).
 # Diferencas: dDD e dRet em fracao (0,10 = 10 p.p.), dSR em unidades de Sharpe.
 ARQS=(); for a in "$@"; do ARQS+=("${a#*:*:}"); done
 gawk -F';' -v rot="$(for a in "$@"; do printf '%s ' "${a%:*}"; done)" '
@@ -45,12 +47,12 @@ FNR == 1 { delete h; for(i = 1; i <= NF; i++) h[$i] = i
            cL = col("Limiar_Sinal"); next }
 {
   g = $cG + 0; e = $cE + 0; z = $cZ + 0; so = $cS + 0
-  dd = $h["dd_selic_t"]; rt = $h["ret_selic_t"]; sr = $h["sharpe_t"]
+  dd = $h["dd_selic_t"]; rt = $h["ret_selic_t"]; sr = $h["sharpe_t"]; vo = $h["vol_selic_t"]
   ref[ap] = sprintf("%7.1f %7.1f %6.1f %7.2f", $h["selic_t"]*100, $h["bh_preco_t"]*100,
                     $h["dd_bh_preco_t"]*100, $h["sharpe_bh_t"])
   arima = ap SUBSEP ($cJ+0) SUBSEP ($cK+0) SUBSEP ($cL+0) SUBSEP so
-  if(g == 0) { DDa[arima] = dd; RTa[arima] = rt; SRa[arima] = sr }
-  else { m = ++nG[ap]; Gk[ap, m] = arima; Gd[ap, m] = dd; Gr[ap, m] = rt; Gs[ap, m] = sr
+  if(g == 0) { DDa[arima] = dd; RTa[arima] = rt; SRa[arima] = sr; VOa[arima] = vo }
+  else { m = ++nG[ap]; Gk[ap, m] = arima; Gd[ap, m] = dd; Gr[ap, m] = rt; Gs[ap, m] = sr; Gv[ap, m] = vo
          Gred[ap, m] = (e == 1 || e == 3 || z == 1) }
   # venda a descoberto: chave = todos os parametros menos SomenteCompra
   kv = ap SUBSEP g SUBSEP e SUBSEP $h["ModoLimiar"] SUBSEP $h["Limiar_Percentil"] SUBSEP \
@@ -99,5 +101,14 @@ END {
       if(Pso[ap, q] == 1) { n1++; a[n1] = Sc[ap, q]; b[n1] = St[ap, q]; c[n1] = Cc[ap, q]; d[n1] = Ct[ap, q] } }
     printf "%-13s %6d %7.2f %7.2f | %8d %7.2f %7.2f\n", ap, n1, spearman(a, b, n1), spearman(c, d, n1),
            n2, spearman(a2, b2, n2), spearman(c2, d2, n2) }
+
+  print "\n=== 6. VOLATILIDADE PAREADA (com GARCH - gemea; acrescentado em 13/10/2026) ==="
+  print "ativo periodo  reduz    n    dVol  reduziu_vol"
+  for(i = 1; i <= na; i++) { ap = lista[i]
+    for(red = 1; red >= 0; red--) {
+      delete A; n = 0; rv = 0
+      for(m = 1; m <= nG[ap]; m++) { if(Gred[ap, m] != red || !(Gk[ap, m] in VOa)) continue
+        n++; A[n] = Gv[ap, m] - VOa[Gk[ap, m]]; rv += (A[n] < 0) }
+      printf "%-13s %5s %4d %7.3f %12.3f\n", ap, red ? "sim" : "nao", n, med(A, n), n ? rv/n : 0 } }
 }' "${ARQS[@]}"
 

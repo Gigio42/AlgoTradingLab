@@ -1,0 +1,6 @@
+robo          retorno  queda_max
+GR            -12.77%     37.71%
+PETR4          -7.20%     64.15%
+GRgemeo       -49.22%     59.24%
+AR              0.72%     23.30%
+MM             28.24%     19.11%

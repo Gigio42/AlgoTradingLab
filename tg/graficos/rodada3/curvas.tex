@@ -31,14 +31,14 @@
 ]
 \nextgroupplot[height=7.5cm, ylabel={Patrimônio (base 100)},
   legend style={font=\normalsize, cells={anchor=west}, at={(0.5,1.03)}, anchor=south, legend columns=3,
-                column sep=6pt, draw=none}]
+                column sep=3pt, draw=none}]
 \addplot[cbh]            table[x=data, y expr=\thisrow{buyhold}*100]{\arq{GS}};
 \addplot[black, dashed]  table[x=data, y expr=\thisrow{selic}*100]{\arq{GS}};
 \addplot[cmm]            table[x=data, y expr=\thisrow{estrategia}*100]{\arq{MM}};
 \addplot[car]            table[x=data, y expr=\thisrow{estrategia}*100]{\arq{AS}};
 \addplot[cgs]            table[x=data, y expr=\thisrow{estrategia}*100]{\arq{GS}};
 \addplot[cgc, dashed]    table[x=data, y expr=\thisrow{estrategia}*100]{\arq{GC}};
-\legend{{PETR4, compra e manutenção}, Selic, Médias móveis (Almeida), ARIMA, ARIMA-GARCH (Sharpe), ARIMA-GARCH (Calmar)}
+\legend{{PETR4, compra e manutenção}, Selic, Médias móveis reproduzidas, ARIMA, {ARIMA-GARCH, versão A}, {ARIMA-GARCH, versão B}}
 
 \nextgroupplot[height=4.5cm, ylabel={Queda do topo (\%)}, ymax=0]
 \addplot[cbh] table[x=data, y expr=-\thisrow{dd_bh}*100]{\arq{GS}};

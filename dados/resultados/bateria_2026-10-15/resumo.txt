@@ -1,0 +1,235 @@
+=========== BATERIA DE 15/10/2026 — RESUMO (camada 1, pura, salvo indicacao) ===========
+
+--- Escolhas (fator de recuperacao do MT5, >= 12 negociacoes na otimizacao) ---
+[C1]
+# passagens: ARIMA-GARCH 336 (com >= 12 negociacoes: 336), ARIMA 8 (com >= 12: 8)
+GR fr=7.193503 saidas=130 negocios=130 ret_puro=0.664320 dd_puro=0.060512 | UsarGARCH=true Estrategia=3 ModoLimiar=1 Limiar_Percentil=90.0 Limiar_Absoluto=0.0200 K_Confianca=0.050 Vol_Alvo=0.0100 ZerarNoVeto=true Janela_Estimacao=120 IncluirConstante=false Limiar_Sinal=0.00000 SomenteCompra=true
+AR fr=2.932090 saidas=197 negocios=197 ret_puro=0.999520 dd_puro=0.263418 | UsarGARCH=false Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0.00000 SomenteCompra=true
+[C2]
+# passagens: ARIMA-GARCH 336 (com >= 12 negociacoes: 332), ARIMA 8 (com >= 12: 8)
+GR fr=0.438042 saidas=107 negocios=107 ret_puro=0.066670 dd_puro=0.128155 | UsarGARCH=true Estrategia=3 ModoLimiar=1 Limiar_Percentil=50.0 Limiar_Absoluto=0.0200 K_Confianca=0.050 Vol_Alvo=0.0200 ZerarNoVeto=true Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0.00000 SomenteCompra=true
+AR fr=-0.477457 saidas=185 negocios=185 ret_puro=-0.133540 dd_puro=0.248611 | UsarGARCH=false Janela_Estimacao=120 IncluirConstante=false Limiar_Sinal=0.00000 SomenteCompra=true
+[C3]
+# passagens: ARIMA-GARCH 336 (com >= 12 negociacoes: 251), ARIMA 8 (com >= 12: 6)
+GR fr=3.147370 saidas=24 negocios=24 ret_puro=0.238130 dd_puro=0.053143 | UsarGARCH=true Estrategia=3 ModoLimiar=1 Limiar_Percentil=70.0 Limiar_Absoluto=0.0200 K_Confianca=0.050 Vol_Alvo=0.0100 ZerarNoVeto=true Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0.00100 SomenteCompra=true
+AR fr=0.256641 saidas=41 negocios=42 ret_puro=0.119220 dd_puro=0.329811 | UsarGARCH=false Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0.00100 SomenteCompra=true
+[C4]
+# passagens: ARIMA-GARCH 336 (com >= 12 negociacoes: 217), ARIMA 8 (com >= 12: 8)
+GR fr=2.620158 saidas=97 negocios=97 ret_puro=0.423470 dd_puro=0.121084 | UsarGARCH=true Estrategia=3 ModoLimiar=1 Limiar_Percentil=50.0 Limiar_Absoluto=0.0200 K_Confianca=0.050 Vol_Alvo=0.0100 ZerarNoVeto=false Janela_Estimacao=120 IncluirConstante=false Limiar_Sinal=0.00000 SomenteCompra=true
+AR fr=0.756927 saidas=19 negocios=20 ret_puro=0.405660 dd_puro=0.374221 | UsarGARCH=false Janela_Estimacao=240 IncluirConstante=true Limiar_Sinal=0.00000 SomenteCompra=true
+[C5]
+# passagens: ARIMA-GARCH 336 (com >= 12 negociacoes: 318), ARIMA 8 (com >= 12: 8)
+GR fr=4.579728 saidas=113 negocios=113 ret_puro=0.512380 dd_puro=0.082105 | UsarGARCH=true Estrategia=3 ModoLimiar=1 Limiar_Percentil=90.0 Limiar_Absoluto=0.0200 K_Confianca=0.050 Vol_Alvo=0.0100 ZerarNoVeto=false Janela_Estimacao=240 IncluirConstante=false Limiar_Sinal=0.00100 SomenteCompra=true
+AR fr=2.067321 saidas=131 negocios=131 ret_puro=1.277770 dd_puro=0.239019 | UsarGARCH=false Janela_Estimacao=120 IncluirConstante=false Limiar_Sinal=0.00100 SomenteCompra=true
+
+--- Resultado por periodo: retorno | queda max | volatilidade | negociacoes | acerto | exposicao ---
+
+[T1] 2007.01.02 a 2011.12.29 | Selic no periodo     68.1%
+  MM           -31.6%     64.6%     28.7%     31     45.2%     47.8%
+  AR           -12.7%     45.1%     27.5%    320     50.3%     43.3%
+  GR            -8.4%     17.5%     10.5%    263     49.8%     20.1%  vetos 225 de 1231
+  GRgemeo        7.2%     38.1%     28.2%    306     50.3%     45.6%
+  PETR4        -14.0%     67.2%     43.2%
+
+[T2] 2013.01.02 a 2016.12.29 | Selic no periodo     53.9%
+  MM           100.8%     42.0%     40.4%     24     37.5%     44.4%
+  AR           -35.8%     54.5%     37.8%    266     47.7%     46.4%
+  GR           -13.8%     28.6%     14.1%    140     42.1%     17.9%  vetos 518 de 987
+  GRgemeo       -9.7%     51.9%     35.1%    266     45.9%     49.5%
+  PETR4        -25.6%     83.1%     59.2%
+
+[R6] 2017.01.02 a 2024.12.27 | Selic no periodo     86.1%
+  MM            47.8%     37.9%     30.9%     56     44.6%     55.0%
+  AR            95.7%     40.5%     32.0%    244     55.7%     62.3%
+  GR            42.9%     40.2%     16.3%    223     55.6%     24.6%  vetos 995 de 1977
+  GRgemeo      -50.1%     79.3%     31.4%    469     52.4%     46.0%
+  PETR4        143.6%     64.2%     44.8%
+
+[T3] 2025.01.02 a 2026.09.18 | Selic no periodo     25.7%
+  MM            18.1%     31.1%     22.7%     12     25.0%     50.4%
+  AR            14.2%     20.1%     22.0%     46     41.3%     52.3%
+  GR            -7.4%     12.2%      9.2%     37     43.2%     19.4%  vetos 146 de 279
+  GRgemeo       14.2%     20.1%     22.0%     46     41.3%     52.3%
+  PETR4         33.2%     25.1%     29.1%
+
+[T5] 2020.01.02 a 2021.12.29 | Selic no periodo      7.2%
+  MM            19.4%     30.4%     32.6%     13     46.2%     51.6%
+  AR           -44.1%     60.0%     39.0%     76     56.6%     47.1%
+  GR           -17.6%     34.5%     18.6%     75     56.0%     17.3%  vetos 47 de 365
+  GRgemeo      -26.2%     53.7%     37.8%     84     56.0%     42.3%
+  PETR4         -6.5%     64.2%     55.7%
+
+[L1] 2005.01.03 a 2026.09.17 | Selic no periodo    795.8%
+  MM           305.5%     77.6%     31.0%    138     44.2%     51.5%
+  GR            74.2%     36.4%     14.3%    744     52.0%     20.0%  vetos 2719 de 5359
+  GRgemeo       16.6%     82.9%     28.8%   1311     51.0%     46.2%
+  PETR4        298.8%     92.0%     44.9%
+
+[L2] 2017.01.02 a 2024.12.27 | Selic no periodo     86.1%
+  MM            47.8%     37.9%     30.9%     56     44.6%     55.0%
+  GR            19.9%     31.9%     17.0%    304     52.0%     21.7%  vetos 881 de 1977
+  GRgemeo        4.6%     57.7%     32.6%    477     52.4%     45.8%
+  PETR4        143.6%     64.2%     44.8%
+
+--- Camadas do retorno: 1 cru | 2 +custos | 3 +caixa na Selic | 4 +proventos ---
+
+[T1]
+  MM           -31.6%    -32.8%    -11.6%     -5.9%   (queda:     64.6% |     57.5%)
+  AR           -12.7%    -27.1%     -2.1%      3.2%   (queda:     45.1% |     44.3%)
+  GR            -8.4%    -15.2%     28.7%     32.9%   (queda:     17.5% |     13.3%)
+  GRgemeo        7.2%     -9.8%     19.8%     28.3%   (queda:     38.1% |     35.1%)
+  PETR4        -14.0%                         -1.2%
+
+[T2]
+  MM           100.8%     98.1%    150.9%    176.0%   (queda:     42.0% |     38.4%)
+  AR           -35.8%    -44.8%    -30.5%    -27.9%   (queda:     54.5% |     51.9%)
+  GR           -13.8%    -18.8%     15.8%     15.8%   (queda:     28.6% |     17.7%)
+  GRgemeo       -9.7%    -22.3%     -3.7%     -3.7%   (queda:     51.9% |     50.9%)
+  PETR4        -25.6%                        -17.7%
+
+[R6]
+  MM            47.8%     43.2%     90.4%    396.1%   (queda:     37.9% |     36.7%)
+  AR            95.7%     70.5%    114.6%    331.1%   (queda:     40.5% |     40.6%)
+  GR            42.9%     34.4%    114.1%    212.1%   (queda:     40.2% |     38.1%)
+  GRgemeo      -50.1%    -61.6%    -46.5%      2.1%   (queda:     79.3% |     78.4%)
+  PETR4        143.6%                        726.5%
+
+[T3]
+  MM            18.1%     17.2%     31.3%     39.0%   (queda:     31.1% |     28.2%)
+  AR            14.2%     11.3%     24.1%     34.4%   (queda:     20.1% |     19.0%)
+  GR            -7.4%     -8.8%      9.6%     13.9%   (queda:     12.2% |      8.2%)
+  GRgemeo       14.2%     11.3%     24.1%     34.4%   (queda:     20.1% |     19.0%)
+  PETR4         33.2%                         57.6%
+
+[T5]
+  MM            19.4%     18.6%     22.7%     48.7%   (queda:     30.4% |     30.3%)
+  AR           -44.1%    -46.4%    -44.3%    -42.6%   (queda:     60.0% |     60.5%)
+  GR           -17.6%    -18.9%    -14.1%    -13.0%   (queda:     34.5% |     34.3%)
+  GRgemeo      -26.2%    -29.6%    -26.6%    -24.3%   (queda:     53.7% |     54.5%)
+  PETR4         -6.5%                         14.8%
+
+[L1]
+  MM           305.5%    274.8%    985.2%   3653.0%   (queda:     77.6% |     67.5%)
+  GR            74.2%     19.3%    602.4%    845.9%   (queda:     36.4% |     29.7%)
+  GRgemeo       16.6%    -44.3%     79.9%    258.6%   (queda:     82.9% |     80.7%)
+  PETR4        298.8%                       2124.9%
+
+[L2]
+  MM            47.8%     43.2%     90.4%    396.1%   (queda:     37.9% |     36.7%)
+  GR            19.9%      2.8%     67.3%    117.6%   (queda:     31.9% |     28.1%)
+  GRgemeo        4.6%    -20.1%     11.9%     92.3%   (queda:     57.7% |     57.8%)
+  PETR4        143.6%                        726.5%
+
+--- Com GARCH x mesma configuracao sem GARCH (camada 1) ---
+  T1  queda     17.5% x     38.1% | vol     10.5% x     28.2% | retorno     -8.4% x      7.2%
+  T2  queda     28.6% x     51.9% | vol     14.1% x     35.1% | retorno    -13.8% x     -9.7%
+  R6  queda     40.2% x     79.3% | vol     16.3% x     31.4% | retorno     42.9% x    -50.1%
+  T3  queda     12.2% x     20.1% | vol      9.2% x     22.0% | retorno     -7.4% x     14.2%
+  T5  queda     34.5% x     53.7% | vol     18.6% x     37.8% | retorno    -17.6% x    -26.2%
+  L1  queda     36.4% x     82.9% | vol     14.3% x     28.8% | retorno     74.2% x     16.6%
+  L2  queda     31.9% x     57.7% | vol     17.0% x     32.6% | retorno     19.9% x      4.6%
+  Em 7 comparacoes: queda menor com GARCH em 7, volatilidade menor em 7, retorno maior em 4.
+  (L1 e L2 usam a mesma GR de C2; R6 e L2 cobrem o mesmo periodo; T5 esta dentro de R6.)
+
+--- Cenario de Almeida (R$ 50 mil, volume fixo, sem custo, compra e venda) ---
+  N_cenA_0711_GARCH    oper  529 | resultado R$       127 | queda      5.0% | vol      2.0% | acerto     47.8%
+  N_cenA_0711_ARIMA    oper  612 | resultado R$      1305 | queda      5.0% | vol      2.6% | acerto     48.2%
+  N_cenA_1316_GARCH    oper  173 | resultado R$     24020 | queda      8.7% | vol     12.2% | acerto     51.4%
+  N_cenA_1316_ARIMA    oper  397 | resultado R$     -8100 | queda     30.9% | vol     14.9% | acerto     48.1%
+
+--- Testes pareados (puro): vol A x vol B, p de Pitman-Morgan; p da diferenca de Sharpe; p do t pareado ---
+  T1        N_T1_GRP         x N_T1_GRgemeoP    vol  10.5% x  28.2% p_pm=0         | p_sharpe=0.0034 | p_dif=0.4938
+  T1        N_T1_GRP         x N_T1_ARP         vol  10.5% x  27.5% p_pm=0         | p_sharpe=0.0496 | p_dif=0.8237
+  T1        N_T1_GRP         x N_T1_MMP         vol  10.5% x  28.7% p_pm=0         | p_sharpe=0.2043 | p_dif=0.8424
+  T1        N_T1_ARP         x N_T1_MMP         vol  27.5% x  28.7% p_pm=0.103     | p_sharpe=0.7684 | p_dif=0.7411
+  T1        N_T1_GRgemeoP    x N_T1_MMP         vol  28.2% x  28.7% p_pm=0.49      | p_sharpe=0.5289 | p_dif=0.5208
+  T2        N_T2_GRP         x N_T2_GRgemeoP    vol  14.1% x  35.1% p_pm=0         | p_sharpe=0.0935 | p_dif=0.6639
+  T2        N_T2_GRP         x N_T2_ARP         vol  14.1% x  37.8% p_pm=0         | p_sharpe=0.3195 | p_dif=0.9401
+  T2        N_T2_GRP         x N_T2_MMP         vol  14.1% x  40.4% p_pm=0         | p_sharpe=0.0299 | p_dif=0.1522
+  T2        N_T2_ARP         x N_T2_MMP         vol  37.8% x  40.4% p_pm=0.0194    | p_sharpe=0.1528 | p_dif=0.1540
+  T2        N_T2_GRgemeoP    x N_T2_MMP         vol  35.1% x  40.4% p_pm=1.18e-06  | p_sharpe=0.2903 | p_dif=0.2843
+  R6        N_R6_GRP         x N_R6_GRgemeoP    vol  16.3% x  31.4% p_pm=0         | p_sharpe=0.2831 | p_dif=0.1989
+  R6        N_R6_GRP         x N_R6_ARP         vol  16.3% x  32.0% p_pm=0         | p_sharpe=0.3798 | p_dif=0.4183
+  R6        N_R6_GRP         x N_R6_MMP         vol  16.3% x  30.9% p_pm=0         | p_sharpe=0.6016 | p_dif=0.6781
+  R6        N_R6_ARP         x N_R6_MMP         vol  32.0% x  30.9% p_pm=0.0345    | p_sharpe=0.6755 | p_dif=0.6647
+  R6        N_R6_GRgemeoP    x N_R6_MMP         vol  31.4% x  30.9% p_pm=0.451     | p_sharpe=0.2363 | p_dif=0.2338
+  T3        N_T3_GRP         x N_T3_GRgemeoP    vol   9.2% x  22.0% p_pm=0         | p_sharpe=0.0091 | p_dif=0.2946
+  T3        N_T3_GRP         x N_T3_ARP         vol   9.2% x  22.0% p_pm=0         | p_sharpe=0.0091 | p_dif=0.2946
+  T3        N_T3_GRP         x N_T3_MMP         vol   9.2% x  22.7% p_pm=0         | p_sharpe=0.0247 | p_dif=0.2956
+  T3        N_T3_ARP         x N_T3_MMP         vol  22.0% x  22.7% p_pm=0.431     | p_sharpe=0.8808 | p_dif=0.8843
+  T3        N_T3_GRgemeoP    x N_T3_MMP         vol  22.0% x  22.7% p_pm=0.431     | p_sharpe=0.8808 | p_dif=0.8843
+  T5        N_T5_GRP         x N_T5_GRgemeoP    vol  18.6% x  37.8% p_pm=0         | p_sharpe=0.4371 | p_dif=0.9867
+  T5        N_T5_GRP         x N_T5_ARP         vol  18.6% x  39.0% p_pm=0         | p_sharpe=0.9693 | p_dif=0.5031
+  T5        N_T5_GRP         x N_T5_MMP         vol  18.6% x  32.6% p_pm=0         | p_sharpe=0.2460 | p_dif=0.3197
+  T5        N_T5_ARP         x N_T5_MMP         vol  39.0% x  32.6% p_pm=7.05e-06  | p_sharpe=0.1860 | p_dif=0.1784
+  T5        N_T5_GRgemeoP    x N_T5_MMP         vol  37.8% x  32.6% p_pm=0.000215  | p_sharpe=0.4021 | p_dif=0.4074
+  L1        N_L1_GRP         x N_L1_GRgemeoP    vol  14.3% x  28.8% p_pm=0         | p_sharpe=0.1570 | p_dif=0.7984
+  L1        N_L1_GRP         x N_L1_MMP         vol  14.3% x  31.0% p_pm=0         | p_sharpe=0.0445 | p_dif=0.2250
+  L1        N_L1_GRgemeoP    x N_L1_MMP         vol  28.8% x  31.0% p_pm=8.91e-10  | p_sharpe=0.3169 | p_dif=0.3300
+  L2        N_L2_GRP         x N_L2_GRgemeoP    vol  17.0% x  32.6% p_pm=0         | p_sharpe=0.5585 | p_dif=0.8066
+  L2        N_L2_GRP         x N_L2_MMP         vol  17.0% x  30.9% p_pm=0         | p_sharpe=0.4209 | p_dif=0.5437
+  L2        N_L2_GRgemeoP    x N_L2_MMP         vol  32.6% x  30.9% p_pm=0.00724   | p_sharpe=0.7350 | p_dif=0.7357
+
+--- Testes pareados (camada3): vol A x vol B, p de Pitman-Morgan; p da diferenca de Sharpe; p do t pareado ---
+  T1        N_T1_GR          x N_T1_GRgemeo     vol  10.5% x  28.2% p_pm=0         | p_sharpe=0.2589 | p_dif=0.8386
+  T1        N_T1_GR          x N_T1_AR          vol  10.5% x  27.5% p_pm=0         | p_sharpe=0.6078 | p_dif=0.8199
+  T1        N_T1_GR          x N_T1_MM          vol  10.5% x  28.7% p_pm=0         | p_sharpe=0.7585 | p_dif=0.7312
+  T1        N_T1_AR          x N_T1_MM          vol  27.5% x  28.7% p_pm=0.0997    | p_sharpe=0.9193 | p_dif=0.8997
+  T1        N_T1_GRgemeo     x N_T1_MM          vol  28.2% x  28.7% p_pm=0.487     | p_sharpe=0.6708 | p_dif=0.6652
+  T2        N_T2_GR          x N_T2_GRgemeo     vol  14.1% x  35.1% p_pm=0         | p_sharpe=0.5401 | p_dif=0.9720
+  T2        N_T2_GR          x N_T2_AR          vol  14.1% x  37.8% p_pm=0         | p_sharpe=0.8663 | p_dif=0.7036
+  T2        N_T2_GR          x N_T2_MM          vol  14.1% x  40.4% p_pm=0         | p_sharpe=0.1254 | p_dif=0.1808
+  T2        N_T2_AR          x N_T2_MM          vol  37.8% x  40.4% p_pm=0.0203    | p_sharpe=0.1113 | p_dif=0.1095
+  T2        N_T2_GRgemeo     x N_T2_MM          vol  35.1% x  40.4% p_pm=1.31e-06  | p_sharpe=0.2185 | p_dif=0.2053
+  R6        N_R6_GR          x N_R6_GRgemeo     vol  16.3% x  31.4% p_pm=0         | p_sharpe=0.0203 | p_dif=0.0641
+  R6        N_R6_GR          x N_R6_AR          vol  16.3% x  32.0% p_pm=0         | p_sharpe=0.9354 | p_dif=0.6872
+  R6        N_R6_GR          x N_R6_MM          vol  16.3% x  30.9% p_pm=0         | p_sharpe=0.9457 | p_dif=0.8301
+  R6        N_R6_AR          x N_R6_MM          vol  32.0% x  30.9% p_pm=0.0356    | p_sharpe=0.8542 | p_dif=0.8359
+  R6        N_R6_GRgemeo     x N_R6_MM          vol  31.4% x  30.9% p_pm=0.44      | p_sharpe=0.1644 | p_dif=0.1633
+  T3        N_T3_GR          x N_T3_GRgemeo     vol   9.2% x  22.0% p_pm=0         | p_sharpe=0.1793 | p_dif=0.4979
+  T3        N_T3_GR          x N_T3_AR          vol   9.2% x  22.0% p_pm=0         | p_sharpe=0.1793 | p_dif=0.4979
+  T3        N_T3_GR          x N_T3_MM          vol   9.2% x  22.7% p_pm=0         | p_sharpe=0.2011 | p_dif=0.4176
+  T3        N_T3_AR          x N_T3_MM          vol  22.0% x  22.7% p_pm=0.426     | p_sharpe=0.8156 | p_dif=0.8103
+  T3        N_T3_GRgemeo     x N_T3_MM          vol  22.0% x  22.7% p_pm=0.426     | p_sharpe=0.8156 | p_dif=0.8103
+  T5        N_T5_GR          x N_T5_GRgemeo     vol  18.6% x  37.9% p_pm=0         | p_sharpe=0.6267 | p_dif=0.9048
+  T5        N_T5_GR          x N_T5_AR          vol  18.6% x  39.0% p_pm=0         | p_sharpe=0.7871 | p_dif=0.4323
+  T5        N_T5_GR          x N_T5_MM          vol  18.6% x  32.6% p_pm=0         | p_sharpe=0.2831 | p_dif=0.3361
+  T5        N_T5_AR          x N_T5_MM          vol  39.0% x  32.6% p_pm=6.55e-06  | p_sharpe=0.1660 | p_dif=0.1605
+  T5        N_T5_GRgemeo     x N_T5_MM          vol  37.9% x  32.6% p_pm=0.000204  | p_sharpe=0.3667 | p_dif=0.3737
+  L1        N_L1_GR          x N_L1_GRgemeo     vol  14.3% x  28.8% p_pm=0         | p_sharpe=0.5866 | p_dif=0.5297
+  L1        N_L1_GR          x N_L1_MM          vol  14.3% x  31.0% p_pm=0         | p_sharpe=0.4421 | p_dif=0.3620
+  L1        N_L1_GRgemeo     x N_L1_MM          vol  28.8% x  31.0% p_pm=9.49e-10  | p_sharpe=0.1748 | p_dif=0.1719
+  L2        N_L2_GR          x N_L2_GRgemeo     vol  17.0% x  32.6% p_pm=0         | p_sharpe=0.9066 | p_dif=0.9062
+  L2        N_L2_GR          x N_L2_MM          vol  17.0% x  30.9% p_pm=0         | p_sharpe=0.6723 | p_dif=0.6130
+  L2        N_L2_GRgemeo     x N_L2_MM          vol  32.6% x  30.9% p_pm=0.0069    | p_sharpe=0.5777 | p_dif=0.5850
+  cenA_1316 N_cenA_1316_GARCH x N_cenA_1316_ARIMA vol  12.2% x  14.9% p_pm=3.2e-08   | p_sharpe=0.0402 | p_dif=0.0480
+
+--- Recortes de um ano (camada 1, queda medida dentro do ano) ---
+[recorte_2008]
+  robo          retorno  queda_max
+  GR             -4.42%     11.25%
+  PETR4         -47.33%     67.15%
+  GRgemeo        -9.90%     35.14%
+  AR            -27.07%     45.15%
+  MM            -40.66%     52.54%
+[recorte_2020_R6]
+  robo          retorno  queda_max
+  GR            -12.77%     37.71%
+  PETR4          -7.20%     64.15%
+  GRgemeo       -49.22%     59.24%
+  AR              0.72%     23.30%
+  MM             28.24%     19.11%
+[recorte_2020_T5]
+  robo          retorno  queda_max
+  GR            -21.46%     34.47%
+  PETR4          -7.08%     64.15%
+  GRgemeo       -39.36%     52.00%
+  AR            -42.88%     52.65%
+  MM             31.73%     19.21%
+[recorte_2021_T5]
+  robo          retorno  queda_max
+  GR              4.91%     11.44%
+  PETR4           0.67%     32.29%
+  GRgemeo        21.77%     24.83%
+  AR             -2.07%     31.50%
+  MM             -9.34%     30.36%

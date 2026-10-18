@@ -128,6 +128,10 @@ int DeterminarOrdemD(const double &serie[], const int d_max,
 //|  TG.                                                             |
 //|                                                                  |
 //+------------------------------------------------------------------+
+//--- Criterio da busca em grade (15/10/2026, exploratorio): false = AIC
+//--- (padrao, o do TG); true = BIC. O EA define pelo input CriterioOrdens.
+bool g_selecao_por_bic = false;
+
 bool BuscarMelhorPQ(const double &serie[], const int d,
                     const int p_max, const int q_max,
                     const bool com_constante,
@@ -149,6 +153,7 @@ bool BuscarMelhorPQ(const double &serie[], const int d,
    //--- somaria mais parcelas que o ARIMA(4,d,4) e venceria por
    //--- construcao, nao por merito.
    int aquecimento_comum = MathMax(p_max, q_max);
+   double melhor_crit = DBL_MAX;
 
    tabela = StringFormat("  (verossimilhanca avaliada sobre amostra comum: %d obs. descartadas no inicio)\n",
                          aquecimento_comum);
@@ -187,13 +192,15 @@ bool BuscarMelhorPQ(const double &serie[], const int d,
            }
 
          res.modelos_ok++;
+         double crit = g_selecao_por_bic ? bic : aic;
 
          tabela += StringFormat("  %3d %3d %12.3f %12.3f %12.3f %5d%s\n",
                                 p, q, aic, bic, m.LogVerossimilhanca(),
-                                m.NEfetivo(), (aic < res.aic) ? "  <<<" : "");
+                                m.NEfetivo(), (crit < melhor_crit) ? "  <<<" : "");
 
-         if(aic < res.aic)
+         if(crit < melhor_crit)
            {
+            melhor_crit = crit;
             res.aic  = aic;
             res.bic  = bic;
             res.logL = m.LogVerossimilhanca();

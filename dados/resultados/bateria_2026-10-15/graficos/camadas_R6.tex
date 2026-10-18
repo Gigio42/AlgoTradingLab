@@ -1,0 +1,16 @@
+% Do resultado bruto ao estimado: retorno acumulado de 2017 a 2024 em quatro camadas.
+\documentclass[border=4pt]{standalone}
+\usepackage[utf8]{inputenc}\usepackage[T1]{fontenc}\usepackage{mathptmx}
+\usepackage{pgfplots}\pgfplotsset{compat=1.18}
+\begin{document}\begin{tikzpicture}
+\begin{axis}[ybar, bar width=7pt, width=14.6cm, height=7.5cm, ylabel={Retorno acumulado (\%)},
+  symbolic x coords={MM,AR,GR,GRgemeo,PETR4}, xtick=data, table/col sep=comma, unbounded coords=jump,
+  xticklabels={{Médias móveis\\reproduzidas},ARIMA,ARIMA-GARCH,{ARIMA-GARCH\\sem GARCH},{PETR4, compra\\e manutenção}},
+  xticklabel style={align=center}, grid=major, grid style={gray!20},
+  legend style={at={(0.5,1.03)}, anchor=south, legend columns=4, draw=none}]
+\addplot table[x=robo, y=cru]{camadas_R6.csv};
+\addplot table[x=robo, y=custos]{camadas_R6.csv};
+\addplot table[x=robo, y=selic]{camadas_R6.csv};
+\addplot table[x=robo, y=proventos]{camadas_R6.csv};
+\legend{1 cru, 2 + custos, 3 + caixa na Selic, 4 + proventos}
+\end{axis}\end{tikzpicture}\end{document}

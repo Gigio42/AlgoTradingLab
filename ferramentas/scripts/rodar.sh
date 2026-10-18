@@ -18,7 +18,7 @@ ini="$TRAB/r_$rot.ini"
 { printf '%s[Tester]\r\n' "$CONTA"
   printf 'Expert=AlgoTradingLab\\%s\r\nSymbol=%s\r\nPeriod=D1\r\nModel=2\r\nFromDate=%s\r\nToDate=%s\r\nDeposit=%s\r\nCurrency=BRL\r\nLeverage=%s\r\nOptimization=0\r\nVisual=0\r\nReport=rel_%s\r\nReplaceReport=1\r\n[TesterInputs]\r\n' "$exp" "$sim" "$de" "$ate" "$dep" "$alav" "$rot"
   echo "$G" | sed 's/$/\r/'; } > "$ini"
-matar; rm -f "$N/rel_$rot".*; rodar_ini "$ini"; esperar "$N/rel_$rot.htm" 600; sleep 2; matar
+matar; rm -f "$N/rel_$rot".*; rodar_ini "$ini"; esperar "$N/rel_$rot.htm" ${ESPERA:-600}; sleep 2; matar
 mkdir -p "$TRAB/rel"; cp "$N/rel_$rot".htm "$N/rel_$rot".png "$TRAB/rel/" 2>/dev/null
 f=$(ls -t "$N/Tester/"Agent*/logs/*.log | head -1)
 iconv -f UTF-16LE -t UTF-8 "$f" | cut -f3- | grep -E "DESEMPENHO|camadas|referencias|camada 3|camada 4" | tail -5 | sed 's/^.*59   //;s/^.*00   //'
