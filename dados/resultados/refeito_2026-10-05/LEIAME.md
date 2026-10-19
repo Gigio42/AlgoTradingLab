@@ -98,3 +98,27 @@ jun/2021. Linha `2020.04.03` de `traco_demo_GARCH.csv`: `prev_dif` = 0,02658,
 sha256:
 - traco_demo_ARIMA.csv f6bf7f50392493f5120711e56f79a1852b1100b26b15db063b49b2236a20cc59
 - traco_demo_GARCH.csv 6719270bbedc6e18e6ba77b00ae3715312589909bcd7c686e9fc21d629723859
+
+## Medidas de risco acrescentadas em 13/10/2026 (texto com foco em volatilidade)
+
+O Cap. III passou a ter a volatilidade e a queda máxima como medidas centrais.
+Arquivos novos, todos sobre os mesmos testes desta pasta (nada foi rodado de novo):
+
+- `testes/comparacoes_risco.csv`: os pares de `testes/pares.txt` mais o cenário de
+  Almeida contra as médias móveis reproduzidas (`testes/pares_risco.txt`), com cinco
+  colunas novas, `vol_a`, `vol_b` e o teste de Pitman-Morgan (`r_pm`, `t_pm`,
+  `p_pm`), calculado em MQL5 (`CompararCurvas`, `Include/Desempenho.mqh`). As 12
+  colunas antigas saíram idênticas às de `comparacoes.csv` (conferido com `diff`).
+  O t do Pitman-Morgan reproduziu o `protecao_pitman_morgan.txt` (awk exploratório).
+- `analise_grades.txt`, bloco 6: volatilidade pareada GARCH × gêmea nos 4 ativos.
+  Blocos 1 a 5 idênticos aos anteriores (conferido com `diff`).
+- `seletividade.txt` (`ferramentas/scripts/seletividade.sh`): oscilação da parte em
+  ações dividida pela que se teria com a mesma exposição em dias quaisquer. A última
+  linha (`fl13of`, médias móveis nas condições de Almeida) vem de
+  `../replica_almeida_2026-09-28/`.
+- `volatilidade_grafico.csv` e `reducao_volatilidade.txt` (14/10/2026,
+  `ferramentas/scripts/resumo_volatilidade.sh`): volatilidade por janela para o
+  gráfico de barras do Cap. III e redução da volatilidade (%) do ARIMA-GARCH contra
+  a gêmea e contra as médias móveis, com o t de Pitman-Morgan. As volatilidades vêm
+  das métricas (`vol_selic`; no cenário de Almeida, `vol_puro`), não do
+  `comparacoes_risco.csv`, que grava só 4 casas.

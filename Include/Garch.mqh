@@ -1,261 +1,148 @@
 //+------------------------------------------------------------------+
-//|                                                        Garch.mqh |
-//|                            Trabalho de Graduacao - FATEC Indaiatuba|
-//+------------------------------------------------------------------+
+//| Garch.mqh                                                        |
+//| GARCH(p,q): variancia condicional dos residuos do ARIMA.         |
 //|                                                                  |
-//|  MODELO GARCH(p,q) — VARIANCIA CONDICIONAL                       |
+//|   sigma2(t) = omega + soma alfa_i e2(t-i) + soma beta_j sigma2(t-j)
 //|                                                                  |
-//|    sigma2(t) = omega + SOMA_i alpha_i * eps2(t-i)                |
-//|                      + SOMA_j beta_j  * sigma2(t-j)              |
-//|                                                                  |
-//|    alpha — REATIVIDADE: quanto a volatilidade responde a um      |
-//|            choque recente                                        |
-//|    beta  — PERSISTENCIA: quanto da volatilidade de ontem         |
-//|            sobrevive hoje                                        |
-//|                                                                  |
-//|  Restricoes obrigatorias para o modelo fazer sentido:            |
-//|    omega > 0, alpha_i >= 0, beta_j >= 0   (variancia positiva)   |
-//|    SOMA(alpha) + SOMA(beta) < 1           (estacionariedade)     |
-//|                                                                  |
-//|  ESTIMACAO: maxima verossimilhanca com restricoes, via ALGLIB    |
-//|  MinBLEIC (Bound and Linear Equality-Inequality Constraints).    |
-//|  As restricoes acima entram diretamente no otimizador, nao como  |
-//|  "clipping" depois do passo — a diferenca importa, porque        |
-//|  clipping deixa o otimizador empurrar o parametro contra a       |
-//|  parede indefinidamente sem nunca convergir.                     |
-//|                                                                  |
-//|  ─────────────────────────────────────────────────────────────   |
-//|  TRUQUE DE ESCALA (importante):                                  |
-//|                                                                  |
-//|  omega tem a mesma unidade da VARIANCIA dos residuos. Se os      |
-//|  residuos forem log-retornos, omega ~ 1e-6; se forem reais,      |
-//|  omega ~ 0,25. Ja alpha e beta sao sempre da ordem de 0,1 a 0,9. |
-//|  Otimizar parametros com escalas tao diferentes e uma receita    |
-//|  para nao convergir.                                             |
-//|                                                                  |
-//|  Por isso otimizamos omega_rel = omega / variancia_amostral, que |
-//|  e adimensional e da mesma ordem de alpha e beta. O modelo fica  |
-//|  numericamente identico e o otimizador passa a funcionar bem     |
-//|  para qualquer ativo e qualquer escala de preco.                 |
-//|  ─────────────────────────────────────────────────────────────   |
-//|  DISTRIBUICAO DOS ERROS (acrescentado em 13/10/2026)             |
-//|                                                                  |
-//|  NORMAL (padrao) e o modelo usado em todos os resultados do TG.  |
-//|  STUDENT troca a verossimilhanca pela da t de Student            |
-//|  padronizada (variancia 1), com nu graus de liberdade estimados  |
-//|  junto com omega, alpha e beta. A t tem caudas mais grossas:     |
-//|  dias extremos pesam menos na estimacao. A equacao da variancia  |
-//|  e a previsao NAO mudam, e sigma2 continua sendo a variancia     |
-//|  condicional do erro nas duas, entao os limiares sao comparaveis.|
-//|                                                                  |
-//|  nu entra no otimizador como eta = 1/nu, na faixa [0,005; 0,45]  |
-//|  (nu de 2,2 a 200), pela mesma razao do truque de escala: eta e  |
-//|  da ordem de alpha e beta, nu nao.                               |
-//|                                                                  |
+//| Maxima verossimilhanca pelo MinBLEIC da ALGLIB, com as restricoes|
+//| omega > 0, alfa e beta >= 0 e soma(alfa) + soma(beta) < 1 dentro |
+//| do otimizador. O otimizador ve omega / variancia amostral, que   |
+//| tem a mesma ordem de grandeza de alfa e beta.                    |
 //+------------------------------------------------------------------+
 #ifndef ALGOTRADINGLAB_GARCH_MQH
 #define ALGOTRADINGLAB_GARCH_MQH
 
 #include <Math\Alglib\alglib.mqh>
-#include <Math\Stat\Math.mqh>
 #include "Estatistica.mqh"
+#include "GarchDistribuicao.mqh"
 
-//+------------------------------------------------------------------+
-//| Distribuicao suposta para os erros                               |
-//+------------------------------------------------------------------+
-enum ENUM_DIST_GARCH
-  {
-   DIST_NORMAL = 0,     // Normal (gaussiana)
-   DIST_STUDENT = 1     // t de Student padronizada (caudas grossas)
-  };
-
-#define GARCH_ETA_MIN 0.005   // nu maximo = 200
-#define GARCH_ETA_MAX 0.45    // nu minimo ~ 2,22 (a variancia exige nu > 2)
-
-//+------------------------------------------------------------------+
-//| Dados passados ao otimizador                                     |
-//+------------------------------------------------------------------+
-//|  A ALGLIB chama nossa funcao objetivo com um CObject generico.   |
-//|  Esta classe e o "pacote" com tudo que a funcao precisa ler.     |
-//+------------------------------------------------------------------+
-class CGarchDados : public CObject
+//--- O que a funcao objetivo precisa ler (a ALGLIB a chama com um CObject)
+class CDadosGarch : public CObject
   {
 public:
-   double            eps2[];        // residuos ao quadrado
-   int               n;             // tamanho de eps2
-   int               p;             // ordem ARCH
-   int               q;             // ordem GARCH
-   int               t0;            // primeiro indice avaliado
-   double            var_amostral;  // variancia amostral dos residuos
-   int               dist;          // ENUM_DIST_GARCH
+   double            erros_quadrado[];
+   int               tamanho;
+   int               p;
+   int               q;
+   int               inicio;               // primeiro periodo avaliado
+   double            variancia_amostral;
+   int               distribuicao;         // ENUM_DISTRIBUICAO_GARCH
 
-                     CGarchDados(void) : n(0), p(1), q(1), t0(1), var_amostral(0.0), dist(DIST_NORMAL) {}
-                    ~CGarchDados(void) { ArrayFree(eps2); }
+                     CDadosGarch(void) : tamanho(0), p(1), q(1), inicio(1), variancia_amostral(0.0),
+                                         distribuicao(DISTRIBUICAO_NORMAL) {}
+                    ~CDadosGarch(void) { ArrayFree(erros_quadrado); }
   };
 
-//+------------------------------------------------------------------+
-//| Funcao objetivo: -log verossimilhanca                            |
-//+------------------------------------------------------------------+
-//|                                                                  |
-//|  NLL = 0.5 * SOMA [ ln(2pi) + ln(sigma2_t) + eps2_t/sigma2_t ]   |
-//|                                                                  |
-//|  MINIMIZAR a NLL equivale a MAXIMIZAR a verossimilhanca.         |
-//|                                                                  |
-//|  (A implementacao anterior calculava a derivada da              |
-//|  log-verossimilhanca e depois SUBTRAIA lr*gradiente, o que       |
-//|  minimizava a verossimilhanca em vez de maximiza-la. Aqui o      |
-//|  sentido fica explicito: devolvemos a NLL e o otimizador         |
-//|  minimiza.)                                                      |
-//|                                                                  |
-//|  par[0]     = omega_rel  (omega = omega_rel * var_amostral)      |
-//|  par[1..p]  = alpha                                              |
-//|  par[p+1..] = beta                                               |
-//|  par[1+p+q] = eta = 1/nu   (so com DIST_STUDENT)                 |
-//|                                                                  |
-//|  Com a t de Student padronizada, cada parcela da NLL vira        |
-//|    -c(nu) + 0.5*ln(sigma2_t)                                     |
-//|           + (nu+1)/2 * ln(1 + eps2_t / ((nu-2)*sigma2_t))        |
-//|  com c(nu) = lnG((nu+1)/2) - lnG(nu/2) - 0.5*ln(pi*(nu-2)).      |
-//|                                                                  |
-//+------------------------------------------------------------------+
-double GarchNLL(CGarchDados &d, const double &par[])
+//--- Menos a log-verossimilhanca. Parametros: omega relativo, alfas, betas e, com a t, eta = 1/nu.
+double MenosLogVerossimilhancaGarch(CDadosGarch &dados, const double &parametros[])
   {
-   int n = d.n;
-   int p = d.p;
-   int q = d.q;
-   bool student = (d.dist == DIST_STUDENT);
+   int n = dados.tamanho;
+   int p = dados.p;
+   int q = dados.q;
+   bool student = (dados.distribuicao == DISTRIBUICAO_STUDENT);
 
-   if(n <= d.t0 || ArraySize(par) < 1 + p + q + (student ? 1 : 0))
+   if(n <= dados.inicio || ArraySize(parametros) < 1 + p + q + (student ? 1 : 0))
       return(1.0e10);
 
-   double nu = 0.0, c_t = 0.0;
+   double graus_liberdade = 0.0, constante_student = 0.0;
    if(student)
      {
-      double eta = par[1 + p + q];
-      if(eta < GARCH_ETA_MIN * 0.999 || eta > GARCH_ETA_MAX * 1.001 || !MathIsValidNumber(eta))
+      double eta = parametros[1 + p + q];
+      if(eta < GARCH_ETA_MINIMO * 0.999 || eta > GARCH_ETA_MAXIMO * 1.001 || !MathIsValidNumber(eta))
          return(1.0e10);
-      nu = 1.0 / eta;
-      c_t = MathGammaLog(0.5 * (nu + 1.0)) - MathGammaLog(0.5 * nu)
-            - 0.5 * MathLog(M_PI * (nu - 2.0));
+      graus_liberdade = 1.0 / eta;
+      constante_student = ConstanteStudent(graus_liberdade);
      }
 
-   double omega = par[0] * d.var_amostral;
-
+   double omega = parametros[0] * dados.variancia_amostral;
    if(omega <= 0.0 || !MathIsValidNumber(omega))
       return(1.0e10);
 
-   double soma_coef = 0.0;
+   double persistencia = 0.0;
    for(int i = 1; i <= p + q; i++)
      {
-      if(par[i] < 0.0 || !MathIsValidNumber(par[i]))
+      if(parametros[i] < 0.0 || !MathIsValidNumber(parametros[i]))
          return(1.0e10);
-      soma_coef += par[i];
+      persistencia += parametros[i];
      }
-
-   //--- Guarda extra: o otimizador respeita a restricao linear, mas
-   //--- pode avaliar pontos ligeiramente fora durante a busca.
-   if(soma_coef >= 1.0)
+   //--- O otimizador pode avaliar pontos um pouco fora da restricao linear
+   if(persistencia >= 1.0)
       return(1.0e10);
 
-   //--- ── Recursao da variancia condicional ──
    double sigma2[];
    ArrayResize(sigma2, n);
+   for(int t = 0; t < dados.inicio; t++)
+      sigma2[t] = dados.variancia_amostral;
 
-   //--- Aquecimento: antes de t0 usamos a variancia amostral.
-   //--- E o procedimento padrao de inicializacao do GARCH.
-   for(int t = 0; t < d.t0; t++)
-      sigma2[t] = d.var_amostral;
-
-   double nll = 0.0;
-   const double LN2PI = MathLog(2.0 * M_PI);
-
-   for(int t = d.t0; t < n; t++)
+   double resultado = 0.0;
+   for(int t = dados.inicio; t < n; t++)
      {
-      double s2 = omega;
-
+      double variancia = omega;
       for(int i = 1; i <= p; i++)
-         s2 += par[i] * d.eps2[t - i];
-
+         variancia += parametros[i] * dados.erros_quadrado[t - i];
       for(int j = 1; j <= q; j++)
-         s2 += par[p + j] * sigma2[t - j];
+         variancia += parametros[p + j] * sigma2[t - j];
 
-      if(s2 <= 0.0 || !MathIsValidNumber(s2))
+      if(variancia <= 0.0 || !MathIsValidNumber(variancia))
          return(1.0e10);
-
-      sigma2[t] = s2;
+      sigma2[t] = variancia;
 
       if(student)
-         nll += -c_t + 0.5 * MathLog(s2)
-                + 0.5 * (nu + 1.0) * MathLog(1.0 + d.eps2[t] / ((nu - 2.0) * s2));
+         resultado -= LogDensidadeStudent(dados.erros_quadrado[t], variancia, graus_liberdade, constante_student);
       else
-         nll += 0.5 * (LN2PI + MathLog(s2) + d.eps2[t] / s2);
+         resultado -= LogDensidadeNormal(dados.erros_quadrado[t], variancia);
      }
 
-   if(!MathIsValidNumber(nll))
-      return(1.0e10);
-
-   return(nll);
+   return(MathIsValidNumber(resultado) ? resultado : 1.0e10);
   }
 
-//+------------------------------------------------------------------+
-//| Adaptador para o otimizador da ALGLIB                            |
-//+------------------------------------------------------------------+
-//|  A ALGLIB invoca Func() com um CRowDouble (ver                   |
-//|  CAlglib::MinBLEICOptimize em alglib.mqh), entao e esta          |
-//|  sobrecarga que precisa ser redefinida.                          |
-//+------------------------------------------------------------------+
-class CGarchObjetivo : public CNDimensional_Func
+class CObjetivoGarch : public CNDimensional_Func
   {
 public:
    virtual void      Func(CRowDouble &x, double &func, CObject &obj);
   };
 
-void CGarchObjetivo::Func(CRowDouble &x, double &func, CObject &obj)
+void CObjetivoGarch::Func(CRowDouble &x, double &func, CObject &obj)
   {
-   CGarchDados *d = dynamic_cast<CGarchDados *>(GetPointer(obj));
-
-   if(d == NULL)
+   CDadosGarch *dados = dynamic_cast<CDadosGarch *>(GetPointer(obj));
+   if(dados == NULL)
      {
       func = 1.0e10;
       return;
      }
 
    int k = x.Size();
-   double par[];
-   ArrayResize(par, k);
+   double parametros[];
+   ArrayResize(parametros, k);
    for(int i = 0; i < k; i++)
-      par[i] = x[i];
+      parametros[i] = x[i];
 
-   func = GarchNLL(d, par);
+   func = MenosLogVerossimilhancaGarch(dados, parametros);
   }
 
-//+------------------------------------------------------------------+
-//| CGarch                                                           |
-//+------------------------------------------------------------------+
 class CGarch
   {
 private:
-   int      m_p;                  // ordem ARCH
-   int      m_q;                  // ordem GARCH
+   int      m_p;
+   int      m_q;
    double   m_omega;
-   double   m_alpha[];
+   double   m_alfa[];
    double   m_beta[];
+   ENUM_DISTRIBUICAO_GARCH m_distribuicao;
+   double   m_graus_liberdade;           // so com a t de Student
 
-   double   m_eps[];              // residuos usados no ajuste
-   double   m_eps2[];             // residuos ao quadrado
-   double   m_sigma2[];           // variancia condicional ajustada
-   double   m_var_amostral;
-   double   m_logL;
-   int      m_t0;
-   int      m_n;
+   double   m_erros[];
+   double   m_erros_quadrado[];
+   double   m_sigma2[];                  // variancia condicional ajustada
+   double   m_variancia_amostral;
+   double   m_log_verossimilhanca;
+   int      m_inicio;
+   int      m_tamanho;
    bool     m_ajustado;
    string   m_erro;
 
-   int      m_max_iter;
+   int      m_iteracoes_maximas;
    double   m_passo_diferencas;
-
-   ENUM_DIST_GARCH m_dist;        // distribuicao suposta para os erros
-   double   m_nu;                 // graus de liberdade (so DIST_STUDENT)
 
    void     RecalcularVariancias(void);
 
@@ -264,103 +151,71 @@ public:
                     ~CGarch(void);
 
    void     Definir(const int p, const int q);
-   void     DefinirOtimizador(const int max_iter, const double passo_dif = 1.0e-6);
-   void     DefinirDistribuicao(const ENUM_DIST_GARCH dist) { m_dist = dist; m_ajustado = false; }
-   ENUM_DIST_GARCH Distribuicao(void) const { return(m_dist); }
-   //--- Graus de liberdade estimados (0 com a distribuicao normal)
-   double   Nu(void) const { return((m_dist == DIST_STUDENT) ? m_nu : 0.0); }
+   void     DefinirOtimizador(const int iteracoes_maximas, const double passo_diferencas = 1.0e-6);
+   void     DefinirDistribuicao(const ENUM_DISTRIBUICAO_GARCH distribuicao) { m_distribuicao = distribuicao; m_ajustado = false; }
 
-   //--- Ajusta aos residuos do ARIMA (ordem cronologica)
+   //--- residuos do ARIMA em ordem cronologica
    bool     Ajustar(const double &residuos[]);
 
-   //--- Previsao da VARIANCIA h passos a frente
-   bool     PreverVariancia(const int passos, double &saida[]);
-   //--- Previsao da VOLATILIDADE (desvio padrao) h passos a frente
-   bool     PreverVolatilidade(const int passos, double &saida[]);
-   //--- Atalho: volatilidade prevista para o proximo periodo
-   double   VolatilidadeProximoPeriodo(void);
-
-   //--- Volatilidade condicional do ultimo periodo observado
+   //--- Um passo a frente: todos os termos ja foram observados, inclusive o ultimo residuo
+   double   VolatilidadeProximoPeriodo(void) const;
    double   VolatilidadeAtual(void) const;
-
-   //--- Serie historica de volatilidade condicional ajustada
    bool     ObterSerieVolatilidade(double &saida[]) const;
-
-   //--- Residuos padronizados eps(t)/sigma(t).
-   //--- Se o GARCH capturou bem a heterocedasticidade, o QUADRADO
-   //--- destes residuos nao deve mais ter autocorrelacao.
+   //--- erro / sigma: o quadrado nao deve ter autocorrelacao se o GARCH capturou a heterocedasticidade
    bool     ObterResiduosPadronizados(double &saida[]) const;
 
    double   Omega(void) const { return(m_omega); }
-   double   Alpha(const int i) const { return((i >= 0 && i < ArraySize(m_alpha)) ? m_alpha[i] : 0.0); }
-   double   Beta(const int j)  const { return((j >= 0 && j < ArraySize(m_beta))  ? m_beta[j]  : 0.0); }
-
-   //--- Persistencia = SOMA(alpha) + SOMA(beta).
-   //--- Proximo de 1 => choques de volatilidade demoram a dissipar.
-   double   Persistencia(void) const;
-
-   //--- Variancia de longo prazo para a qual o modelo converge:
-   //---   omega / (1 - persistencia)
-   double   VarianciaLongoPrazo(void) const;
-
-   double   LogVerossimilhanca(void) const { return(m_logL); }
-   int      NumParametros(void) const { return(1 + m_p + m_q + ((m_dist == DIST_STUDENT) ? 1 : 0)); }
+   double   Alfa(const int i) const { return((i >= 0 && i < ArraySize(m_alfa)) ? m_alfa[i] : 0.0); }
+   double   Beta(const int j) const { return((j >= 0 && j < ArraySize(m_beta)) ? m_beta[j] : 0.0); }
+   double   GrausLiberdade(void) const { return((m_distribuicao == DISTRIBUICAO_STUDENT) ? m_graus_liberdade : 0.0); }
+   double   Persistencia(void) const;          // soma(alfa) + soma(beta)
+   double   VarianciaLongoPrazo(void) const;   // omega / (1 - persistencia)
+   double   LogVerossimilhanca(void) const { return(m_log_verossimilhanca); }
+   int      NumParametros(void) const { return(1 + m_p + m_q + ((m_distribuicao == DISTRIBUICAO_STUDENT) ? 1 : 0)); }
    double   AIC(void) const;
    double   BIC(void) const;
    bool     Ajustado(void) const { return(m_ajustado); }
    string   UltimoErro(void) const { return(m_erro); }
-   int      P(void) const { return(m_p); }
-   int      Q(void) const { return(m_q); }
-
    string   Descricao(void) const;
   };
 
-//+------------------------------------------------------------------+
-CGarch::CGarch(void) : m_p(1), m_q(1), m_omega(0.0), m_var_amostral(0.0),
-                       m_logL(0.0), m_t0(1), m_n(0), m_ajustado(false),
-                       m_erro(""), m_max_iter(200), m_passo_diferencas(1.0e-6),
-                       m_dist(DIST_NORMAL), m_nu(0.0)
+CGarch::CGarch(void) : m_p(1), m_q(1), m_omega(0.0), m_distribuicao(DISTRIBUICAO_NORMAL),
+                       m_graus_liberdade(0.0), m_variancia_amostral(0.0), m_log_verossimilhanca(0.0),
+                       m_inicio(1), m_tamanho(0), m_ajustado(false), m_erro(""),
+                       m_iteracoes_maximas(200), m_passo_diferencas(1.0e-6)
   {
-   ArrayResize(m_alpha, 1);
+   ArrayResize(m_alfa, 1);
    ArrayResize(m_beta, 1);
-   ArrayInitialize(m_alpha, 0.0);
+   ArrayInitialize(m_alfa, 0.0);
    ArrayInitialize(m_beta, 0.0);
   }
 
-//+------------------------------------------------------------------+
 CGarch::~CGarch(void)
   {
-   ArrayFree(m_alpha);
+   ArrayFree(m_alfa);
    ArrayFree(m_beta);
-   ArrayFree(m_eps);
-   ArrayFree(m_eps2);
+   ArrayFree(m_erros);
+   ArrayFree(m_erros_quadrado);
    ArrayFree(m_sigma2);
   }
 
-//+------------------------------------------------------------------+
 void CGarch::Definir(const int p, const int q)
   {
    m_p = MathMax(1, p);
    m_q = MathMax(0, q);
-
-   ArrayResize(m_alpha, m_p);
+   ArrayResize(m_alfa, m_p);
    ArrayResize(m_beta, MathMax(1, m_q));
-   ArrayInitialize(m_alpha, 0.0);
+   ArrayInitialize(m_alfa, 0.0);
    ArrayInitialize(m_beta, 0.0);
-
    m_ajustado = false;
   }
 
-//+------------------------------------------------------------------+
-void CGarch::DefinirOtimizador(const int max_iter, const double passo_dif)
+void CGarch::DefinirOtimizador(const int iteracoes_maximas, const double passo_diferencas)
   {
-   m_max_iter = MathMax(10, max_iter);
-   m_passo_diferencas = (passo_dif > 0.0) ? passo_dif : 1.0e-6;
+   m_iteracoes_maximas = MathMax(10, iteracoes_maximas);
+   m_passo_diferencas = (passo_diferencas > 0.0) ? passo_diferencas : 1.0e-6;
   }
 
-//+------------------------------------------------------------------+
-//| Ajuste por maxima verossimilhanca com restricoes                 |
-//+------------------------------------------------------------------+
 bool CGarch::Ajustar(const double &residuos[])
   {
    m_ajustado = false;
@@ -368,137 +223,110 @@ bool CGarch::Ajustar(const double &residuos[])
 
    int n = ArraySize(residuos);
    int minimo = m_p + m_q + 30;
-
    if(n < minimo)
      {
       m_erro = StringFormat("Residuos: %d pontos; minimo %d", n, minimo);
       return(false);
      }
 
-   //--- Guarda os residuos e seus quadrados
-   ArrayResize(m_eps, n);
-   ArrayResize(m_eps2, n);
-   ArrayCopy(m_eps, residuos);
-
+   ArrayResize(m_erros, n);
+   ArrayResize(m_erros_quadrado, n);
+   ArrayCopy(m_erros, residuos);
    for(int i = 0; i < n; i++)
-      m_eps2[i] = residuos[i] * residuos[i];
+      m_erros_quadrado[i] = residuos[i] * residuos[i];
 
-   m_n = n;
-   m_t0 = MathMax(m_p, m_q);
-   if(m_t0 < 1)
-      m_t0 = 1;
+   m_tamanho = n;
+   m_inicio = MathMax(1, MathMax(m_p, m_q));
 
-   //--- Variancia amostral: base do truque de escala e da
-   //--- inicializacao da recursao
    double soma = 0.0;
    for(int i = 0; i < n; i++)
-      soma += m_eps2[i];
-   m_var_amostral = soma / (double)n;
-
-   if(m_var_amostral <= 0.0 || !MathIsValidNumber(m_var_amostral))
+      soma += m_erros_quadrado[i];
+   m_variancia_amostral = soma / (double)n;
+   if(m_variancia_amostral <= 0.0 || !MathIsValidNumber(m_variancia_amostral))
      {
       m_erro = "Variancia amostral dos residuos nula ou invalida";
       return(false);
      }
 
-   //--- ── Prepara o pacote de dados para o otimizador ──
-   CGarchDados dados;
-   ArrayResize(dados.eps2, n);
-   ArrayCopy(dados.eps2, m_eps2);
-   dados.n = n;
+   CDadosGarch dados;
+   ArrayResize(dados.erros_quadrado, n);
+   ArrayCopy(dados.erros_quadrado, m_erros_quadrado);
+   dados.tamanho = n;
    dados.p = m_p;
    dados.q = m_q;
-   dados.t0 = m_t0;
-   dados.var_amostral = m_var_amostral;
-   dados.dist = m_dist;
+   dados.inicio = m_inicio;
+   dados.variancia_amostral = m_variancia_amostral;
+   dados.distribuicao = m_distribuicao;
 
-   bool student = (m_dist == DIST_STUDENT);
-   int k_garch = 1 + m_p + m_q;              // omega_rel, alphas, betas
-   int k = k_garch + (student ? 1 : 0);      // + eta = 1/nu
+   bool student = (m_distribuicao == DISTRIBUICAO_STUDENT);
+   int parametros_garch = 1 + m_p + m_q;
+   int k = parametros_garch + (student ? 1 : 0);
 
-   //--- ── Ponto inicial ──
-   //--- Valores tipicos de series financeiras diarias:
-   //--- persistencia alta (beta ~ 0,85) e reatividade baixa
-   //--- (alpha ~ 0,10). Partir dali acelera muito a convergencia.
+   //--- Partida tipica de serie diaria: alfa ~ 0,10 e beta ~ 0,85; com a t, nu ~ 6,7
    double x[];
    ArrayResize(x, k);
-   x[0] = 0.05;                                   // omega_rel
+   x[0] = 0.05;
    for(int i = 1; i <= m_p; i++)
       x[i] = 0.10 / (double)m_p;
    for(int j = 1; j <= m_q; j++)
       x[m_p + j] = 0.85 / (double)m_q;
    if(student)
-      x[k_garch] = 0.15;                          // eta: nu ~ 6,7, tipico de acoes
+      x[parametros_garch] = 0.15;
 
-   //--- ── Restricoes de caixa ──
-   double bndl[], bndu[];
-   ArrayResize(bndl, k);
-   ArrayResize(bndu, k);
-
-   bndl[0] = 1.0e-8;   bndu[0] = 10.0;            // omega_rel > 0
-   for(int i = 1; i < k_garch; i++)
+   double limite_inferior[], limite_superior[];
+   ArrayResize(limite_inferior, k);
+   ArrayResize(limite_superior, k);
+   limite_inferior[0] = 1.0e-8;
+   limite_superior[0] = 10.0;
+   for(int i = 1; i < parametros_garch; i++)
      {
-      bndl[i] = 0.0;                              // alpha, beta >= 0
-      bndu[i] = 1.0;
+      limite_inferior[i] = 0.0;
+      limite_superior[i] = 1.0;
      }
    if(student)
      {
-      bndl[k_garch] = GARCH_ETA_MIN;              // nu <= 200
-      bndu[k_garch] = GARCH_ETA_MAX;              // nu >= 2,22
+      limite_inferior[parametros_garch] = GARCH_ETA_MINIMO;
+      limite_superior[parametros_garch] = GARCH_ETA_MAXIMO;
      }
 
-   //--- ── Restricao linear: SOMA(alpha) + SOMA(beta) <= 0,9999 ──
-   //--- Esta e a condicao de estacionariedade da variancia. Sem
-   //--- ela o modelo pode divergir para volatilidade infinita.
-   CMatrixDouble lc(1, k + 1);
+   //--- soma(alfa) + soma(beta) <= 0,9999: estacionariedade da variancia
+   CMatrixDouble restricao(1, k + 1);
    for(int i = 0; i <= k; i++)
-      lc.Set(0, i, 0.0);
-   for(int i = 1; i < k_garch; i++)
-      lc.Set(0, i, 1.0);        // coeficientes de alpha e beta (eta fica fora)
-   lc.Set(0, k, 0.9999);        // lado direito
+      restricao.Set(0, i, 0.0);
+   for(int i = 1; i < parametros_garch; i++)
+      restricao.Set(0, i, 1.0);
+   restricao.Set(0, k, 0.9999);
+   int tipo_restricao[];
+   ArrayResize(tipo_restricao, 1);
+   tipo_restricao[0] = -1;   // menor ou igual
 
-   int ct[];
-   ArrayResize(ct, 1);
-   ct[0] = -1;                  // -1 significa "<="
-
-   //--- ── Otimiza ──
-   //--- CreateF usa diferencas finitas: nao precisamos derivar o
-   //--- gradiente da verossimilhanca a mao. Com apenas 3 parametros
-   //--- (GARCH(1,1)) o custo e irrelevante e elimina uma fonte
-   //--- classica de erro algebrico.
+   //--- Gradiente por diferencas finitas (CreateF): sem derivada escrita a mao
    CMinBLEICStateShell estado;
    CMinBLEICReportShell relatorio;
-   CGarchObjetivo objetivo;
+   CObjetivoGarch objetivo;
    CNDimensional_Rep repositor;
 
    CAlglib::MinBLEICCreateF(k, x, m_passo_diferencas, estado);
-   CAlglib::MinBLEICSetBC(estado, bndl, bndu);
-   CAlglib::MinBLEICSetLC(estado, lc, ct, 1);
+   CAlglib::MinBLEICSetBC(estado, limite_inferior, limite_superior);
+   CAlglib::MinBLEICSetLC(estado, restricao, tipo_restricao, 1);
    CAlglib::MinBLEICSetInnerCond(estado, 0.0, 0.0, 1.0e-8);
    CAlglib::MinBLEICSetOuterCond(estado, 1.0e-8, 1.0e-8);
-   CAlglib::MinBLEICSetMaxIts(estado, m_max_iter);
-
+   CAlglib::MinBLEICSetMaxIts(estado, m_iteracoes_maximas);
    CAlglib::MinBLEICOptimize(estado, objetivo, repositor, false, dados);
 
    double x_final[];
    CAlglib::MinBLEICResults(estado, x_final, relatorio);
-
-   int cod = relatorio.GetTerminationType();
-
-   //--- Codigos <= 0 indicam falha; 1..5 e 7 sao terminacoes normais
-   if(cod <= 0 || ArraySize(x_final) < k)
+   int codigo = relatorio.GetTerminationType();
+   if(codigo <= 0 || ArraySize(x_final) < k)
      {
-      m_erro = StringFormat("Otimizador falhou (codigo %d)", cod);
+      m_erro = StringFormat("Otimizador falhou (codigo %d)", codigo);
       return(false);
      }
 
-   //--- ── Extrai os parametros ──
-   m_omega = x_final[0] * m_var_amostral;
-
-   ArrayResize(m_alpha, m_p);
+   m_omega = x_final[0] * m_variancia_amostral;
+   ArrayResize(m_alfa, m_p);
    for(int i = 0; i < m_p; i++)
-      m_alpha[i] = x_final[1 + i];
-
+      m_alfa[i] = x_final[1 + i];
    ArrayResize(m_beta, MathMax(1, m_q));
    ArrayInitialize(m_beta, 0.0);
    for(int j = 0; j < m_q; j++)
@@ -510,267 +338,155 @@ bool CGarch::Ajustar(const double &residuos[])
       return(false);
      }
 
-   m_nu = 0.0;
+   m_graus_liberdade = 0.0;
    if(student)
      {
-      double eta = x_final[k_garch];
+      double eta = x_final[parametros_garch];
       if(eta <= 0.0 || !MathIsValidNumber(eta))
         {
          m_erro = "Graus de liberdade estimados invalidos";
          return(false);
         }
-      m_nu = 1.0 / eta;
+      m_graus_liberdade = 1.0 / eta;
      }
 
    RecalcularVariancias();
-
    m_ajustado = true;
    return(true);
   }
 
-//+------------------------------------------------------------------+
-//| Reconstroi a serie de variancia e a verossimilhanca finais       |
-//+------------------------------------------------------------------+
 void CGarch::RecalcularVariancias(void)
   {
-   ArrayResize(m_sigma2, m_n);
+   ArrayResize(m_sigma2, m_tamanho);
+   for(int t = 0; t < m_inicio; t++)
+      m_sigma2[t] = m_variancia_amostral;
 
-   for(int t = 0; t < m_t0; t++)
-      m_sigma2[t] = m_var_amostral;
+   bool student = (m_distribuicao == DISTRIBUICAO_STUDENT && m_graus_liberdade > 2.0);
+   double constante_student = student ? ConstanteStudent(m_graus_liberdade) : 0.0;
+   double log_verossimilhanca = 0.0;
 
-   const double LN2PI = MathLog(2.0 * M_PI);
-   double logL = 0.0;
-
-   bool student = (m_dist == DIST_STUDENT && m_nu > 2.0);
-   double c_t = 0.0;
-   if(student)
-      c_t = MathGammaLog(0.5 * (m_nu + 1.0)) - MathGammaLog(0.5 * m_nu)
-            - 0.5 * MathLog(M_PI * (m_nu - 2.0));
-
-   for(int t = m_t0; t < m_n; t++)
+   for(int t = m_inicio; t < m_tamanho; t++)
      {
-      double s2 = m_omega;
-
+      double variancia = m_omega;
       for(int i = 1; i <= m_p; i++)
-         s2 += m_alpha[i - 1] * m_eps2[t - i];
-
+         variancia += m_alfa[i - 1] * m_erros_quadrado[t - i];
       for(int j = 1; j <= m_q; j++)
-         s2 += m_beta[j - 1] * m_sigma2[t - j];
-
-      m_sigma2[t] = MathMax(s2, 1.0e-300);
+         variancia += m_beta[j - 1] * m_sigma2[t - j];
+      m_sigma2[t] = MathMax(variancia, 1.0e-300);
 
       if(student)
-         logL += c_t - 0.5 * MathLog(m_sigma2[t])
-                 - 0.5 * (m_nu + 1.0) * MathLog(1.0 + m_eps2[t] / ((m_nu - 2.0) * m_sigma2[t]));
+         log_verossimilhanca += LogDensidadeStudent(m_erros_quadrado[t], m_sigma2[t], m_graus_liberdade, constante_student);
       else
-         logL += -0.5 * (LN2PI + MathLog(m_sigma2[t]) + m_eps2[t] / m_sigma2[t]);
+         log_verossimilhanca += LogDensidadeNormal(m_erros_quadrado[t], m_sigma2[t]);
      }
 
-   m_logL = logL;
+   m_log_verossimilhanca = log_verossimilhanca;
   }
 
-//+------------------------------------------------------------------+
-//| PREVISAO DA VARIANCIA                                            |
-//+------------------------------------------------------------------+
-//|                                                                  |
-//|  Um passo a frente (h=1) — TODOS os termos sao conhecidos:       |
-//|                                                                  |
-//|    sigma2(N) = omega + SOMA alpha_i*eps2(N-i)                    |
-//|                      + SOMA beta_j*sigma2(N-j)                   |
-//|                                                                  |
-//|  O erro eps(N-1) JA FOI OBSERVADO — e o ultimo residuo do ARIMA. |
-//|  (A implementacao anterior zerava o termo ARCH na previsao       |
-//|  alegando que "o erro futuro e desconhecido". Isso confundia     |
-//|  eps(N), de fato desconhecido, com eps(N-1), que e dado. O       |
-//|  efeito era subestimar a volatilidade de forma sistematica.)     |
-//|                                                                  |
-//|  Varios passos a frente (h>1) — o erro futuro entra pelo seu     |
-//|  valor esperado, que e a propria variancia prevista:             |
-//|                                                                  |
-//|    E[eps2(N+h)] = sigma2(N+h)                                    |
-//|                                                                  |
-//+------------------------------------------------------------------+
-bool CGarch::PreverVariancia(const int passos, double &saida[])
+double CGarch::VolatilidadeProximoPeriodo(void) const
   {
-   if(!m_ajustado || passos <= 0)
-      return(false);
-
-   int total = m_n + passos;
-
-   //--- Series estendidas: passado observado + futuro previsto
-   double eps2_ext[], sig2_ext[];
-   ArrayResize(eps2_ext, total);
-   ArrayResize(sig2_ext, total);
-
-   for(int t = 0; t < m_n; t++)
-     {
-      eps2_ext[t] = m_eps2[t];
-      sig2_ext[t] = m_sigma2[t];
-     }
-
-   for(int h = 0; h < passos; h++)
-     {
-      int t = m_n + h;
-      double s2 = m_omega;
-
-      for(int i = 1; i <= m_p; i++)
-         s2 += m_alpha[i - 1] * eps2_ext[t - i];
-
-      for(int j = 1; j <= m_q; j++)
-         s2 += m_beta[j - 1] * sig2_ext[t - j];
-
-      s2 = MathMax(s2, 1.0e-300);
-
-      sig2_ext[t] = s2;
-      //--- Valor esperado do quadrado do erro futuro
-      eps2_ext[t] = s2;
-     }
-
-   ArrayResize(saida, passos);
-   for(int h = 0; h < passos; h++)
-      saida[h] = sig2_ext[m_n + h];
-
-   return(true);
-  }
-
-//+------------------------------------------------------------------+
-bool CGarch::PreverVolatilidade(const int passos, double &saida[])
-  {
-   double var[];
-   if(!PreverVariancia(passos, var))
-      return(false);
-
-   int n = ArraySize(var);
-   ArrayResize(saida, n);
-
-   for(int i = 0; i < n; i++)
-      saida[i] = MathSqrt(var[i]);
-
-   return(true);
-  }
-
-//+------------------------------------------------------------------+
-double CGarch::VolatilidadeProximoPeriodo(void)
-  {
-   double vol[];
-   if(!PreverVolatilidade(1, vol) || ArraySize(vol) < 1)
+   if(!m_ajustado)
       return(0.0);
 
-   return(vol[0]);
+   double variancia = m_omega;
+   for(int i = 1; i <= m_p; i++)
+      variancia += m_alfa[i - 1] * m_erros_quadrado[m_tamanho - i];
+   for(int j = 1; j <= m_q; j++)
+      variancia += m_beta[j - 1] * m_sigma2[m_tamanho - j];
+
+   return(MathSqrt(MathMax(variancia, 1.0e-300)));
   }
 
-//+------------------------------------------------------------------+
 double CGarch::VolatilidadeAtual(void) const
   {
    int n = ArraySize(m_sigma2);
    if(!m_ajustado || n <= 0)
       return(0.0);
-
    return(MathSqrt(m_sigma2[n - 1]));
   }
 
-//+------------------------------------------------------------------+
 bool CGarch::ObterSerieVolatilidade(double &saida[]) const
   {
    if(!m_ajustado)
       return(false);
 
-   int n = ArraySize(m_sigma2) - m_t0;
+   int n = ArraySize(m_sigma2) - m_inicio;
    if(n <= 0)
       return(false);
 
    ArrayResize(saida, n);
    for(int i = 0; i < n; i++)
-      saida[i] = MathSqrt(m_sigma2[m_t0 + i]);
-
+      saida[i] = MathSqrt(m_sigma2[m_inicio + i]);
    return(true);
   }
 
-//+------------------------------------------------------------------+
 bool CGarch::ObterResiduosPadronizados(double &saida[]) const
   {
    if(!m_ajustado)
       return(false);
 
-   int n = m_n - m_t0;
+   int n = m_tamanho - m_inicio;
    if(n <= 0)
       return(false);
 
    ArrayResize(saida, n);
    for(int i = 0; i < n; i++)
      {
-      int t = m_t0 + i;
-      double s = MathSqrt(m_sigma2[t]);
-      saida[i] = (s > 0.0) ? m_eps[t] / s : 0.0;
+      int t = m_inicio + i;
+      double desvio = MathSqrt(m_sigma2[t]);
+      saida[i] = (desvio > 0.0) ? m_erros[t] / desvio : 0.0;
      }
-
    return(true);
   }
 
-//+------------------------------------------------------------------+
 double CGarch::Persistencia(void) const
   {
    double soma = 0.0;
-
    for(int i = 0; i < m_p; i++)
-      soma += m_alpha[i];
+      soma += m_alfa[i];
    for(int j = 0; j < m_q; j++)
       soma += m_beta[j];
-
    return(soma);
   }
 
-//+------------------------------------------------------------------+
 double CGarch::VarianciaLongoPrazo(void) const
   {
-   double persist = Persistencia();
-
-   if(persist >= 1.0 || persist < 0.0)
-      return(m_var_amostral);
-
-   return(m_omega / (1.0 - persist));
+   double persistencia = Persistencia();
+   if(persistencia >= 1.0 || persistencia < 0.0)
+      return(m_variancia_amostral);
+   return(m_omega / (1.0 - persistencia));
   }
 
-//+------------------------------------------------------------------+
 double CGarch::AIC(void) const
   {
    if(!m_ajustado)
       return(DBL_MAX);
-   return(CalcularAIC(m_logL, NumParametros()));
+   return(CalcularAIC(m_log_verossimilhanca, NumParametros()));
   }
 
-//+------------------------------------------------------------------+
 double CGarch::BIC(void) const
   {
    if(!m_ajustado)
       return(DBL_MAX);
-   return(CalcularBIC(m_logL, NumParametros(), m_n - m_t0));
+   return(CalcularBIC(m_log_verossimilhanca, NumParametros(), m_tamanho - m_inicio));
   }
 
-//+------------------------------------------------------------------+
 string CGarch::Descricao(void) const
   {
-   string s = StringFormat("GARCH(%d,%d)", m_p, m_q);
-
+   string texto = StringFormat("GARCH(%d,%d)", m_p, m_q);
    if(!m_ajustado)
-      return(s + " [nao ajustado: " + m_erro + "]");
+      return(texto + " [nao ajustado: " + m_erro + "]");
 
-   s += StringFormat(" omega=%.10f", m_omega);
-
+   texto += StringFormat(" omega=%.10f", m_omega);
    for(int i = 0; i < m_p; i++)
-      s += StringFormat(" alpha%d=%.6f", i + 1, m_alpha[i]);
+      texto += StringFormat(" alpha%d=%.6f", i + 1, m_alfa[i]);
    for(int j = 0; j < m_q; j++)
-      s += StringFormat(" beta%d=%.6f", j + 1, m_beta[j]);
-
-   if(m_dist == DIST_STUDENT)
-      s += StringFormat(" nu=%.3f", m_nu);
-
-   s += StringFormat(" | persist=%.6f volLP=%.6f logL=%.3f AIC=%.3f",
-                     Persistencia(), MathSqrt(VarianciaLongoPrazo()),
-                     m_logL, AIC());
-
-   return(s);
+      texto += StringFormat(" beta%d=%.6f", j + 1, m_beta[j]);
+   if(m_distribuicao == DISTRIBUICAO_STUDENT)
+      texto += StringFormat(" nu=%.3f", m_graus_liberdade);
+   texto += StringFormat(" | persist=%.6f volLP=%.6f logL=%.3f AIC=%.3f",
+                         Persistencia(), MathSqrt(VarianciaLongoPrazo()), m_log_verossimilhanca, AIC());
+   return(texto);
   }
 
-#endif // ALGOTRADINGLAB_GARCH_MQH
-//+------------------------------------------------------------------+
+#endif

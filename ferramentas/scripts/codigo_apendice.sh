@@ -7,7 +7,9 @@
 #      O que fica de fora e log, diagnostico, traco e avaliacao no testador,
 #      nada que participe da decisao de operar.
 #   2) remove os comentarios (sem_comentarios.sh).
-# A listagem resultante compila sozinha (conferido em 05/10/2026).
+#   3) bloco de if/else que ficou com uma instrucao so vira a forma sem chaves,
+#      e some a linha em branco logo depois de { ou antes de }.
+# A listagem resultante compila sozinha (conferido em 18/10/2026).
 #   uso: codigo_apendice.sh EA.mq5 > saida.mq5
 D=$(dirname "$0")
 awk '
@@ -20,5 +22,7 @@ pula                 { next }
   sub(/^[ \t]*\/\/@apendice: /, ""); print ind $0; next
 }
 { print }' "$1" > "${TMPDIR:-/tmp}/apendice_$$.mq5"
-bash "$D/sem_comentarios.sh" "${TMPDIR:-/tmp}/apendice_$$.mq5"
+bash "$D/sem_comentarios.sh" "${TMPDIR:-/tmp}/apendice_$$.mq5" | perl -0pe '
+  s/^([ ]*(?:if|else)\b[^\n]*\n)([ ]*)\{\n([ ]*[^\n{}]+\n)\2\}\n/$1$3/mg;
+  s/\{\n\n/{\n/g; s/\n\n([ ]*\})/\n$1/g'
 rm -f "${TMPDIR:-/tmp}/apendice_$$.mq5"

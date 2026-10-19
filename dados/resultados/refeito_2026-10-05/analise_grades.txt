@@ -77,3 +77,30 @@ USIM5 T3         344    0.21    0.31 |      688   -0.01    0.30
 POMO4 T1         344    0.41    0.42 |      688    0.63    0.66
 POMO4 T2         344   -0.13   -0.06 |      688   -0.23   -0.03
 POMO4 T3         344    0.31    0.50 |      688    0.08    0.35
+
+=== 6. VOLATILIDADE PAREADA (com GARCH - gemea; acrescentado em 13/10/2026) ===
+ativo periodo  reduz    n    dVol  reduziu_vol
+PETR4 T1        sim  544  -0.147        0.954
+PETR4 T1        nao  128   0.002        0.445
+PETR4 T2        sim  544  -0.231        0.989
+PETR4 T2        nao  128  -0.002        0.523
+PETR4 T3        sim  544  -0.066        0.743
+PETR4 T3        nao  128   0.000        0.484
+VALE3 T1        sim  544  -0.087        0.967
+VALE3 T1        nao  128   0.000        0.492
+VALE3 T2        sim  544  -0.192        0.991
+VALE3 T2        nao  128  -0.003        0.539
+VALE3 T3        sim  544  -0.001        0.513
+VALE3 T3        nao  128   0.000        0.328
+USIM5 T1        sim  544  -0.156        0.974
+USIM5 T1        nao  128   0.001        0.469
+USIM5 T2        sim  544  -0.364        0.996
+USIM5 T2        nao  128  -0.006        0.570
+USIM5 T3        sim  544  -0.171        0.993
+USIM5 T3        nao  128  -0.001        0.570
+POMO4 T1        sim  544  -0.134        0.956
+POMO4 T1        nao  128   0.003        0.312
+POMO4 T2        sim  544  -0.136        0.974
+POMO4 T2        nao  128  -0.002        0.570
+POMO4 T3        sim  544  -0.096        0.950
+POMO4 T3        nao  128   0.000        0.469

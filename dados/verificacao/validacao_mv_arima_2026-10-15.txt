@@ -1,0 +1,30 @@
+========= HANNAN-RISSANEN x MAXIMA VEROSSIMILHANCA CONDICIONAL =========
+
+--- 1) Series da Tabela 1 (N = 4000) ---
+  ARMA(1,1) verdadeiro: phi1=0.600 theta1=0.400 | AR(2) verdadeiro: phi1=0.500 phi2=-0.300
+  HR: ARMA(1,1) phi1=0.5799 theta1=0.4105 logL=-5599.109 | AR(2) phi1=0.4815 phi2=-0.2891 logL=-5658.605
+  MV: ARMA(1,1) phi1=0.5771 theta1=0.4135 logL=-5599.089 | AR(2) phi1=0.4815 phi2=-0.2891 logL=-5658.605
+
+--- 2) Monte Carlo, janela de 240, 300 replicas por caso ---
+  ARMA(1,1) phi=0.6 theta=0.4    HR: rmse_phi=0.0699 rmse_theta=0.0960 (ok 300) | MV: rmse_phi=0.0672 rmse_theta=0.0749 (ok 300) | AIC_MV<=AIC_HR em 300 de 300 | MV voltou ao HR em 0 de 300
+  MA(1) theta=0.5                HR: rmse_phi=0.0000 rmse_theta=0.0707 (ok 300) | MV: rmse_phi=0.0000 rmse_theta=0.0555 (ok 300) | AIC_MV<=AIC_HR em 300 de 300 | MV voltou ao HR em 0 de 300
+  AR(1) phi=0.1 (fraco)          HR: rmse_phi=0.0612 rmse_theta=0.0000 (ok 300) | MV: rmse_phi=0.0613 rmse_theta=0.0000 (ok 300) | AIC_MV<=AIC_HR em 300 de 300 | MV voltou ao HR em 0 de 300
+  ARMA(1,1) phi=0.3 theta=-0.2   HR: rmse_phi=0.2656 rmse_theta=0.2611 (ok 300) | MV: rmse_phi=0.4768 rmse_theta=0.4812 (ok 300) | AIC_MV<=AIC_HR em 300 de 300 | MV voltou ao HR em 0 de 300
+
+--- 3) Selecao de ordens pelo AIC (grade 0..4 x 0..4), janela de 240 ---
+  ARMA(1,1) phi=0.6 theta=0.4    ordem certa (1,1): HR 60 de 150 (40.0%) | MV 18 de 150 (12.0%)
+  AR(1) phi=0.3                  ordem certa (1,0): HR 87 de 150 (58.0%) | MV 12 de 150 (8.0%)
+
+--- 4) Tempo medio por ajuste, janela de 240 (200 ajustes por celula) ---
+  ARMA(1,0): HR 11 us | MV 374 us | razao 34.5x
+  ARMA(1,1): HR 596 us | MV 3403 us | razao 5.7x
+  ARMA(2,2): HR 608 us | MV 29786 us | razao 49.0x
+  ARMA(4,4): HR 656 us | MV 128591 us | razao 195.9x
+
+--- 5) PETR4_OFICIAL, ate 500 pregoes disponiveis no testador, ARIMA(1,1,1) com constante ---
+  Pregoes copiados: 428
+  HR: ARIMA(1,1,1) c=0.00051786 phi1=0.174825 theta1=-0.100035 | sigma2=0.0002671746 logL=1148.013 AIC=-2288.025 BIC=-2271.808 n=426
+  MV: ARIMA(1,1,1) c=0.00024307 phi1=0.652219 theta1=-0.572239 | sigma2=0.0002666025 logL=1148.469 AIC=-2288.939 BIC=-2272.721 n=426
+
+Total: MV tentado 9503 vezes, voltou ao HR em 32 (0.34%)
+================ FIM ================

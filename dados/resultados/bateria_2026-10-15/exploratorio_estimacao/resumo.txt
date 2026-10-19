@@ -1,0 +1,74 @@
+=== EXPLORATORIO: estimacao do ARIMA x criterio de ordens (camada 1 = cru; camada 3 = com Selic) ===
+Robos escolhidos com HR + AIC (bateria de 15/10), sem reotimizar. Exploratorio: nao muda a decisao.
+
+per  robo     comb     ret_cru     queda       vol ret_selic  acerto    oper
+T1   GR       HRAIC      -8.4%     17.5%     10.5%     28.7%   49.8%     263
+T1   GR       HRBIC     -11.4%     21.9%     10.3%     25.5%   51.2%     258
+T1   GR       MVAIC     -22.2%     27.8%     11.0%      8.9%   44.5%     265
+T1   GR       MVBIC       2.0%     13.7%     10.3%     43.8%   53.0%     270
+T1   GRgemeo  HRAIC       7.2%     38.1%     28.2%     19.8%   50.3%     306
+T1   GRgemeo  HRBIC      -5.6%     52.2%     25.0%      7.6%   52.1%     286
+T1   GRgemeo  MVAIC     -58.6%     68.4%     27.7%    -53.8%   44.6%     307
+T1   GRgemeo  MVBIC     -10.5%     52.8%     25.5%      0.5%   52.5%     305
+T1   AR       HRAIC     -12.7%     45.1%     27.5%     -2.1%   50.3%     320
+T1   AR       HRBIC     -45.8%     58.6%     24.7%    -38.3%   48.3%     298
+T1   AR       MVAIC     -34.4%     55.4%     27.2%    -27.1%   46.9%     322
+T1   AR       MVBIC     -42.7%     59.7%     25.1%    -35.5%   49.3%     304
+
+T2   GR       HRAIC     -13.8%     28.6%     14.1%     15.8%   42.1%     140
+T2   GR       HRBIC     -25.3%     38.1%     14.5%      1.1%   39.1%     133
+T2   GR       MVAIC     -12.3%     36.2%     14.0%     18.3%   46.0%     139
+T2   GR       MVBIC     -30.2%     43.1%     14.5%     -5.5%   39.4%     132
+T2   GRgemeo  HRAIC      -9.7%     51.9%     35.1%     -3.7%   45.9%     266
+T2   GRgemeo  HRBIC     -47.9%     71.3%     36.2%    -43.9%   44.7%     255
+T2   GRgemeo  MVAIC       7.1%     63.8%     38.5%     15.2%   45.1%     253
+T2   GRgemeo  MVBIC     -59.7%     74.2%     36.7%    -56.6%   44.0%     252
+T2   AR       HRAIC     -35.8%     54.5%     37.8%    -30.5%   47.7%     266
+T2   AR       HRBIC     -63.4%     74.0%     39.1%    -60.4%   45.5%     253
+T2   AR       MVAIC     -37.3%     65.4%     38.3%    -32.5%   45.8%     273
+T2   AR       MVBIC     -73.6%     78.4%     39.1%    -71.5%   44.4%     252
+
+R6   GR       HRAIC      42.9%     40.2%     16.3%    114.1%   55.6%     223
+R6   GR       HRBIC      38.3%     38.2%     15.3%    109.5%   58.7%     237
+R6   GR       MVAIC      25.8%     45.2%     17.1%     88.9%   54.8%     230
+R6   GR       MVBIC      39.9%     38.2%     14.8%    113.0%   57.7%     246
+R6   GRgemeo  HRAIC     -50.1%     79.3%     31.4%    -46.5%   52.4%     469
+R6   GRgemeo  HRBIC      72.5%     49.1%     30.1%     83.4%   54.9%     474
+R6   GRgemeo  MVAIC     -24.6%     58.6%     30.4%    -20.6%   53.6%     498
+R6   GRgemeo  MVBIC      82.3%     43.1%     29.9%     92.1%   55.4%     484
+R6   AR       HRAIC      95.7%     40.5%     32.0%    114.6%   55.7%     244
+R6   AR       HRBIC      28.1%     48.0%     32.4%     48.8%   58.4%     101
+R6   AR       MVAIC      -2.0%     38.3%     31.5%      2.1%   53.7%     428
+R6   AR       MVBIC       9.4%     44.6%     32.3%     25.5%   57.0%     135
+
+T3   GR       HRAIC      -7.4%     12.2%      9.2%      9.6%   43.2%      37
+T3   GR       HRBIC      -6.5%     13.9%      8.3%     13.3%   40.9%      22
+T3   GR       MVAIC     -13.1%     17.8%     10.4%      1.8%   36.7%      49
+T3   GR       MVBIC       2.0%      9.6%      8.1%     23.0%   50.0%      24
+T3   GRgemeo  HRAIC      14.2%     20.1%     22.0%     24.1%   41.3%      46
+T3   GRgemeo  HRBIC       4.5%     22.7%     23.3%     13.7%   37.0%      27
+T3   GRgemeo  MVAIC       0.5%     24.0%     21.7%      7.7%   39.1%      64
+T3   GRgemeo  MVBIC      -3.1%     22.5%     23.6%      4.6%   41.9%      31
+T3   AR       HRAIC      14.2%     20.1%     22.0%     24.1%   41.3%      46
+T3   AR       HRBIC       4.5%     22.7%     23.3%     13.7%   37.0%      27
+T3   AR       MVAIC       0.5%     24.0%     21.7%      7.7%   39.1%      64
+T3   AR       MVBIC      -3.1%     22.5%     23.6%      4.6%   41.9%      31
+
+T5   GR       HRAIC     -17.6%     34.5%     18.6%    -14.1%   56.0%      75
+T5   GR       HRBIC      -3.7%     34.5%     19.6%      0.5%   67.7%      62
+T5   GR       MVAIC     -11.2%     34.6%     18.4%     -7.8%   58.2%      91
+T5   GR       MVBIC     -11.3%     33.7%     17.9%     -7.6%   60.6%      71
+T5   GRgemeo  HRAIC     -26.2%     53.7%     37.8%    -26.6%   56.0%      84
+T5   GRgemeo  HRBIC       9.6%     55.3%     41.4%      9.5%   64.4%      73
+T5   GRgemeo  MVAIC     -13.3%     48.7%     36.2%    -14.7%   55.6%      99
+T5   GRgemeo  MVBIC     -10.6%     53.6%     38.9%    -11.2%   62.5%      80
+T5   AR       HRAIC     -44.1%     60.0%     39.0%    -44.3%   56.6%      76
+T5   AR       HRBIC     -26.0%     58.5%     39.2%    -26.2%   61.6%      73
+T5   AR       MVAIC     -12.5%     43.5%     37.4%    -13.9%   60.6%      94
+T5   AR       MVBIC     -33.3%     55.5%     40.3%    -33.8%   60.3%      78
+
+--- Contagem: em quantos dos 15 casos (5 periodos x 3 robos) cada combinacao teve o melhor valor ---
+  ret_puro (maior): HRAIC 7 | HRBIC 2 | MVAIC 3 | MVBIC 3
+  dd_puro (menor): HRAIC 7 | HRBIC 1 | MVAIC 3 | MVBIC 4
+  vol_puro (menor): HRAIC 2 | HRBIC 3 | MVAIC 6 | MVBIC 4
+combinacoes periodo x estimacao: 20 | queda menor com GARCH: 20 | volatilidade menor: 20 | retorno cru maior: 9

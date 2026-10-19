@@ -1,7 +1,7 @@
 #!/bin/bash
 # Remove comentarios (// e /* */) de um arquivo MQL5, preservando strings,
-# literais de caractere e a indentacao original. Linhas que ficam vazias sao
-# reduzidas a no maximo uma em branco seguida. Usado para gerar o Apendice A
+# literais de caractere e a indentacao original. Linha que so tinha comentario
+# some; linhas em branco seguidas viram uma. Usado para gerar o Apendice A
 # do TG a partir do codigo que de fato roda, sem copia manual.
 #   uso: sem_comentarios.sh entrada.mq5 > saida.mq5
 awk '
@@ -26,6 +26,7 @@ BEGIN { bloco = 0; branco = 1 }
     out = out c; i++
   }
   sub(/[ \t]+$/, "", out)
+  if (out == "" && linha !~ /^[ \t]*$/) next
   if (out == "") { if (!branco) print ""; branco = 1 }
   else { print out; branco = 0 }
 }' "$1" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}'

@@ -1,24 +1,7 @@
 //+------------------------------------------------------------------+
-//|                                                SelecaoModelo.mqh |
-//|                            Trabalho de Graduacao - FATEC Indaiatuba|
-//+------------------------------------------------------------------+
-//|                                                                  |
-//|  SELECAO AUTOMATICA DE ORDENS (p, d, q)                          |
-//|                                                                  |
-//|  Implementa o procedimento descrito na metodologia do TG:        |
-//|                                                                  |
-//|    1. 'd' vem da aplicacao SEQUENCIAL do teste ADF: diferencia   |
-//|       enquanto a serie nao for estacionaria.                     |
-//|                                                                  |
-//|    2. 'p' e 'q' vem de uma busca em grade de 0 a 4, escolhendo   |
-//|       a combinacao de MENOR AIC.                                 |
-//|                                                                  |
-//|  O AIC equilibra ajuste e parcimonia: adicionar parametros       |
-//|  sempre melhora o ajuste aos dados historicos, mas o AIC cobra   |
-//|  um pedagio de 2 por parametro. Assim ele penaliza o             |
-//|  sobreajuste, que produziria um modelo excelente no passado e    |
-//|  inutil no futuro.                                               |
-//|                                                                  |
+//| SelecaoModelo.mqh                                                |
+//| Ordens do ARIMA: d pelo teste ADF aplicado em sequencia; p e q   |
+//| pela busca em grade de menor AIC.                                |
 //+------------------------------------------------------------------+
 #ifndef ALGOTRADINGLAB_SELECAOMODELO_MQH
 #define ALGOTRADINGLAB_SELECAOMODELO_MQH
@@ -26,9 +9,16 @@
 #include "Arima.mqh"
 #include "Estatistica.mqh"
 
-//+------------------------------------------------------------------+
-//| Resultado da selecao de ordens                                   |
-//+------------------------------------------------------------------+
+enum ENUM_CRITERIO_ORDENS
+  {
+   CRITERIO_AIC = 0,   // AIC (o do TG)
+   CRITERIO_BIC = 1    // BIC (experimental)
+  };
+
+ENUM_CRITERIO_ORDENS g_criterio_ordens = CRITERIO_AIC;
+
+void DefinirCriterioDeOrdens(const ENUM_CRITERIO_ORDENS criterio) { g_criterio_ordens = criterio; }
+
 struct ResultadoSelecao
   {
    bool     valido;
@@ -37,224 +27,152 @@ struct ResultadoSelecao
    int      q;
    double   aic;
    double   bic;
-   double   logL;
    int      modelos_testados;
-   int      modelos_ok;
-   //--- Diagnostico do ADF que definiu 'd'
-   double   adf_stat_final;
-   double   adf_vc5_final;
+   int      modelos_ajustados;
   };
 
-//+------------------------------------------------------------------+
-//| DETERMINAR 'd' — aplicacao sequencial do teste ADF               |
-//+------------------------------------------------------------------+
-//|                                                                  |
-//|  Testa a serie. Se nao for estacionaria, diferencia e testa de   |
-//|  novo. Repete ate estacionaria ou ate atingir d_max.             |
-//|                                                                  |
-//|  Observacao sobre os termos deterministicos: para o NIVEL da     |
-//|  serie usamos constante (a serie tem media diferente de zero);   |
-//|  para as diferencas, tambem mantemos a constante, pois um ativo  |
-//|  pode ter drift. Manter a constante e a escolha conservadora.    |
-//|                                                                  |
-//+------------------------------------------------------------------+
-int DeterminarOrdemD(const double &serie[], const int d_max,
-                     const ENUM_ADF_DETERMINISTICO det,
-                     string &relatorio,
-                     double &stat_final, double &vc5_final)
+//--- Diferencia ate o ADF rejeitar a raiz unitaria ou ate d_maximo. -1 se o ADF nao puder ser calculado.
+int DeterminarOrdemD(const double &serie[], const int d_maximo,
+                     const ENUM_ADF_DETERMINISTICO deterministico, string &relatorio)
   {
    relatorio = "";
-   stat_final = 0.0;
-   vc5_final = 0.0;
 
    double atual[];
-   int n = ArraySize(serie);
-   ArrayResize(atual, n);
+   ArrayResize(atual, ArraySize(serie));
    ArrayCopy(atual, serie);
 
-   for(int d = 0; d <= d_max; d++)
+   for(int d = 0; d <= d_maximo; d++)
      {
-      ResultadoADF r;
-
-      if(!TesteADF(atual, det, -1, r))
+      ResultadoADF adf;
+      if(!TesteADF(atual, deterministico, -1, adf))
         {
-         //--- Sem ADF nao ha base para escolher d. Antes devolvia o d
-         //--- corrente (0 na primeira volta) em silencio; agora a selecao
-         //--- falha e o EA adia a escolha. (Corrigido em 05/10/2026.)
          relatorio += StringFormat("  d=%d: ADF nao pode ser calculado (dados insuficientes)\n", d);
          return(-1);
         }
 
       relatorio += StringFormat("  d=%d: ADF=%8.4f  VC5%%=%8.4f  lags=%d  n=%d  -> %s\n",
-                                d, r.estatistica, r.vc_5pct, r.lags, r.n_obs,
-                                r.estacionaria_5pct ? "ESTACIONARIA" : "nao estacionaria");
+                                d, adf.estatistica, adf.valor_critico_5, adf.defasagens, adf.observacoes,
+                                adf.estacionaria ? "ESTACIONARIA" : "nao estacionaria");
 
-      stat_final = r.estatistica;
-      vc5_final  = r.vc_5pct;
-
-      if(r.estacionaria_5pct)
+      if(adf.estacionaria)
          return(d);
-
-      if(d == d_max)
+      if(d == d_maximo)
          break;
 
-      //--- Diferencia mais uma vez
-      int m = ArraySize(atual);
-      if(m < 3)
+      int tamanho = ArraySize(atual);
+      if(tamanho < 3)
          break;
-
-      for(int i = 0; i < m - 1; i++)
+      for(int i = 0; i < tamanho - 1; i++)
          atual[i] = atual[i + 1] - atual[i];
-      ArrayResize(atual, m - 1);
+      ArrayResize(atual, tamanho - 1);
      }
 
-   relatorio += StringFormat("  Limite d_max=%d atingido sem estacionariedade; usando d=%d\n",
-                             d_max, d_max);
-   return(d_max);
+   relatorio += StringFormat("  Limite d_max=%d atingido sem estacionariedade; usando d=%d\n", d_maximo, d_maximo);
+   return(d_maximo);
   }
 
-//+------------------------------------------------------------------+
-//| BUSCA EM GRADE (p,q) POR AIC                                     |
-//+------------------------------------------------------------------+
-//|                                                                  |
-//|  Ajusta ARIMA(p,d,q) para todo p em [0,p_max] e q em [0,q_max]   |
-//|  e devolve a combinacao de menor AIC.                            |
-//|                                                                  |
-//|  CUSTO: (p_max+1)*(q_max+1) ajustes. Com o padrao 0..4 sao 25    |
-//|  modelos. Cada ajuste e MQO exato, entao e rapido — mas NAO e    |
-//|  para rodar a cada barra. Veja a politica de reavaliacao no EA.  |
-//|                                                                  |
-//|  'tabela' recebe a grade completa, pronta para virar tabela do   |
-//|  TG.                                                             |
-//|                                                                  |
-//+------------------------------------------------------------------+
-bool BuscarMelhorPQ(const double &serie[], const int d,
-                    const int p_max, const int q_max,
-                    const bool com_constante,
-                    ResultadoSelecao &res,
-                    string &tabela)
+//--- Ajusta ARIMA(p,d,q) para p em 0..p_maximo e q em 0..q_maximo e fica com o menor criterio
+bool BuscarMelhorPQ(const double &serie[], const int d, const int p_maximo, const int q_maximo,
+                    const bool com_constante, ResultadoSelecao &resultado, string &tabela)
   {
-   res.valido = false;
-   res.p = 0;
-   res.q = 0;
-   res.d = d;
-   res.aic = DBL_MAX;
-   res.bic = DBL_MAX;
-   res.logL = 0.0;
-   res.modelos_testados = 0;
-   res.modelos_ok = 0;
+   resultado.valido = false;
+   resultado.p = 0;
+   resultado.q = 0;
+   resultado.d = d;
+   resultado.aic = DBL_MAX;
+   resultado.bic = DBL_MAX;
+   resultado.modelos_testados = 0;
+   resultado.modelos_ajustados = 0;
 
-   //--- AMOSTRA COMUM: todos os candidatos avaliam a verossimilhanca
-   //--- sobre exatamente as mesmas observacoes. Sem isto o ARIMA(0,d,0)
-   //--- somaria mais parcelas que o ARIMA(4,d,4) e venceria por
-   //--- construcao, nao por merito.
-   int aquecimento_comum = MathMax(p_max, q_max);
+   //--- Todos os candidatos somam a verossimilhanca sobre as mesmas observacoes.
+   //--- Sem isso o modelo menor soma mais parcelas e vence por construcao.
+   int aquecimento_comum = MathMax(p_maximo, q_maximo);
+   double melhor_criterio = DBL_MAX;
 
    tabela = StringFormat("  (verossimilhanca avaliada sobre amostra comum: %d obs. descartadas no inicio)\n",
                          aquecimento_comum);
    tabela += "   p   q          AIC          BIC         logL     n\n";
    tabela += "  --- --- ------------ ------------ ------------ -----\n";
 
-   for(int p = 0; p <= p_max; p++)
-     {
-      for(int q = 0; q <= q_max; q++)
+   for(int p = 0; p <= p_maximo; p++)
+      for(int q = 0; q <= q_maximo; q++)
         {
-         res.modelos_testados++;
+         resultado.modelos_testados++;
 
-         //--- ARIMA(0,d,0) sem constante nao tem nada a estimar.
-         //--- (Com d = 0 a constante e sempre incluida pelo CArima.)
+         //--- ARIMA(0,d,0) sem constante nao tem o que estimar (com d = 0 a constante e obrigatoria)
          if(p == 0 && q == 0 && !com_constante && d != 0)
             continue;
 
-         CArima m;
-         m.Definir(p, d, q, com_constante);
-         m.DefinirAquecimentoMinimo(aquecimento_comum);
+         CArima candidato;
+         candidato.Definir(p, d, q, com_constante);
+         candidato.DefinirAquecimentoMinimo(aquecimento_comum);
 
-         if(!m.Ajustar(serie))
+         if(!candidato.Ajustar(serie))
            {
-            tabela += StringFormat("  %3d %3d          ---          ---   %s\n",
-                                   p, q, m.UltimoErro());
+            tabela += StringFormat("  %3d %3d          ---          ---   %s\n", p, q, candidato.UltimoErro());
             continue;
            }
 
-         double aic = m.AIC();
-         double bic = m.BIC();
-
+         double aic = candidato.AIC();
+         double bic = candidato.BIC();
          if(!MathIsValidNumber(aic))
            {
             tabela += StringFormat("  %3d %3d          ---          ---   AIC invalido\n", p, q);
             continue;
            }
 
-         res.modelos_ok++;
+         resultado.modelos_ajustados++;
+         double criterio = (g_criterio_ordens == CRITERIO_BIC) ? bic : aic;
 
          tabela += StringFormat("  %3d %3d %12.3f %12.3f %12.3f %5d%s\n",
-                                p, q, aic, bic, m.LogVerossimilhanca(),
-                                m.NEfetivo(), (aic < res.aic) ? "  <<<" : "");
+                                p, q, aic, bic, candidato.LogVerossimilhanca(),
+                                candidato.ObservacoesEfetivas(), (criterio < melhor_criterio) ? "  <<<" : "");
 
-         if(aic < res.aic)
+         if(criterio < melhor_criterio)
            {
-            res.aic  = aic;
-            res.bic  = bic;
-            res.logL = m.LogVerossimilhanca();
-            res.p    = p;
-            res.q    = q;
-            res.valido = true;
+            melhor_criterio = criterio;
+            resultado.aic = aic;
+            resultado.bic = bic;
+            resultado.p = p;
+            resultado.q = q;
+            resultado.valido = true;
            }
         }
-     }
 
-   return(res.valido);
+   return(resultado.valido);
   }
 
-//+------------------------------------------------------------------+
-//| SELECAO COMPLETA: d por ADF, depois (p,q) por AIC                |
-//+------------------------------------------------------------------+
-bool SelecionarModelo(const double &serie[],
-                      const int d_max, const int p_max, const int q_max,
-                      const bool com_constante,
-                      const ENUM_ADF_DETERMINISTICO det,
-                      ResultadoSelecao &res,
-                      string &relatorio)
+//--- d por ADF, depois (p,q) por AIC. 'relatorio' traz a sequencia do ADF e a grade inteira.
+bool SelecionarModelo(const double &serie[], const int d_maximo, const int p_maximo, const int q_maximo,
+                      const bool com_constante, const ENUM_ADF_DETERMINISTICO deterministico,
+                      ResultadoSelecao &resultado, string &relatorio)
   {
-   relatorio = "";
+   string relatorio_adf = "";
+   int d = DeterminarOrdemD(serie, d_maximo, deterministico, relatorio_adf);
 
-   //--- ── Etapa 1: ordem de integracao ──
-   string rel_adf = "";
-   double stat = 0.0, vc5 = 0.0;
-
-   int d = DeterminarOrdemD(serie, d_max, det, rel_adf, stat, vc5);
-
-   relatorio += "[1] Ordem de integracao 'd' por ADF sequencial:\n";
-   relatorio += rel_adf;
+   relatorio = "[1] Ordem de integracao 'd' por ADF sequencial:\n" + relatorio_adf;
    if(d < 0)
      {
       relatorio += "    => d indeterminado; selecao adiada\n";
-      res.valido = false;
+      resultado.valido = false;
       return(false);
      }
    relatorio += StringFormat("    => d = %d\n\n", d);
 
-   //--- ── Etapa 2: ordens p e q ──
    string tabela = "";
-   bool ok = BuscarMelhorPQ(serie, d, p_max, q_max, com_constante, res, tabela);
+   bool selecionou = BuscarMelhorPQ(serie, d, p_maximo, q_maximo, com_constante, resultado, tabela);
+   resultado.d = d;
 
-   res.adf_stat_final = stat;
-   res.adf_vc5_final  = vc5;
-   res.d = d;
-
-   relatorio += StringFormat("[2] Busca em grade (p,q) de 0..%d x 0..%d por AIC:\n", p_max, q_max);
+   relatorio += StringFormat("[2] Busca em grade (p,q) de 0..%d x 0..%d por AIC:\n", p_maximo, q_maximo);
    relatorio += tabela;
-
-   if(ok)
+   if(selecionou)
       relatorio += StringFormat("\n    => SELECIONADO: ARIMA(%d,%d,%d)  AIC=%.3f  BIC=%.3f  (%d/%d modelos validos)\n",
-                                res.p, res.d, res.q, res.aic, res.bic,
-                                res.modelos_ok, res.modelos_testados);
+                                resultado.p, resultado.d, resultado.q, resultado.aic, resultado.bic,
+                                resultado.modelos_ajustados, resultado.modelos_testados);
    else
       relatorio += "\n    => NENHUM modelo pode ser ajustado.\n";
 
-   return(ok);
+   return(selecionou);
   }
 
-#endif // ALGOTRADINGLAB_SELECAOMODELO_MQH
-//+------------------------------------------------------------------+
+#endif

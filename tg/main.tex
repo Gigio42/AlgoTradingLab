@@ -47,6 +47,11 @@
 \newlistentry{grafico}{lof}{0}
 \renewcommand{\cftgraficoname}{Gráfico\space}
 \renewcommand*{\cftgraficoaftersnum}{\hfill\textendash\hfill}
+% [H] (pacote float): figura, tabela, quadro e gráfico ficam no ponto do texto que
+% os cita (Manual FATEC-ID, item 3: "o mais próximo possível do trecho"). Tem de
+% vir DEPOIS dos \newfloat acima: o float redefine \newfloat com outra sintaxe, e,
+% carregado antes, desmontou o Quadro e o Gráfico (legenda embaixo, "gráfico 1:").
+\usepackage{float}
 
 % ----------------------- Ajustes de formatação -----------------------
 % Manual FATEC: recuo de primeira linha 1,25 cm; espaçamento 1,5;
@@ -224,7 +229,7 @@
 \usepackage{xurl}           % URLs longas nas referências quebram em qualquer ponto
 \usepackage{hyperref}
 \hypersetup{
-  pdftitle={Previsão e análise de tendências no mercado de ativos},
+  pdftitle={Desenvolvimento e comparação de modelos de negociação algorítmica: ARIMA-GARCH e médias móveis},
   pdfauthor={Bruno Rocha Pereira e Giovanni Silva Loose},
   colorlinks=false, pdfborder={0 0 0}
 }

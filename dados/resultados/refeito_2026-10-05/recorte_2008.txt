@@ -1,0 +1,6 @@
+robo          retorno  queda_max
+GS              4.99%      6.88%
+PETR4         -47.33%     67.15%
+GSgemeo        -7.42%     34.08%
+AS            -24.82%     44.31%
+MM            -36.58%     50.42%

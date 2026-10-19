@@ -15,5 +15,5 @@ iconv -f UTF-16LE -t UTF-8 "$N/MQL5/Experts/ValidarGarchT_EA.log" | grep -E "err
 ini="$TRAB/validar_garch_t.ini"
 { printf '%s[Tester]\r\n' "$CONTA"
   printf 'Expert=ValidarGarchT_EA\r\nSymbol=PETR4_OFICIAL\r\nPeriod=D1\r\nModel=2\r\nFromDate=2024.01.02\r\nToDate=2024.01.31\r\nDeposit=100000\r\nCurrency=BRL\r\nLeverage=1:1\r\nOptimization=0\r\nVisual=0\r\nReport=rel_validar_t\r\nReplaceReport=1\r\n'; } > "$ini"
-matar; rodar_ini "$ini"; esperar "$N/rel_validar_t.htm" 900; sleep 2; matar
+matar; rm -f "$N/rel_validar_t".*; rodar_ini "$ini"; esperar "$N/rel_validar_t.htm" 900; sleep 2; matar
 cp "$COMUM/validacao_garch_t.txt" "$SAIDA" && echo "gravado $SAIDA" && cat "$SAIDA"

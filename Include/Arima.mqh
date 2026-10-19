@@ -1,76 +1,55 @@
 //+------------------------------------------------------------------+
-//|                                                        Arima.mqh |
-//|                            Trabalho de Graduacao - FATEC Indaiatuba|
-//+------------------------------------------------------------------+
+//| Arima.mqh                                                        |
+//| ARIMA(p,d,q): media condicional, estimada por Hannan-Rissanen.   |
 //|                                                                  |
-//|  MODELO ARIMA(p,d,q) — MEDIA CONDICIONAL                         |
+//|   z(t) = c + soma phi_i z(t-i) + soma theta_j e(t-j) + e(t)      |
 //|                                                                  |
-//|  Modelo (sobre a serie ja diferenciada d vezes, z):              |
-//|                                                                  |
-//|    z(t) = c + SOMA_i phi_i * z(t-i)                              |
-//|              + SOMA_j theta_j * e(t-j)                           |
-//|              + e(t)                                              |
-//|                                                                  |
-//|  ESTIMACAO: metodo de Hannan-Rissanen (1982), em dois estagios.  |
-//|                                                                  |
-//|  O problema do ARMA e que os erros e(t) nao sao observaveis —    |
-//|  eles dependem dos coeficientes que ainda queremos estimar.      |
-//|  Hannan-Rissanen resolve isso em duas etapas, ambas por MQO:     |
-//|                                                                  |
-//|    Estagio 1: ajusta um AR(m) longo (m grande). Um AR longo      |
-//|               aproxima qualquer ARMA invertivel, entao seus      |
-//|               residuos sao uma boa ESTIMATIVA de e(t).           |
-//|                                                                  |
-//|    Estagio 2: agora que temos e(t) estimados, o modelo ARMA      |
-//|               vira uma regressao linear comum de z(t) contra     |
-//|               z(t-1..p) e e(t-1..q). Resolve-se por MQO.         |
-//|                                                                  |
-//|  Por que nao gradiente descendente (implementacao anterior):     |
-//|  MQO nao tem taxa de aprendizado nem numero de iteracoes, da o   |
-//|  otimo exato do problema de cada estagio e — o mais importante — |
-//|  e invariante a escala. A versao com gradiente exigia recalibrar |
-//|  a taxa de aprendizado para cada ativo e cada periodo.           |
-//|                                                                  |
+//| z e a serie diferenciada d vezes. Os erros e(t) nao sao          |
+//| observados; o primeiro estagio os estima com um AR longo e o     |
+//| segundo regride z contra z e e defasados. Os dois sao MQO.       |
 //+------------------------------------------------------------------+
 #ifndef ALGOTRADINGLAB_ARIMA_MQH
 #define ALGOTRADINGLAB_ARIMA_MQH
 
 #include "Numerico.mqh"
 #include "Estatistica.mqh"
+#include "ArimaVerossimilhanca.mqh"
 
-//+------------------------------------------------------------------+
-//| CArima                                                           |
-//+------------------------------------------------------------------+
+enum ENUM_ESTIMACAO_ARIMA
+  {
+   ESTIMACAO_HANNAN_RISSANEN = 0,   // Hannan-Rissanen (dois estagios de MQO)
+   ESTIMACAO_VEROSSIMILHANCA = 1    // Maxima verossimilhanca condicional (experimental)
+  };
+
 class CArima
   {
 private:
-   //--- Ordens do modelo
-   int      m_p;                 // ordem autorregressiva
-   int      m_d;                 // ordem de diferenciacao
-   int      m_q;                 // ordem de medias moveis
-   bool     m_com_constante;     // incluir o intercepto c
+   int      m_p;
+   int      m_d;
+   int      m_q;
+   bool     m_com_constante;
+   ENUM_ESTIMACAO_ARIMA m_estimacao;
 
-   //--- Parametros estimados
-   double   m_c;                 // constante
-   double   m_phi[];             // coeficientes AR
-   double   m_theta[];           // coeficientes MA
+   double   m_constante;
+   double   m_phi[];
+   double   m_theta[];
 
-   //--- Estado do ajuste
-   double   m_z[];               // serie diferenciada
-   double   m_e[];               // residuos alinhados com m_z (0 no aquecimento)
-   double   m_niveis[];          // ultimos valores da serie ORIGINAL
-   double   m_sigma2;            // variancia dos residuos
-   double   m_logL;              // log-verossimilhanca condicional
-   int      m_t0_rec;            // inicio da recursao dos residuos
-   int      m_t0_ll;             // inicio da soma da verossimilhanca
-   int      m_t0_min;            // aquecimento minimo imposto de fora
-   int      m_n_efetivo;         // observacoes usadas na verossimilhanca
+   double   m_serie_diferenciada[];
+   double   m_residuos[];               // alinhados com a serie diferenciada (zero no aquecimento)
+   double   m_ultimos_niveis[];         // fim da serie original, para desfazer a diferenciacao
+   double   m_sigma2;
+   double   m_log_verossimilhanca;
+   int      m_inicio_recursao;          // primeiro residuo calculado
+   int      m_inicio_verossimilhanca;   // primeiro residuo somado na verossimilhanca
+   int      m_aquecimento_minimo;
+   int      m_observacoes_efetivas;
    bool     m_ajustado;
    string   m_erro;
 
-   //--- Metodos internos
+   static ENUM_ESTIMACAO_ARIMA s_estimacao_padrao;
+
    void     Diferenciar(const double &origem[], double &destino[], const int ordem);
-   bool     EstimarAR(const double &z[], const int ordem, double &coef_out[], double &res_out[]);
+   bool     EstimarAR(const double &z[], const int ordem, double &coeficientes[], double &residuos[]);
    bool     HannanRissanen(void);
    void     CalcularResiduos(void);
    void     CalcularVerossimilhanca(void);
@@ -79,383 +58,299 @@ public:
                      CArima(void);
                     ~CArima(void);
 
-   //--- Configuracao
+   //--- Estimacao usada pelos objetos criados depois (a selecao de ordens cria um por candidato)
+   static void DefinirEstimacaoPadrao(const ENUM_ESTIMACAO_ARIMA estimacao) { s_estimacao_padrao = estimacao; }
+   void     DefinirEstimacao(const ENUM_ESTIMACAO_ARIMA estimacao) { m_estimacao = estimacao; }
+
    void     Definir(const int p, const int d, const int q, const bool com_constante = true);
 
-   //--- AQUECIMENTO MINIMO — essencial para comparar AIC entre modelos
-   //--- Um ARIMA(0,d,0) consegue avaliar a verossimilhanca em todas as
-   //--- observacoes; um ARIMA(4,d,4) precisa descartar as 4 primeiras.
-   //--- Como a log-verossimilhanca CRESCE com o numero de observacoes,
-   //--- comparar o AIC dos dois seria injusto: o modelo menor venceria
-   //--- por ter somado mais parcelas, nao por ajustar melhor.
-   //---
-   //--- A busca em grade chama isto com max(p_max, q_max) para que TODOS
-   //--- os candidatos sejam avaliados exatamente sobre as mesmas
-   //--- observacoes. Sem isso a selecao fica viesada para modelos
-   //--- pequenos — o vies chega a ser maior que a diferenca real entre
-   //--- os modelos.
-   void     DefinirAquecimentoMinimo(const int t0_min) { m_t0_min = MathMax(0, t0_min); }
+   //--- Descarta as primeiras observacoes da verossimilhanca. A selecao de ordens usa
+   //--- o mesmo valor em todos os candidatos para o AIC comparar a mesma amostra.
+   void     DefinirAquecimentoMinimo(const int observacoes) { m_aquecimento_minimo = MathMax(0, observacoes); }
 
-   //--- Ajuste. 'serie' em ordem cronologica: indice 0 = mais antigo.
+   //--- serie em ordem cronologica (indice 0 = mais antigo)
    bool     Ajustar(const double &serie[]);
 
-   //--- Previsao um passo a frente
-   double   PreverDiferenciado(void);   // no espaco diferenciado (z)
-   double   PreverNivel(void);          // revertido para o nivel original
+   double   PreverDiferenciado(void);   // proximo z
+   double   PreverNivel(void);          // proximo valor da serie original
 
-   //--- Diagnostico e selecao de modelo
-   double   LogVerossimilhanca(void) const { return(m_logL);      }
-   double   Sigma2(void)            const  { return(m_sigma2);    }
-   int      NumParametros(void)     const;
-   double   AIC(void)               const;
-   double   BIC(void)               const;
-   int      NEfetivo(void)          const  { return(m_n_efetivo); }
-   bool     Ajustado(void)          const  { return(m_ajustado);  }
-   string   UltimoErro(void)        const  { return(m_erro);      }
+   //--- Residuos sem o aquecimento: e a serie que vai para o GARCH
+   bool     ObterResiduos(double &saida[]) const;
+
+   double   LogVerossimilhanca(void)   const { return(m_log_verossimilhanca);  }
+   double   Sigma2(void)               const { return(m_sigma2);               }
+   int      ObservacoesEfetivas(void)  const { return(m_observacoes_efetivas); }
+   int      NumParametros(void)        const { return(m_p + m_q + (m_com_constante ? 1 : 0) + 1); }
+   double   AIC(void)                  const;
+   double   BIC(void)                  const;
+   string   UltimoErro(void)           const { return(m_erro); }
 
    int      P(void) const { return(m_p); }
    int      D(void) const { return(m_d); }
    int      Q(void) const { return(m_q); }
-   double   Constante(void) const { return(m_c); }
+   double   Constante(void) const { return(m_constante); }
    double   Phi(const int i)   const { return((i >= 0 && i < ArraySize(m_phi))   ? m_phi[i]   : 0.0); }
    double   Theta(const int j) const { return((j >= 0 && j < ArraySize(m_theta)) ? m_theta[j] : 0.0); }
 
-   //--- Residuos VALIDOS (sem o periodo de aquecimento).
-   //--- E esta a serie que alimenta o GARCH.
-   bool     ObterResiduos(double &saida[]) const;
-
-   //--- Guarda conservadora de estabilidade do polinomio AR.
-   //--- SOMA|phi| < 1 e condicao SUFICIENTE (nao necessaria) para
-   //--- estacionariedade. Se falhar, o modelo pode ainda ser valido,
-   //--- mas a previsao merece desconfianca.
-   bool     EstavelConservador(void) const;
-
+   //--- soma |phi| < 1: condicao suficiente (nao necessaria) de estacionariedade
+   bool     EstacionariedadeGarantida(void) const;
    string   Descricao(void) const;
   };
 
-//+------------------------------------------------------------------+
+ENUM_ESTIMACAO_ARIMA CArima::s_estimacao_padrao = ESTIMACAO_HANNAN_RISSANEN;
+
 CArima::CArima(void) : m_p(1), m_d(1), m_q(1), m_com_constante(true),
-                       m_c(0.0), m_sigma2(0.0), m_logL(0.0),
-                       m_t0_rec(0), m_t0_ll(0), m_t0_min(0),
-                       m_n_efetivo(0), m_ajustado(false), m_erro("")
+                       m_estimacao(s_estimacao_padrao),
+                       m_constante(0.0), m_sigma2(0.0), m_log_verossimilhanca(0.0),
+                       m_inicio_recursao(0), m_inicio_verossimilhanca(0), m_aquecimento_minimo(0),
+                       m_observacoes_efetivas(0), m_ajustado(false), m_erro("")
   {
   }
 
-//+------------------------------------------------------------------+
 CArima::~CArima(void)
   {
    ArrayFree(m_phi);
    ArrayFree(m_theta);
-   ArrayFree(m_z);
-   ArrayFree(m_e);
-   ArrayFree(m_niveis);
+   ArrayFree(m_serie_diferenciada);
+   ArrayFree(m_residuos);
+   ArrayFree(m_ultimos_niveis);
   }
 
-//+------------------------------------------------------------------+
 void CArima::Definir(const int p, const int d, const int q, const bool com_constante)
   {
    m_p = MathMax(0, p);
    m_d = MathMax(0, MathMin(2, d));
    m_q = MathMax(0, q);
-   //--- Com d = 0 o modelo descreve o NIVEL da serie (o log-preco, ~3),
-   //--- que nao tem media zero: sem a constante, o ajuste puxa a previsao
-   //--- sistematicamente para baixo. A constante e obrigatoria nesse caso.
-   //--- (Corrigido em 05/10/2026; ver notas/INCERTEZAS.md.)
+   //--- Com d = 0 o modelo descreve o nivel do log-preco, que nao tem media zero
    m_com_constante = com_constante || (m_d == 0);
 
    ArrayResize(m_phi, m_p);
    ArrayResize(m_theta, m_q);
    ArrayInitialize(m_phi, 0.0);
    ArrayInitialize(m_theta, 0.0);
-
    m_ajustado = false;
   }
 
-//+------------------------------------------------------------------+
-//| Diferenciacao de ordem 'ordem'                                   |
-//+------------------------------------------------------------------+
-//|  d=1: z(t) = y(t) - y(t-1)                                       |
-//|  d=2: aplica o mesmo duas vezes                                  |
-//+------------------------------------------------------------------+
 void CArima::Diferenciar(const double &origem[], double &destino[], const int ordem)
   {
-   int n = ArraySize(origem);
-   ArrayResize(destino, n);
+   ArrayResize(destino, ArraySize(origem));
    ArrayCopy(destino, origem);
 
-   for(int d = 0; d < ordem; d++)
+   for(int vez = 0; vez < ordem; vez++)
      {
-      int tam = ArraySize(destino);
-      if(tam < 2)
+      int tamanho = ArraySize(destino);
+      if(tamanho < 2)
          break;
-
-      for(int i = 0; i < tam - 1; i++)
+      for(int i = 0; i < tamanho - 1; i++)
          destino[i] = destino[i + 1] - destino[i];
-
-      ArrayResize(destino, tam - 1);
+      ArrayResize(destino, tamanho - 1);
      }
   }
 
-//+------------------------------------------------------------------+
-//| Estima um AR(ordem) por MQO e devolve coeficientes e residuos    |
-//+------------------------------------------------------------------+
-//|  res_out fica alinhado com z: res_out[t] e o residuo em t,       |
-//|  zerado para t < ordem (periodo de aquecimento).                 |
-//+------------------------------------------------------------------+
-bool CArima::EstimarAR(const double &z[], const int ordem,
-                       double &coef_out[], double &res_out[])
+//--- AR(ordem) com constante por MQO; residuos[t] alinhado com z, zero para t < ordem
+bool CArima::EstimarAR(const double &z[], const int ordem, double &coeficientes[], double &residuos[])
   {
-   int N = ArraySize(z);
-   int n_obs = N - ordem;
-   int n_par = ordem + 1;         // + constante
+   int tamanho = ArraySize(z);
+   int observacoes = tamanho - ordem;
+   int parametros = ordem + 1;
 
-   if(ordem <= 0 || n_obs <= n_par)
+   if(ordem <= 0 || observacoes <= parametros)
       return(false);
 
-   CMatrixDouble X(n_obs, n_par);
-   double dep[];
-   ArrayResize(dep, n_obs);
+   CMatrixDouble X(observacoes, parametros);
+   double dependente[];
+   ArrayResize(dependente, observacoes);
 
-   for(int t = ordem, linha = 0; t < N; t++, linha++)
+   for(int t = ordem, linha = 0; t < tamanho; t++, linha++)
      {
-      dep[linha] = z[t];
+      dependente[linha] = z[t];
       X.Set(linha, 0, 1.0);
       for(int i = 1; i <= ordem; i++)
          X.Set(linha, i, z[t - i]);
      }
 
-   double se[], ssr = 0.0;
-   if(!MQO(X, dep, n_obs, n_par, coef_out, se, ssr, false))
+   double erros_padrao[], soma_quadrados = 0.0;
+   if(!MQO(X, dependente, observacoes, parametros, coeficientes, erros_padrao, soma_quadrados, false))
       return(false);
 
-   //--- Residuos do AR longo = estimativa de e(t)
-   ArrayResize(res_out, N);
-   ArrayInitialize(res_out, 0.0);
-
-   for(int t = ordem; t < N; t++)
+   ArrayResize(residuos, tamanho);
+   ArrayInitialize(residuos, 0.0);
+   for(int t = ordem; t < tamanho; t++)
      {
-      double ajuste = coef_out[0];
+      double ajuste = coeficientes[0];
       for(int i = 1; i <= ordem; i++)
-         ajuste += coef_out[i] * z[t - i];
-
-      res_out[t] = z[t] - ajuste;
+         ajuste += coeficientes[i] * z[t - i];
+      residuos[t] = z[t] - ajuste;
      }
 
    return(true);
   }
 
-//+------------------------------------------------------------------+
-//| Hannan-Rissanen — os dois estagios                               |
-//+------------------------------------------------------------------+
 bool CArima::HannanRissanen(void)
   {
-   int N = ArraySize(m_z);
+   int tamanho = ArraySize(m_serie_diferenciada);
 
-   //--- ── Caso especial: q = 0 ──
-   //--- Sem componente MA, o modelo ja e uma regressao linear
-   //--- direta. Um unico MQO resolve exatamente.
+   //--- Sem termos MA o modelo ja e uma regressao linear: um MQO basta
    if(m_q == 0)
      {
       if(m_p == 0)
         {
-         //--- ARIMA(0,d,0): so a constante (passeio aleatorio com drift)
-         m_c = m_com_constante ? Media(m_z) : 0.0;
+         m_constante = m_com_constante ? Media(m_serie_diferenciada) : 0.0;
          return(true);
         }
 
-      int n_obs = N - m_p;
-      int n_par = m_p + (m_com_constante ? 1 : 0);
-      if(n_obs <= n_par)
+      int observacoes = tamanho - m_p;
+      int parametros = m_p + (m_com_constante ? 1 : 0);
+      if(observacoes <= parametros)
         {
          m_erro = "Serie curta demais para AR(" + IntegerToString(m_p) + ")";
          return(false);
         }
 
-      CMatrixDouble X(n_obs, n_par);
-      double dep[];
-      ArrayResize(dep, n_obs);
+      CMatrixDouble X(observacoes, parametros);
+      double dependente[];
+      ArrayResize(dependente, observacoes);
 
-      for(int t = m_p, linha = 0; t < N; t++, linha++)
+      for(int t = m_p, linha = 0; t < tamanho; t++, linha++)
         {
-         dep[linha] = m_z[t];
-         int col = 0;
+         dependente[linha] = m_serie_diferenciada[t];
+         int coluna = 0;
          if(m_com_constante)
-            X.Set(linha, col++, 1.0);
+            X.Set(linha, coluna++, 1.0);
          for(int i = 1; i <= m_p; i++)
-            X.Set(linha, col++, m_z[t - i]);
+            X.Set(linha, coluna++, m_serie_diferenciada[t - i]);
         }
 
-      double coef[], se[], ssr = 0.0;
-      if(!MQO(X, dep, n_obs, n_par, coef, se, ssr, false))
+      double coeficientes[], erros_padrao[], soma_quadrados = 0.0;
+      if(!MQO(X, dependente, observacoes, parametros, coeficientes, erros_padrao, soma_quadrados, false))
         {
          m_erro = "MQO singular no ajuste AR";
          return(false);
         }
 
-      int col = 0;
-      m_c = m_com_constante ? coef[col++] : 0.0;
+      int coluna = 0;
+      m_constante = m_com_constante ? coeficientes[coluna++] : 0.0;
       for(int i = 0; i < m_p; i++)
-         m_phi[i] = coef[col++];
-
+         m_phi[i] = coeficientes[coluna++];
       return(true);
      }
 
-   //--- ── ESTAGIO 1: AR(m) longo para estimar os erros ──
-   //--- m cresce com o tamanho da amostra. A regra log(N)^2 e a
-   //--- usual na literatura de Hannan-Rissanen; limitamos abaixo
-   //--- para nao consumir observacoes demais em janelas curtas.
-   int m = (int)MathFloor(MathPow(MathLog((double)N), 2.0));
-   m = MathMax(m, m_p + m_q + 1);
-   m = MathMin(m, N / 5);
+   //--- Estagio 1: AR longo, ordem log(N)^2, para estimar os erros
+   int ordem_longa = (int)MathFloor(MathPow(MathLog((double)tamanho), 2.0));
+   ordem_longa = MathMax(ordem_longa, m_p + m_q + 1);
+   ordem_longa = MathMin(ordem_longa, tamanho / 5);
 
-   if(m < 1 || N - m < m_p + m_q + 10)
+   if(ordem_longa < 1 || tamanho - ordem_longa < m_p + m_q + 10)
      {
       m_erro = "Serie curta demais para Hannan-Rissanen";
       return(false);
      }
 
-   double coef_ar[], e_est[];
-   if(!EstimarAR(m_z, m, coef_ar, e_est))
+   double coeficientes_ar_longo[], erros_estimados[];
+   if(!EstimarAR(m_serie_diferenciada, ordem_longa, coeficientes_ar_longo, erros_estimados))
      {
       m_erro = "Falha no estagio 1 (AR longo)";
       return(false);
      }
 
-   //--- ── ESTAGIO 2: regressao de z contra z defasado e e defasado ──
-   //--- Precisamos que e(t-1..t-q) sejam validos => t >= m + q
-   int t_ini = MathMax(m + m_q, m_p);
-   int n_obs = N - t_ini;
-   int n_par = m_p + m_q + (m_com_constante ? 1 : 0);
+   //--- Estagio 2: z contra z defasado e erros estimados defasados
+   int primeiro = MathMax(ordem_longa + m_q, m_p);
+   int observacoes = tamanho - primeiro;
+   int parametros = m_p + m_q + (m_com_constante ? 1 : 0);
 
-   if(n_obs <= n_par + 5)
+   if(observacoes <= parametros + 5)
      {
       m_erro = "Observacoes insuficientes no estagio 2";
       return(false);
      }
 
-   CMatrixDouble X(n_obs, n_par);
-   double dep[];
-   ArrayResize(dep, n_obs);
+   CMatrixDouble X(observacoes, parametros);
+   double dependente[];
+   ArrayResize(dependente, observacoes);
 
-   for(int t = t_ini, linha = 0; t < N; t++, linha++)
+   for(int t = primeiro, linha = 0; t < tamanho; t++, linha++)
      {
-      dep[linha] = m_z[t];
-
-      int col = 0;
+      dependente[linha] = m_serie_diferenciada[t];
+      int coluna = 0;
       if(m_com_constante)
-         X.Set(linha, col++, 1.0);
-
+         X.Set(linha, coluna++, 1.0);
       for(int i = 1; i <= m_p; i++)
-         X.Set(linha, col++, m_z[t - i]);
-
+         X.Set(linha, coluna++, m_serie_diferenciada[t - i]);
       for(int j = 1; j <= m_q; j++)
-         X.Set(linha, col++, e_est[t - j]);
+         X.Set(linha, coluna++, erros_estimados[t - j]);
      }
 
-   double coef[], se[], ssr = 0.0;
-   if(!MQO(X, dep, n_obs, n_par, coef, se, ssr, false))
+   double coeficientes[], erros_padrao[], soma_quadrados = 0.0;
+   if(!MQO(X, dependente, observacoes, parametros, coeficientes, erros_padrao, soma_quadrados, false))
      {
       m_erro = "MQO singular no estagio 2";
       return(false);
      }
 
-   int col = 0;
-   m_c = m_com_constante ? coef[col++] : 0.0;
+   int coluna = 0;
+   m_constante = m_com_constante ? coeficientes[coluna++] : 0.0;
    for(int i = 0; i < m_p; i++)
-      m_phi[i] = coef[col++];
+      m_phi[i] = coeficientes[coluna++];
    for(int j = 0; j < m_q; j++)
-      m_theta[j] = coef[col++];
-
+      m_theta[j] = coeficientes[coluna++];
    return(true);
   }
 
-//+------------------------------------------------------------------+
-//| Recalcula os residuos pela recursao ARMA exata                   |
-//+------------------------------------------------------------------+
-//|  e(t) = z(t) - c - SOMA phi_i*z(t-i) - SOMA theta_j*e(t-j)       |
-//|                                                                  |
-//|  Os residuos do estagio 2 sao aproximados (usam os erros do AR   |
-//|  longo). Aqui reconstruimos os residuos coerentes com os         |
-//|  coeficientes finais — sao eles que alimentam o GARCH e o        |
-//|  teste de Ljung-Box.                                             |
-//+------------------------------------------------------------------+
+//--- Residuos coerentes com os coeficientes finais (os do estagio 2 sao aproximados)
 void CArima::CalcularResiduos(void)
   {
-   int N = ArraySize(m_z);
+   int tamanho = ArraySize(m_serie_diferenciada);
+   ArrayResize(m_residuos, tamanho);
+   ArrayInitialize(m_residuos, 0.0);
 
-   ArrayResize(m_e, N);
-   ArrayInitialize(m_e, 0.0);
+   m_inicio_recursao = MathMax(m_p, m_q);
+   m_inicio_verossimilhanca = MathMax(m_inicio_recursao, m_aquecimento_minimo);
 
-   //--- A recursao comeca cedo (assim o componente MA tem tempo de
-   //--- aquecer), mas a verossimilhanca so passa a somar em m_t0_ll.
-   m_t0_rec = MathMax(m_p, m_q);
-   m_t0_ll  = MathMax(m_t0_rec, m_t0_min);
-
-   for(int t = m_t0_rec; t < N; t++)
+   for(int t = m_inicio_recursao; t < tamanho; t++)
      {
-      double ajuste = m_c;
-
+      double ajuste = m_constante;
       for(int i = 0; i < m_p; i++)
-         ajuste += m_phi[i] * m_z[t - 1 - i];
-
+         ajuste += m_phi[i] * m_serie_diferenciada[t - 1 - i];
       for(int j = 0; j < m_q; j++)
-         ajuste += m_theta[j] * m_e[t - 1 - j];
-
-      m_e[t] = m_z[t] - ajuste;
+         ajuste += m_theta[j] * m_residuos[t - 1 - j];
+      m_residuos[t] = m_serie_diferenciada[t] - ajuste;
      }
   }
 
-//+------------------------------------------------------------------+
-//| Log-verossimilhanca gaussiana condicional                        |
-//+------------------------------------------------------------------+
-//|  Com sigma2 estimado por maxima verossimilhanca (SSR/n), a       |
-//|  expressao se reduz a:                                           |
-//|                                                                  |
-//|    logL = -n/2 * [ ln(2*pi) + ln(sigma2) + 1 ]                   |
-//|                                                                  |
-//|  E esta a verossimilhanca que alimenta o AIC usado para          |
-//|  escolher (p,q) na busca em grade.                               |
-//+------------------------------------------------------------------+
+//--- Gaussiana condicional com sigma2 = SQR/n: logL = -n/2 [ln(2 pi) + ln(sigma2) + 1]
 void CArima::CalcularVerossimilhanca(void)
   {
-   int N = ArraySize(m_z);
-   m_n_efetivo = N - m_t0_ll;
+   int tamanho = ArraySize(m_serie_diferenciada);
+   m_observacoes_efetivas = tamanho - m_inicio_verossimilhanca;
 
-   if(m_n_efetivo <= 0)
+   if(m_observacoes_efetivas <= 0)
      {
       m_sigma2 = 0.0;
-      m_logL   = -DBL_MAX;
+      m_log_verossimilhanca = -DBL_MAX;
       return;
      }
 
-   double ssr = 0.0;
-   for(int t = m_t0_ll; t < N; t++)
-      ssr += m_e[t] * m_e[t];
+   double soma_quadrados = 0.0;
+   for(int t = m_inicio_verossimilhanca; t < tamanho; t++)
+      soma_quadrados += m_residuos[t] * m_residuos[t];
 
-   m_sigma2 = ssr / (double)m_n_efetivo;
-
+   m_sigma2 = soma_quadrados / (double)m_observacoes_efetivas;
    if(m_sigma2 <= 0.0 || !MathIsValidNumber(m_sigma2))
      {
-      m_logL = -DBL_MAX;
+      m_log_verossimilhanca = -DBL_MAX;
       return;
      }
 
-   m_logL = -0.5 * (double)m_n_efetivo *
-            (MathLog(2.0 * M_PI) + MathLog(m_sigma2) + 1.0);
+   m_log_verossimilhanca = -0.5 * (double)m_observacoes_efetivas *
+                           (MathLog(2.0 * M_PI) + MathLog(m_sigma2) + 1.0);
   }
 
-//+------------------------------------------------------------------+
-//| Ajusta o modelo a uma serie                                      |
-//+------------------------------------------------------------------+
 bool CArima::Ajustar(const double &serie[])
   {
    m_ajustado = false;
    m_erro = "";
 
    int n = ArraySize(serie);
-
-   //--- Precisamos de folga: diferenciacao consome d observacoes,
-   //--- o estagio 1 consome m, o estagio 2 consome mais q.
    int minimo = m_p + m_q + m_d + 30;
    if(n < minimo)
      {
@@ -463,15 +358,12 @@ bool CArima::Ajustar(const double &serie[])
       return(false);
      }
 
-   //--- Guarda os ultimos niveis para reverter a diferenciacao
-   ArrayResize(m_niveis, MathMin(n, 3));
-   for(int i = 0; i < ArraySize(m_niveis); i++)
-      m_niveis[i] = serie[n - ArraySize(m_niveis) + i];
+   ArrayResize(m_ultimos_niveis, MathMin(n, 3));
+   for(int i = 0; i < ArraySize(m_ultimos_niveis); i++)
+      m_ultimos_niveis[i] = serie[n - ArraySize(m_ultimos_niveis) + i];
 
-   //--- Diferencia
-   Diferenciar(serie, m_z, m_d);
-
-   if(ArraySize(m_z) < m_p + m_q + 20)
+   Diferenciar(serie, m_serie_diferenciada, m_d);
+   if(ArraySize(m_serie_diferenciada) < m_p + m_q + 20)
      {
       m_erro = "Serie diferenciada curta demais";
       return(false);
@@ -481,12 +373,11 @@ bool CArima::Ajustar(const double &serie[])
    ArrayResize(m_theta, m_q);
    ArrayInitialize(m_phi, 0.0);
    ArrayInitialize(m_theta, 0.0);
-   m_c = 0.0;
+   m_constante = 0.0;
 
    if(!HannanRissanen())
       return(false);
 
-   //--- Verifica sanidade numerica dos coeficientes
    for(int i = 0; i < m_p; i++)
       if(!MathIsValidNumber(m_phi[i]))
         {
@@ -501,9 +392,16 @@ bool CArima::Ajustar(const double &serie[])
         }
 
    CalcularResiduos();
+   if(m_estimacao == ESTIMACAO_VEROSSIMILHANCA)
+     {
+      RefinarPorVerossimilhanca(m_serie_diferenciada, m_p, m_q, m_com_constante,
+                                m_inicio_recursao, m_inicio_verossimilhanca,
+                                m_constante, m_phi, m_theta);
+      CalcularResiduos();
+     }
    CalcularVerossimilhanca();
 
-   if(m_logL == -DBL_MAX)
+   if(m_log_verossimilhanca == -DBL_MAX)
      {
       m_erro = "Verossimilhanca invalida";
       return(false);
@@ -513,149 +411,100 @@ bool CArima::Ajustar(const double &serie[])
    return(true);
   }
 
-//+------------------------------------------------------------------+
-//| Previsao um passo a frente no espaco diferenciado                |
-//+------------------------------------------------------------------+
-//|  z(N) = c + SOMA phi_i*z(N-1-i) + SOMA theta_j*e(N-1-j)          |
-//|                                                                  |
-//|  O termo e(N) e omitido porque seu valor esperado e zero.        |
-//+------------------------------------------------------------------+
+//--- z(N) = c + soma phi_i z(N-1-i) + soma theta_j e(N-1-j); o e(N) entra pelo valor esperado, zero
 double CArima::PreverDiferenciado(void)
   {
    if(!m_ajustado)
       return(0.0);
 
-   int N = ArraySize(m_z);
-   double previsao = m_c;
+   int tamanho = ArraySize(m_serie_diferenciada);
+   double previsao = m_constante;
 
    for(int i = 0; i < m_p; i++)
      {
-      int idx = N - 1 - i;
-      if(idx >= 0)
-         previsao += m_phi[i] * m_z[idx];
+      int indice = tamanho - 1 - i;
+      if(indice >= 0)
+         previsao += m_phi[i] * m_serie_diferenciada[indice];
      }
-
    for(int j = 0; j < m_q; j++)
      {
-      int idx = N - 1 - j;
-      if(idx >= 0)
-         previsao += m_theta[j] * m_e[idx];
+      int indice = tamanho - 1 - j;
+      if(indice >= 0)
+         previsao += m_theta[j] * m_residuos[indice];
      }
 
    return(previsao);
   }
 
-//+------------------------------------------------------------------+
-//| Previsao revertida para o nivel da serie original                |
-//+------------------------------------------------------------------+
-//|  d=0: y(N) = z(N)                                                |
-//|  d=1: y(N) = y(N-1) + z(N)                                       |
-//|  d=2: y(N) = 2*y(N-1) - y(N-2) + z(N)                            |
-//+------------------------------------------------------------------+
+//--- d=1: y(N) = y(N-1) + z(N);  d=2: y(N) = 2 y(N-1) - y(N-2) + z(N)
 double CArima::PreverNivel(void)
   {
    if(!m_ajustado)
       return(0.0);
 
    double z = PreverDiferenciado();
-   int n = ArraySize(m_niveis);
-
-   if(m_d == 0)
-      return(z);
+   int n = ArraySize(m_ultimos_niveis);
 
    if(m_d == 1)
-      return((n >= 1) ? m_niveis[n - 1] + z : z);
-
-   if(m_d == 2)
-     {
-      if(n < 2)
-         return(z);
-      return(2.0 * m_niveis[n - 1] - m_niveis[n - 2] + z);
-     }
+      return((n >= 1) ? m_ultimos_niveis[n - 1] + z : z);
+   if(m_d == 2 && n >= 2)
+      return(2.0 * m_ultimos_niveis[n - 1] - m_ultimos_niveis[n - 2] + z);
 
    return(z);
-  }
-
-//+------------------------------------------------------------------+
-//| Numero de parametros para os criterios de informacao             |
-//+------------------------------------------------------------------+
-//|  p coeficientes AR + q coeficientes MA + constante + sigma2      |
-//+------------------------------------------------------------------+
-int CArima::NumParametros(void) const
-  {
-   return(m_p + m_q + (m_com_constante ? 1 : 0) + 1);
   }
 
 double CArima::AIC(void) const
   {
    if(!m_ajustado)
       return(DBL_MAX);
-   return(CalcularAIC(m_logL, NumParametros()));
+   return(CalcularAIC(m_log_verossimilhanca, NumParametros()));
   }
 
 double CArima::BIC(void) const
   {
    if(!m_ajustado)
       return(DBL_MAX);
-   return(CalcularBIC(m_logL, NumParametros(), m_n_efetivo));
+   return(CalcularBIC(m_log_verossimilhanca, NumParametros(), m_observacoes_efetivas));
   }
 
-//+------------------------------------------------------------------+
-//| Residuos validos (descarta o aquecimento)                        |
-//+------------------------------------------------------------------+
-//|  IMPORTANTE: a implementacao anterior passava ao GARCH o array   |
-//|  inteiro, incluindo os zeros do periodo de aquecimento. Zeros    |
-//|  artificiais reduzem a variancia amostral e contaminam a         |
-//|  estimacao da volatilidade. Aqui eles sao cortados.              |
-//+------------------------------------------------------------------+
 bool CArima::ObterResiduos(double &saida[]) const
   {
    if(!m_ajustado)
       return(false);
 
-   int N = ArraySize(m_e);
-   int n_validos = N - m_t0_rec;
-
-   if(n_validos <= 0)
+   int validos = ArraySize(m_residuos) - m_inicio_recursao;
+   if(validos <= 0)
       return(false);
 
-   ArrayResize(saida, n_validos);
-   for(int i = 0; i < n_validos; i++)
-      saida[i] = m_e[m_t0_rec + i];
+   ArrayResize(saida, validos);
+   for(int i = 0; i < validos; i++)
+      saida[i] = m_residuos[m_inicio_recursao + i];
 
    return(true);
   }
 
-//+------------------------------------------------------------------+
-bool CArima::EstavelConservador(void) const
+bool CArima::EstacionariedadeGarantida(void) const
   {
    double soma = 0.0;
    for(int i = 0; i < m_p; i++)
       soma += MathAbs(m_phi[i]);
-
    return(soma < 1.0);
   }
 
-//+------------------------------------------------------------------+
 string CArima::Descricao(void) const
   {
-   string s = StringFormat("ARIMA(%d,%d,%d)", m_p, m_d, m_q);
-
+   string texto = StringFormat("ARIMA(%d,%d,%d)", m_p, m_d, m_q);
    if(!m_ajustado)
-      return(s + " [nao ajustado: " + m_erro + "]");
+      return(texto + " [nao ajustado: " + m_erro + "]");
 
-   s += StringFormat(" c=%.8f", m_c);
-
+   texto += StringFormat(" c=%.8f", m_constante);
    for(int i = 0; i < m_p; i++)
-      s += StringFormat(" phi%d=%.6f", i + 1, m_phi[i]);
+      texto += StringFormat(" phi%d=%.6f", i + 1, m_phi[i]);
    for(int j = 0; j < m_q; j++)
-      s += StringFormat(" theta%d=%.6f", j + 1, m_theta[j]);
-
-   s += StringFormat(" | sigma2=%.10f logL=%.3f AIC=%.3f BIC=%.3f n=%d",
-                     m_sigma2, m_logL, AIC(), BIC(), m_n_efetivo);
-
-   return(s);
+      texto += StringFormat(" theta%d=%.6f", j + 1, m_theta[j]);
+   texto += StringFormat(" | sigma2=%.10f logL=%.3f AIC=%.3f BIC=%.3f n=%d",
+                         m_sigma2, m_log_verossimilhanca, AIC(), BIC(), m_observacoes_efetivas);
+   return(texto);
   }
 
-#endif // ALGOTRADINGLAB_ARIMA_MQH
-//+------------------------------------------------------------------+
+#endif

@@ -1,346 +1,164 @@
 //+------------------------------------------------------------------+
-//|                                                  Estatistica.mqh |
-//|                            Trabalho de Graduacao - FATEC Indaiatuba|
-//+------------------------------------------------------------------+
-//|                                                                  |
-//|  TESTES ESTATISTICOS                                             |
-//|                                                                  |
-//|  Implementa os testes que a metodologia do TG (secao 3.4 e 3.6)  |
-//|  afirma terem sido executados:                                   |
-//|                                                                  |
-//|    - ADF (Dickey-Fuller Aumentado) .... define a ordem 'd'       |
-//|    - Ljung-Box ....................... valida os residuos        |
-//|    - AIC / BIC ....................... seleciona (p,q)           |
-//|                                                                  |
+//| Estatistica.mqh                                                  |
+//| Teste ADF, teste de Ljung-Box, AIC/BIC, media, variancia e       |
+//| percentil.                                                       |
 //+------------------------------------------------------------------+
 #ifndef ALGOTRADINGLAB_ESTATISTICA_MQH
 #define ALGOTRADINGLAB_ESTATISTICA_MQH
 
 #include "Numerico.mqh"
 #include <Math\Stat\ChiSquare.mqh>
-#include <Math\Stat\Normal.mqh>
 
-//+------------------------------------------------------------------+
-//| Termos deterministicos da regressao ADF                          |
-//+------------------------------------------------------------------+
-//|                                                                  |
-//|  A escolha muda os valores criticos do teste, entao ela importa. |
-//|                                                                  |
-//|  ADF_SEM_CONSTANTE     — serie sem media e sem tendencia.        |
-//|                          Apropriado para RETORNOS.               |
-//|  ADF_CONSTANTE         — serie com media diferente de zero.      |
-//|                          Padrao para precos.                     |
-//|  ADF_CONSTANTE_TENDENCIA — serie com tendencia deterministica.   |
-//|                                                                  |
-//+------------------------------------------------------------------+
+//--- Termos deterministicos da regressao do ADF (mudam o valor critico)
 enum ENUM_ADF_DETERMINISTICO
   {
-   ADF_SEM_CONSTANTE = 0,        // Sem constante (nc)
-   ADF_CONSTANTE = 1,            // Com constante (c)
-   ADF_CONSTANTE_TENDENCIA = 2   // Constante + tendencia (ct)
+   ADF_SEM_CONSTANTE = 0,        // Sem constante
+   ADF_CONSTANTE = 1,            // Com constante
+   ADF_CONSTANTE_TENDENCIA = 2   // Constante e tendencia
   };
 
-//+------------------------------------------------------------------+
-//| Resultado do teste ADF                                           |
-//+------------------------------------------------------------------+
 struct ResultadoADF
   {
-   bool     valido;            // false se nao houve dados suficientes
-   double   estatistica;       // estatistica t de gamma
-   double   vc_1pct;           // valor critico a 1%
-   double   vc_5pct;           // valor critico a 5%
-   double   vc_10pct;          // valor critico a 10%
-   double   pvalor_aprox;      // p-valor APROXIMADO (ver nota abaixo)
-   int      lags;              // defasagens usadas
-   int      n_obs;             // observacoes efetivas na regressao
-   bool     estacionaria_5pct; // estatistica < vc_5pct
+   bool     valido;
+   double   estatistica;        // estatistica t do coeficiente do nivel defasado
+   double   valor_critico_5;    // valor critico a 5%
+   int      defasagens;
+   int      observacoes;
+   bool     estacionaria;       // estatistica < valor critico: rejeita a raiz unitaria
   };
 
-//+------------------------------------------------------------------+
-//| Valores criticos de MacKinnon (2010)                             |
-//+------------------------------------------------------------------+
-//|                                                                  |
-//|  O teste ADF nao segue distribuicao t de Student — sua           |
-//|  distribuicao nula e nao-padrao. MacKinnon estimou por simulacao |
-//|  uma "superficie de resposta" que da o valor critico em funcao   |
-//|  do tamanho da amostra T:                                        |
-//|                                                                  |
-//|      VC(T) = b0 + b1/T + b2/T^2 + b3/T^3                         |
-//|                                                                  |
-//|  Fonte: MacKinnon, J. G. "Critical Values for Cointegration      |
-//|  Tests" (2010), Tabela 2, coluna N=1. Sao os mesmos coeficientes |
-//|  usados pelo pacote statsmodels do Python, o que permite         |
-//|  conferir os resultados deste EA contra uma referencia externa.  |
-//|                                                                  |
-//+------------------------------------------------------------------+
-double ADF_ValorCritico(const ENUM_ADF_DETERMINISTICO det,
-                        const int nivel_idx,   // 0 = 1%, 1 = 5%, 2 = 10%
-                        const int T)
+//--- Valor critico a 5% de MacKinnon (2010), tabela 2, N = 1: b0 + b1/T + b2/T^2 + b3/T^3
+double ValorCriticoADF5(const ENUM_ADF_DETERMINISTICO deterministico, const int observacoes)
   {
-   //--- [determinismo][nivel][coeficiente b0..b3]
-   static double tab[3][3][4] =
+   static double coeficientes[3][4] =
      {
-        //--- ADF_SEM_CONSTANTE (nc)
-        {
-           { -2.56574, -2.2358,  -3.627,    0.000 },
-           { -1.94100, -0.2686,  -3.365,   31.223 },
-           { -1.61682,  0.2656,  -2.714,   25.364 }
-        },
-        //--- ADF_CONSTANTE (c)
-        {
-           { -3.43035, -6.5393, -16.786,  -79.433 },
-           { -2.86154, -2.8903,  -4.234,  -40.040 },
-           { -2.56677, -1.5384,  -2.809,    0.000 }
-        },
-        //--- ADF_CONSTANTE_TENDENCIA (ct)
-        {
-           { -3.95877, -9.0531, -28.428, -134.155 },
-           { -3.41049, -4.3904,  -9.036,  -45.374 },
-           { -3.12705, -2.5856,  -3.925,  -22.380 }
-        }
+        { -1.94100, -0.2686, -3.365,  31.223 },   // sem constante
+        { -2.86154, -2.8903, -4.234, -40.040 },   // com constante
+        { -3.41049, -4.3904, -9.036, -45.374 }    // constante e tendencia
      };
 
-   if(T <= 0)
+   if(observacoes <= 0)
       return(0.0);
 
-   int d = (int)det;
-   if(d < 0 || d > 2)      d = 1;
-   int L = nivel_idx;
-   if(L < 0 || L > 2)      L = 1;
+   int linha = (int)deterministico;
+   if(linha < 0 || linha > 2)
+      linha = 1;
 
-   double invT = 1.0 / (double)T;
+   double inverso = 1.0 / (double)observacoes;
 
-   return(tab[d][L][0]
-          + tab[d][L][1] * invT
-          + tab[d][L][2] * invT * invT
-          + tab[d][L][3] * invT * invT * invT);
+   return(coeficientes[linha][0]
+          + coeficientes[linha][1] * inverso
+          + coeficientes[linha][2] * inverso * inverso
+          + coeficientes[linha][3] * inverso * inverso * inverso);
   }
 
-//+------------------------------------------------------------------+
-//| p-valor aproximado do ADF                                        |
-//+------------------------------------------------------------------+
-//|                                                                  |
-//|  ATENCAO — LIMITACAO CONHECIDA E DELIBERADA:                     |
-//|                                                                  |
-//|  O p-valor exato do ADF exige a superficie de resposta completa  |
-//|  de MacKinnon (dezenas de coeficientes por regiao da            |
-//|  distribuicao). Aqui ele e obtido por interpolacao entre os      |
-//|  tres valores criticos (1%, 5%, 10%) na escala do quantil        |
-//|  normal. E adequado para leitura ("bem abaixo de 5%"), mas NAO   |
-//|  deve ser reportado no TG como um p-valor exato.                 |
-//|                                                                  |
-//|  A DECISAO do teste (estacionaria ou nao) usa sempre os valores  |
-//|  criticos, que sao exatos. O p-valor e apenas informativo.       |
-//|                                                                  |
-//+------------------------------------------------------------------+
-double ADF_PValorAproximado(const double estatistica,
-                            const double vc1, const double vc5, const double vc10)
-  {
-   //--- Quantis normais correspondentes a 1%, 5% e 10%
-   const double z1  = -2.326347;
-   const double z5  = -1.644854;
-   const double z10 = -1.281552;
-
-   double z;
-
-   if(estatistica <= vc5)
-     {
-      //--- Entre 1% e 5%, e extrapolando abaixo de 1% com a mesma
-      //--- inclinacao (por isso os dois casos usam a mesma reta)
-      double inclinacao = (z5 - z1) / (vc5 - vc1);
-      z = z1 + (estatistica - vc1) * inclinacao;
-     }
-   else if(estatistica <= vc10)
-     {
-      double inclinacao = (z10 - z5) / (vc10 - vc5);
-      z = z5 + (estatistica - vc5) * inclinacao;
-     }
-   else
-     {
-      double inclinacao = (z10 - z5) / (vc10 - vc5);
-      z = z10 + (estatistica - vc10) * inclinacao;
-     }
-
-   int erro = 0;
-   double p = MathCumulativeDistributionNormal(z, 0.0, 1.0, erro);
-
-   if(erro != 0)
-      return(-1.0);
-
-   //--- Limita a faixa em que a aproximacao tem algum sentido
-   return(MathMax(0.001, MathMin(0.999, p)));
-  }
-
-//+------------------------------------------------------------------+
-//| Regressao auxiliar do ADF com k defasagens, a partir de t_ini    |
-//+------------------------------------------------------------------+
-//|  dy(t) = gamma*y(t-1) + [a] + [b*t] + SOMA_j c_j*dy(t-j) + e     |
-//|  com t = t_ini .. n-1 (t_ini >= k+1). Devolve a estatistica t de |
-//|  gamma, o AIC da regressao e o numero de observacoes.            |
-//+------------------------------------------------------------------+
-bool RegressaoADF(const double &y[], const ENUM_ADF_DETERMINISTICO det,
-                  const int k, const int t_ini,
-                  double &estatistica, double &aic, int &n_obs)
+//--- dy(t) = gamma y(t-1) + [a] + [b t] + soma c_j dy(t-j) + e, para t >= inicio.
+//--- Devolve a estatistica t de gamma e o AIC da regressao.
+bool RegressaoADF(const double &y[], const ENUM_ADF_DETERMINISTICO deterministico,
+                  const int defasagens, const int inicio,
+                  double &estatistica, double &aic, int &observacoes)
   {
    int n = ArraySize(y);
-   int t0 = MathMax(t_ini, k + 1);
-   n_obs = n - t0;
-   if(n_obs < k + 5)
+   int primeiro = MathMax(inicio, defasagens + 1);
+   observacoes = n - primeiro;
+   if(observacoes < defasagens + 5)
       return(false);
 
-   int n_det = 0;
-   if(det == ADF_CONSTANTE)             n_det = 1;
-   if(det == ADF_CONSTANTE_TENDENCIA)   n_det = 2;
+   int termos_deterministicos = 0;
+   if(deterministico == ADF_CONSTANTE)            termos_deterministicos = 1;
+   if(deterministico == ADF_CONSTANTE_TENDENCIA)  termos_deterministicos = 2;
 
-   int n_par = 1 + n_det + k;   // gamma + deterministicos + defasagens
-   if(n_obs <= n_par)
+   int parametros = 1 + termos_deterministicos + defasagens;
+   if(observacoes <= parametros)
       return(false);
 
-   CMatrixDouble X(n_obs, n_par);
-   double dep[];
-   ArrayResize(dep, n_obs);
+   CMatrixDouble X(observacoes, parametros);
+   double variacao[];
+   ArrayResize(variacao, observacoes);
 
-   for(int t = t0, linha = 0; t <= n - 1; t++, linha++)
+   for(int t = primeiro, linha = 0; t <= n - 1; t++, linha++)
      {
-      dep[linha] = y[t] - y[t - 1];
-      int col = 0;
-      X.Set(linha, col++, y[t - 1]);                 // nivel defasado (gamma)
-      if(n_det >= 1) X.Set(linha, col++, 1.0);
-      if(n_det >= 2) X.Set(linha, col++, (double)t);
-      for(int j = 1; j <= k; j++)
-         X.Set(linha, col++, y[t - j] - y[t - j - 1]);
+      variacao[linha] = y[t] - y[t - 1];
+      int coluna = 0;
+      X.Set(linha, coluna++, y[t - 1]);
+      if(termos_deterministicos >= 1) X.Set(linha, coluna++, 1.0);
+      if(termos_deterministicos >= 2) X.Set(linha, coluna++, (double)t);
+      for(int j = 1; j <= defasagens; j++)
+         X.Set(linha, coluna++, y[t - j] - y[t - j - 1]);
      }
 
-   double coef[], se[], ssr = 0.0;
-   if(!MQO(X, dep, n_obs, n_par, coef, se, ssr, true))
+   double coeficientes[], erros_padrao[], soma_quadrados = 0.0;
+   if(!MQO(X, variacao, observacoes, parametros, coeficientes, erros_padrao, soma_quadrados, true))
       return(false);
-   if(se[0] <= 0.0 || ssr <= 0.0)
+   if(erros_padrao[0] <= 0.0 || soma_quadrados <= 0.0)
       return(false);
 
-   estatistica = coef[0] / se[0];
-   aic = (double)n_obs * MathLog(ssr / (double)n_obs) + 2.0 * (double)n_par;
+   estatistica = coeficientes[0] / erros_padrao[0];
+   aic = (double)observacoes * MathLog(soma_quadrados / (double)observacoes) + 2.0 * (double)parametros;
    return(true);
   }
 
-//+------------------------------------------------------------------+
-//| TESTE ADF — Dickey-Fuller Aumentado                              |
-//+------------------------------------------------------------------+
-//|                                                                  |
-//|  HIPOTESE NULA (H0): a serie possui raiz unitaria                |
-//|                      => NAO e estacionaria                       |
-//|  HIPOTESE ALT. (H1): a serie e estacionaria                      |
-//|                                                                  |
-//|  Estimamos por MQO a regressao:                                  |
-//|                                                                  |
-//|    dy(t) = gamma*y(t-1) + [a] + [b*t] + SOMA(c_i * dy(t-i)) + e  |
-//|                                                                  |
-//|  e testamos gamma = 0 pela estatistica t. Se gamma = 0, entao    |
-//|  dy(t) nao depende do nivel y(t-1) — a serie "passeia" sem ser   |
-//|  puxada de volta, ou seja, tem raiz unitaria.                    |
-//|                                                                  |
-//|  Rejeitamos H0 quando a estatistica t e MENOR (mais negativa)    |
-//|  que o valor critico. Note que o teste e unilateral a esquerda.  |
-//|                                                                  |
-//|  ENTRADA:                                                        |
-//|    y     — serie em ordem cronologica (indice 0 = mais antigo)   |
-//|    det   — termos deterministicos                                |
-//|    lags  — numero de defasagens de dy. Use -1 para selecao       |
-//|            automatica por AIC (recomendado).                     |
-//|                                                                  |
-//+------------------------------------------------------------------+
-bool TesteADF(const double &y[], const ENUM_ADF_DETERMINISTICO det,
-              const int lags, ResultadoADF &res)
+//--- Dickey-Fuller aumentado. H0: raiz unitaria (nao estacionaria).
+//--- defasagens = -1 escolhe o numero de defasagens pelo AIC.
+bool TesteADF(const double &y[], const ENUM_ADF_DETERMINISTICO deterministico,
+              const int defasagens, ResultadoADF &resultado)
   {
-   res.valido = false;
-   res.estatistica = 0.0;
-   res.pvalor_aprox = -1.0;
-   res.lags = 0;
-   res.n_obs = 0;
-   res.estacionaria_5pct = false;
+   resultado.valido = false;
+   resultado.estatistica = 0.0;
+   resultado.defasagens = 0;
+   resultado.observacoes = 0;
+   resultado.estacionaria = false;
 
    int n = ArraySize(y);
    if(n < 20)
       return(false);
 
-   //--- Regra de Schwert para o numero maximo de defasagens:
-   //--- k_max = floor(12 * (T/100)^(1/4))
-   int k_max = (int)MathFloor(12.0 * MathPow(n / 100.0, 0.25));
-   k_max = MathMax(0, MathMin(k_max, (n - 10) / 4));
+   //--- Maximo de defasagens pela regra de Schwert: 12 (T/100)^(1/4)
+   int maximo = (int)MathFloor(12.0 * MathPow(n / 100.0, 0.25));
+   maximo = MathMax(0, MathMin(maximo, (n - 10) / 4));
 
-   int k_ini, k_fim;
-   if(lags >= 0)
-     {
-      k_ini = MathMin(lags, k_max);
-      k_fim = k_ini;
-     }
-   else
-     {
-      //--- Selecao automatica: testa 0..k_max e fica com o menor AIC
-      k_ini = 0;
-      k_fim = k_max;
-     }
+   int primeira = (defasagens >= 0) ? MathMin(defasagens, maximo) : 0;
+   int ultima   = (defasagens >= 0) ? primeira : maximo;
 
-   //--- Escolha das defasagens por AIC sobre AMOSTRA COMUM: todas as
-   //--- regressoes candidatas usam as mesmas observacoes (t > k_fim), como
-   //--- no adfuller do statsmodels. Antes cada k usava n-1-k observacoes,
-   //--- e o AIC, que soma uma parcela por observacao, favorecia k pequeno
-   //--- (o mesmo vies ja corrigido na selecao do ARIMA). Escolhido k, a
-   //--- estatistica e recalculada com toda a amostra disponivel para ele.
-   //--- (Corrigido em 05/10/2026.)
+   //--- As candidatas comparam o AIC sobre a mesma amostra (t > ultima).
+   //--- Escolhida a defasagem, a estatistica usa toda a amostra disponivel.
    double melhor_aic = DBL_MAX;
-   int    k_melhor = -1;
+   int    melhor_defasagem = -1;
 
-   for(int k = k_ini; k <= k_fim; k++)
+   for(int k = primeira; k <= ultima; k++)
      {
-      double stat_k = 0.0, aic_k = 0.0;
-      int    nobs_k = 0;
-      if(!RegressaoADF(y, det, k, k_fim + 1, stat_k, aic_k, nobs_k))
+      double estatistica_k = 0.0, aic_k = 0.0;
+      int    observacoes_k = 0;
+      if(!RegressaoADF(y, deterministico, k, ultima + 1, estatistica_k, aic_k, observacoes_k))
          continue;
       if(aic_k < melhor_aic)
         {
          melhor_aic = aic_k;
-         k_melhor = k;
+         melhor_defasagem = k;
         }
      }
 
-   bool achou = false;
-   if(k_melhor >= 0)
-     {
-      double stat = 0.0, aic = 0.0;
-      int    nobs = 0;
-      if(RegressaoADF(y, det, k_melhor, k_melhor + 1, stat, aic, nobs))
-        {
-         res.estatistica = stat;
-         res.lags = k_melhor;
-         res.n_obs = nobs;
-         achou = true;
-        }
-     }
-
-   if(!achou)
+   if(melhor_defasagem < 0)
       return(false);
 
-   res.vc_1pct  = ADF_ValorCritico(det, 0, res.n_obs);
-   res.vc_5pct  = ADF_ValorCritico(det, 1, res.n_obs);
-   res.vc_10pct = ADF_ValorCritico(det, 2, res.n_obs);
+   double estatistica = 0.0, aic = 0.0;
+   int    observacoes = 0;
+   if(!RegressaoADF(y, deterministico, melhor_defasagem, melhor_defasagem + 1, estatistica, aic, observacoes))
+      return(false);
 
-   res.pvalor_aprox = ADF_PValorAproximado(res.estatistica,
-                                           res.vc_1pct, res.vc_5pct, res.vc_10pct);
-
-   //--- Rejeita H0 (raiz unitaria) => serie estacionaria
-   res.estacionaria_5pct = (res.estatistica < res.vc_5pct);
-   res.valido = true;
-
+   resultado.estatistica = estatistica;
+   resultado.defasagens = melhor_defasagem;
+   resultado.observacoes = observacoes;
+   resultado.valor_critico_5 = ValorCriticoADF5(deterministico, observacoes);
+   resultado.estacionaria = (resultado.estatistica < resultado.valor_critico_5);
+   resultado.valido = true;
    return(true);
   }
 
-//+------------------------------------------------------------------+
-//| Autocorrelacao amostral no lag k                                 |
-//+------------------------------------------------------------------+
-double Autocorrelacao(const double &x[], const int k)
+double Autocorrelacao(const double &x[], const int defasagem)
   {
    int n = ArraySize(x);
-   if(n <= k || k < 0)
+   if(n <= defasagem || defasagem < 0)
       return(0.0);
 
    double media = 0.0;
@@ -348,67 +166,47 @@ double Autocorrelacao(const double &x[], const int k)
       media += x[i];
    media /= (double)n;
 
-   double num = 0.0, den = 0.0;
+   double numerador = 0.0, denominador = 0.0;
    for(int i = 0; i < n; i++)
      {
-      double d = x[i] - media;
-      den += d * d;
-      if(i >= k)
-         num += d * (x[i - k] - media);
+      double desvio = x[i] - media;
+      denominador += desvio * desvio;
+      if(i >= defasagem)
+         numerador += desvio * (x[i - defasagem] - media);
      }
 
-   return((den > 0.0) ? num / den : 0.0);
+   return((denominador > 0.0) ? numerador / denominador : 0.0);
   }
 
-//+------------------------------------------------------------------+
-//| Resultado do teste de Ljung-Box                                  |
-//+------------------------------------------------------------------+
 struct ResultadoLjungBox
   {
    bool     valido;
-   double   estatistica;   // Q
+   double   estatistica;          // Q
    double   pvalor;
-   int      lags;          // h
-   int      gl;            // graus de liberdade
-   bool     ruido_branco;  // p > 0.05 => residuos sem autocorrelacao
+   int      graus_liberdade;
+   bool     ruido_branco;         // p > 0,05: sem autocorrelacao restante
   };
 
-//+------------------------------------------------------------------+
-//| TESTE DE LJUNG-BOX                                               |
-//+------------------------------------------------------------------+
-//|                                                                  |
-//|  Verifica se os residuos do modelo ainda carregam autocorrelacao.|
-//|  Se carregam, sobrou estrutura que o ARIMA nao capturou e o      |
-//|  modelo esta mal especificado.                                   |
-//|                                                                  |
-//|    Q = n(n+2) * SOMA_{k=1..h} [ r_k^2 / (n-k) ]  ~  Qui2(h - m)  |
-//|                                                                  |
-//|  onde m = p + q e o numero de parametros ARMA estimados.         |
-//|                                                                  |
-//|  H0: residuos sao ruido branco (o que QUEREMOS nao rejeitar).    |
-//|  p-valor ALTO (> 0,05) e o resultado desejavel aqui.             |
-//|                                                                  |
-//+------------------------------------------------------------------+
-bool TesteLjungBox(const double &residuos[], const int h, const int n_par_arma,
-                   ResultadoLjungBox &res)
+//--- Q = n(n+2) soma r_k^2/(n-k), k = 1..h, contra qui-quadrado com h - (p+q) graus de liberdade
+bool TesteLjungBox(const double &residuos[], const int defasagens, const int parametros_arma,
+                   ResultadoLjungBox &resultado)
   {
-   res.valido = false;
-   res.estatistica = 0.0;
-   res.pvalor = -1.0;
-   res.lags = h;
-   res.gl = 0;
-   res.ruido_branco = false;
+   resultado.valido = false;
+   resultado.estatistica = 0.0;
+   resultado.pvalor = -1.0;
+   resultado.graus_liberdade = 0;
+   resultado.ruido_branco = false;
 
    int n = ArraySize(residuos);
-   if(n < h + 5 || h <= 0)
+   if(n < defasagens + 5 || defasagens <= 0)
       return(false);
 
-   int gl = h - n_par_arma;
-   if(gl <= 0)
+   int graus_liberdade = defasagens - parametros_arma;
+   if(graus_liberdade <= 0)
       return(false);
 
    double soma = 0.0;
-   for(int k = 1; k <= h; k++)
+   for(int k = 1; k <= defasagens; k++)
      {
       double r = Autocorrelacao(residuos, k);
       soma += (r * r) / (double)(n - k);
@@ -417,59 +215,42 @@ bool TesteLjungBox(const double &residuos[], const int h, const int n_par_arma,
    double Q = (double)n * (double)(n + 2) * soma;
 
    int erro = 0;
-   double cdf = MathCumulativeDistributionChiSquare(Q, (double)gl, erro);
+   double acumulada = MathCumulativeDistributionChiSquare(Q, (double)graus_liberdade, erro);
    if(erro != 0)
       return(false);
 
-   res.estatistica = Q;
-   res.gl = gl;
-   res.pvalor = 1.0 - cdf;
-   res.ruido_branco = (res.pvalor > 0.05);
-   res.valido = true;
-
+   resultado.estatistica = Q;
+   resultado.graus_liberdade = graus_liberdade;
+   resultado.pvalor = 1.0 - acumulada;
+   resultado.ruido_branco = (resultado.pvalor > 0.05);
+   resultado.valido = true;
    return(true);
   }
 
-//+------------------------------------------------------------------+
-//| Criterios de informacao                                          |
-//+------------------------------------------------------------------+
-//|                                                                  |
-//|  Ambos penalizam a complexidade do modelo. Menor = melhor.       |
-//|                                                                  |
-//|    AIC = -2*logL + 2k                                            |
-//|    BIC = -2*logL + k*ln(n)    (penaliza mais que o AIC)          |
-//|                                                                  |
-//|  'k' deve incluir TODOS os parametros estimados, inclusive a     |
-//|  variancia dos residuos. Esquecer isso e um erro comum que       |
-//|  desloca a comparacao entre modelos de tamanhos diferentes.      |
-//|                                                                  |
-//+------------------------------------------------------------------+
-double CalcularAIC(const double log_verossimilhanca, const int k)
+//--- k inclui todos os parametros estimados, inclusive a variancia dos residuos
+double CalcularAIC(const double log_verossimilhanca, const int parametros)
   {
-   return(-2.0 * log_verossimilhanca + 2.0 * (double)k);
+   return(-2.0 * log_verossimilhanca + 2.0 * (double)parametros);
   }
 
-double CalcularBIC(const double log_verossimilhanca, const int k, const int n)
+double CalcularBIC(const double log_verossimilhanca, const int parametros, const int observacoes)
   {
-   if(n <= 0)
+   if(observacoes <= 0)
       return(DBL_MAX);
-   return(-2.0 * log_verossimilhanca + (double)k * MathLog((double)n));
+   return(-2.0 * log_verossimilhanca + (double)parametros * MathLog((double)observacoes));
   }
 
-//+------------------------------------------------------------------+
-//| Media e variancia amostral                                       |
-//+------------------------------------------------------------------+
 double Media(const double &x[])
   {
    int n = ArraySize(x);
    if(n <= 0)
       return(0.0);
 
-   double s = 0.0;
+   double soma = 0.0;
    for(int i = 0; i < n; i++)
-      s += x[i];
+      soma += x[i];
 
-   return(s / (double)n);
+   return(soma / (double)n);
   }
 
 double Variancia(const double &x[])
@@ -478,13 +259,38 @@ double Variancia(const double &x[])
    if(n <= 1)
       return(0.0);
 
-   double m = Media(x);
-   double s = 0.0;
+   double media = Media(x);
+   double soma = 0.0;
    for(int i = 0; i < n; i++)
-      s += (x[i] - m) * (x[i] - m);
+      soma += (x[i] - media) * (x[i] - media);
 
-   return(s / (double)(n - 1));
+   return(soma / (double)(n - 1));
   }
 
-#endif // ALGOTRADINGLAB_ESTATISTICA_MQH
-//+------------------------------------------------------------------+
+//--- Percentil com interpolacao linear (0 a 100)
+double Percentil(const double &x[], const double percentual)
+  {
+   int n = ArraySize(x);
+   if(n <= 0)
+      return(0.0);
+   if(n == 1)
+      return(x[0]);
+
+   double ordenado[];
+   ArrayResize(ordenado, n);
+   ArrayCopy(ordenado, x);
+   ArraySort(ordenado);
+
+   double fracao = MathMax(0.0, MathMin(100.0, percentual)) / 100.0;
+   double posicao = fracao * (double)(n - 1);
+
+   int i = (int)MathFloor(posicao);
+   double resto = posicao - (double)i;
+
+   if(i >= n - 1)
+      return(ordenado[n - 1]);
+
+   return(ordenado[i] * (1.0 - resto) + ordenado[i + 1] * resto);
+  }
+
+#endif

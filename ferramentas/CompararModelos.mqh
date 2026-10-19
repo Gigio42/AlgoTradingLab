@@ -16,7 +16,7 @@ void CompararPares()
      }
    int fh = FileOpen("AlgoLab\\comparacoes.tmp", FILE_WRITE | FILE_TXT | FILE_ANSI | FILE_COMMON);
    FileWriteString(fh, "grupo;modelo_a;modelo_b;n;sharpe_a;sharpe_b;rho;"
-                       "z_sharpe;p_sharpe;dif_anual;t_dif;p_dif\n");
+                       "z_sharpe;p_sharpe;dif_anual;t_dif;p_dif;vol_a;vol_b;r_pm;t_pm;p_pm\n");
    int ok = 0, falhas = 0;
    while(!FileIsEnding(fp))
      {
@@ -31,9 +31,10 @@ void CompararPares()
          falhas++;
          continue;
         }
-      FileWriteString(fh, StringFormat("%s;%s;%s;%d;%.4f;%.4f;%.4f;%.4f;%.4f;%.6f;%.4f;%.4f\n",
+      FileWriteString(fh, StringFormat("%s;%s;%s;%d;%.4f;%.4f;%.4f;%.4f;%.4f;%.6f;%.4f;%.4f;%.4f;%.4f;%.4f;%.2f;%.3g\n",
                       c3[0], c3[1], c3[2], c.n, c.sharpe_a, c.sharpe_b, c.rho,
-                      c.z_sharpe, c.p_sharpe, c.dif_anual, c.t_dif, c.p_dif));
+                      c.z_sharpe, c.p_sharpe, c.dif_anual, c.t_dif, c.p_dif,
+                      c.vol_a, c.vol_b, c.r_pm, c.t_pm, c.p_pm));
       ok++;
      }
    FileClose(fp);

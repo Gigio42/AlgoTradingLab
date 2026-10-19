@@ -1,0 +1,20 @@
+% Volatilidade e queda maxima por periodo (camada 1).
+\documentclass[border=4pt]{standalone}
+\usepackage[utf8]{inputenc}\usepackage[T1]{fontenc}\usepackage{mathptmx}
+\usepackage{pgfplots}\usepgfplotslibrary{groupplots}\pgfplotsset{compat=1.18}
+\begin{document}\begin{tikzpicture}
+\begin{groupplot}[group style={group size=1 by 2, vertical sep=1.4cm}, width=14.6cm, height=5.5cm,
+  symbolic x coords={T1,T2,R6,T3,T5}, xtick=data, table/col sep=comma, grid=major, grid style={gray!20},
+  xticklabels={2007--2011,2013--2016,2017--2024,2025--2026,2020--2021}]
+\nextgroupplot[ybar, bar width=6pt, ylabel={Volatilidade anual (\%)}, legend style={at={(0.5,1.03)}, anchor=south, legend columns=4, draw=none}]
+\addplot table[x=periodo, y=GR]{risco_periodos.csv};
+\addplot table[x=periodo, y=GRgemeo]{risco_periodos.csv};
+\addplot table[x=periodo, y=AR]{risco_periodos.csv};
+\addplot table[x=periodo, y=MM]{risco_periodos.csv};
+\legend{ARIMA-GARCH, {sem GARCH}, ARIMA, Médias móveis reproduzidas}
+\nextgroupplot[ybar, bar width=6pt, ylabel={Queda máxima (\%)}]
+\addplot table[x=periodo, y=qGR]{risco_periodos.csv};
+\addplot table[x=periodo, y=qGRgemeo]{risco_periodos.csv};
+\addplot table[x=periodo, y=qAR]{risco_periodos.csv};
+\addplot table[x=periodo, y=qMM]{risco_periodos.csv};
+\end{groupplot}\end{tikzpicture}\end{document}

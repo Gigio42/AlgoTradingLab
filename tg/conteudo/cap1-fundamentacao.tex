@@ -8,6 +8,19 @@
 %  versão anterior está em notas/rascunhos/antes_revisao_2026-10-05/.
 %
 %  Títulos só com a inicial maiúscula (Manual FATEC-ID, item 4.1.2.10).
+%
+%  Varredura do autor em 2026-10-15: figuras fixas no lugar ([H]); "pregão"
+%  definido; ADF (raiz unitária e valor-p) e AIC explicados com Thomaz (2019,
+%  p. 28, 40-41, 44-45); ARMA e AR como casos do ARIMA (Thomaz, 2019, p. 33);
+%  citação dupla "(Xing; Araya; Araya)" virou narrativa; frase do agrupamento
+%  de volatilidade reescrita; saiu a remissão às considerações finais; as três
+%  formas de usar o GARCH foram para o Cap. II (decisão de projeto, sem fonte);
+%  "Medidas de desempenho e risco" virou "Métricas de avaliação", com quadro de
+%  todas as métricas e a explicação da raiz de 252 (Sharpe, 1994, regra da raiz
+%  do tempo; 252 = convenção, marcado para fonte; média de 247,8 pregões/ano em
+%  dados/series/PETR4_OFICIAL.csv). Equações sem rótulo: o texto não as cita
+%  mais pelo número. Versão anterior em
+%  notas/rascunhos/antes_varredura_autor_2026-10-15/.
 % =====================================================================
 \setdiv{CAPÍTULO I}
 \chapter{Fundamentação teórica}
@@ -29,7 +42,8 @@ Mobiliários. No Brasil, esse papel é exercido pela B3.
 Para a empresa, a abertura de capital é uma forma de obter recursos de terceiros.
 Em troca do capital recebido, ela cede aos acionistas uma participação no negócio
 proporcional ao valor investido. Para o investidor, a ação passa a ser um ativo
-cujo preço varia a cada pregão conforme a oferta e a procura, e é essa variação
+cujo preço varia a cada pregão, isto é, a cada sessão diária de negociação na
+bolsa, conforme a oferta e a procura, e é essa variação
 que as estratégias de negociação procuram aproveitar.
 
 O investidor não negocia diretamente na bolsa. O acesso se dá por meio de
@@ -87,11 +101,11 @@ uma média rápida, de janela curta, e uma lenta, de janela longa, e interpreta 
 cruzamento entre elas como sinal de compra ou de venda, como ilustra a
 Figura~\ref{fig:cruzamento-mm}.
 
-\begin{figure}[htb]
+\begin{figure}[H]
 \centering
 \caption{Cruzamento de médias móveis}
 \label{fig:cruzamento-mm}
-\includegraphics[width=0.95\textwidth]{fig04-cruzamento-medias.png}
+\includegraphics[width=0.8\textwidth]{fig04-cruzamento-medias.png}
 \fonte{Elaboração própria com dados e interface do MetaTrader 5.}
 \end{figure}
 
@@ -114,11 +128,11 @@ Figura~\ref{fig:interface-mt}, organiza em janelas as cotações em tempo real, 
 gráficos de preços e o navegador, que dá acesso às contas, aos indicadores e aos
 programas instalados.
 
-\begin{figure}[htb]
+\begin{figure}[H]
 \centering
 \caption{Interface do MetaTrader 5}
 \label{fig:interface-mt}
-\includegraphics[width=0.85\textwidth]{fig01-interface-metatrader.png}
+\includegraphics[width=0.72\textwidth]{fig01-interface-metatrader.png}
 \fonte{\citeonline{metaquotes2024}.}
 \end{figure}
 
@@ -128,11 +142,11 @@ abre, modifica e encerra posições segundo regras programadas, sem intervençã
 manual \cite{almeida2016}. A Figura~\ref{fig:fluxograma-ea} apresenta o ciclo de
 funcionamento de um EA.
 
-\begin{figure}[htb]
+\begin{figure}[H]
 \centering
 \caption{Ciclo de funcionamento de um \textit{Expert Advisor}}
 \label{fig:fluxograma-ea}
-\includegraphics[width=0.55\textwidth]{fig02-fluxograma-ea.png}
+\includegraphics[width=0.42\textwidth]{fig02-fluxograma-ea.png}
 \fonte{\citeonline{almeida2016}.}
 \end{figure}
 
@@ -182,11 +196,16 @@ escrito como
 \begin{equation}
 y_t = c + \phi_1 y_{t-1} + \cdots + \phi_p y_{t-p}
         + \varepsilon_t + \theta_1 \varepsilon_{t-1} + \cdots + \theta_q \varepsilon_{t-q},
-\label{eq:arima}
 \end{equation}
 em que $c$ é uma constante, os coeficientes $\phi$ ponderam os valores passados da
 série, os coeficientes $\theta$ ponderam os erros passados e $\varepsilon_t$ é o
 erro do período atual, que o modelo não consegue prever.
+
+O ARIMA supõe, portanto, que a série diferenciada segue um modelo ARMA($p$,$q$),
+que tem apenas as partes autorregressiva e de médias móveis \cite{thomaz2019}.
+Quando a série não precisa ser diferenciada ($d = 0$), o próprio ARIMA é um ARMA,
+e quando também não há termos de médias móveis ($q = 0$), o modelo é chamado de
+AR($p$), ou autorregressivo.
 
 Há uma relação direta entre essa equação e a estratégia de
 \citeonline{almeida2016}. A média móvel simples de dez períodos é um filtro linear
@@ -197,7 +216,10 @@ convenção. Nesse sentido, o ARIMA pode ser visto como uma generalização da m
 móvel: mantém a mesma família de operação e ajusta os coeficientes ao ativo e ao
 período analisados.
 
-\begin{figure}[htb]
+A aplicação do modelo segue as etapas representadas na
+Figura~\ref{fig:fluxo-arima}.
+
+\begin{figure}[H]
 \centering
 \caption{Etapas de aplicação do modelo ARIMA}
 \label{fig:fluxo-arima}
@@ -205,45 +227,67 @@ período analisados.
 \fonte{Elaboração própria.}
 \end{figure}
 
-As etapas de aplicação do modelo estão representadas na
-Figura~\ref{fig:fluxo-arima}. A primeira é verificar se a série é estacionária e,
-caso não seja, diferenciá-la até que se torne. Essa verificação é feita, em geral,
-pelo teste de Dickey-Fuller aumentado (ADF), que tem como hipótese nula a
-existência de uma raiz unitária, isto é, a não estacionariedade da série. No
-estudo de \citeonline{xing2024} sobre as ações da NVIDIA, o teste aplicado aos
-preços resultou em valor-p de 0,998773, o que impediu a rejeição da hipótese nula.
-Após uma diferenciação, o valor-p ficou próximo de zero, e a ordem de integração
-foi definida como $d = 1$.
+A primeira etapa é verificar se a série é estacionária. Uma série estacionária
+oscila em torno de uma média estável, e um choque que a afasta dessa média tende a
+se desfazer com o tempo. Os preços de ações, ao contrário, costumam se comportar
+como um passeio aleatório, em que cada choque se incorpora ao preço e não se
+desfaz, de modo que a variância da série cresce com o tempo \cite{thomaz2019}.
+Esse comportamento é chamado de raiz unitária. Para identificá-lo, usa-se o teste
+de Dickey-Fuller aumentado (ADF), que estima, por regressão, o quanto a variação de
+cada dia depende do nível da série no dia anterior. Se a série tende a voltar à
+sua média, essa dependência é negativa e forte. Se não tende, ela é próxima de
+zero, e a série tem raiz unitária \cite{thomaz2019}.
+
+A hipótese nula do teste é a existência de raiz unitária. O valor-p indica a
+probabilidade de se obter um resultado tão favorável à estacionariedade quanto o
+observado se a série de fato tivesse raiz unitária. Como a estatística do teste não
+segue as distribuições usuais, os seus valores críticos foram tabelados
+especialmente para ele, e a hipótese nula é rejeitada quando a estatística fica
+abaixo do valor crítico, o que corresponde a um valor-p pequeno, em geral menor
+que 0,05 \cite{thomaz2019}. Quando a hipótese não é rejeitada, a série é
+diferenciada e testada de novo. No estudo de \citeonline{xing2024} sobre as ações
+da NVIDIA, o teste aplicado aos preços resultou em valor-p de 0,998773, isto é, sem
+nenhum indício contra a raiz unitária. Após uma diferenciação, o valor-p ficou
+próximo de zero, e a ordem de integração foi definida como $d = 1$.
 
 Definido $d$, resta escolher $p$ e $q$. Como várias combinações são possíveis,
 \citeonline{xing2024} testaram valores de zero a quatro para cada ordem e
-selecionaram a combinação de menor critério de informação de Akaike (AIC). O AIC
-mede o equilíbrio entre a qualidade do ajuste e a quantidade de parâmetros do
-modelo, penalizando especificações com parâmetros em excesso, que tenderiam a
-reproduzir o ruído dos dados passados sem melhorar a previsão. Com o modelo
-ajustado, obtêm-se a previsão para o período seguinte e os resíduos, que são os
-erros de previsão observados na amostra.
+escolheram a combinação de menor critério de informação de Akaike (AIC), dado por
+\begin{equation*}
+\text{AIC} = -2\ln \hat{L} + 2k,
+\end{equation*}
+em que $\hat{L}$ é a verossimilhança do modelo ajustado, que mede o quão provável é
+a série observada segundo o modelo, e $k$ é o número de parâmetros estimados
+\cite{thomaz2019}. A primeira parcela diminui quanto melhor o ajuste, e a segunda
+aumenta a cada parâmetro acrescentado. Um modelo com mais parâmetros sempre se
+ajusta um pouco melhor aos dados passados, mas parte desse ganho é apenas ruído
+reproduzido, que não ajuda a prever. A penalidade faz com que um parâmetro a mais
+só compense se melhorar o ajuste mais do que custa. Ajusta-se, então, cada
+combinação candidata, e escolhe-se a de menor AIC, que é a que melhor equilibra
+ajuste e simplicidade. Com o modelo escolhido, obtêm-se a previsão para o período
+seguinte e os resíduos, que são os erros de previsão observados na amostra.
 
-A principal limitação do ARIMA é tratar apenas relações lineares e supor que a
-variância dos erros é constante \cite{xing2024,araya2024}. Em séries financeiras
-essa segunda suposição raramente se verifica, e é dela que trata o modelo GARCH.
+Segundo \citeonline{xing2024} e \citeonline{araya2024}, a principal limitação do
+ARIMA é tratar apenas relações lineares e supor que a variância dos erros é
+constante. Em séries financeiras essa segunda suposição raramente se verifica, e é
+dela que trata o modelo GARCH.
 
 \subsection{GARCH}
 
-Nas séries de retornos de ações, períodos de grande oscilação tendem a ser
-seguidos por outros de grande oscilação, e períodos calmos por outros calmos. A
-volatilidade, que mede o grau de variação dos preços ao longo do tempo, não é
-constante, e conhecê-la é fundamental para a gestão de risco \cite{araya2024}.
+Nas séries de retornos de ações, a volatilidade, que mede o grau de variação dos
+preços ao longo do tempo, não é constante. Ela costuma vir em ondas, com dias
+agitados seguidos de outros dias agitados e dias calmos seguidos de dias calmos, e
+conhecê-la é fundamental para a gestão de risco \cite{araya2024}.
 \citeonline{engle1982} propôs o modelo ARCH, em que a variância do erro de cada
 período depende dos erros dos períodos anteriores. \citeonline{bollerslev1986}
 generalizou essa proposta no modelo GARCH, do inglês \textit{Generalized
 Autoregressive Conditional Heteroskedasticity}, em que a variância passa a
 depender também das próprias variâncias anteriores.
 
-Na especificação GARCH(1,1), adotada neste trabalho, a variância condicional $\sigma^2_t$ do erro no período $t$ é dada por
+Na especificação GARCH(1,1), adotada neste trabalho, a variância condicional
+$\sigma^2_t$ do erro no período $t$ é dada por
 \begin{equation}
 \sigma^2_t = \omega + \alpha\,\varepsilon^2_{t-1} + \beta\,\sigma^2_{t-1},
-\label{eq:garch}
 \end{equation}
 em que $\varepsilon_{t-1}$ é o erro do período anterior, $\sigma^2_{t-1}$ é a
 variância estimada para o período anterior e $\omega$, $\alpha$ e $\beta$ são os
@@ -252,7 +296,7 @@ um choque recente, e o termo com $\beta$ representa a persistência da
 volatilidade passada \cite{bollerslev1986}. A Figura~\ref{fig:fluxo-garch}
 ilustra esse processo de retroalimentação.
 
-\begin{figure}[htb]
+\begin{figure}[H]
 \centering
 \caption{Retroalimentação da variância no modelo GARCH}
 \label{fig:fluxo-garch}
@@ -272,9 +316,8 @@ mesma magnitude. Nos mercados de ações, porém, as quedas costumam elevar a
 volatilidade mais do que as altas. Para representar essa assimetria foram
 propostas variações do modelo, como o EGARCH e o TGARCH, que acrescentam à
 equação termos capazes de fazer a volatilidade reagir de forma diferente a
-choques positivos e negativos \cite{araya2024}. Este trabalho emprega a especificação simétrica, e as variações
-assimétricas são retomadas nas considerações finais como possibilidade de
-continuação.
+choques positivos e negativos \cite{araya2024}. Este trabalho emprega a
+especificação simétrica.
 
 \subsection{Integração entre ARIMA e GARCH}
 
@@ -289,67 +332,98 @@ direção da operação é dada pelo sinal da previsão do ARIMA, e o risco asso
 ela é dado pela volatilidade prevista pelo GARCH. Como o GARCH não fornece nenhuma
 informação sobre a direção dos preços, ele não pode, sozinho, gerar uma ordem de
 compra ou de venda. O que ele pode fazer é condicionar a operação indicada pelo
-ARIMA ao nível de risco esperado.
+ARIMA ao nível de risco esperado, impedindo a operação ou reduzindo o seu tamanho
+quando a volatilidade prevista é alta.
 
-Há três formas de fazer esse condicionamento. Na primeira, chamada de filtro de
-volatilidade, a operação só é realizada quando a volatilidade prevista está
-abaixo de um limiar. Na segunda, conhecida como \textit{volatility targeting}, o
-tamanho da posição é ajustado de forma inversamente proporcional à volatilidade
-prevista, de modo que a posição diminui quando a incerteza aumenta. Na terceira, a
-volatilidade prevista é usada para construir um intervalo de confiança em torno
-da previsão do ARIMA, e a operação só é realizada quando a previsão se afasta de
-zero o suficiente para sair desse intervalo. As três formas foram implementadas
-neste trabalho, além de uma quarta que combina o filtro com o ajuste do tamanho da
-posição. Como se verá no Capítulo III, a diferença que mais pesou nos resultados
-foi entre as variantes que reduzem a posição diante de uma volatilidade alta e as
-que apenas impedem novas entradas.
-
-\section{Medidas de desempenho e risco}
+\section{Métricas de avaliação}
 \label{sec:medidas}
 
 Avaliar uma estratégia de negociação apenas pelo lucro final esconde o caminho
 percorrido até ele. Duas estratégias com o mesmo retorno podem ter exposto o
 investidor a riscos muito diferentes. Por isso, o relatório do testador de
 estratégias do MetaTrader 5 apresenta, ao lado do lucro, medidas de risco e
-índices que relacionam as duas coisas \cite{metaquotesRelatorio}.
+índices que relacionam as duas coisas \cite{metaquotesRelatorio}. O
+Quadro~\ref{qua:metricas} resume as métricas usadas neste trabalho para avaliar e
+comparar os robôs.
 
-O risco pode ser medido de duas formas complementares. A volatilidade é o
-desvio-padrão dos retornos e mede o quanto o patrimônio oscila no dia a dia. A
-queda máxima, que o relatório da plataforma chama de rebaixamento relativo, é a
-maior queda percentual entre um máximo local do patrimônio e o mínimo local
-seguinte \cite{metaquotesRelatorio}. Ela responde a outra pergunta, a de qual
-foi o pior tombo que um investidor que seguisse a estratégia teria sofrido.
+\begin{quadro}[H]
+\centering
+\caption{Métricas de avaliação usadas no trabalho}
+\label{qua:metricas}
+\fontsize{10}{12}\selectfont
+\begin{tabular}{|>{\raggedright\arraybackslash}p{3.0cm}|>{\raggedright\arraybackslash}p{5.2cm}|>{\raggedright\arraybackslash}p{6.2cm}|}
+\hline
+Métrica & O que indica & Como é calculada \\
+\hline
+Retorno acumulado & quanto o patrimônio cresceu ou diminuiu no período & patrimônio final dividido pelo inicial, menos um \\
+\hline
+Queda máxima & o pior tombo que um investidor teria sofrido seguindo a estratégia & maior queda percentual do patrimônio entre um ponto alto e o ponto mais baixo seguinte \\
+\hline
+Volatilidade & o quanto o patrimônio sobe e desce de um dia para o outro & desvio-padrão dos retornos diários do patrimônio, em base anual \\
+\hline
+Negociações & quantas operações o robô realizou & contagem do relatório do testador \\
+\hline
+Taxa de acerto & a proporção de negociações que terminaram com lucro & negociações com lucro divididas pelo total \\
+\hline
+Sinais vetados & quantas vezes o GARCH impediu uma operação indicada pelo ARIMA & contagem registrada pelo robô \\
+\hline
+Índice de Sharpe & o ganho além de uma referência por unidade de oscilação & média do retorno diferencial dividida pelo seu desvio-padrão \\
+\hline
+Índice de Calmar & o ganho por unidade de queda máxima & retorno anualizado dividido pela queda máxima \\
+\hline
+\end{tabular}
+\fonte{Elaboração própria, com base em \citeonline{metaquotesRelatorio} e \citeonline{sharpe1994}.}
+\end{quadro}
+
+O risco é medido de duas formas complementares. A queda máxima, que o relatório
+da plataforma chama de rebaixamento relativo e que também é conhecida pelo termo em
+inglês \textit{drawdown}, é a maior queda percentual entre um máximo local do
+patrimônio e o mínimo local seguinte \cite{metaquotesRelatorio}. Ela responde à
+pergunta de qual foi o pior tombo do caminho. A volatilidade, por sua vez, é o
+desvio-padrão dos retornos e mede o quanto o patrimônio oscila no dia a dia.
+
+Como os retornos são diários, a volatilidade é convertida para base anual, o que
+facilita a leitura e a comparação. Se os retornos de dias diferentes forem
+independentes entre si, a variância de um período de $T$ dias é $T$ vezes a
+variância diária, e o desvio-padrão, a raiz de $T$ vezes o diário
+\cite{sharpe1994}. Usou-se $T = 252$, número de dias úteis de um ano adotado por
+convenção no mercado brasileiro. Na série da PETR4 usada neste trabalho, a média
+foi de 248 pregões por ano. A volatilidade anual é, portanto, o desvio-padrão
+diário multiplicado pela raiz de 252, e uma oscilação típica de 2\% ao dia
+corresponde a cerca de 32\% ao ano.
+% REFERÊNCIA (convenção de 252 dias úteis, a buscar): Banco Central do Brasil,
+% taxa Selic anualizada com base 252. A média de 247,8 pregões por ano (2004 a
+% 2025) sai de dados/series/PETR4_OFICIAL.csv.
 
 O índice de Sharpe relaciona o retorno de uma estratégia à sua volatilidade. Ele
-divide o retorno diferencial, isto é, a diferença entre o retorno da estratégia
-e o de uma referência, pelo desvio-padrão dessa diferença \cite{sharpe1994},
+divide o retorno diferencial, isto é, a diferença entre o retorno da estratégia e
+o de uma referência, pelo desvio-padrão dessa diferença \cite{sharpe1994},
 \begin{equation}
 S = \frac{\bar{d}}{\sigma_d},
-\label{eq:sharpe-geral}
 \end{equation}
 em que $\bar{d}$ é a média do retorno diferencial e $\sigma_d$ o seu
-desvio-padrão. O índice indica quanto se ganhou além da referência por unidade
-de oscilação, e quanto maior, melhor a relação. Um índice negativo indica que a
+desvio-padrão. O índice indica quanto se ganhou além da referência por unidade de
+oscilação, e quanto maior, melhor a relação. Um índice negativo indica que a
 estratégia rendeu menos que a referência. O testador do MetaTrader 5 usa como
-referência um rendimento livre de risco igual a zero \cite{metaquotesRelatorio}.
-O próprio autor observa que o índice está ligado à estatística $t$ da média do
-retorno diferencial, que é igual a ele multiplicado pela raiz do número de
-observações \cite{sharpe1994}. Por isso, um mesmo valor de índice é
-estatisticamente mais forte quando medido em um período mais longo.
+referência um rendimento livre de risco igual a zero \cite{metaquotesRelatorio}, e
+neste trabalho a referência foi a taxa Selic. O próprio autor observa que o
+índice está ligado à estatística $t$ da média do retorno diferencial, que é igual
+a ele multiplicado pela raiz do número de observações \cite{sharpe1994}. Por isso,
+um mesmo valor de índice é estatisticamente mais forte quando medido em um período
+mais longo.
 
 O índice de Calmar relaciona o retorno à queda máxima. Ele divide o retorno
 anualizado pela queda máxima do período,
 \begin{equation}
 C = \frac{\text{retorno anualizado}}{\text{queda máxima}},
-\label{eq:calmar}
 \end{equation}
 e segue a mesma ideia do fator de recuperação do relatório da plataforma, que
-divide o lucro obtido pelo rebaixamento máximo \cite{metaquotesRelatorio}, com
-a diferença de usar o retorno anualizado, o que permite comparar períodos de
-durações diferentes. O índice indica quanto se ganhou por unidade do pior tombo
-e, por isso, favorece estratégias que evitam perdas grandes. Os dois índices
-medem coisas diferentes. O Sharpe penaliza toda oscilação, para cima ou para
-baixo, e o Calmar considera apenas a pior queda.
+divide o lucro obtido pelo rebaixamento máximo \cite{metaquotesRelatorio}, com a
+diferença de usar o retorno anualizado, o que permite comparar períodos de
+durações diferentes. O índice indica quanto se ganhou por unidade do pior tombo e,
+por isso, favorece estratégias que evitam perdas grandes. Os dois índices medem
+coisas diferentes. O Sharpe penaliza toda oscilação, para cima ou para baixo, e o
+Calmar considera apenas a pior queda.
 
 \section{Trabalhos relacionados}
 
@@ -395,7 +469,7 @@ mesma arquitetura adotada no algoritmo aqui desenvolvido.
 O Quadro~\ref{qua:comparativa} resume as características desses estudos e as
 deste trabalho.
 
-\begin{quadro}[htb]
+\begin{quadro}[H]
 \centering
 \caption{Características dos estudos relacionados}
 \label{qua:comparativa}
