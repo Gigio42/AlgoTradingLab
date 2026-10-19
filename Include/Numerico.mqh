@@ -1,94 +1,43 @@
 //+------------------------------------------------------------------+
-//|                                                     Numerico.mqh |
-//|                            Trabalho de Graduacao - FATEC Indaiatuba|
-//+------------------------------------------------------------------+
-//|                                                                  |
-//|  NUCLEO NUMERICO — Minimos Quadrados Ordinarios (MQO/OLS)        |
-//|                                                                  |
-//|  Este modulo e a UNICA porta de entrada para algebra linear no   |
-//|  projeto. Todo o resto (ADF, ARIMA) resolve seus sistemas aqui.  |
-//|  Backend: ALGLIB, que ja acompanha a instalacao do MetaTrader 5  |
-//|  (MQL5\Include\Math\Alglib) — nao ha nada para instalar.         |
-//|                                                                  |
-//|  POR QUE MQO E NAO GRADIENTE DESCENDENTE:                        |
-//|                                                                  |
-//|  O gradiente descendente precisa de uma "taxa de aprendizado".   |
-//|  O gradiente de uma regressao cresce com o QUADRADO da escala    |
-//|  dos dados, entao a mesma taxa que converge para um ativo de     |
-//|  R$ 36,00 diverge para um de R$ 5,00. O MQO resolve o sistema    |
-//|  de equacoes normais de forma exata e em um unico passo:         |
-//|  nao tem taxa de aprendizado, nao tem numero de iteracoes,       |
-//|  nao tem risco de divergencia e o resultado nao depende da       |
-//|  escala do ativo.                                                |
-//|                                                                  |
+//| Numerico.mqh                                                     |
+//| Minimos quadrados ordinarios (MQO) sobre a ALGLIB. E a unica     |
+//| entrada para algebra linear do projeto (ADF e ARIMA).            |
 //+------------------------------------------------------------------+
 #ifndef ALGOTRADINGLAB_NUMERICO_MQH
 #define ALGOTRADINGLAB_NUMERICO_MQH
 
 #include <Math\Alglib\alglib.mqh>
 
-//+------------------------------------------------------------------+
-//| MQO — Regressao linear por Minimos Quadrados Ordinarios          |
-//+------------------------------------------------------------------+
-//|                                                                  |
-//|  Estima o vetor c que minimiza  || X*c - y ||^2                  |
-//|                                                                  |
-//|  Resolve as equacoes normais:   (X'X) * c = X'y                  |
-//|                                                                  |
-//|  ENTRADA:                                                        |
-//|    X    — matriz de desenho (n linhas x k colunas). Cada linha   |
-//|           e uma observacao, cada coluna uma variavel explicativa.|
-//|           A constante, se desejada, deve ser uma coluna de 1.0.  |
-//|    y    — vetor dependente (n elementos)                         |
-//|    n    — numero de observacoes                                  |
-//|    k    — numero de parametros (colunas de X)                    |
-//|                                                                  |
-//|  SAIDA:                                                          |
-//|    coef — coeficientes estimados (k elementos)                   |
-//|    se   — erros-padrao de cada coeficiente (k elementos).        |
-//|           Necessarios para a estatistica t do teste ADF.         |
-//|    ssr  — soma dos quadrados dos residuos                        |
-//|                                                                  |
-//|  Retorna false se o sistema for singular ou mal condicionado     |
-//|  (por exemplo, colunas colineares em X).                         |
-//|                                                                  |
-//+------------------------------------------------------------------+
-bool MQO(CMatrixDouble &X, const double &y[], const int n, const int k,
-         double &coef[], double &se[], double &ssr,
-         const bool calcular_erros = true)
+//--- Resolve (X'X) coeficientes = X'y. A constante, se houver, e uma coluna de 1.
+//--- Devolve falso se X'X for singular.
+bool MQO(CMatrixDouble &X, const double &y[], const int observacoes, const int parametros,
+         double &coeficientes[], double &erros_padrao[], double &soma_quadrados_residuos,
+         const bool calcular_erros_padrao = true)
   {
-   ssr = 0.0;
+   soma_quadrados_residuos = 0.0;
 
-   //--- Precisamos de mais observacoes do que parametros para ter
-   //--- graus de liberdade. Caso contrario o ajuste e degenerado.
-   if(n <= k || k <= 0 || n <= 0)
+   if(observacoes <= parametros || parametros <= 0 || observacoes <= 0)
+      return(false);
+   if(X.Rows() < observacoes || X.Cols() < parametros || ArraySize(y) < observacoes)
       return(false);
 
-   if(X.Rows() < n || X.Cols() < k || ArraySize(y) < n)
-      return(false);
-
-   //--- ── Monta X'X (k x k) e X'y (k) ──
-   //--- X'X e simetrica, entao calculamos so o triangulo inferior
-   //--- e espelhamos. Guardamos DUAS copias porque o solver da
-   //--- ALGLIB consome (fatora) a matriz que recebe, e ainda
-   //--- precisaremos dela intacta para inverter e obter os erros.
-   CMatrixDouble XtX(k, k);
-   CMatrixDouble XtX_para_inversa(k, k);
-
+   //--- O solver da ALGLIB destroi a matriz que recebe; a copia serve para a inversa.
+   CMatrixDouble XtX(parametros, parametros);
+   CMatrixDouble XtX_para_inversa(parametros, parametros);
    double Xty[];
-   ArrayResize(Xty, k);
+   ArrayResize(Xty, parametros);
 
-   for(int i = 0; i < k; i++)
+   for(int i = 0; i < parametros; i++)
      {
       double soma_xy = 0.0;
-      for(int t = 0; t < n; t++)
+      for(int t = 0; t < observacoes; t++)
          soma_xy += X.Get(t, i) * y[t];
       Xty[i] = soma_xy;
 
       for(int j = 0; j <= i; j++)
         {
          double soma = 0.0;
-         for(int t = 0; t < n; t++)
+         for(int t = 0; t < observacoes; t++)
             soma += X.Get(t, i) * X.Get(t, j);
 
          XtX.Set(i, j, soma);
@@ -98,58 +47,46 @@ bool MQO(CMatrixDouble &X, const double &y[], const int n, const int k,
         }
      }
 
-   //--- ── Resolve (X'X)c = X'y ──
-   int info = 0;
-   CDenseSolverReportShell rep;
-   ArrayResize(coef, k);
-   ArrayInitialize(coef, 0.0);
+   int situacao = 0;
+   CDenseSolverReportShell relatorio_solver;
+   ArrayResize(coeficientes, parametros);
+   ArrayInitialize(coeficientes, 0.0);
 
-   CAlglib::RMatrixSolve(XtX, k, Xty, info, rep, coef);
-
-   //--- info > 0 significa sucesso; <= 0 indica matriz singular
-   if(info <= 0 || ArraySize(coef) < k)
+   CAlglib::RMatrixSolve(XtX, parametros, Xty, situacao, relatorio_solver, coeficientes);
+   if(situacao <= 0 || ArraySize(coeficientes) < parametros)
       return(false);
 
-   //--- ── Residuos e SSR ──
-   for(int t = 0; t < n; t++)
+   for(int t = 0; t < observacoes; t++)
      {
       double ajustado = 0.0;
-      for(int i = 0; i < k; i++)
-         ajustado += X.Get(t, i) * coef[i];
+      for(int i = 0; i < parametros; i++)
+         ajustado += X.Get(t, i) * coeficientes[i];
 
       double residuo = y[t] - ajustado;
-      ssr += residuo * residuo;
+      soma_quadrados_residuos += residuo * residuo;
      }
 
-   //--- ── Erros-padrao (opcionais) ──
-   //--- Var(c) = sigma^2 * (X'X)^-1, com sigma^2 = SSR / (n - k)
-   ArrayResize(se, k);
-   ArrayInitialize(se, 0.0);
-
-   if(!calcular_erros)
+   ArrayResize(erros_padrao, parametros);
+   ArrayInitialize(erros_padrao, 0.0);
+   if(!calcular_erros_padrao)
       return(true);
 
-   double sigma2 = ssr / (double)(n - k);
+   //--- Var(coeficientes) = sigma2 (X'X)^-1, com sigma2 = SQR / (n - k)
+   double sigma2 = soma_quadrados_residuos / (double)(observacoes - parametros);
 
-   int info_inv = 0;
-   CMatInvReportShell rep_inv;
-   CAlglib::RMatrixInverse(XtX_para_inversa, k, info_inv, rep_inv);
+   int situacao_inversa = 0;
+   CMatInvReportShell relatorio_inversa;
+   CAlglib::RMatrixInverse(XtX_para_inversa, parametros, situacao_inversa, relatorio_inversa);
+   if(situacao_inversa <= 0)
+      return(true);   // coeficientes valem; erros-padrao ficam em zero
 
-   if(info_inv <= 0)
+   for(int i = 0; i < parametros; i++)
      {
-      //--- Coeficientes sao validos, mas nao conseguimos os erros.
-      //--- Sinalizamos com se = 0 e deixamos o chamador decidir.
-      return(true);
-     }
-
-   for(int i = 0; i < k; i++)
-     {
-      double variancia_i = sigma2 * XtX_para_inversa.Get(i, i);
-      se[i] = (variancia_i > 0.0) ? MathSqrt(variancia_i) : 0.0;
+      double variancia = sigma2 * XtX_para_inversa.Get(i, i);
+      erros_padrao[i] = (variancia > 0.0) ? MathSqrt(variancia) : 0.0;
      }
 
    return(true);
   }
 
-#endif // ALGOTRADINGLAB_NUMERICO_MQH
-//+------------------------------------------------------------------+
+#endif

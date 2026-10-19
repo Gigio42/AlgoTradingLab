@@ -2,8 +2,8 @@
 %  CAPÍTULO II — PERCURSO METODOLÓGICO
 %
 %  Numeração 2.1 a 2.3.2 dada pela FATEC-ID (caderno de delineamentos e
-%  Manual, item 4.1.2.8). As seções seguintes (implementação, validação,
-%  plano experimental, obstáculos) detalham os procedimentos.
+%  Manual, item 4.1.2.8). As seções seguintes (implementação, plano
+%  experimental, obstáculos) detalham os procedimentos.
 %
 %  Varredura do autor em 2026-10-15 (lista de pedidos colada na conversa):
 %  Wazlawick citado em 2.1.1 e 2.1.2 (a definição vem do PTG, escrito pelos
@@ -18,6 +18,12 @@
 %  períodos e menos detalhe; sem "equação (x.y)" e com menos remissões internas.
 %  Versão anterior em notas/rascunhos/antes_varredura_autor_2026-10-15/.
 %
+%  Em 2026-10-18, a pedido do autor, saiu a seção "Validação das
+%  implementações" (testes do código em séries sintéticas, ADF em séries
+%  artificiais e diagnóstico ADF/Ljung-Box na PETR4): foge do escopo
+%  apresentado; pode voltar depois. Texto guardado em
+%  notas/rascunhos/antes_tirar_validacao_2026-10-18/.
+%
 %  % REFERÊNCIA: marcações assim indicam onde uma citação deve entrar
 %  depois que o autor ler a obra. Nenhuma foi inserida sem leitura.
 %  Thomaz (2019), já lido pelo autor, sustenta: log-retorno (p. 28-29), AIC
@@ -30,8 +36,6 @@
 %     75,2% e 49,5% no COTAHIST; preços divididos por 2 e por 8):
 %     dados/FONTES.md, itens 1 e 2
 %   - critério dos outros ativos: dados/FONTES.md, item 9
-%   - séries sintéticas (2.000 no ADF, 4.000 no AR e ARMA, 6.000 no GARCH,
-%     semente fixa): ferramentas/ValidacaoAlgoLab.mq5
 %   - 344 configurações: dados/resultados/rodada3_b3_oficial/grades/*.txt
 %   - janelas de otimização e teste, critérios, configurações fixas e
 %     cenário de Almeida: dados/resultados/refeito_2026-10-05/PROTOCOLO.md
@@ -43,8 +47,8 @@
 \chapter{Percurso metodológico}
 
 Este capítulo descreve como a pesquisa foi conduzida. Apresenta a caracterização
-do estudo, a amostra, a coleta e a análise dos dados, a implementação e a
-validação dos modelos, o plano experimental e os obstáculos encontrados.
+do estudo, a amostra, a coleta e a análise dos dados, a implementação dos
+modelos, o plano experimental e os obstáculos encontrados.
 
 \section{Caracterização da pesquisa}
 
@@ -64,13 +68,12 @@ Quanto ao delineamento, trata-se de uma pesquisa quase experimental. A pesquisa
 experimental envolve a manipulação controlada de variáveis e a observação dos
 efeitos resultantes \cite{wazlawick2014}. Ela é chamada de quase experimental
 quando não há distribuição aleatória dos sujeitos, como neste trabalho, em que a
-série histórica de um ativo é única e não pode ser sorteada. Esse delineamento
-abrange, entre seus casos mais frequentes, o desenvolvimento de softwares e a
-análise de algoritmos, que é a natureza deste trabalho.
-% REFERÊNCIA: caderno de delineamentos da FATEC-ID, Gil (2010)
+série histórica de um ativo é única e não pode ser sorteada.
+% REFERÊNCIA: a frase sobre a falta de distribuição aleatória continua sem fonte
+% (Gil, 2010, a ler). Em 19/10/2026 o autor pediu para não citar documentos da
+% própria FATEC-ID: o caderno de delineamentos saiu daqui e do .bib.
 
-O percurso seguiu as etapas previstas para esse delineamento. O problema e as
-hipóteses foram formulados na introdução. As variáveis são os parâmetros
+O problema e as hipóteses foram formulados na introdução. As variáveis são os parâmetros
 configuráveis do robô, e o plano experimental foi definido antes da observação
 dos resultados. Os sujeitos são as séries históricas dos ativos, e o ambiente é a
 plataforma de simulação.
@@ -138,10 +141,7 @@ foram incorporados à série. Eles foram obtidos da mesma base, que não é ofic
 usados apenas para verificar o efeito de deixá-los de fora.
 
 As séries preparadas foram importadas para a plataforma como símbolos
-personalizados, recurso que permite ao testador operar sobre dados próprios. A
-conferência consistiu em comparar a quantidade de barras processadas pela
-plataforma com a de pregões da série de origem e em reconstruir preços isolados a
-partir das linhas originais do arquivo da bolsa.
+personalizados, recurso que permite ao testador operar sobre dados próprios.
 
 \subsection{Natureza da análise de dados}
 
@@ -155,9 +155,9 @@ ajudam a explicar o funcionamento do filtro.
 Para verificar se as diferenças entre os robôs eram consistentes, e não obra do
 acaso, observou-se se elas se repetiam entre os períodos, entre as configurações e
 entre os ativos. Se o GARCH não fizesse diferença, a versão com ele seria melhor
-em cerca de metade das comparações, como no lançamento de uma moeda. Testes
+em cerca de metade das comparações, como no lançamento de uma moeda.\iffalse{} Testes
 estatísticos das diferenças foram aplicados como verificação adicional, ao final
-da análise dos dados.
+da análise dos dados.\fi % OCULTO-18/10: trecho oculto
 
 \section{Implementação dos modelos}
 
@@ -197,20 +197,14 @@ A ordem de integração $d$ foi determinada pela aplicação sequencial do teste
 \cite{thomaz2019}. Testa-se a série e, enquanto a hipótese de raiz unitária não for
 rejeitada, testa-se a série diferenciada mais uma vez. As ordens $p$ e $q$ foram
 escolhidas por busca em grade, de zero a quatro, pelo menor AIC
-\cite{thomaz2019}, procedimento semelhante ao de \citeonline{xing2024}. Todos os
-candidatos foram avaliados sobre a mesma amostra, porque modelos de ordem maior
-consomem mais observações iniciais e, sem esse cuidado, os mais simples seriam
-favorecidos na comparação. As ordens são reavaliadas a cada 21 pregões, de modo
+\cite{thomaz2019}, procedimento semelhante ao de \citeonline{xing2024}. As ordens são reavaliadas a cada 21 pregões, de modo
 que o valor de $d$ escolhido pode mudar ao longo de um teste.
 % REFERÊNCIA (originais, se o autor quiser): Dickey e Fuller (1979), MacKinnon
 % (2010), Akaike (1974)
 
 O GARCH foi estimado por máxima verossimilhança \cite{thomaz2019}. Foi adotada a
 especificação GARCH(1,1), que exige poucos parâmetros e é a escolha predominante
-nos estudos de previsão de ações \cite{xing2024}. As restrições do modelo foram
-informadas ao otimizador como limites da região de busca, e não aplicadas como
-correção depois de cada passo, o que mantém a busca dentro da região válida e
-permite que ela convirja.
+nos estudos de previsão de ações \cite{xing2024}.
 
 Os dois modelos são reestimados a cada pregão sobre uma janela deslizante, isto é,
 sobre os últimos 120 ou 240 pregões já encerrados, conforme a configuração. A cada
@@ -236,7 +230,11 @@ operação só é realizada quando a volatilidade prevista está abaixo de um li
 que pode ser um valor fixo ou um percentil da volatilidade estimada dentro da
 própria janela. Na segunda, o tamanho da posição é ajustado de forma inversamente
 proporcional à volatilidade prevista, de modo que a posição diminui quando a
-incerteza aumenta, técnica conhecida como \textit{volatility targeting}. Na
+incerteza aumenta, técnica conhecida como \textit{volatility targeting}, expressão
+inglesa que pode ser traduzida como volatilidade-alvo. Define-se um nível de
+oscilação considerado aceitável, o alvo, e o tamanho da posição é multiplicado pela
+razão entre esse alvo e a volatilidade prevista, dentro de limites mínimo e máximo.
+Se a volatilidade prevista dobra, a posição cai pela metade. Na
 terceira, a volatilidade prevista é usada para construir um intervalo de
 confiança em torno da previsão do ARIMA, e a operação só é realizada quando a
 previsão se afasta de zero o suficiente para sair desse intervalo. Há ainda uma
@@ -248,50 +246,13 @@ retorno do dia, ajusta o GARCH sobre os resíduos e obtém a volatilidade previs
 Se a forma de uso escolhida não vetar a operação, o sinal da previsão do ARIMA
 determina a direção, e a ordem é executada na abertura do pregão. A janela nunca
 inclui o pregão em andamento, para que a decisão do dia não use uma informação que
-só estaria disponível no seu encerramento. Como a previsão reflete os dias mais
-recentes e o limiar por percentil vem da janela inteira, em períodos agitados a
-proporção de sinais vetados pode ser maior que a sugerida pelo percentil.
+só estaria disponível no seu encerramento.
 
 Por padrão, o veto impede a abertura de uma nova posição, mas não encerra a que já
 está aberta, e o ajuste do tamanho é feito apenas na entrada. Uma opção do robô
 permite que o veto também encerre a posição, retirando o capital do mercado
 enquanto a volatilidade prevista estiver alta. As duas alternativas fizeram parte
 dos testes.
-
-\section{Validação das implementações}
-
-Como os modelos foram programados do zero, era preciso verificar se os
-estimadores calculavam corretamente antes de usá-los com dados reais. Para isso,
-foi feito um teste de recuperação de parâmetros. O programa gera uma série
-artificial a partir de coeficientes escolhidos, o estimador recebe apenas a série,
-sem conhecer os coeficientes, e o resultado é comparado com os valores usados na
-geração. Como a resposta certa é conhecida, o teste distingue um estimador correto
-de um que apenas produz números plausíveis. As séries artificiais não
-correspondem a nenhum período do mercado. Elas foram geradas com uma semente fixa
-de números aleatórios, para que o teste possa ser repetido com o mesmo resultado.
-
-Foram usados três casos, cada um verificando uma parte do código. O primeiro é um
-AR(2), modelo que tem apenas a parte autorregressiva e verifica o caminho mais
-simples do estimador do ARIMA, em que uma única regressão basta. O segundo é um
-ARMA(1,1), que tem também a parte de médias móveis e verifica o caminho completo,
-em que os erros passados precisam ser estimados antes. Como o ARIMA aplica um ARMA
-à série já diferenciada, esses dois casos cobrem o estimador do ARIMA. O terceiro é
-um GARCH(1,1), que verifica o estimador da volatilidade. As séries do AR(2) e do
-ARMA(1,1) têm 4.000 observações, e a do GARCH, 6.000.
-
-A diferenciação, por sua vez, depende do teste ADF, que foi verificado da mesma
-forma, em três séries artificiais de 2.000 observações com comportamento
-conhecido. A primeira é um passeio aleatório, que não é estacionário. A segunda é
-uma série autorregressiva estacionária. A terceira é a primeira diferença do
-passeio aleatório, também estacionária.
-
-Por fim, os procedimentos foram aplicados aos 500 pregões da PETR4 encerrados até
-18 de setembro de 2026. Além do ADF, os resíduos foram examinados pelo teste de
-Ljung-Box, que verifica se ainda resta autocorrelação nos erros de um modelo, isto
-é, algum padrão que ele não capturou. Seguindo o diagnóstico feito por
-\citeonline{thomaz2019} para modelos ARMA-GARCH em ações brasileiras, o teste foi
-aplicado com dez defasagens em duas etapas, primeiro nos resíduos do ARIMA e
-depois no quadrado dos resíduos padronizados pelo GARCH.
 
 \section{Plano experimental}
 

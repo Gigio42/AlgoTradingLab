@@ -87,8 +87,8 @@ string Linha(const string rotulo, CGarch &g)
    if(!g.Ajustado())
       return(rotulo + ": nao ajustou (" + g.UltimoErro() + ")");
    return(StringFormat("%-22s omega=%.3e alpha=%.4f beta=%.4f persist=%.4f nu=%7.2f logL=%9.2f AIC=%9.2f",
-                       rotulo, g.Omega(), g.Alpha(0), g.Beta(0), g.Persistencia(),
-                       g.Nu(), g.LogVerossimilhanca(), g.AIC()));
+                       rotulo, g.Omega(), g.Alfa(0), g.Beta(0), g.Persistencia(),
+                       g.GrausLiberdade(), g.LogVerossimilhanca(), g.AIC()));
   }
 
 double Quantil(double &x[], const double p)
@@ -114,19 +114,19 @@ void Replicas(const int n, const int r)
       Simular(n, NU_VERD, eps);
       CGarch gn, gt;
       gn.Definir(1, 1); gn.DefinirOtimizador(300);
-      gt.Definir(1, 1); gt.DefinirOtimizador(300); gt.DefinirDistribuicao(DIST_STUDENT);
+      gt.Definir(1, 1); gt.DefinirOtimizador(300); gt.DefinirDistribuicao(DISTRIBUICAO_STUDENT);
       bool bn = gn.Ajustar(eps), bt = gt.Ajustar(eps);
       if(bn)
         {
          ArrayResize(a_n, ok_n + 1); ArrayResize(b_n, ok_n + 1);
-         a_n[ok_n] = gn.Alpha(0); b_n[ok_n] = gn.Beta(0); ok_n++;
+         a_n[ok_n] = gn.Alfa(0); b_n[ok_n] = gn.Beta(0); ok_n++;
         }
       if(bt)
         {
          ArrayResize(nu_t, ok_t + 1); ArrayResize(a_t, ok_t + 1); ArrayResize(b_t, ok_t + 1);
-         nu_t[ok_t] = gt.Nu(); a_t[ok_t] = gt.Alpha(0); b_t[ok_t] = gt.Beta(0); ok_t++;
-         if(gt.Nu() > 199.0) no_teto++;
-         if(gt.Nu() < 2.3) no_piso++;
+         nu_t[ok_t] = gt.GrausLiberdade(); a_t[ok_t] = gt.Alfa(0); b_t[ok_t] = gt.Beta(0); ok_t++;
+         if(gt.GrausLiberdade() > 199.0) no_teto++;
+         if(gt.GrausLiberdade() < 2.3) no_piso++;
         }
       if(bn && bt)
         {
@@ -158,7 +158,7 @@ int OnInit()
    double eps[];
    CGarch gn, gt;
    gn.Definir(1, 1); gn.DefinirOtimizador(300);
-   gt.Definir(1, 1); gt.DefinirOtimizador(300); gt.DefinirDistribuicao(DIST_STUDENT);
+   gt.Definir(1, 1); gt.DefinirOtimizador(300); gt.DefinirDistribuicao(DISTRIBUICAO_STUDENT);
 
    Escrever(StringFormat("A) erros t com nu=%d, n=2000", NU_VERD));
    Simular(2000, NU_VERD, eps);

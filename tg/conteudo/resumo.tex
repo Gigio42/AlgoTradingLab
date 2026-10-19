@@ -15,8 +15,8 @@ volatilidade poderiam ajudar a contornar essa limitação. Partindo dessa sugest
 desenvolveu-se um novo robô que reúne dois modelos estatísticos com papéis
 distintos. O primeiro, chamado ARIMA, procura antecipar a direção dos preços. O
 segundo, chamado GARCH, estima o quanto o mercado deve oscilar e decide se vale a
-pena operar. Os dois modelos foram programados na própria linguagem da plataforma,
-conferidos em dados com resposta conhecida e testados sobre o histórico oficial
+pena operar. Os dois modelos foram programados na própria linguagem da plataforma
+e testados sobre o histórico oficial
 da bolsa brasileira, em períodos de crise e de calma, sempre em comparação com a
 estratégia original e com uma versão do robô sem o controle de volatilidade. Os
 resultados mostram que esse controle tornou o robô mais seguro. Em todos os
@@ -25,7 +25,9 @@ estratégia original, e as perdas nos piores momentos foram menores que as da
 versão sem o controle. Em boa parte dos períodos, o ganho final também foi maior.
 A capacidade de acertar a direção do mercado, porém, continuou próxima do acaso, e
 as diferenças de ganho em relação à estratégia original variaram conforme o
-período, dentro da margem que o próprio acaso também explicaria. Conclui-se que o
+período\iffalse, dentro da margem que o próprio acaso também explicaria\else, ora a favor
+de um, ora de outro\fi. % OCULTO-18/10: \iftrue volta o texto que depende da seção oculta
+Conclui-se que o
 modelo de volatilidade funciona como um instrumento de proteção, especialmente
 útil nos períodos de crise, e não como uma forma de prever melhor o mercado.
 

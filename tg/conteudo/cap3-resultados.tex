@@ -23,12 +23,15 @@
 %  ferramentas/scripts/recorte_ano.sh, que reproduz os retornos de anual_R6.csv
 %  e anual_R3_T1.csv); o Apêndice B virou a última seção deste capítulo.
 %
+%  Em 2026-10-18, a pedido do autor, saiu a seção "Validação dos modelos"
+%  (tabela de recuperação de parâmetros, ADF nas séries artificiais e
+%  ADF/Ljung-Box na PETR4). O parágrafo do d (83,1%) foi para "Como o GARCH
+%  protege". Texto antigo em notas/rascunhos/antes_tirar_validacao_2026-10-18/.
+%
 %  Versão A = escolha por Sharpe (GS); versão B = escolha por Calmar (GC);
 %  ARIMA = AS (melhor sem GARCH pelo critério da versão A).
 %
 %  Procedência (R = dados/resultados/refeito_2026-10-05/):
-%   - Validação e ADF/Ljung-Box da PETR4:
-%     dados/verificacao/validacao_numerica_2026-10-05.txt
 %   - Tabela replica: dados/FONTES.md item 7 e
 %     dados/resultados/replica_almeida_2026-09-28/
 %   - Tabela condições originais: R/testes/metricas_cenA_1316_* e
@@ -56,70 +59,11 @@
 \chapter{Análise e discussão dos dados}
 
 Este capítulo apresenta os resultados dos experimentos descritos no Capítulo II.
-Começa pela validação dos modelos e pela reprodução do estudo de
-\citeonline{almeida2016}, apresenta o comportamento dos robôs durante a crise de
+Começa pela reprodução do estudo de \citeonline{almeida2016}, apresenta o comportamento dos robôs durante a crise de
 2008, fora dela, no período recente e na crise da pandemia, verifica se o efeito
-observado vem mesmo do GARCH e de que forma ele protege o capital e termina com a
-verificação estatística dos resultados.
+observado vem mesmo do GARCH e de que forma ele protege o capital\iffalse{} e termina com a
+verificação estatística dos resultados\fi. % OCULTO-18/10: trecho oculto
 
-\section{Validação dos modelos}
-\label{sec:res-validacao}
-
-A Tabela~\ref{tab:validacao} apresenta os parâmetros estimados nas séries
-sintéticas, ao lado dos valores usados para gerá-las.
-
-\begin{table}[H]
-\centering
-\caption{Recuperação de parâmetros em séries sintéticas}
-\label{tab:validacao}
-\fontsize{10}{12}\selectfont
-\begin{tabular}{l|c|c}
-\hline
-Parâmetro & Valor verdadeiro & Valor estimado \\
-\hline
-ARMA(1,1), $\phi_1$ & 0,600 & 0,5799 \\
-\hline
-ARMA(1,1), $\theta_1$ & 0,400 & 0,4105 \\
-\hline
-AR(2), $\phi_1$ & 0,500 & 0,4815 \\
-\hline
-AR(2), $\phi_2$ & $-0{,}300$ & $-0{,}2891$ \\
-\hline
-GARCH, $\omega$ & $1{,}00\times10^{-5}$ & $1{,}17\times10^{-5}$ \\
-\hline
-GARCH, $\alpha$ & 0,090 & 0,0825 \\
-\hline
-GARCH, $\beta$ & 0,890 & 0,8941 \\
-\hline
-\end{tabular}
-\fonte{Elaboração própria, a partir da execução do script de validação, com
-semente fixa.}
-\end{table}
-
-Os coeficientes do ARIMA foram recuperados com desvio inferior a 4\%. No GARCH, o
-parâmetro $\beta$, que responde pela persistência da volatilidade, ficou a menos
-de 1\% do valor verdadeiro, enquanto $\omega$ e $\alpha$ se afastaram cerca de 17\%
-e 8\%. Ainda assim, a soma $\alpha + \beta$, que determina quanto tempo um choque de
-volatilidade leva para se dissipar, foi estimada em 0,9765, contra 0,98 do valor
-verdadeiro. O teste ADF também distinguiu corretamente os três casos. Não rejeitou
-a raiz unitária no passeio aleatório, com estatística de $-1{,}41$, e a rejeitou na
-série estacionária e na diferença do passeio, com $-26{,}87$ e $-46{,}19$.
-
-Na PETR4, o ADF não rejeitou a raiz unitária para o logaritmo do preço, com
-estatística de $-0{,}95$, e a rejeitou para o retorno logarítmico, com $-6{,}14$, o
-que indica $d = 1$. É o mesmo comportamento descrito por \citeonline{xing2024} para
-as ações da NVIDIA, cuja série também se tornou estacionária após uma
-diferenciação. No teste de Ljung-Box, um ARIMA(1,1,1) de ordens fixas deixou
-autocorrelação nos resíduos, com valor-p de 0,009, o que reforça a escolha das
-ordens por busca em grade. No quadrado dos resíduos padronizados pelo GARCH, o
-valor-p foi de 0,75, sem indício de que os dias agitados continuem vindo em
-sequência, ou seja, o GARCH capturou a variação da volatilidade presente nos
-resíduos.
-
-O resultado $d = 1$ vale para essa amostra. Como o teste ADF é refeito a cada
-reavaliação das ordens, o $d$ escolhido pelo robô variou ao longo dos testes. No
-acompanhamento diário da versão A entre julho de 2019 e junho de 2021, o teste
-indicou $d = 1$ em 412 dos 496 pregões, ou 83,1\%, e $d = 0$ nos demais.
 
 \section{Reprodução do estudo de referência}
 
@@ -427,14 +371,14 @@ impedem novas entradas, mantendo a posição aberta, não mostraram o mesmo efei
 que confirma o que se viu na versão B de 2017 a 2024. As configurações fixas,
 mantidas sem nova escolha de 2005 a 2026, também protegeram. A queda máxima delas
 ficou entre 14,2\% e 29,7\%, contra 80,7\% sem o GARCH e 67,5\% das médias móveis.
-Os números completos estão na última seção deste capítulo.
+\iffalse Os números completos estão na última seção deste capítulo.\fi % OCULTO-18/10: frase oculta
 
 No retorno, o resultado não foi tão consistente. As médias móveis renderam mais
 que as versões com GARCH em 2013 a 2016 e em 2025 e 2026, e a Selic rendeu mais que
-elas em três dos quatro períodos. A verificação estatística da última seção deste
+elas em três dos quatro períodos.\iffalse{} A verificação estatística da última seção deste
 capítulo mostra a mesma diferença entre risco e retorno. A redução da volatilidade foi
 significativa em todas as comparações, e as diferenças de retorno, em quase
-nenhuma.
+nenhuma.\fi % OCULTO-18/10: trecho oculto
 
 \section{Como o GARCH protege}
 \label{sec:mecanismo}
@@ -444,6 +388,11 @@ melhorou a previsão. Em todos os períodos, a taxa de acerto dos robôs com ARI
 com e sem o GARCH, ficou entre 41\% e 59\%, perto dos 50\% que se teria escolhendo a
 direção ao acaso, e a diferença entre as versões com e sem o GARCH foi de no máximo
 quatro pontos percentuais.
+
+O formato do ARIMA também não ficou fixo. Como o teste ADF é refeito a cada
+reavaliação das ordens, o $d$ escolhido pelo robô variou ao longo dos testes. No
+acompanhamento diário da versão A entre julho de 2019 e junho de 2021, o teste
+indicou $d = 1$ em 412 dos 496 pregões, ou 83,1\%, e $d = 0$ nos demais.
 
 O que o GARCH mudou foi a quantidade de vezes em que o robô agiu. Em 2017 a 2024,
 a versão A vetou 657 dos 1.983 sinais do ARIMA e aplicou, em média, 43,9\% do
@@ -458,6 +407,8 @@ teria comprado. A volatilidade prevista pelo GARCH para aquele dia era de 7,58\%
 cerca de três vezes o limiar vigente, de 2,54\%, e a operação foi vetada. Naquele
 momento, a ação acumulava queda de 48,6\% em relação ao fechamento de 2019.
 
+% OCULTO-18/10: seção oculta temporariamente a pedido do autor (apagar o \iffalse e o \fi do fim do arquivo para voltar)
+\iffalse
 \section{Verificação estatística e testes complementares}
 
 Esta seção reúne a verificação estatística das diferenças e os resultados
@@ -579,3 +530,4 @@ Período & Robô & Volatilidade & Queda máx. \\
 \fonte{Elaboração própria.}
 \nota{As duas versões fixas usam o mesmo ARIMA, de modo que a configuração sem GARCH é a mesma para as duas. Compra e manutenção da PETR4, pela variação do preço: volatilidade de 44,9\% e queda máxima de 92,0\% em 2005 a 2026, e de 44,8\% e 64,2\% em 2017 a 2024.}
 \end{table}
+\fi % OCULTO-18/10: fim da seção oculta

@@ -44,12 +44,12 @@ bool Ajusta(const double &z[], const int p, const int q, const ENUM_ESTIMACAO_AR
             double &aic, double &aicc, double &bic, double &ll)
   {
    CArima m;
-   m.DefinirMetodo(met);
+   m.DefinirEstimacao(met);
    m.Definir(p, 0, q, true);
    m.DefinirAquecimentoMinimo(4);
    if(!m.Ajustar(z)) return(false);
    aic = m.AIC(); bic = m.BIC(); ll = m.LogVerossimilhanca();
-   int k = m.NumParametros(), n = m.NEfetivo();
+   int k = m.NumParametros(), n = m.ObservacoesEfetivas();
    aicc = aic + 2.0 * k * (k + 1) / MathMax(1.0, (double)(n - k - 1));
    return(true);
   }
@@ -81,24 +81,24 @@ int OnInit()
       for(int k = 0; k < 2; k++)
         {
          CArima m;
-         m.DefinirMetodo((ENUM_ESTIMACAO_ARIMA)k);
+         m.DefinirEstimacao((ENUM_ESTIMACAO_ARIMA)k);
          m.Definir(1, 1, 1, false);
          m.Ajustar(y);
          ph[k] = m.Phi(0); th[k] = m.Theta(0);
-         ssr[k] = m.Sigma2() * m.NEfetivo();
+         ssr[k] = m.Sigma2() * m.ObservacoesEfetivas();
         }
       //--- mesma funcao objetivo, avaliada na grade
-      CArimaDados d;
-      d.N = 240;
-      ArrayResize(d.z, 240);
-      for(int i = 0; i < 240; i++) d.z[i] = y[i + 1] - y[i];
-      d.p = 1; d.q = 1; d.com_c = false; d.t0_rec = 1; d.t0_ll = 1;
+      CDadosVerossimilhancaArima d;
+      d.tamanho = 240;
+      ArrayResize(d.serie, 240);
+      for(int i = 0; i < 240; i++) d.serie[i] = y[i + 1] - y[i];
+      d.p = 1; d.q = 1; d.com_constante = false; d.inicio_recursao = 1; d.inicio_soma = 1;
       double best = DBL_MAX, bp = 0, bq = 0, a[1], b[1];
       for(int i = -198; i <= 198; i++)
          for(int j = -198; j <= 198; j++)
            {
             a[0] = i * 0.005; b[0] = j * 0.005;
-            double v = ArimaSSR(GetPointer(d), 0.0, a, b);
+            double v = SomaQuadradosResiduosArima(d, 0.0, a, b);
             if(v < best) { best = v; bp = a[0]; bq = b[0]; }
            }
       double dif = ssr[1] - best;
@@ -128,13 +128,13 @@ int OnInit()
          for(int q = 0; q <= 4; q++)
            {
             double aic, aicc, bic, ll;
-            if(Ajusta(z, p, q, EST_ARIMA_HR, aic, aicc, bic, ll))
+            if(Ajusta(z, p, q, ESTIMACAO_HANNAN_RISSANEN, aic, aicc, bic, ll))
               {
                if(aic < melhor[0]) { melhor[0] = aic; esc[0] = p * 5 + q; }
                if(p == 1 && q == 0) ll_hr10 = ll;
                if(p == 4 && q == 4) ll_hr44 = ll;
               }
-            if(Ajusta(z, p, q, EST_ARIMA_MV, aic, aicc, bic, ll))
+            if(Ajusta(z, p, q, ESTIMACAO_VEROSSIMILHANCA, aic, aicc, bic, ll))
               {
                if(aic  < melhor[1]) { melhor[1] = aic;  esc[1] = p * 5 + q; }
                if(aicc < melhor[2]) { melhor[2] = aicc; esc[2] = p * 5 + q; }

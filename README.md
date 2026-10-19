@@ -113,8 +113,8 @@ As tabelas completas estão no Capítulo III do trabalho e em
 
 | Pasta | Conteúdo |
 |---|---|
-| `ARIMA-GARCH/` | o Expert Advisor (`ARIMA_GARCH_EA.mq5`) |
-| `Include/` | os módulos: ARIMA, GARCH, estatística (ADF, Ljung-Box, AIC), seleção de ordens, estratégia e avaliação de desempenho |
+| `ARIMA-GARCH/` | o Expert Advisor (`ARIMA_GARCH_EA.mq5`), com o registro (`Diagnostico.mqh`) e a avaliação no testador (`Avaliacao.mqh`) em arquivos à parte |
+| `Include/` | os módulos: ARIMA, GARCH, estatística (ADF, Ljung-Box, AIC), seleção de ordens, estratégia, negociação e avaliação de desempenho; as opções experimentais ficam em `ArimaVerossimilhanca.mqh` e `GarchDistribuicao.mqh` |
 | `MediasMoveis2/` | a estratégia de médias móveis de Almeida (2016), reimplementada |
 | `ferramentas/` | importador de séries, comparador de estratégias, validações e os scripts que rodam as baterias de testes (`scripts/`) |
 | `dados/` | dados brutos (`fontes/`), séries prontas para o MetaTrader (`series/`), conferências (`verificacao/`) e resultados dos experimentos (`resultados/`) |

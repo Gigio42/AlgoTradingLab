@@ -62,7 +62,7 @@ bool Ajusta(const double &z[], const int p, const int q, const ENUM_ESTIMACAO_AR
             double &phi, double &theta, double &aic)
   {
    CArima m;
-   m.DefinirMetodo(met);
+   m.DefinirEstimacao(met);
    m.Definir(p, 0, q, true);
    m.DefinirAquecimentoMinimo(4);
    if(!m.Ajustar(z))
@@ -79,7 +79,7 @@ void MonteCarlo(const string nome, const int p, const int q, const double phi0, 
   {
    double s_phi[2] = {0, 0}, s_th[2] = {0, 0};
    int ok[2] = {0, 0}, melhor_mv = 0, comuns = 0;
-   int fb0 = CArima::s_mv_fallback, tt0 = CArima::s_mv_tentativas;
+   int fb0 = g_mantidos_hannan_rissanen, tt0 = g_tentativas_verossimilhanca;
    double z[];
    for(int r = 0; r < reps; r++)
      {
@@ -110,7 +110,7 @@ void MonteCarlo(const string nome, const int p, const int q, const double phi0, 
                     p > 0 ? MathSqrt(s_phi[1] / MathMax(ok[1], 1)) : 0.0,
                     q > 0 ? MathSqrt(s_th[1] / MathMax(ok[1], 1)) : 0.0, ok[1],
                     melhor_mv, comuns,
-                    CArima::s_mv_fallback - fb0, CArima::s_mv_tentativas - tt0));
+                    g_mantidos_hannan_rissanen - fb0, g_tentativas_verossimilhanca - tt0));
   }
 
 //--- Selecao de ordens pelo AIC: quantas vezes acerta (p0,q0)
@@ -181,8 +181,8 @@ int OnInit()
    for(int k = 0; k < 2; k++)
      {
       CArima a, b;
-      a.DefinirMetodo((ENUM_ESTIMACAO_ARIMA)k);
-      b.DefinirMetodo((ENUM_ESTIMACAO_ARIMA)k);
+      a.DefinirEstimacao((ENUM_ESTIMACAO_ARIMA)k);
+      b.DefinirEstimacao((ENUM_ESTIMACAO_ARIMA)k);
       a.Definir(1, 0, 1, true);
       b.Definir(2, 0, 0, true);
       bool oa = a.Ajustar(z), ob = b.Ajustar(z2);
@@ -239,7 +239,7 @@ int OnInit()
       for(int k = 0; k < 2; k++)
         {
          CArima ap;
-         ap.DefinirMetodo((ENUM_ESTIMACAO_ARIMA)k);
+         ap.DefinirEstimacao((ENUM_ESTIMACAO_ARIMA)k);
          ap.Definir(1, 1, 1, true);
          if(ap.Ajustar(lp))
             Log(StringFormat("  %s: %s", k == 0 ? "HR" : "MV", ap.Descricao()));
@@ -252,8 +252,8 @@ int OnInit()
 
    Log("");
    Log(StringFormat("Total: MV tentado %d vezes, voltou ao HR em %d (%.2f%%)",
-                    CArima::s_mv_tentativas, CArima::s_mv_fallback,
-                    100.0 * CArima::s_mv_fallback / MathMax(CArima::s_mv_tentativas, 1)));
+                    g_tentativas_verossimilhanca, g_mantidos_hannan_rissanen,
+                    100.0 * g_mantidos_hannan_rissanen / MathMax(g_tentativas_verossimilhanca, 1)));
    Log("================ FIM ================");
    if(g_h != INVALID_HANDLE)
       FileClose(g_h);

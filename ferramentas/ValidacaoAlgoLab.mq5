@@ -45,7 +45,7 @@ void OnStart()
    ResultadoADF a1;
    if(TesteADF(rw, ADF_CONSTANTE, -1, a1))
       Log(StringFormat("  Passeio aleatorio : stat=%8.4f  vc5=%8.4f  lags=%d  -> estacionaria=%s  [ESPERADO: nao]",
-                       a1.estatistica, a1.vc_5pct, a1.lags, a1.estacionaria_5pct ? "SIM" : "nao"));
+                       a1.estatistica, a1.valor_critico_5, a1.defasagens, a1.estacionaria ? "SIM" : "nao"));
 
    //--- (b) AR(1) com phi=0.5: DEVE rejeitar H0 (estacionaria)
    double ar1[];
@@ -57,7 +57,7 @@ void OnStart()
    ResultadoADF a2;
    if(TesteADF(ar1, ADF_CONSTANTE, -1, a2))
       Log(StringFormat("  AR(1) phi=0.5     : stat=%8.4f  vc5=%8.4f  lags=%d  -> estacionaria=%s  [ESPERADO: SIM]",
-                       a2.estatistica, a2.vc_5pct, a2.lags, a2.estacionaria_5pct ? "SIM" : "nao"));
+                       a2.estatistica, a2.valor_critico_5, a2.defasagens, a2.estacionaria ? "SIM" : "nao"));
 
    //--- (c) Primeira diferenca do passeio aleatorio: DEVE ser estacionaria
    double drw[];
@@ -68,7 +68,7 @@ void OnStart()
    ResultadoADF a3;
    if(TesteADF(drw, ADF_CONSTANTE, -1, a3))
       Log(StringFormat("  d(passeio), d=1   : stat=%8.4f  vc5=%8.4f  lags=%d  -> estacionaria=%s  [ESPERADO: SIM]",
-                       a3.estatistica, a3.vc_5pct, a3.lags, a3.estacionaria_5pct ? "SIM" : "nao"));
+                       a3.estatistica, a3.valor_critico_5, a3.defasagens, a3.estacionaria ? "SIM" : "nao"));
 
    //=================================================================
    // 2) ARIMA deve RECUPERAR coeficientes conhecidos
@@ -141,7 +141,7 @@ void OnStart()
    g1.DefinirOtimizador(500);
    if(g1.Ajustar(eps))
       Log(StringFormat("  Estimado  : omega=%.8f  alpha=%.4f  beta=%.4f  persist=%.4f",
-                       g1.Omega(), g1.Alpha(0), g1.Beta(0), g1.Persistencia()));
+                       g1.Omega(), g1.Alfa(0), g1.Beta(0), g1.Persistencia()));
    else
       Log("  FALHOU: " + g1.UltimoErro());
 
@@ -175,7 +175,7 @@ void OnStart()
       ResultadoADF ad0, ad1;
       if(TesteADF(lp, ADF_CONSTANTE, -1, ad0))
          Log(StringFormat("  ADF log-preco  (d=0): stat=%8.4f vc5=%8.4f -> estacionaria=%s",
-                          ad0.estatistica, ad0.vc_5pct, ad0.estacionaria_5pct ? "SIM" : "nao"));
+                          ad0.estatistica, ad0.valor_critico_5, ad0.estacionaria ? "SIM" : "nao"));
 
       double dlp[];
       ArrayResize(dlp, copiados - 1);
@@ -184,7 +184,7 @@ void OnStart()
 
       if(TesteADF(dlp, ADF_CONSTANTE, -1, ad1))
          Log(StringFormat("  ADF log-retorno(d=1): stat=%8.4f vc5=%8.4f -> estacionaria=%s",
-                          ad1.estatistica, ad1.vc_5pct, ad1.estacionaria_5pct ? "SIM" : "nao"));
+                          ad1.estatistica, ad1.valor_critico_5, ad1.estacionaria ? "SIM" : "nao"));
 
       CArima ap;
       ap.Definir(1, 1, 1, true);
@@ -201,7 +201,7 @@ void OnStart()
             ResultadoLjungBox lb;
             if(TesteLjungBox(r, 10, 2, lb))
                Log(StringFormat("  Ljung-Box(10): Q=%.3f gl=%d p=%.4f -> ruido branco=%s",
-                                lb.estatistica, lb.gl, lb.pvalor, lb.ruido_branco ? "SIM" : "nao"));
+                                lb.estatistica, lb.graus_liberdade, lb.pvalor, lb.ruido_branco ? "SIM" : "nao"));
 
             CGarch gp;
             gp.Definir(1, 1);

@@ -1,278 +1,224 @@
 //+------------------------------------------------------------------+
-//| EA_MM_Crossover_SLTP_v1.06.mq5                                   |
+//| MediasMoveis2.mq5                                                |
+//| TG - FATEC Indaiatuba (ADS). Cruzamento de medias moveis 10/20   |
+//| de Almeida (2016), reproduzido: compra quando a rapida cruza a   |
+//| lenta para cima, vende quando cruza para baixo. Mesma avaliacao  |
+//| do ARIMA_GARCH_EA, para os modelos serem comparados com a mesma  |
+//| regua.                                                           |
 //+------------------------------------------------------------------+
-#property copyright "Adaptado por [Seu Nome/Assistente Virtual]"
-#property link      "https://www.mql5.com"
-#property version   "1.06"
-#property description "Cruzamento de MM com SL/TP e reversão"
-
-#include <Trade\Trade.mqh>
-#include "..\Include\Estrategia.mqh"
-#include "..\Include\Desempenho.mqh"
-
-//--- Mesma avaliacao do ARIMA_GARCH_EA (Selic, buy-and-hold, Sharpe...),
-//--- para os tres modelos serem comparados com a mesma regua.
+#property copyright "TG - FATEC Indaiatuba (ADS)"
+#property version   "2.00"
 #property tester_file "selic_diaria.csv"
 #property tester_file "proventos_PETR4.csv"
 #property tester_file "proventos_VALE3.csv"
 #property tester_file "proventos_USIM5.csv"
 #property tester_file "proventos_POMO4.csv"
 
-CTrade Trade;
-CDesempenho g_desempenho;
-bool g_no_testador = false;
+#include "..\Include\Negociacao.mqh"
+#include "..\Include\Desempenho.mqh"
 
-input group "Parâmetros das Médias Móveis"
+input group "Medias moveis"
 input int                RapidaMM_Periodo   = 10;
 input ENUM_MA_METHOD     RapidaMM_Metodo    = MODE_SMA;
 input ENUM_APPLIED_PRICE RapidaMM_Preco     = PRICE_CLOSE;
 input int                RapidaMM_Shift     = 0;
-
 input int                DevagarMM_Periodo  = 20;
 input ENUM_MA_METHOD     DevagarMM_Metodo   = MODE_SMA;
 input ENUM_APPLIED_PRICE DevagarMM_Preco    = PRICE_CLOSE;
 input int                DevagarMM_Shift    = 0;
 
-input group "Parâmetros de Negociação"
-input double             Volume_Fixo_Input  = 1.0; 
-input int                StopLoss_Points    = 50;
-input int                TakeProfit_Points  = 100;
-input ulong              MagicNumber        = 12349; 
+input group "Negociacao"
+input double             Volume_Fixo_Input  = 1.0;      // Volume fixo (acoes)
+input int                StopLoss_Points    = 50;       // Stop Loss em pontos (0 = sem)
+input int                TakeProfit_Points  = 100;      // Take Profit em pontos (0 = sem)
+input ulong              MagicNumber        = 12349;
 input int                Slippage_Points    = 10;
-input bool               TradeOnNewBarOnly  = true;
-input double             Fracao_Capital     = 0.0;    // >0: volume = fracao do patrimonio (ignora Volume_Fixo_Input)
-input bool               SomenteCompra      = false;  // Sinal de venda apenas zera a compra (sem venda a descoberto)
+input bool               TradeOnNewBarOnly  = true;     // Operar so na abertura da barra
+input double             Fracao_Capital     = 0.0;      // > 0: volume = fracao do patrimonio
+input bool               SomenteCompra      = false;    // Sinal de venda so zera a compra
 
-input group "Avaliação (Strategy Tester)"
-input double             Custo_Por_Lado     = 0.0003; // Custo B3 por execucao (fracao do valor negociado)
-input string             Arquivo_Proventos  = "proventos_PETR4.csv"; // Proventos por data-ex (so avaliacao)
-input string             Rotulo             = "";     // Nome da curva diaria exportada (vazio = nao exporta)
+input group "Avaliacao (Strategy Tester)"
+input double             Custo_Por_Lado     = 0.0003;   // Custo B3 por execucao (fracao do valor)
+input string             Arquivo_Proventos  = "proventos_PETR4.csv"; // Proventos por data-ex
+input string             Rotulo             = "";       // Nome das metricas e da curva (vazio = nao grava)
 
-int      h_RapidaMM;
-int      h_DevagarMM;
-datetime gl_TimeUltimaBarraProcessada = 0;
-int      gl_DigitsPrice;
-double   g_VolumeOperacional; 
+CNegociacao g_negociacao;
+CDesempenho g_desempenho;
+bool        g_no_testador = false;
 
-//+------------------------------------------------------------------+
+int      g_media_rapida;
+int      g_media_lenta;
+int      g_casas_decimais;
+double   g_volume_fixo;
+
 int OnInit()
-{
-   g_VolumeOperacional = Volume_Fixo_Input; 
+  {
+   g_media_rapida = iMA(_Symbol, _Period, RapidaMM_Periodo, RapidaMM_Shift, RapidaMM_Metodo, RapidaMM_Preco);
+   g_media_lenta  = iMA(_Symbol, _Period, DevagarMM_Periodo, DevagarMM_Shift, DevagarMM_Metodo, DevagarMM_Preco);
+   if(g_media_rapida == INVALID_HANDLE || g_media_lenta == INVALID_HANDLE)
+      return(INIT_FAILED);
 
-   h_RapidaMM = iMA(_Symbol, _Period, RapidaMM_Periodo, RapidaMM_Shift, RapidaMM_Metodo, RapidaMM_Preco);
-   if(h_RapidaMM == INVALID_HANDLE) return(INIT_FAILED);
-
-   h_DevagarMM = iMA(_Symbol, _Period, DevagarMM_Periodo, DevagarMM_Shift, DevagarMM_Metodo, DevagarMM_Preco);
-   if(h_DevagarMM == INVALID_HANDLE) return(INIT_FAILED);
-   
-   Trade.SetExpertMagicNumber(MagicNumber);
-   Trade.SetDeviationInPoints(Slippage_Points);
-   Trade.SetTypeFillingBySymbol(_Symbol);
-   
-   gl_DigitsPrice = (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS);
-   
-   double min_volume = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
-   double max_volume = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MAX);
-   double step_volume = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
-
-   if(g_VolumeOperacional < min_volume) g_VolumeOperacional = min_volume;
-   if(g_VolumeOperacional > max_volume) g_VolumeOperacional = max_volume;
-   
-   if(step_volume > 0) {
-      double remainder = MathMod(g_VolumeOperacional, step_volume);
-      if(MathAbs(remainder) > 1e-10) { 
-          g_VolumeOperacional = MathRound(g_VolumeOperacional / step_volume) * step_volume;
-          int volume_digits = 0;
-          if(step_volume < 1.0 && step_volume > 0) {
-            string step_str = DoubleToString(step_volume, 8);
-            int dot_pos = StringFind(step_str, ".");
-            if(dot_pos != -1) volume_digits = StringLen(step_str) - dot_pos - 1;
-          }
-          g_VolumeOperacional = NormalizeDouble(g_VolumeOperacional, volume_digits);
-      }
-   }
-   if(g_VolumeOperacional < min_volume) g_VolumeOperacional = min_volume;
+   g_negociacao.Configurar(_Symbol, MagicNumber, Slippage_Points);
+   g_casas_decimais = (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS);
+   g_volume_fixo = VolumeFixoDoSimbolo(Volume_Fixo_Input);
 
    g_no_testador = (bool)MQLInfoInteger(MQL_TESTER);
    if(g_no_testador)
-   {
+     {
       g_desempenho.Definir(_Symbol, MagicNumber, Custo_Por_Lado);
       if(!g_desempenho.CarregarSelic("selic_diaria.csv"))
          Print("AVISO: selic_diaria.csv nao encontrado - caixa parado rendera 0");
       if(!g_desempenho.CarregarProventos(Arquivo_Proventos))
          Print("AVISO: ", Arquivo_Proventos, " nao encontrado - camada de proventos = 0");
-   }
-
+     }
    return(INIT_SUCCEEDED);
-}
-//+------------------------------------------------------------------+
+  }
+
 void OnDeinit(const int reason)
-{
-   if(h_RapidaMM != INVALID_HANDLE) IndicatorRelease(h_RapidaMM);
-   if(h_DevagarMM != INVALID_HANDLE) IndicatorRelease(h_DevagarMM);
-}
-//+------------------------------------------------------------------+
-ENUM_POSITION_TYPE ObterTipoPosicaoAtual() {
-    for(int i = PositionsTotal() - 1; i >= 0; i--) {
-        ulong ticket = PositionGetTicket(i);
-        if(ticket > 0 && PositionSelectByTicket(ticket)) {
-            if(PositionGetString(POSITION_SYMBOL) == _Symbol &&
-               PositionGetInteger(POSITION_MAGIC) == MagicNumber) {
-                return (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
-            }
-        }
-    }
-    return (ENUM_POSITION_TYPE)-1; 
-}
-//+------------------------------------------------------------------+
-bool FecharPosicaoAtual(ENUM_POSITION_TYPE tipoPosicaoParaFechar) {
-    if (tipoPosicaoParaFechar == POSITION_TYPE_BUY || tipoPosicaoParaFechar == POSITION_TYPE_SELL) {
-        for(int i = PositionsTotal() - 1; i >= 0; i--) {
-            ulong ticket = PositionGetTicket(i);
-            if(ticket > 0 && PositionSelectByTicket(ticket)) {
-                if(PositionGetString(POSITION_SYMBOL) == _Symbol &&
-                   PositionGetInteger(POSITION_MAGIC) == MagicNumber &&
-                   PositionGetInteger(POSITION_TYPE) == tipoPosicaoParaFechar) {
-                    
-                    if(Trade.PositionClose(ticket, Slippage_Points)) { 
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            }
-        }
-    }
-    return true; 
-}
-//+------------------------------------------------------------------+
-double VolumeAtual(const double preco)
-{
-   if(Fracao_Capital <= 0.0) return g_VolumeOperacional;
-   return VolumePorCapital(_Symbol, Fracao_Capital, preco);
-}
-//+------------------------------------------------------------------+
+  {
+   IndicatorRelease(g_media_rapida);
+   IndicatorRelease(g_media_lenta);
+  }
+
+//--- Volume dentro do minimo e do maximo do simbolo, arredondado ao passo
+double VolumeFixoDoSimbolo(double volume)
+  {
+   double minimo = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
+   double maximo = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MAX);
+   double passo  = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
+
+   if(volume < minimo) volume = minimo;
+   if(volume > maximo) volume = maximo;
+   if(passo > 0 && MathAbs(MathMod(volume, passo)) > 1e-10)
+     {
+      volume = MathRound(volume / passo) * passo;
+      volume = NormalizeDouble(volume, (passo < 1.0) ? 8 : 0);
+     }
+   if(volume < minimo) volume = minimo;
+   return(volume);
+  }
+
+double VolumeDaOrdem(const double preco)
+  {
+   if(Fracao_Capital <= 0.0)
+      return(g_volume_fixo);
+   return(VolumePorCapital(_Symbol, Fracao_Capital, preco));
+  }
+
 void OnTick()
-{
+  {
    //--- Registro na abertura de cada barra, antes de qualquer ordem
-   static datetime barraRegistrada = 0;
-   datetime barraAtual = (datetime)SeriesInfoInteger(_Symbol, _Period, SERIES_LASTBAR_DATE);
-   if(g_no_testador && barraAtual != barraRegistrada)
-   {
-      barraRegistrada = barraAtual;
-      g_desempenho.RegistrarAgora(barraAtual);
-   }
+   static datetime barra_registrada = 0;
+   datetime barra = (datetime)SeriesInfoInteger(_Symbol, _Period, SERIES_LASTBAR_DATE);
+   if(g_no_testador && barra != barra_registrada)
+     {
+      barra_registrada = barra;
+      g_desempenho.RegistrarAgora(barra);
+     }
 
    if(TradeOnNewBarOnly)
-   {
-      static datetime prevTime = 0;
-      datetime currentTime = (datetime)SeriesInfoInteger(_Symbol, _Period, SERIES_LASTBAR_DATE);
-      if(currentTime == prevTime) return;
-      prevTime = currentTime;
-   }
+     {
+      static datetime barra_operada = 0;
+      if(barra == barra_operada)
+         return;
+      barra_operada = barra;
+     }
 
-   double arr_temp[1];
-   double maRapidaAnterior, maLentaAnterior, maRapidaAntesDoCruzamento, maLentaAntesDoCruzamento;
-
-   if(CopyBuffer(h_RapidaMM, 0, 1, 1, arr_temp) != 1) return; maRapidaAnterior = arr_temp[0];
-   if(CopyBuffer(h_DevagarMM, 0, 1, 1, arr_temp) != 1) return; maLentaAnterior  = arr_temp[0];
-   if(CopyBuffer(h_RapidaMM, 0, 2, 1, arr_temp) != 1) return; maRapidaAntesDoCruzamento = arr_temp[0];
-   if(CopyBuffer(h_DevagarMM, 0, 2, 1, arr_temp) != 1) return; maLentaAntesDoCruzamento  = arr_temp[0];
+   //--- Medias da ultima barra fechada (1) e da anterior (2)
+   double valor[1];
+   if(CopyBuffer(g_media_rapida, 0, 1, 1, valor) != 1) return;
+   double rapida_agora = valor[0];
+   if(CopyBuffer(g_media_lenta, 0, 1, 1, valor) != 1) return;
+   double lenta_agora = valor[0];
+   if(CopyBuffer(g_media_rapida, 0, 2, 1, valor) != 1) return;
+   double rapida_antes = valor[0];
+   if(CopyBuffer(g_media_lenta, 0, 2, 1, valor) != 1) return;
+   double lenta_antes = valor[0];
 
    MqlTick tick;
-   if(!SymbolInfoTick(_Symbol, tick) || tick.ask == 0 || tick.bid == 0) return;
-   double askPrice = tick.ask;
-   double bidPrice = tick.bid;
-
-   ENUM_POSITION_TYPE tipoPosicaoAtual = ObterTipoPosicaoAtual();
-
-   bool condicaoCompra = maRapidaAnterior > maLentaAnterior && maRapidaAntesDoCruzamento <= maLentaAntesDoCruzamento;
-   if(condicaoCompra)
-   {
-      if(tipoPosicaoAtual == POSITION_TYPE_SELL) { 
-          if(!FecharPosicaoAtual(POSITION_TYPE_SELL)) return; 
-          Sleep(1);
-          tipoPosicaoAtual = ObterTipoPosicaoAtual(); 
-      }
-
-      if(tipoPosicaoAtual != POSITION_TYPE_BUY) { 
-          double sl = 0, tp = 0;
-          double stop_level_points = (double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL);
-          double min_distance_sl_tp = stop_level_points * _Point;
-          
-          if(StopLoss_Points > 0) {
-              sl = NormalizeDouble(askPrice - StopLoss_Points * _Point, gl_DigitsPrice);
-              if (min_distance_sl_tp > 0 && askPrice - sl < min_distance_sl_tp) {
-                 sl = NormalizeDouble(askPrice - min_distance_sl_tp, gl_DigitsPrice);
-              }
-              if (sl >= askPrice) sl = 0; 
-          }
-          if(TakeProfit_Points > 0) {
-              tp = NormalizeDouble(askPrice + TakeProfit_Points * _Point, gl_DigitsPrice);
-              if (min_distance_sl_tp > 0 && tp - askPrice < min_distance_sl_tp) {
-                 tp = NormalizeDouble(askPrice + min_distance_sl_tp, gl_DigitsPrice);
-              }
-              if (tp <= askPrice && TakeProfit_Points > 0) tp = 0;
-          }
-          
-          Trade.Buy(VolumeAtual(askPrice), _Symbol, askPrice, sl, tp, "Compra MM Rev");
-      }
-      return; 
-   }
-
-   bool condicaoVenda = maRapidaAnterior < maLentaAnterior && maRapidaAntesDoCruzamento >= maLentaAntesDoCruzamento;
-   if(condicaoVenda)
-   {
-      if(tipoPosicaoAtual == POSITION_TYPE_BUY) { 
-          if(!FecharPosicaoAtual(POSITION_TYPE_BUY)) return;
-          Sleep(1);
-          tipoPosicaoAtual = ObterTipoPosicaoAtual(); 
-      }
-      if(SomenteCompra) return;
-      
-      if(tipoPosicaoAtual != POSITION_TYPE_SELL) { 
-          double sl = 0, tp = 0;
-          double stop_level_points = (double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL);
-          double min_distance_sl_tp = stop_level_points * _Point;
-
-          if(StopLoss_Points > 0) {
-              sl = NormalizeDouble(bidPrice + StopLoss_Points * _Point, gl_DigitsPrice);
-              if (min_distance_sl_tp > 0 && sl - bidPrice < min_distance_sl_tp) {
-                 sl = NormalizeDouble(bidPrice + min_distance_sl_tp, gl_DigitsPrice);
-              }
-              if (sl <= bidPrice) sl = 0; 
-          }
-          if(TakeProfit_Points > 0) {
-              tp = NormalizeDouble(bidPrice - TakeProfit_Points * _Point, gl_DigitsPrice);
-              if (min_distance_sl_tp > 0 && bidPrice - tp < min_distance_sl_tp) {
-                 tp = NormalizeDouble(bidPrice - min_distance_sl_tp, gl_DigitsPrice);
-              }
-              if (tp >= bidPrice && TakeProfit_Points > 0) tp = 0;
-          }
-
-          Trade.Sell(VolumeAtual(bidPrice), _Symbol, bidPrice, sl, tp, "Venda MM Rev");
-      }
+   if(!SymbolInfoTick(_Symbol, tick) || tick.ask == 0 || tick.bid == 0)
       return;
-   }
-}
-//+------------------------------------------------------------------+
-//+------------------------------------------------------------------+
-//| Fim do teste: metricas contra a Selic e o buy-and-hold           |
-//+------------------------------------------------------------------+
+
+   ENUM_POSITION_TYPE posicao = g_negociacao.PosicaoAtual();
+   double distancia_minima = (double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL) * _Point;
+
+   if(rapida_agora > lenta_agora && rapida_antes <= lenta_antes)
+     {
+      if(posicao == POSITION_TYPE_SELL)
+        {
+         if(!g_negociacao.Fechar(POSITION_TYPE_SELL))
+            return;
+         Sleep(1);
+         posicao = g_negociacao.PosicaoAtual();
+        }
+      if(posicao != POSITION_TYPE_BUY)
+        {
+         double preco = tick.ask, stop_loss = 0, take_profit = 0;
+         if(StopLoss_Points > 0)
+           {
+            stop_loss = NormalizeDouble(preco - StopLoss_Points * _Point, g_casas_decimais);
+            if(distancia_minima > 0 && preco - stop_loss < distancia_minima)
+               stop_loss = NormalizeDouble(preco - distancia_minima, g_casas_decimais);
+            if(stop_loss >= preco) stop_loss = 0;
+           }
+         if(TakeProfit_Points > 0)
+           {
+            take_profit = NormalizeDouble(preco + TakeProfit_Points * _Point, g_casas_decimais);
+            if(distancia_minima > 0 && take_profit - preco < distancia_minima)
+               take_profit = NormalizeDouble(preco + distancia_minima, g_casas_decimais);
+            if(take_profit <= preco) take_profit = 0;
+           }
+         g_negociacao.Comprar(VolumeDaOrdem(preco), preco, stop_loss, take_profit, "Compra MM Rev");
+        }
+      return;
+     }
+
+   if(rapida_agora < lenta_agora && rapida_antes >= lenta_antes)
+     {
+      if(posicao == POSITION_TYPE_BUY)
+        {
+         if(!g_negociacao.Fechar(POSITION_TYPE_BUY))
+            return;
+         Sleep(1);
+         posicao = g_negociacao.PosicaoAtual();
+        }
+      if(SomenteCompra)
+         return;
+      if(posicao != POSITION_TYPE_SELL)
+        {
+         double preco = tick.bid, stop_loss = 0, take_profit = 0;
+         if(StopLoss_Points > 0)
+           {
+            stop_loss = NormalizeDouble(preco + StopLoss_Points * _Point, g_casas_decimais);
+            if(distancia_minima > 0 && stop_loss - preco < distancia_minima)
+               stop_loss = NormalizeDouble(preco + distancia_minima, g_casas_decimais);
+            if(stop_loss <= preco) stop_loss = 0;
+           }
+         if(TakeProfit_Points > 0)
+           {
+            take_profit = NormalizeDouble(preco - TakeProfit_Points * _Point, g_casas_decimais);
+            if(distancia_minima > 0 && preco - take_profit < distancia_minima)
+               take_profit = NormalizeDouble(preco - distancia_minima, g_casas_decimais);
+            if(take_profit >= preco) take_profit = 0;
+           }
+         g_negociacao.Vender(VolumeDaOrdem(preco), preco, stop_loss, take_profit, "Venda MM Rev");
+        }
+     }
+  }
+
+//--- Fim do teste: metricas contra a Selic e a compra e manutencao
 double OnTester()
-{
+  {
    g_desempenho.RegistrarAgora(TimeCurrent());
 
-   ResultadoDesempenho r;
-   if(!g_desempenho.Calcular(r)) return 0.0;
+   ResultadoDesempenho resultado;
+   if(!g_desempenho.Calcular(resultado))
+      return(0.0);
 
-   g_desempenho.Imprimir(r);
-
-   string cab = "modelo;MM_rapida;MM_lenta;StopLoss;TakeProfit;Volume_Fixo;Fracao_Capital;SomenteCompra";
-   string val = StringFormat("MM;%d;%d;%d;%d;%.0f;%.2f;%d", RapidaMM_Periodo, DevagarMM_Periodo,
-                             StopLoss_Points, TakeProfit_Points, g_VolumeOperacional,
-                             Fracao_Capital, SomenteCompra);
-   g_desempenho.Gravar(Rotulo, cab, val, r);
-   return r.excesso * 100.0;
-}
-//+------------------------------------------------------------------+
+   g_desempenho.Imprimir(resultado);
+   string cabecalho = "modelo;MM_rapida;MM_lenta;StopLoss;TakeProfit;Volume_Fixo;Fracao_Capital;SomenteCompra";
+   string valores = StringFormat("MM;%d;%d;%d;%d;%.0f;%.2f;%d", RapidaMM_Periodo, DevagarMM_Periodo,
+                                 StopLoss_Points, TakeProfit_Points, g_volume_fixo, Fracao_Capital, SomenteCompra);
+   g_desempenho.Gravar(Rotulo, cabecalho, valores, resultado);
+   return(resultado.excesso * 100.0);
+  }
