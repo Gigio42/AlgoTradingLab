@@ -1,0 +1,75 @@
+Camada 1 (bruta), só compra. Escolha: escolher.sh so_compra na calibração; resultado: mesma configuração na grade do teste.
+Sem as passagens com intervalo de confiança (Estrategia=2), fora do escopo desde 21/10/2026.
+Colunas: ret_puro, dd_puro, vol_puro, saidas; PETR4 = bh_preco, dd_bh_preco, vol_bh_preco.
+
+== PETR4 T1
+GS  ret=   -8.4 queda= 17.5 vol= 10.5 saidas= 263 estrategia=3 zera=true
+GC  ret=   -8.4 queda= 17.5 vol= 10.5 saidas= 263 estrategia=3 zera=true
+AS  ret=  -12.7 queda= 45.1 vol= 27.5 saidas= 320 estrategia=- zera=-
+B&H ret=  -14.0 queda= 67.2 vol= 43.2
+
+== PETR4 T2
+GS  ret=  -13.8 queda= 28.6 vol= 14.1 saidas= 140 estrategia=3 zera=true
+GC  ret=   -6.8 queda= 15.5 vol=  7.1 saidas= 140 estrategia=3 zera=true
+AS  ret=  -35.8 queda= 54.5 vol= 37.8 saidas= 266 estrategia=- zera=-
+B&H ret=  -25.6 queda= 83.1 vol= 59.2
+
+== PETR4 T3
+GS  ret=  -13.7 queda= 17.6 vol= 13.5 saidas=  37 estrategia=0 zera=true
+GC  ret=   -7.4 queda= 12.2 vol=  9.2 saidas=  37 estrategia=3 zera=true
+AS  ret=  +14.2 queda= 20.1 vol= 22.0 saidas=  46 estrategia=- zera=-
+B&H ret=  +33.2 queda= 25.1 vol= 29.1
+
+== VALE3 T1
+GS  ret=  -38.2 queda= 40.0 vol=  8.6 saidas=  37 estrategia=3 zera=true
+GC  ret=  -10.1 queda= 25.8 vol=  8.7 saidas=  57 estrategia=3 zera=true
+AS  ret=  +60.1 queda= 43.0 vol= 23.0 saidas= 162 estrategia=- zera=-
+B&H ret=  +23.9 queda= 67.7 vol= 44.4
+
+== VALE3 T2
+GS  ret=  -27.5 queda= 32.0 vol= 11.0 saidas= 120 estrategia=3 zera=false
+GC  ret=   +2.1 queda=  9.6 vol=  5.2 saidas=  40 estrategia=3 zera=true
+AS  ret=  +34.2 queda= 34.3 vol= 28.2 saidas=  77 estrategia=- zera=-
+B&H ret=  -40.3 queda= 79.9 vol= 51.1
+
+== VALE3 T3
+GS  ret=  +23.3 queda=  5.0 vol=  8.5 saidas=  57 estrategia=0 zera=true
+GC  ret=   -0.3 queda= 12.9 vol=  9.4 saidas=   9 estrategia=0 zera=true
+AS  ret=   +4.6 queda= 10.9 vol= 12.3 saidas=  21 estrategia=- zera=-
+B&H ret=  +34.1 queda= 21.0 vol= 25.9
+
+== USIM5 T1
+GS  ret=  +36.4 queda= 19.1 vol= 15.8 saidas= 161 estrategia=0 zera=true
+GC  ret=   +3.3 queda=  6.1 vol=  3.3 saidas=  37 estrategia=3 zera=true
+AS  ret=  -28.7 queda= 67.0 vol= 29.8 saidas= 289 estrategia=- zera=-
+B&H ret=  -42.7 queda= 79.1 vol= 48.4
+
+== USIM5 T2
+GS  ret=  -21.5 queda= 80.4 vol= 58.6 saidas=  50 estrategia=0 zera=false
+GC  ret=   -0.9 queda=  0.9 vol=  0.4 saidas=   2 estrategia=3 zera=true
+AS  ret=   -4.3 queda= 66.0 vol= 54.7 saidas= 248 estrategia=- zera=-
+B&H ret=  -68.8 queda= 94.3 vol= 77.0
+
+== USIM5 T3
+GS  ret=   +0.0 queda=  0.0 vol=  0.0 saidas=   0 estrategia=3 zera=true
+GC  ret=   +0.0 queda=  0.0 vol=  0.0 saidas=   0 estrategia=3 zera=true
+AS  ret=   +9.3 queda= 25.6 vol= 29.8 saidas=  61 estrategia=- zera=-
+B&H ret=  +29.2 queda= 48.1 vol= 44.0
+
+== POMO4 T1
+GS  ret=   +4.6 queda= 10.4 vol=  5.9 saidas=  47 estrategia=3 zera=true
+GC  ret=   +4.6 queda= 10.4 vol=  5.9 saidas=  47 estrategia=3 zera=true
+AS  ret= +275.5 queda= 24.8 vol= 28.8 saidas=  54 estrategia=- zera=-
+B&H ret= +138.3 queda= 71.1 vol= 44.6
+
+== POMO4 T2
+GS  ret=  -67.6 queda= 70.3 vol= 28.2 saidas= 194 estrategia=0 zera=false
+GC  ret=  -21.0 queda= 26.9 vol=  8.0 saidas=  41 estrategia=3 zera=true
+AS  ret=  -21.0 queda= 40.8 vol= 24.8 saidas=  33 estrategia=- zera=-
+B&H ret=  -58.0 queda= 77.8 vol= 43.1
+
+== POMO4 T3
+GS  ret=  -10.9 queda= 34.5 vol= 19.9 saidas=   1 estrategia=0 zera=false
+GC  ret=   -1.4 queda=  5.5 vol=  3.0 saidas=  16 estrategia=3 zera=true
+AS  ret=   -4.9 queda= 27.0 vol= 22.9 saidas=   1 estrategia=- zera=-
+B&H ret=  -36.2 queda= 54.3 vol= 35.8

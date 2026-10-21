@@ -14,7 +14,10 @@
 %  p. 28, 40-41, 44-45); ARMA e AR como casos do ARIMA (Thomaz, 2019, p. 33);
 %  citação dupla "(Xing; Araya; Araya)" virou narrativa; frase do agrupamento
 %  de volatilidade reescrita; saiu a remissão às considerações finais; as três
-%  formas de usar o GARCH foram para o Cap. II (decisão de projeto, sem fonte);
+%  formas de usar o GARCH foram para o Cap. II (decisão de projeto, sem fonte).
+%  Em 21/10/2026, a pedido do autor, o conceito voltou para cá como subseção
+%  "Uso da volatilidade prevista na operação" (filtro e volatility targeting, este
+%  com Harvey et al., 2018); o Cap. II ficou só com a implementação;
 %  "Medidas de desempenho e risco" virou "Métricas de avaliação", com quadro de
 %  todas as métricas e a explicação da raiz de 252 (Sharpe, 1994, regra da raiz
 %  do tempo; 252 = convenção, marcado para fonte; média de 247,8 pregões/ano em
@@ -52,11 +55,8 @@ plataformas de negociação pela internet, custódia dos títulos e financiament
 a compra de ações, cobrando por isso comissões e taxas \cite{bcbCorretoras}. É
 pela corretora que uma plataforma como o MetaTrader 5 se conecta ao mercado.
 
-Toda decisão de investimento envolve um compromisso entre risco e retorno, uma vez
-que os recursos são limitados e precisam ser distribuídos entre alternativas
-\cite{elder2002}. No Brasil, a principal referência para essa comparação é a taxa
-Selic, a taxa básica de juros da economia, que serve de base para as demais taxas
-praticadas no mercado e influencia tanto o custo do crédito quanto o retorno das
+A taxa Selic é a taxa básica de juros da economia brasileira. Ela serve de base
+para as demais taxas praticadas no mercado e influencia tanto o custo do crédito quanto o retorno das
 aplicações financeiras \cite{bcbSelic}. Por esse motivo, o capital que uma
 estratégia mantém fora do mercado costuma ser comparado ao que renderia se
 estivesse aplicado a essa taxa.
@@ -335,6 +335,44 @@ compra ou de venda. O que ele pode fazer é condicionar a operação indicada pe
 ARIMA ao nível de risco esperado, impedindo a operação ou reduzindo o seu tamanho
 quando a volatilidade prevista é alta.
 
+\subsection{Uso da volatilidade prevista na operação}
+
+A volatilidade prevista pelo GARCH pode entrar na decisão de duas maneiras
+básicas, que respondem a perguntas diferentes.
+
+A primeira é o filtro de volatilidade, que decide se a operação é feita.
+Define-se um limiar, e a operação indicada pelo ARIMA só é realizada quando a
+volatilidade prevista está abaixo dele. Nos dias em que se espera uma oscilação
+acima do limiar, a operação é vetada, e o investidor deixa de se expor justamente
+quando o risco esperado é maior.
+
+A segunda é o ajuste do tamanho da posição, técnica conhecida como
+\textit{volatility targeting}, ou volatilidade-alvo, que decide quanto aplicar. Em
+vez de manter o valor aplicado constante, procura-se manter constante o nível de
+oscilação da carteira, aumentando a posição quando a volatilidade está baixa e
+reduzindo-a quando está alta \cite{harvey2018}. Define-se um nível de oscilação
+considerado aceitável, o alvo, e o tamanho da posição é multiplicado pela razão
+entre esse alvo e a volatilidade prevista. Se a volatilidade prevista dobra, a
+posição cai pela metade. A técnica parte do fato de que a volatilidade é
+persistente, isto é, períodos de oscilação alta tendem a ser seguidos por
+oscilação alta, a mesma característica que o GARCH modela. Em um estudo com mais
+de 60 ativos, \citeonline{harvey2018} observaram que esse ajuste reduziu a
+ocorrência de retornos extremos em todos eles e, nas ações, também melhorou a
+relação entre retorno e risco.
+% Harvey et al. (2018), p. 14: definição ("leveraging the portfolio at times of
+% low volatility and scaling down at times of high volatility"), persistência,
+% 60+ ativos, Sharpe maior em ações e crédito, menos retornos extremos em todos;
+% p. 16: retorno x alvo / volatilidade prevista. Leitura indicada ao autor: p. 14-16.
+
+As duas maneiras podem ser combinadas. Nesse caso, o filtro veta a operação nos
+dias de volatilidade prevista mais alta e, nos dias liberados, a posição é menor
+quanto maior for a volatilidade prevista.
+
+Existem ainda outras formas de usar a volatilidade prevista, como só operar
+quando a previsão do ARIMA superar uma fração da oscilação esperada para o dia, o
+que equivale a um intervalo de confiança em torno da previsão. Este trabalho se
+limita ao filtro e ao ajuste da posição.
+
 \section{Métricas de avaliação}
 \label{sec:medidas}
 
@@ -386,14 +424,13 @@ Como os retornos são diários, a volatilidade é convertida para base anual, o 
 facilita a leitura e a comparação. Se os retornos de dias diferentes forem
 independentes entre si, a variância de um período de $T$ dias é $T$ vezes a
 variância diária, e o desvio-padrão, a raiz de $T$ vezes o diário
-\cite{sharpe1994}. Usou-se $T = 252$, número de dias úteis de um ano adotado por
-convenção no mercado brasileiro. Na série da PETR4 usada neste trabalho, a média
-foi de 248 pregões por ano. A volatilidade anual é, portanto, o desvio-padrão
+\cite{sharpe1994}. Usou-se $T = 252$, valor próximo da média de 248 pregões por
+ano observada na série da PETR4 usada neste trabalho. A volatilidade anual é, portanto, o desvio-padrão
 diário multiplicado pela raiz de 252, e uma oscilação típica de 2\% ao dia
 corresponde a cerca de 32\% ao ano.
-% REFERÊNCIA (convenção de 252 dias úteis, a buscar): Banco Central do Brasil,
-% taxa Selic anualizada com base 252. A média de 247,8 pregões por ano (2004 a
-% 2025) sai de dados/series/PETR4_OFICIAL.csv.
+% 252: sem fonte externa (decisão do autor em 21/10/2026: não acrescentar
+% referência). A frase se apoia só no dado: média de 247,8 pregões por ano (2004 a
+% 2025), de dados/series/PETR4_OFICIAL.csv.
 
 O índice de Sharpe relaciona o retorno de uma estratégia à sua volatilidade. Ele
 divide o retorno diferencial, isto é, a diferença entre o retorno da estratégia e
@@ -406,11 +443,11 @@ desvio-padrão. O índice indica quanto se ganhou além da referência por unida
 oscilação, e quanto maior, melhor a relação. Um índice negativo indica que a
 estratégia rendeu menos que a referência. O testador do MetaTrader 5 usa como
 referência um rendimento livre de risco igual a zero \cite{metaquotesRelatorio}, e
-neste trabalho a referência foi a taxa Selic. O próprio autor observa que o
+neste trabalho a referência foi a taxa Selic.\iffalse{} O próprio autor observa que o
 índice está ligado à estatística $t$ da média do retorno diferencial, que é igual
 a ele multiplicado pela raiz do número de observações \cite{sharpe1994}. Por isso,
 um mesmo valor de índice é estatisticamente mais forte quando medido em um período
-mais longo.
+mais longo.\fi % OCULTO-19/10: só servia à seção estatística oculta do Cap. III; volta junto com ela
 
 O índice de Calmar relaciona o retorno à queda máxima. Ele divide o retorno
 anualizado pela queda máxima do período,
