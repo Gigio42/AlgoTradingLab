@@ -1,0 +1,45 @@
+% Nota inicial do estudo (não é texto do TG). Mesmo estilo do TG: prosa
+% corrida, sem negrito, sem listas, sem ponto e vírgula.
+Este documento não faz parte do trabalho. Ele reúne o Capítulo III refeito com
+uma mudança de método, para que os autores possam comparar os resultados com os
+da versão atual antes de decidir qual delas entra no texto. A estrutura, os
+períodos, as tabelas e os gráficos são os mesmos do Capítulo III. Mudam os
+números e os comentários sobre eles.
+
+Na versão atual, o ARIMA é estimado a cada pregão sobre os últimos 120 ou 240
+pregões, conforme a configuração escolhida na otimização, e o GARCH é ajustado
+sobre os resíduos dessa mesma janela. Neste estudo, as duas janelas foram
+fixadas. O ARIMA usa sempre os últimos 240 pregões, cerca de um ano. O GARCH
+usa os 500 resíduos mais recentes, cerca de dois anos, calculados com os
+coeficientes do ARIMA estimados no dia. O limiar por percentil passa a ser
+calculado sobre a volatilidade desses 500 pregões.
+
+A razão das duas escolhas é a forma como cada modelo é estimado. O GARCH é
+estimado por máxima verossimilhança, e \citeonline{hwang2006} mostraram, por
+simulação, que com menos de 500 observações as estimativas do GARCH(1,1) saem
+viesadas e muitas vezes não convergem. O ARIMA é estimado pelo método de
+Hannan-Rissanen, cujo primeiro estágio ajusta um modelo autorregressivo de ordem
+próxima de $\log^2 N$ \cite{gomez1998}. Com 240 pregões, essa regressão tem 30
+defasagens e cerca de 209 equações. Com 120, teria 22 defasagens e cerca de 97
+equações. Uma janela de um ano basta para essa estimação e mantém o ARIMA
+próximo do comportamento recente do mercado, que é o que interessa para a
+direção.
+
+Com as janelas fixas, o tamanho da janela deixou de ser otimizado, e a grade
+passou de 312 para 156 configurações. Todo o resto do protocolo foi mantido.
+As ações, os períodos de teste, os demais parâmetros da grade, o critério de
+escolha, o capital e a forma de execução são os mesmos, e as médias móveis não
+dependem da mudança.
+
+Como o testador do MetaTrader 5 disponibiliza cerca de 250 pregões de histórico
+no início de cada teste, cada simulação começou dois anos antes da data oficial
+do período. Nesses dois anos o robô não opera e o resultado não é medido. Ele
+apenas acumula o histórico de que o GARCH precisa. Conferiu-se que esse
+aquecimento não altera nada por si só, pois o ARIMA sem o GARCH, com e sem ele,
+produziu exatamente a mesma evolução do patrimônio, dia a dia, em 2017 a 2024, e
+as 96 configurações sem o GARCH da otimização nos períodos de teste das quatro
+ações deram o mesmo resultado nas duas versões. A
+série oficial da PETR4 começa em janeiro de 2003 e só reúne os 500 pregões em
+janeiro de 2005. Por isso, a otimização do primeiro período, que era de 2004 a
+2006, passou a ir de fevereiro de 2005 a dezembro de 2006, e o teste longo
+passou a começar em fevereiro de 2005.

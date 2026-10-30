@@ -12,7 +12,7 @@ could help overcome this limitation. Building on that suggestion, a new robot wa
 developed that brings together two statistical models with distinct roles. The
 first, called ARIMA, tries to anticipate the direction of prices. The second,
 called GARCH, estimates how much the market is likely to fluctuate and decides
-whether it is worth trading. Both models were programmed in the platform's own
+whether it is worth trading and with how much. Both models were programmed in the platform's own
 language and tested on the official history
 of the Brazilian stock exchange, in periods of crisis and of calm, always in
 comparison with the original strategy and with a version of the robot without the
@@ -22,8 +22,7 @@ control and the original strategy, and its losses in the worst moments were
 smaller than those of the version without the control. In many periods the final
 gain was also larger. The ability to predict market direction, however, remained
 close to chance, and the differences in gain relative to the original strategy
-varied from period to period\iffalse, within the margin that chance alone would also
-explain\else, sometimes favouring one and sometimes the other\fi. % OCULTO-18/10: \iftrue volta o texto que depende da seção oculta
+varied from period to period, sometimes favouring one and sometimes the other.
 The conclusion is that
 the volatility model works as a protective instrument, especially useful in
 prolonged downturns such as the 2008 crisis, and not as a way of predicting the

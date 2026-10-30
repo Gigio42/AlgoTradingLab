@@ -1,0 +1,35 @@
+% Preço da PETR4 (base 100) e fração do patrimônio aplicada na ação, ARIMA ×
+% ARIMA-GARCH, no ano da crise: \def\dados{exposicao_2008} ou exposicao_2020,
+% média dos 5 pregões anteriores. (Até 22/10/2026 o Cap. III usava exposicao_T1,
+% 2007-2011 com média de 21 pregões, que o dados_cru.sh ainda gera.)
+% Dados gerados por ferramentas/scripts/dados_cru.sh.
+\documentclass[border=4pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage{pgfplots}
+\usepgfplotslibrary{dateplot,groupplots}
+\pgfplotsset{compat=1.18}
+\definecolor{cgs}{RGB}{0,90,181}
+\definecolor{car}{RGB}{220,50,32}
+\definecolor{cbh}{RGB}{26,133,55}
+\providecommand{\dados}{exposicao_2008}
+\providecommand{\rotg}{ARIMA-GARCH}
+\newcommand{\arq}{../../cru/\dados.csv}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=1 by 2, vertical sep=0.6cm, xticklabels at=edge bottom},
+  width=14.6cm, date coordinates in=x, xticklabel={\month/\year}, max space between ticks=80,
+  table/col sep=comma, grid=major, grid style={gray!20}, every axis plot/.append style={line width=0.9pt},
+]
+\nextgroupplot[height=4.0cm, ylabel={PETR4 (base 100)}]
+\addplot[cbh] table[x=data, y=petr4]{\arq};
+\nextgroupplot[height=4.0cm, ylabel={Patrimônio aplicado (\%)}, ymin=0, ymax=100,
+  legend style={font=\normalsize, cells={anchor=west}, at={(0.5,-0.32)}, anchor=north, legend columns=2, column sep=6pt, draw=none}]
+\addplot[car] table[x=data, y=exp_arima]{\arq};
+\addplot[cgs] table[x=data, y=exp_garch]{\arq};
+\legend{ARIMA, \rotg}
+\end{groupplot}
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,44 @@
+Mesma configuração com GARCH: 500 resíduos (estudo) menos 240 (TG), camada 1, grade do período de teste.
+n = pares; dDD, dVol, dRet = medianas em p.p.; caiu_DD = fração dos pares com queda máxima menor com 500.
+ativo  per  reduz    n     dDD  caiu_DD    dVol    dRet
+PETR4  T1   sim    256    +0.2     0.47    -0.1    +0.0
+PETR4  T1   nao     48    +0.2     0.42    +0.2    +0.5
+PETR4  T2   sim    256    +0.0     0.49    +0.1    +0.0
+PETR4  T2   nao     48    -1.7     0.62    -0.5    +3.3
+PETR4  T3   sim    256    +0.4     0.36    +0.1    -1.7
+PETR4  T3   nao     48    +0.0     0.44    +0.0    +0.0
+VALE3  T1   sim    256    -0.7     0.57    -0.5    +0.0
+VALE3  T1   nao     48    -1.7     0.62    -0.2    -0.4
+VALE3  T2   sim    256    +0.0     0.43    -0.5    -0.3
+VALE3  T2   nao     48    +1.2     0.38    +0.4    -0.5
+VALE3  T3   sim    256    +0.0     0.30    +0.0    +0.0
+VALE3  T3   nao     48    +0.0     0.19    +0.0    +0.0
+USIM5  T1   sim    256    +0.7     0.42    -0.4    -2.2
+USIM5  T1   nao     48    +3.8     0.27    +0.2   -12.7
+USIM5  T2   sim    256    -2.8     0.76    -0.8    +5.3
+USIM5  T2   nao     48   -13.0     0.88    -4.0   +47.3
+USIM5  T3   sim    256    +1.8     0.34    +0.4    -2.6
+USIM5  T3   nao     48    +0.3     0.38    +0.0    +1.9
+POMO4  T1   sim    256    -0.0     0.50    -0.1    -1.3
+POMO4  T1   nao     48    -0.1     0.52    +0.0    +0.8
+POMO4  T2   sim    256    -0.1     0.53    +0.2    +0.0
+POMO4  T2   nao     48    -0.4     0.58    +0.0    +0.5
+POMO4  T3   sim    256    +0.0     0.45    -0.1    +0.0
+POMO4  T3   nao     48    +0.0     0.25    +0.0    +0.0
+
+Conferência: passagens sem GARCH, retorno e queda idênticos no TG e no estudo
+PETR4 T1: 8 de 8 iguais
+PETR4 T2: 8 de 8 iguais
+PETR4 T3: 8 de 8 iguais
+VALE3 T1: 8 de 8 iguais
+VALE3 T2: 8 de 8 iguais
+VALE3 T3: 8 de 8 iguais
+USIM5 T1: 8 de 8 iguais
+USIM5 T2: 8 de 8 iguais
+USIM5 T3: 8 de 8 iguais
+POMO4 T1: 8 de 8 iguais
+POMO4 T2: 8 de 8 iguais
+POMO4 T3: 8 de 8 iguais
+
+Total dos pares com GARCH: queda máxima com 500 menor / igual / maior que com 240
+pares 3648: menor 1708 (46.8%), igual 343 (9.4%), maior 1597 (43.8%)

@@ -1,0 +1,53 @@
+% Patrimônio e queda acumulada no ano da crise, recorte do teste do período
+% (2008 em 2007-2011, 2020 em 2017-2024), na camada 1 (crua). Base 100 no último
+% fechamento do ano anterior e queda medida só dentro do ano, como nas tabelas
+% dos anos. Dados de dados/.../cru/curva_<ano>.csv (ferramentas/scripts/dados_cru.sh).
+% Compilar: pdflatex -jobname=curva_2008 "\def\ano{2008}\def\comb{0}\input{curva_ano}"
+\documentclass[border=4pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage{pgfplots}
+\usepgfplotslibrary{dateplot,groupplots}
+\pgfplotsset{compat=1.18}
+\definecolor{cgs}{RGB}{0,90,181}
+\definecolor{cgc}{RGB}{120,40,160}
+\definecolor{car}{RGB}{220,50,32}
+\definecolor{cmm}{RGB}{120,120,120}
+\definecolor{cbh}{RGB}{26,133,55}
+\providecommand{\ano}{2020}
+\providecommand{\comb}{1}
+\newcommand{\arq}{../../../dados/resultados/refeito_2026-10-05/cru/curva_\ano.csv}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=1 by 2, vertical sep=0.6cm, xticklabels at=edge bottom},
+  width=14.6cm, date coordinates in=x, xticklabel style={font=\normalsize},
+  xticklabel={\month/\year}, max space between ticks=80,
+  yticklabel style={font=\normalsize}, table/col sep=comma,
+  grid=major, grid style={gray!20}, every axis plot/.append style={line width=0.9pt},
+]
+\nextgroupplot[height=5.0cm, ylabel={Patrimônio (base 100)},
+  legend style={font=\normalsize, cells={anchor=west}, at={(0.5,1.03)}, anchor=south, legend columns=3,
+                column sep=3pt, draw=none}]
+\addplot[cbh] table[x=data, y=petr4]{\arq};
+\addplot[cmm] table[x=data, y=mm]{\arq};
+\addplot[car] table[x=data, y=arima]{\arq};
+\addplot[cgs] table[x=data, y=gs]{\arq};
+\ifnum\comb=1
+\addplot[cgc, dashed] table[x=data, y=gc]{\arq};
+\legend{PETR4, Médias móveis reproduzidas, ARIMA, ARIMA-GARCH Sharpe, ARIMA-GARCH Calmar}
+\else
+\legend{PETR4, Médias móveis reproduzidas, ARIMA, ARIMA-GARCH}
+\fi
+\nextgroupplot[height=3.0cm, ylabel={Queda do\\topo (\%)}, ylabel style={align=center}, ymax=0]
+\addplot[cbh] table[x=data, y=dd_petr4]{\arq};
+\addplot[cmm] table[x=data, y=dd_mm]{\arq};
+\addplot[car] table[x=data, y=dd_arima]{\arq};
+\addplot[cgs] table[x=data, y=dd_gs]{\arq};
+\ifnum\comb=1
+\addplot[cgc, dashed] table[x=data, y=dd_gc]{\arq};
+\fi
+\end{groupplot}
+\end{tikzpicture}
+\end{document}

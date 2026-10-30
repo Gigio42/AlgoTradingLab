@@ -6,12 +6,23 @@
 %  traço e avaliação no testador). Pedidos do autor em 2026-10-05: "mais
 %  enxuto sem comentários" e "sem logs tbm, só o modelo puro".
 %  A listagem reduzida compila sozinha (0 erros, 0 avisos).
+%  29/10/2026, pedido do autor ("deixar puramente só o que está no texto"): saem
+%  também as opções que os experimentos não usaram (preço sem logaritmo, ordens
+%  manuais, volume fixo, StopLoss/TakeProfit, reversão desligável, ordem do GARCH
+%  como parâmetro). Listagem de 216 linhas; compila com os .mqh reduzidos.
+%  Na segunda passada (mesmo dia) saíram os input group, a validação dos
+%  parâmetros, Iteracoes_GARCH (fica 300), o tipo de ADF como parâmetro (sempre
+%  com constante), o campo aic do resultado e os destrutores.
 % =====================================================================
 \chapter{Código do \textit{Expert Advisor}}
 
 Este apêndice apresenta o código do \textit{Expert Advisor} desenvolvido neste
 trabalho. As rotinas de estimação do ARIMA e do GARCH, de seleção das ordens e
-das formas de uso do GARCH estão em arquivos de inclusão próprios, chamados
-pelas diretivas \texttt{\#include} do início do código.
+das formas de uso do GARCH estão em arquivos próprios, chamados pelas diretivas
+\texttt{\#include} do início do código, e são apresentadas no Apêndice~B. Para facilitar a leitura, foram retirados os
+comentários, as mensagens de registro e as opções do robô que não foram usadas
+nos experimentos, como a aplicação do modelo ao preço sem logaritmo, a definição
+manual das ordens do ARIMA e as ordens de limite de perda e de realização de
+lucro.
 
 \lstinputlisting[style=mql5]{codigo/ARIMA_GARCH_EA.mq5}

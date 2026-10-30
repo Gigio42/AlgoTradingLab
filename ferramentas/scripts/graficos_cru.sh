@@ -11,6 +11,9 @@ c curva_T3 '\def\pre{R3_T3}\def\ar{AS}\def\comb{1}\input{curvas}'
 c anual_T1 '\def\periodo{T1}\def\comb{0}\input{anual}'
 c anual_T2 '\def\periodo{T2}\def\comb{1}\input{anual}'
 c anual_R6 '\def\periodo{R6}\def\comb{1}\input{anual}'
-c exposicao '\input{exposicao}'
+c curva_2008 '\def\ano{2008}\def\comb{0}\input{curva_ano}'
+c curva_2020 '\def\ano{2020}\def\comb{1}\input{curva_ano}'
+c exposicao_2008 '\def\dados{exposicao_2008}\input{exposicao}'
+c exposicao_2020 '\def\dados{exposicao_2020}\def\rotg{ARIMA-GARCH Sharpe}\input{exposicao}'
 rm -f *.aux *.log
 ls *.pdf

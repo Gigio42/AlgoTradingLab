@@ -21,8 +21,9 @@
 # Uso (da raiz do repositório): bash ferramentas/scripts/outras_acoes.sh
 set -e
 raiz=$(cd "$(dirname "$0")/../.." && pwd)
-C="$raiz/dados/resultados/refeito_2026-10-05/calibracao"
-O="$raiz/dados/resultados/refeito_2026-10-05/cru/outras_acoes.txt"
+RES="${RES:-$raiz/dados/resultados/refeito_2026-10-05}"   # outra pasta: estudo de 26/10
+C="$RES/calibracao"
+O="$RES/cru/outras_acoes.txt"
 S="$raiz/ferramentas/scripts"
 SEM_IC="${SEM_IC:-1}"
 T=$(mktemp -d); trap 'rm -rf "$T"' EXIT

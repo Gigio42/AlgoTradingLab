@@ -15,6 +15,10 @@
 %  Reescrito em 2026-10-13 a pedido do autor, com foco no risco (volatilidade e
 %  queda máxima) e na sugestão de Almeida (2016); Selic e Sharpe passam a ser
 %  referência de medida. Versão anterior em notas/rascunhos/antes_foco_risco_2026-10-13/.
+%  2026-10-22: objetivos específicos reescritos na introdução; o parágrafo dos
+%  objetivos e o das limitações acompanham. As hipóteses chegaram a ser trocadas e
+%  voltaram às do PTG no mesmo dia, a pedido do autor. Cópia anterior em
+%  notas/rascunhos/antes_polimento_2026-10-22/.
 % =====================================================================
 \chapter*{Considerações finais}
 \phantomsection
@@ -25,13 +29,14 @@ condicional a uma estratégia automatizada de negociação cuja previsão de dir
 permanece a mesma. A questão norteadora foi em que medida a integração dos modelos
 ARIMA e GARCH em um único algoritmo de negociação altera o desempenho e o risco
 das operações, em comparação com o uso do ARIMA isolado e com uma estratégia de
-cruzamento de médias móveis.
+cruzamento de médias móveis. A introdução perguntava, também, o que
+efetivamente se ganha ao acrescentar essa camada de modelagem. Em resumo, o
+ganho está no risco, e não no retorno, como se detalha a seguir.
 
 Quanto ao risco, a resposta é clara. Em todos os períodos analisados, a versão do algoritmo com o GARCH oscilou
-menos e sofreu quedas menores que a mesma configuração com o GARCH desligado\iffalse, e a
-redução da oscilação foi estatisticamente significativa em todas as comparações\else, nas
+menos e sofreu quedas menores que a mesma configuração com o GARCH desligado, nas
 onze comparações feitas, quando o acaso faria a versão com GARCH vencer em cerca
-de metade delas\fi. % OCULTO-18/10: \iftrue volta o texto que depende da seção oculta
+de metade delas.
 O efeito se repetiu nas outras três ações estudadas,
 sobretudo nos períodos de turbulência. O ano de 2008 resume bem esse
 comportamento. Enquanto a PETR4 perdia quase metade do seu valor, o ARIMA-GARCH
@@ -46,26 +51,18 @@ apontou a limitação das médias móveis em mercados de alta volatilidade e ind
 os modelos de volatilidade como caminho para contorná-la. Nos testes deste
 trabalho, as médias móveis e o ARIMA sem o GARCH oscilaram de forma muito parecida, o
 que mostra que trocar o indicador de direção não basta para reduzir o risco. Com o
-GARCH, o algoritmo oscilou menos que as médias móveis em todos os períodos,
-inclusive nas condições originais do estudo de referência, e sofreu quedas menores
-em quase todos, com a maior diferença de queda máxima justamente no período de
+GARCH, o algoritmo oscilou menos que as médias móveis em todos os períodos e
+sofreu quedas menores em quase todos, com a maior diferença de queda máxima justamente no período de
 crise em que o robô de \citeonline{almeida2016} acumulou prejuízo. Na crise da
 pandemia, em 2020, a proteção se repetiu, mas as médias móveis protegeram de forma
 parecida e renderam mais, o que mostra que a vantagem do GARCH sobre elas depende
 do tipo de crise.
 
 Quanto ao retorno, o efeito foi menos claro. Na maior parte dos testes, a versão
-com GARCH terminou com retorno maior que o da mesma configuração sem ele\iffalse, mas essa
-vantagem só foi
-confirmada estatisticamente em uma das comparações, e em nenhuma delas o GARCH
-piorou o resultado de forma significativa\else, em sete das onze comparações, mas, ao
-contrário do que ocorreu com o risco, a vantagem não apareceu em todas\fi. Em relação às médias móveis, o
-ARIMA-GARCH ganhou em alguns períodos e perdeu em outros\iffalse, por diferenças que
-ficaram dentro da margem do acaso\else, sem vantagem consistente
-para nenhum dos dois\fi. Em relação à taxa Selic, usada neste trabalho
-como referência de medida e não como meta, o ARIMA-GARCH, considerados os custos e
-a remuneração do caixa, só rendeu mais no período de 2017 a 2024\iffalse, e por uma margem que o acaso também explicaria\fi. % OCULTO-18/10: \iftrue volta o texto que depende da seção oculta
-Esse resultado se
+com GARCH terminou com retorno maior que o da mesma configuração sem ele, em sete das onze comparações, mas, ao
+contrário do que ocorreu com o risco, a vantagem não apareceu em todas. Em relação às médias móveis, o
+ARIMA-GARCH ganhou em alguns períodos e perdeu em outros, sem vantagem consistente
+para nenhum dos dois. Esse resultado se
 explica pela função do modelo. O GARCH descreve o tamanho das oscilações, e não a
 direção dos preços, e por isso o seu efeito apareceu no risco, e não no lucro.
 
@@ -73,8 +70,7 @@ A primeira hipótese afirmava que a integração entre ARIMA e GARCH gera sinais
 mais eficazes que o ARIMA isolado, tanto em acerto direcional quanto em adequação
 ao risco. Ela foi parcialmente confirmada. A adequação ao risco foi confirmada
 pela volatilidade e pela queda máxima menores que as da mesma configuração sem o
-GARCH, em todas as comparações\iffalse, com significância
-estatística na volatilidade\fi. % OCULTO-18/10: \iftrue volta o texto que depende da seção oculta
+GARCH, em todas as comparações.
 O acerto direcional, por outro lado, não melhorou nem piorou. Com e sem o GARCH, a
 diferença foi de no máximo quatro pontos percentuais, e a taxa de acerto
 permaneceu próxima do acaso. Esperava-se que, ao deixar de operar nos dias de maior
@@ -84,62 +80,58 @@ oscilação, e não de acertar mais.
 
 A segunda hipótese afirmava que a combinação representa um avanço em relação às
 análises baseadas em médias móveis. Ela foi confirmada quanto ao risco. Todas as
-variantes com GARCH oscilaram menos que as médias móveis\iffalse, com diferença
-significativa em todos os períodos\fi, e a queda máxima foi menor em quase todas. A
+variantes com GARCH oscilaram menos que as médias móveis, e a queda máxima foi menor em quase todas. A
 exceção foi a variante que mantém a posição aberta durante o veto, no período de
-2017 a 2024, a única escolhida em que o veto não encerra a posição. Isso indica
+2017 a 2024, a única escolhida na PETR4 em que o veto não encerra a posição. Isso indica
 que a proteção é mais consistente quando o GARCH, além de impedir novas compras,
-tira o capital do mercado nos dias de volatilidade alta. Quanto ao retorno, \iffalse as diferenças entre os dois
-algoritmos ficaram dentro da margem do acaso\else cada algoritmo levou vantagem em
-períodos diferentes\fi, e não se pode afirmar avanço nesse
-sentido. % OCULTO-18/10: \iftrue volta o texto que depende da seção oculta
+tira o capital do mercado nos dias de volatilidade alta. Quanto ao retorno, cada algoritmo levou vantagem em
+períodos diferentes, e não se pode afirmar avanço nesse
+sentido.
 
 O objetivo geral, desenvolver em MQL5 um \textit{Expert Advisor} que integra os
 modelos ARIMA e GARCH e avaliar experimentalmente o efeito da inclusão do GARCH,
-foi alcançado. Os dois modelos foram implementados na própria linguagem da
-plataforma. A escolha das ordens do ARIMA foi automatizada pelo teste ADF e pelo
-critério de Akaike. A estratégia de \citeonline{almeida2016} foi reimplementada,
-e a reprodução dos seus testes confirmou o comportamento do algoritmo original,
-embora não os seus valores em reais, que dependem de informações que o estudo
-original não registra. Por fim, o protocolo com períodos de otimização e de teste
-separados foi definido antes da observação dos resultados e executado sobre dados
-oficiais, e os três algoritmos foram comparados quanto a risco e retorno\iffalse, com
-testes estatísticos\fi. % OCULTO-18/10: \iftrue volta o texto que depende da seção oculta
+foi alcançado, assim como os objetivos específicos. Os conceitos de tendência e de
+volatilidade foram reunidos no Capítulo I e serviram de base para a divisão de
+tarefas entre os modelos. O ARIMA e o GARCH foram implementados em MQL5 e
+integrados em um mesmo robô, no qual o primeiro indica a direção da operação e o
+segundo controla o risco, pelo filtro de operações e pelo ajuste do tamanho da
+posição. A estratégia de
+\citeonline{almeida2016} foi reimplementada, e a reprodução dos seus testes
+confirmou o comportamento do algoritmo original. Os valores em reais dependem do
+histórico que o autor usou, que o estudo original não registra, e só se
+aproximaram dos relatados sob a hipótese de que esse histórico começasse em 2008.
+Por fim,
+os três algoritmos foram comparados quanto a risco e retorno em períodos de crise
+e de calma, sobre dados oficiais e com períodos de otimização e de teste
+separados.
 
-Os resultados têm limitações.\iffalse{} As diferenças de retorno, em sua maior parte, não
-atingem significância estatística, e o teste da volatilidade supõe retornos
-normais e independentes ao longo do tempo, o que torna os seus valores-p
-otimistas, ainda que a distância das estatísticas obtidas torne improvável que a
-conclusão mude.\else{} As diferenças de retorno não se repetiram de forma consistente
-entre os períodos.\fi{} % OCULTO-18/10: \iftrue volta o texto que depende da seção oculta
-A configuração com melhor retorno em um período não tende a
-repetir o desempenho no seguinte, embora a proteção tenda a se manter, e os ganhos
-se concentram em poucos anos. A análise se restringe a quatro ativos de um único
-mercado, com um custo de execução único para todo o período, e com janelas de
-estimação de no máximo 240 pregões, limitadas pelo histórico que o testador
-disponibiliza, curtas para a estimação do GARCH.
-% REFERÊNCIA (a ler): Hwang e Valls Pereira (2006), European Journal of Finance,
-% recomendam ao menos 500 observações para o GARCH(1,1)
-Os proventos
-entraram apenas como complemento da medida, a partir de uma base que não é
-oficial, e, quando incluídos, favorecem as estratégias que permanecem mais tempo
-compradas. Além disso, os experimentos foram
-realizados por simulação sobre dados históricos, com execução no preço de abertura
-e sem considerar a falta de liquidez ou a diferença entre o preço pedido e o
-executado, condições que só podem ser verificadas em operação real.
+Os resultados têm limitações. As diferenças de retorno não se repetiram de forma
+consistente entre os períodos, e a configuração com melhor retorno em um período
+nem sempre repetiu o desempenho no seguinte, embora a proteção tenha se mantido.
+Os ganhos se concentraram em poucos anos. A análise se restringe a quatro ativos
+de um único mercado e a janelas de estimação de no máximo 240 pregões, tamanho que
+decorreu da forma como os testes foram montados no testador. A comparação principal usa o resultado
+bruto, sem custos de negociação e sem proventos, o que favorece os robôs que
+negociam com mais frequência, como o ARIMA sem o GARCH, e desfavorece a compra e
+manutenção e as estratégias que permanecem mais tempo compradas. Esses fatores
+aparecem apenas na análise complementar, e os proventos, como estimativa. Com
+eles, a compra e manutenção superou todos os robôs em 2017 a 2024. Além disso, os experimentos foram realizados por simulação sobre dados
+históricos, com execução no preço de abertura e sem considerar a falta de
+liquidez ou a diferença entre o preço pedido e o executado, condições que só
+podem ser verificadas em operação real.
 
 Como continuação, o resultado indica que o caminho mais promissor está no
 controle de risco, que foi onde o modelo mostrou efeito. Uma possibilidade é
-empregar variações assimétricas do GARCH, que reagem mais às quedas do que às
-altas, comportamento comum nas séries de ações e não capturado pela especificação
-simétrica utilizada.
-% REFERÊNCIA: Glosten, Jagannathan e Runkle (1993), Nelson (1991)
-Outra é testar a janela expansiva, que acumula todo o histórico e que, no estudo
-de \citeonline{xing2024}, deu ao ARIMA melhores resultados que a janela
-deslizante. Outra, ainda, é aplicar o mesmo protocolo a um conjunto maior de ativos e acompanhar o
-algoritmo em conta de demonstração, em tempo real, o que permitiria também avaliar
-as ordens de limite de perda e de realização de lucro que
-\citeonline{almeida2016} previu em seu algoritmo, mas não utilizou em seus testes.
+aplicar o mesmo protocolo a um conjunto maior de ativos e acompanhar o algoritmo
+em conta de demonstração, em tempo real, o que permitiria também avaliar as ordens
+de limite de perda e de realização de lucro que \citeonline{almeida2016} previu em
+seu algoritmo, mas não utilizou em seus testes. Outra é testar janelas de
+estimação maiores, iniciando a simulação antes do período de teste, e a janela
+expansiva, que acumula todo o histórico e que, no estudo de
+\citeonline{xing2024}, deu ao ARIMA melhores resultados que a janela deslizante. Uma terceira é substituir o
+GARCH simétrico por uma das variações assimétricas citadas no Capítulo I, como o
+EGARCH e o TGARCH, que fazem a volatilidade reagir mais às quedas que às altas,
+possibilidade que não foi contemplada neste trabalho.
 
 No eixo da previsão, a próxima etapa é a que estava prevista no projeto original
 deste trabalho e foi deixada de lado para que a implementação do ARIMA e do GARCH

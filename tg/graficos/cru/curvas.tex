@@ -29,7 +29,7 @@
   yticklabel style={font=\normalsize}, table/col sep=comma,
   grid=major, grid style={gray!20}, every axis plot/.append style={line width=0.9pt},
 ]
-\nextgroupplot[height=7.5cm, ylabel={Patrimônio (base 100)},
+\nextgroupplot[height=5.0cm, ylabel={Patrimônio (base 100)},
   legend style={font=\normalsize, cells={anchor=west}, at={(0.5,1.03)}, anchor=south, legend columns=3,
                 column sep=3pt, draw=none}]
 \addplot[cbh]  table[x=data, y expr=\thisrow{buyhold}*100]{\arq{GS}};
@@ -42,7 +42,7 @@
 \else
 \legend{PETR4, Médias móveis reproduzidas, ARIMA, ARIMA-GARCH}
 \fi
-\nextgroupplot[height=4.5cm, ylabel={Queda do topo (\%)}, ymax=0]
+\nextgroupplot[height=3.0cm, ylabel={Queda do\\topo (\%)}, ylabel style={align=center}, ymax=0]
 \addplot[cbh] table[x=data, y expr=-\thisrow{dd_bh}*100]{\arq{GS}};
 \addplot[cmm] table[x=data, y expr=-\thisrow{dd_puro}*100]{\arq{MM}};
 \addplot[car] table[x=data, y expr=-\thisrow{dd_puro}*100]{\arq{\ar}};

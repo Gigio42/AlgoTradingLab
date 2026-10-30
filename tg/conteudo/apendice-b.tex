@@ -1,0 +1,54 @@
+% =====================================================================
+%  APÊNDICE B — código dos modelos (27/10/2026, pedido do autor depois da
+%  leitura da orientadora: "a classe arima, classe garch, selecao e
+%  estrategia", "da forma mais simples e crua possível, sem logs e sem
+%  flags de teste adicional").
+%  Os arquivos listados são gerados pelo Makefile a partir de Include/*.mqh
+%  por ferramentas/scripts/codigo_apendice.sh, com os mesmos marcadores do
+%  EA: saem comentários, mensagens de erro, a montagem do relatório da
+%  seleção e as opções experimentais (t de Student, BIC, máxima
+%  verossimilhança, janela própria do GARCH). A densidade normal, que mora
+%  em GarchDistribuicao.mqh, entra no Garch.mqh por //@apendice.
+%  O EA reduzido mais os quatro arquivos reduzidos compilam juntos
+%  (0 erros, 0 avisos, 27/10/2026).
+% =====================================================================
+\chapter{Código dos modelos}
+
+Este apêndice reúne os arquivos chamados pelo \textit{Expert Advisor} do
+Apêndice~A que contêm os modelos. Como no Apêndice~A, foram retirados os
+comentários, as mensagens de registro e as opções experimentais que não fazem
+parte deste trabalho. As funções auxiliares de mínimos quadrados e dos testes
+estatísticos, assim como as rotinas de envio de ordens, ficam em arquivos
+próprios, que não são reproduzidos aqui.
+
+\section{Classe do ARIMA}
+
+A classe \texttt{CArima} diferencia a série, estima os coeficientes pelo método
+de Hannan e Rissanen, calcula os resíduos e o AIC e faz a previsão do período
+seguinte.
+
+\lstinputlisting[style=mql5]{codigo/Arima.mqh}
+
+\section{Seleção das ordens}
+
+A função \texttt{DeterminarOrdemD} aplica o teste ADF em sequência para definir
+a ordem $d$, e a função \texttt{BuscarMelhorPQ} ajusta todas as combinações de
+$p$ e $q$ de 0 a 4 e fica com a de menor AIC.
+
+\lstinputlisting[style=mql5]{codigo/SelecaoModelo.mqh}
+
+\section{Classe do GARCH}
+
+A classe \texttt{CGarch} estima os parâmetros do GARCH por máxima
+verossimilhança, com as restrições passadas ao otimizador da biblioteca ALGLIB,
+e prevê a volatilidade do período seguinte.
+
+\lstinputlisting[style=mql5]{codigo/Garch.mqh}
+
+\section{Decisão de operação}
+
+A função \texttt{DecidirOperacao} recebe a previsão do ARIMA, que dá a direção,
+e a volatilidade prevista pelo GARCH, que pode vetar a operação no filtro ou
+mudar o tamanho da posição no ajuste.
+
+\lstinputlisting[style=mql5]{codigo/Estrategia.mqh}

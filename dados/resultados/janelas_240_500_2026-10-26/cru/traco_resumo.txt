@@ -1,0 +1,20 @@
+== TG atual (traco_demo_GARCH, GARCH sobre os resíduos da janela do ARIMA)
+intervalo 2019.07.01 a 2021.06.30: 496 pregões
+d = 1: 412 (83.1%)
+GARCH estimado em 496 pregões: mediana alfa1 0.3120, beta1 0.6817, persistência 0.9685; persistência > 0,999 em 144 (29.0%)
+vetos: 120; ordens enviadas: 72
+
+== Estudo (traco_R6_GS, GARCH sobre 500 resíduos)
+intervalo 2019.07.01 a 2021.06.30: 497 pregões
+d = 1: 455 (91.5%)
+GARCH estimado em 497 pregões: mediana alfa1 0.2241, beta1 0.7417, persistência 0.9653; persistência > 0,999 em 11 (2.2%)
+vetos: 150; ordens enviadas: 51
+
+intervalo 2017.01.01 a 2024.12.31: 1983 pregões
+d = 1: 1857 (93.6%)
+GARCH estimado em 1983 pregões: mediana alfa1 0.1198, beta1 0.8012, persistência 0.9636; persistência > 0,999 em 26 (1.3%)
+vetos: 428; ordens enviadas: 247
+
+== Estudo, 03/04/2020
+data;preco;usa_garch;p;d;q;constante;phi1;phi2;phi3;phi4;theta1;theta2;theta3;theta4;arima_sigma2;arima_logL;arima_aic;arima_bic;arima_nef;arima_estavel;prev_dif;prev_nivel;garch_omega;garch_alpha1;garch_beta1;garch_persist;garch_var_lp;garch_logL;garch_aic;vol_prevista;vol_atual;limiar;sinal;volume;vetou;ordem_enviada;posicao;motivo
+2020.04.03;15.51000;1;0;1;4;-0.002510365461;0;0;0;0;-0.1727837462;0.1823882958;0.2876975095;-0.1051320572;0.001646775043;419.599474;-827.198949;-806.441436;235;1;0.02159253701;2.763078;4.667882482e-05;0.2521981077;0.7320416173;0.984240;0.002961802692;1081.364123;-2156.728247;0.07808823357;0.07735104277;0.0301175552;0;100.00;1;0;0;FILTRO: vol prevista 0.078088 > limiar 0.030118 - sem operacao

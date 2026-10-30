@@ -1,0 +1,106 @@
+=== 1. REFERENCIAS NO TESTE (camada 3) ===
+ativo periodo   selic%    b&h%  dd_bh%  sharpe_bh
+PETR4 T1         68.1   -14.0   67.2   -0.10
+PETR4 T2         53.9   -25.6   83.1   -0.02
+PETR4 T3         25.7    33.2   25.1    0.26
+VALE3 T1         68.1    23.9   67.7    0.08
+VALE3 T2         53.9   -40.3   79.9   -0.22
+VALE3 T3         25.7    34.1   21.0    0.28
+USIM5 T1         68.1   -42.7   79.1   -0.21
+USIM5 T2         53.9   -68.8   94.3   -0.17
+USIM5 T3         25.7    29.2   48.1    0.26
+POMO4 T1         68.1   138.3   71.1    0.38
+POMO4 T2         53.9   -58.0   77.8   -0.55
+POMO4 T3         25.7   -36.2   54.3   -0.93
+
+=== 2. EFEITO PAREADO DO GARCH (com GARCH - gemea) ===
+ativo periodo  reduz    n    dDD  reduziu_DD     dSR  melhorou_SR    dRet
+PETR4 T1        sim  256  -0.251      0.949    0.070       0.672    0.245
+PETR4 T1        nao   48  -0.013      0.583    0.131       0.896    0.158
+PETR4 T2        sim  256  -0.267      0.941   -0.013       0.473    0.099
+PETR4 T2        nao   48   0.007      0.438    0.078       0.625    0.080
+PETR4 T3        sim  256  -0.007      0.543   -0.030       0.340   -0.007
+PETR4 T3        nao   48   0.000      0.229    0.000       0.292    0.000
+VALE3 T1        sim  256  -0.112      0.859   -0.045       0.418    0.011
+VALE3 T1        nao   48  -0.055      0.625    0.225       0.771    0.256
+VALE3 T2        sim  256  -0.202      0.863   -0.106       0.340   -0.091
+VALE3 T2        nao   48   0.106      0.312   -0.021       0.458   -0.054
+VALE3 T3        sim  256   0.000      0.484    0.023       0.520    0.000
+VALE3 T3        nao   48   0.000      0.354    0.000       0.417    0.000
+USIM5 T1        sim  256  -0.303      0.914   -0.047       0.461    0.104
+USIM5 T1        nao   48   0.003      0.458   -0.067       0.438   -0.104
+USIM5 T2        sim  256  -0.429      1.000   -0.042       0.461    0.095
+USIM5 T2        nao   48  -0.175      0.875    0.263       0.625    0.626
+USIM5 T3        sim  256  -0.145      0.859   -0.144       0.273   -0.044
+USIM5 T3        nao   48   0.003      0.354    0.010       0.521   -0.009
+POMO4 T1        sim  256  -0.175      0.859    0.003       0.512   -0.001
+POMO4 T1        nao   48  -0.013      0.500    0.077       0.604    0.157
+POMO4 T2        sim  256  -0.218      0.941   -0.012       0.477    0.162
+POMO4 T2        nao   48  -0.048      0.771    0.077       0.625    0.056
+POMO4 T3        sim  256  -0.069      0.820   -0.178       0.109   -0.058
+POMO4 T3        nao   48   0.012      0.208   -0.109       0.167   -0.037
+
+=== 3. VENDA A DESCOBERTO (long-short - so compra, mesma configuracao) ===
+ativo periodo    n    dRet  melhorou_ret     dSR  melhorou_SR     dDD
+PETR4 T1       156  -0.048         0.333  -0.098        0.179   0.078
+PETR4 T2       156   0.016         0.538   0.018        0.558   0.112
+PETR4 T3       156  -0.155         0.077  -0.588        0.077   0.099
+VALE3 T1       156  -0.036         0.365  -0.053        0.282   0.056
+VALE3 T2       156   0.154         0.821   0.176        0.814   0.052
+VALE3 T3       156  -0.130         0.096  -0.610        0.019   0.056
+USIM5 T1       156  -0.014         0.481  -0.054        0.397   0.110
+USIM5 T2       156   0.351         0.821   0.336        0.833   0.044
+USIM5 T3       156  -0.145         0.109  -0.412        0.096   0.059
+POMO4 T1       156  -0.405         0.160  -0.532        0.000   0.185
+POMO4 T2       156   0.144         0.763   0.360        0.929   0.046
+POMO4 T3       156   0.112         0.744   0.463        0.859   0.028
+
+=== 4. RUINA NO TESTE (ret_selic <= -99%) ===
+T3 so_compra=0  8 de 624 (1.3%)
+T3 so_compra=1  0 de 624 (0.0%)
+T1 so_compra=0  8 de 624 (1.3%)
+T1 so_compra=1  0 de 624 (0.0%)
+T2 so_compra=0  8 de 624 (1.3%)
+T2 so_compra=1  0 de 624 (0.0%)
+
+=== 5. PERSISTENCIA CALIBRACAO -> TESTE (Spearman) ===
+ativo periodo   n_so  Sharpe  Calmar |  n_todas  Sharpe  Calmar
+PETR4 T1         156   -0.16    0.60 |      312    0.08    0.49
+PETR4 T2         156   -0.21    0.23 |      312   -0.05    0.21
+PETR4 T3         156   -0.07    0.19 |      312    0.24    0.40
+VALE3 T1         156   -0.48   -0.15 |      312   -0.08    0.09
+VALE3 T2         156    0.57    0.40 |      312    0.45    0.47
+VALE3 T3         156    0.08   -0.41 |      312    0.15    0.33
+USIM5 T1         156   -0.03    0.45 |      312   -0.07    0.45
+USIM5 T2         156    0.06    0.34 |      312    0.46    0.33
+USIM5 T3         156   -0.07    0.35 |      312    0.11    0.43
+POMO4 T1         156    0.17    0.27 |      312    0.54    0.64
+POMO4 T2         156    0.16    0.16 |      312   -0.04    0.20
+POMO4 T3         156    0.30    0.57 |      312    0.15    0.42
+
+=== 6. VOLATILIDADE PAREADA (com GARCH - gemea; acrescentado em 13/10/2026) ===
+ativo periodo  reduz    n    dVol  reduziu_vol
+PETR4 T1        sim  256  -0.149        0.918
+PETR4 T1        nao   48   0.002        0.438
+PETR4 T2        sim  256  -0.242        0.969
+PETR4 T2        nao   48  -0.014        0.604
+PETR4 T3        sim  256  -0.066        0.695
+PETR4 T3        nao   48   0.000        0.354
+VALE3 T1        sim  256  -0.082        0.953
+VALE3 T1        nao   48   0.006        0.417
+VALE3 T2        sim  256  -0.220        0.984
+VALE3 T2        nao   48  -0.016        0.542
+VALE3 T3        sim  256   0.000        0.430
+VALE3 T3        nao   48   0.000        0.333
+USIM5 T1        sim  256  -0.166        0.969
+USIM5 T1        nao   48   0.022        0.292
+USIM5 T2        sim  256  -0.407        1.000
+USIM5 T2        nao   48  -0.057        0.646
+USIM5 T3        sim  256  -0.169        0.977
+USIM5 T3        nao   48  -0.003        0.583
+POMO4 T1        sim  256  -0.131        0.953
+POMO4 T1        nao   48   0.003        0.312
+POMO4 T2        sim  256  -0.127        0.977
+POMO4 T2        nao   48  -0.004        0.646
+POMO4 T3        sim  256  -0.110        0.934
+POMO4 T3        nao   48  -0.001        0.542

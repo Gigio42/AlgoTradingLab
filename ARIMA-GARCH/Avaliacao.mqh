@@ -46,15 +46,15 @@ double AvaliarTeste(const int p, const int d, const int q, const CDiagnostico &d
    PrintFormat("  GARCH: %d vetos em %d sinais do ARIMA", diagnostico.VetosGarch(), diagnostico.SinaisArima());
 
    string cabecalho = "modelo;UsarGARCH;Estrategia;ModoLimiar;Limiar_Percentil;"
-                      "Limiar_Absoluto;K_Confianca;Vol_Alvo;Limiar_Sinal;Janela_Estimacao;"
+                      "Limiar_Absoluto;Vol_Alvo;Limiar_Sinal;Janela_Estimacao;"
                       "SomenteCompra;ZerarNoVeto;ModoVolume;Fracao_Capital;Volume_Base;ModoOrdens;"
                       "IncluirConstante;Barras_Entre_Reselecao;p;d;q;vetos;sinais;DistribuicaoGARCH;nu_medio;"
                       "MetodoARIMA;mv_tentativas;mv_fallback;fator_recuperacao_mt5;lucro_mt5;dd_capital_mt5;SelecaoPorBIC";
 
-   string valores = StringFormat("%s;%d;%d;%d;%.1f;%.4f;%.3f;%.4f;%.5f;%d;%d;%d;%d;%.2f;%.0f;%d;%d;%d;%d;%d;%d;%d;%d;%d;%.3f",
+   string valores = StringFormat("%s;%d;%d;%d;%.1f;%.4f;%.4f;%.5f;%d;%d;%d;%d;%.2f;%.0f;%d;%d;%d;%d;%d;%d;%d;%d;%d;%.3f",
                                  UsarGARCH ? "ARIMA-GARCH" : "ARIMA",
                                  UsarGARCH, Estrategia, ModoLimiar, Limiar_Percentil,
-                                 Limiar_Absoluto, K_Confianca, Vol_Alvo, Limiar_Sinal,
+                                 Limiar_Absoluto, Vol_Alvo, Limiar_Sinal,
                                  Janela_Estimacao, SomenteCompra, ZerarNoVeto, ModoVolume,
                                  Fracao_Capital, Volume_Base, ModoOrdens, IncluirConstante,
                                  Barras_Entre_Reselecao, p, d, q,

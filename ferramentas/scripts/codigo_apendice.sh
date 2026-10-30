@@ -1,16 +1,19 @@
 #!/bin/bash
-# Gera a listagem do Apendice A do TG a partir do EA que de fato roda:
+# Gera as listagens dos Apendices A e B do TG a partir do codigo que de fato
+# roda (o EA e, desde 27/10/2026, Arima, SelecaoModelo, Garch e Estrategia):
 #   1) aplica os marcadores (que no EA sao so comentarios):
 #        //@omitir-inicio ... //@omitir-fim   bloco fora da listagem
 #        linha terminada em //@omitir         linha fora da listagem
 #        //@apendice: CODIGO                   CODIGO entra no lugar, mesma indentacao
-#      O que fica de fora e log, diagnostico, traco e avaliacao no testador,
-#      nada que participe da decisao de operar.
+#      O que fica de fora e log, diagnostico, traco, avaliacao no testador e as
+#      opcoes experimentais (t de Student, BIC, maxima verossimilhanca, janela
+#      propria do GARCH), nada que participe da decisao de operar no TG.
 #   2) remove os comentarios (sem_comentarios.sh).
 #   3) bloco de if/else que ficou com uma instrucao so vira a forma sem chaves,
 #      e some a linha em branco logo depois de { ou antes de }.
-# A listagem resultante compila sozinha (conferido em 18/10/2026).
-#   uso: codigo_apendice.sh EA.mq5 > saida.mq5
+# A listagem resultante compila sozinha (conferido em 18/10/2026; EA mais os
+# quatro .mqh reduzidos, 0 erros e 0 avisos, em 27/10/2026).
+#   uso: codigo_apendice.sh arquivo.mq5|.mqh > saida
 D=$(dirname "$0")
 awk '
 /\/\/@omitir-inicio/ { pula = 1; next }

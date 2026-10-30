@@ -1,0 +1,7 @@
+# passagens: ARIMA-GARCH 1216, ARIMA 16
+GS sharpe=0.1068 calmar=0.7150 negocios=64 dd=0.148797 ret=0.346719 | UsarGARCH=true Estrategia=3 ModoLimiar=1 Limiar_Percentil=90.0 Limiar_Absoluto=0.0200 K_Confianca= Vol_Alvo=0.0100 ZerarNoVeto=false DistribuicaoGARCH=1 Janela_Estimacao=240 IncluirConstante=true Limiar_Sinal=0.00100 SomenteCompra=true SelecaoPorBIC=false Barras_Entre_Reselecao=63
+GC sharpe=0.1068 calmar=0.7150 negocios=64 dd=0.148797 ret=0.346719 | UsarGARCH=true Estrategia=3 ModoLimiar=1 Limiar_Percentil=90.0 Limiar_Absoluto=0.0200 K_Confianca= Vol_Alvo=0.0100 ZerarNoVeto=false DistribuicaoGARCH=1 Janela_Estimacao=240 IncluirConstante=true Limiar_Sinal=0.00100 SomenteCompra=true SelecaoPorBIC=false Barras_Entre_Reselecao=63
+AS sharpe=-0.1075 calmar=0.2848 negocios=68 dd=0.245819 ret=0.220484 | UsarGARCH=false Janela_Estimacao=240 IncluirConstante=true Limiar_Sinal=0.00100 SomenteCompra=true SelecaoPorBIC=false Barras_Entre_Reselecao=63
+AC sharpe=-0.2141 calmar=0.3422 negocios=2 dd=0.168531 ret=0.179529 | UsarGARCH=false Janela_Estimacao=240 IncluirConstante=true Limiar_Sinal=0.00100 SomenteCompra=true SelecaoPorBIC=true Barras_Entre_Reselecao=63
+GSgemeo | UsarGARCH=false Janela_Estimacao=240 IncluirConstante=true Limiar_Sinal=0.00100 SomenteCompra=true SelecaoPorBIC=false Barras_Entre_Reselecao=63
+GCgemeo | UsarGARCH=false Janela_Estimacao=240 IncluirConstante=true Limiar_Sinal=0.00100 SomenteCompra=true SelecaoPorBIC=false Barras_Entre_Reselecao=63

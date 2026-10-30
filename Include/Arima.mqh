@@ -13,13 +13,15 @@
 
 #include "Numerico.mqh"
 #include "Estatistica.mqh"
-#include "ArimaVerossimilhanca.mqh"
+#include "ArimaVerossimilhanca.mqh"   //@omitir
 
+//@omitir-inicio
 enum ENUM_ESTIMACAO_ARIMA
   {
    ESTIMACAO_HANNAN_RISSANEN = 0,   // Hannan-Rissanen (dois estagios de MQO)
    ESTIMACAO_VEROSSIMILHANCA = 1    // Maxima verossimilhanca condicional (experimental)
   };
+  //@omitir-fim
 
 class CArima
   {
@@ -28,7 +30,7 @@ private:
    int      m_d;
    int      m_q;
    bool     m_com_constante;
-   ENUM_ESTIMACAO_ARIMA m_estimacao;
+   ENUM_ESTIMACAO_ARIMA m_estimacao;   //@omitir
 
    double   m_constante;
    double   m_phi[];
@@ -44,9 +46,9 @@ private:
    int      m_aquecimento_minimo;
    int      m_observacoes_efetivas;
    bool     m_ajustado;
-   string   m_erro;
+   string   m_erro;   //@omitir
 
-   static ENUM_ESTIMACAO_ARIMA s_estimacao_padrao;
+   static ENUM_ESTIMACAO_ARIMA s_estimacao_padrao;   //@omitir
 
    void     Diferenciar(const double &origem[], double &destino[], const int ordem);
    bool     EstimarAR(const double &z[], const int ordem, double &coeficientes[], double &residuos[]);
@@ -56,11 +58,13 @@ private:
 
 public:
                      CArima(void);
-                    ~CArima(void);
+                    ~CArima(void);   //@omitir
 
+   //@omitir-inicio
    //--- Estimacao usada pelos objetos criados depois (a selecao de ordens cria um por candidato)
    static void DefinirEstimacaoPadrao(const ENUM_ESTIMACAO_ARIMA estimacao) { s_estimacao_padrao = estimacao; }
    void     DefinirEstimacao(const ENUM_ESTIMACAO_ARIMA estimacao) { m_estimacao = estimacao; }
+   //@omitir-fim
 
    void     Definir(const int p, const int d, const int q, const bool com_constante = true);
 
@@ -76,37 +80,46 @@ public:
 
    //--- Residuos sem o aquecimento: e a serie que vai para o GARCH
    bool     ObterResiduos(double &saida[]) const;
+   //@omitir-inicio
+   //--- Os ultimos 'quantidade' residuos dos coeficientes atuais sobre outra serie,
+   //--- mais longa que a da estimacao (janela propria do GARCH)
+   bool     ResiduosSobre(const double &serie[], const int quantidade, double &saida[]);
+   //@omitir-fim
 
-   double   LogVerossimilhanca(void)   const { return(m_log_verossimilhanca);  }
-   double   Sigma2(void)               const { return(m_sigma2);               }
-   int      ObservacoesEfetivas(void)  const { return(m_observacoes_efetivas); }
+   double   LogVerossimilhanca(void)   const { return(m_log_verossimilhanca);  }   //@omitir
+   double   Sigma2(void)               const { return(m_sigma2);               }   //@omitir
+   int      ObservacoesEfetivas(void)  const { return(m_observacoes_efetivas); }   //@omitir
    int      NumParametros(void)        const { return(m_p + m_q + (m_com_constante ? 1 : 0) + 1); }
    double   AIC(void)                  const;
-   double   BIC(void)                  const;
-   string   UltimoErro(void)           const { return(m_erro); }
+   double   BIC(void)                  const;   //@omitir
+   string   UltimoErro(void)           const { return(m_erro); }   //@omitir
 
-   int      P(void) const { return(m_p); }
+   int      P(void) const { return(m_p); }   //@omitir
    int      D(void) const { return(m_d); }
-   int      Q(void) const { return(m_q); }
-   double   Constante(void) const { return(m_constante); }
-   double   Phi(const int i)   const { return((i >= 0 && i < ArraySize(m_phi))   ? m_phi[i]   : 0.0); }
-   double   Theta(const int j) const { return((j >= 0 && j < ArraySize(m_theta)) ? m_theta[j] : 0.0); }
+   int      Q(void) const { return(m_q); }   //@omitir
+   double   Constante(void) const { return(m_constante); }   //@omitir
+   double   Phi(const int i)   const { return((i >= 0 && i < ArraySize(m_phi))   ? m_phi[i]   : 0.0); }   //@omitir
+   double   Theta(const int j) const { return((j >= 0 && j < ArraySize(m_theta)) ? m_theta[j] : 0.0); }   //@omitir
 
+   //@omitir-inicio
    //--- soma |phi| < 1: condicao suficiente (nao necessaria) de estacionariedade
    bool     EstacionariedadeGarantida(void) const;
    string   Descricao(void) const;
+   //@omitir-fim
   };
 
-ENUM_ESTIMACAO_ARIMA CArima::s_estimacao_padrao = ESTIMACAO_HANNAN_RISSANEN;
+ENUM_ESTIMACAO_ARIMA CArima::s_estimacao_padrao = ESTIMACAO_HANNAN_RISSANEN;   //@omitir
 
 CArima::CArima(void) : m_p(1), m_d(1), m_q(1), m_com_constante(true),
-                       m_estimacao(s_estimacao_padrao),
+                       m_estimacao(s_estimacao_padrao),   //@omitir
                        m_constante(0.0), m_sigma2(0.0), m_log_verossimilhanca(0.0),
                        m_inicio_recursao(0), m_inicio_verossimilhanca(0), m_aquecimento_minimo(0),
-                       m_observacoes_efetivas(0), m_ajustado(false), m_erro("")
+                       //@apendice: m_observacoes_efetivas(0), m_ajustado(false)
+                       m_observacoes_efetivas(0), m_ajustado(false), m_erro("")   //@omitir
   {
   }
 
+//@omitir-inicio
 CArima::~CArima(void)
   {
    ArrayFree(m_phi);
@@ -116,6 +129,7 @@ CArima::~CArima(void)
    ArrayFree(m_ultimos_niveis);
   }
 
+//@omitir-fim
 void CArima::Definir(const int p, const int d, const int q, const bool com_constante)
   {
    m_p = MathMax(0, p);
@@ -203,7 +217,7 @@ bool CArima::HannanRissanen(void)
       int parametros = m_p + (m_com_constante ? 1 : 0);
       if(observacoes <= parametros)
         {
-         m_erro = "Serie curta demais para AR(" + IntegerToString(m_p) + ")";
+         m_erro = "Serie curta demais para AR(" + IntegerToString(m_p) + ")";   //@omitir
          return(false);
         }
 
@@ -224,7 +238,7 @@ bool CArima::HannanRissanen(void)
       double coeficientes[], erros_padrao[], soma_quadrados = 0.0;
       if(!MQO(X, dependente, observacoes, parametros, coeficientes, erros_padrao, soma_quadrados, false))
         {
-         m_erro = "MQO singular no ajuste AR";
+         m_erro = "MQO singular no ajuste AR";   //@omitir
          return(false);
         }
 
@@ -242,14 +256,14 @@ bool CArima::HannanRissanen(void)
 
    if(ordem_longa < 1 || tamanho - ordem_longa < m_p + m_q + 10)
      {
-      m_erro = "Serie curta demais para Hannan-Rissanen";
+      m_erro = "Serie curta demais para Hannan-Rissanen";   //@omitir
       return(false);
      }
 
    double coeficientes_ar_longo[], erros_estimados[];
    if(!EstimarAR(m_serie_diferenciada, ordem_longa, coeficientes_ar_longo, erros_estimados))
      {
-      m_erro = "Falha no estagio 1 (AR longo)";
+      m_erro = "Falha no estagio 1 (AR longo)";   //@omitir
       return(false);
      }
 
@@ -260,7 +274,7 @@ bool CArima::HannanRissanen(void)
 
    if(observacoes <= parametros + 5)
      {
-      m_erro = "Observacoes insuficientes no estagio 2";
+      m_erro = "Observacoes insuficientes no estagio 2";   //@omitir
       return(false);
      }
 
@@ -283,7 +297,7 @@ bool CArima::HannanRissanen(void)
    double coeficientes[], erros_padrao[], soma_quadrados = 0.0;
    if(!MQO(X, dependente, observacoes, parametros, coeficientes, erros_padrao, soma_quadrados, false))
      {
-      m_erro = "MQO singular no estagio 2";
+      m_erro = "MQO singular no estagio 2";   //@omitir
       return(false);
      }
 
@@ -348,13 +362,13 @@ void CArima::CalcularVerossimilhanca(void)
 bool CArima::Ajustar(const double &serie[])
   {
    m_ajustado = false;
-   m_erro = "";
+   m_erro = "";   //@omitir
 
    int n = ArraySize(serie);
    int minimo = m_p + m_q + m_d + 30;
    if(n < minimo)
      {
-      m_erro = StringFormat("Serie com %d pontos; minimo %d", n, minimo);
+      m_erro = StringFormat("Serie com %d pontos; minimo %d", n, minimo);   //@omitir
       return(false);
      }
 
@@ -365,7 +379,7 @@ bool CArima::Ajustar(const double &serie[])
    Diferenciar(serie, m_serie_diferenciada, m_d);
    if(ArraySize(m_serie_diferenciada) < m_p + m_q + 20)
      {
-      m_erro = "Serie diferenciada curta demais";
+      m_erro = "Serie diferenciada curta demais";   //@omitir
       return(false);
      }
 
@@ -381,17 +395,18 @@ bool CArima::Ajustar(const double &serie[])
    for(int i = 0; i < m_p; i++)
       if(!MathIsValidNumber(m_phi[i]))
         {
-         m_erro = "Coeficiente AR invalido";
+         m_erro = "Coeficiente AR invalido";   //@omitir
          return(false);
         }
    for(int j = 0; j < m_q; j++)
       if(!MathIsValidNumber(m_theta[j]))
         {
-         m_erro = "Coeficiente MA invalido";
+         m_erro = "Coeficiente MA invalido";   //@omitir
          return(false);
         }
 
    CalcularResiduos();
+   //@omitir-inicio
    if(m_estimacao == ESTIMACAO_VEROSSIMILHANCA)
      {
       RefinarPorVerossimilhanca(m_serie_diferenciada, m_p, m_q, m_com_constante,
@@ -399,11 +414,12 @@ bool CArima::Ajustar(const double &serie[])
                                 m_constante, m_phi, m_theta);
       CalcularResiduos();
      }
+     //@omitir-fim
    CalcularVerossimilhanca();
 
    if(m_log_verossimilhanca == -DBL_MAX)
      {
-      m_erro = "Verossimilhanca invalida";
+      m_erro = "Verossimilhanca invalida";   //@omitir
       return(false);
      }
 
@@ -460,12 +476,14 @@ double CArima::AIC(void) const
    return(CalcularAIC(m_log_verossimilhanca, NumParametros()));
   }
 
+//@omitir-inicio
 double CArima::BIC(void) const
   {
    if(!m_ajustado)
       return(DBL_MAX);
    return(CalcularBIC(m_log_verossimilhanca, NumParametros(), m_observacoes_efetivas));
   }
+  //@omitir-fim
 
 bool CArima::ObterResiduos(double &saida[]) const
   {
@@ -483,6 +501,40 @@ bool CArima::ObterResiduos(double &saida[]) const
    return(true);
   }
 
+//@omitir-inicio
+bool CArima::ResiduosSobre(const double &serie[], const int quantidade, double &saida[])
+  {
+   if(!m_ajustado || quantidade <= 0)
+      return(false);
+
+   double z[];
+   Diferenciar(serie, z, m_d);
+   int tamanho = ArraySize(z);
+   int inicio = MathMax(m_p, m_q);
+   if(tamanho - inicio < quantidade)
+      return(false);
+
+   double erros[];
+   ArrayResize(erros, tamanho);
+   ArrayInitialize(erros, 0.0);
+   for(int t = inicio; t < tamanho; t++)
+     {
+      double ajuste = m_constante;
+      for(int i = 0; i < m_p; i++)
+         ajuste += m_phi[i] * z[t - 1 - i];
+      for(int j = 0; j < m_q; j++)
+         ajuste += m_theta[j] * erros[t - 1 - j];
+      erros[t] = z[t] - ajuste;
+     }
+
+   ArrayResize(saida, quantidade);
+   for(int i = 0; i < quantidade; i++)
+      saida[i] = erros[tamanho - quantidade + i];
+   return(true);
+  }
+  //@omitir-fim
+
+//@omitir-inicio
 bool CArima::EstacionariedadeGarantida(void) const
   {
    double soma = 0.0;
@@ -506,5 +558,6 @@ string CArima::Descricao(void) const
                          m_sigma2, m_log_verossimilhanca, AIC(), BIC(), m_observacoes_efetivas);
    return(texto);
   }
+  //@omitir-fim
 
 #endif

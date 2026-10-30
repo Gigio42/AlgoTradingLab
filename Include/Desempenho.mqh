@@ -5,7 +5,7 @@
 //|   1) pura: variacao do patrimonio no testador                    |
 //|   2) + custos B3 por execucao                                    |
 //|   3) + caixa parado rendendo a Selic do dia                      |
-//|   4) + proventos na data-ex (fonte nao oficial, so adendo)       |
+//|   4) + proventos na data-ex (B3, estimativa; so adendo)          |
 //| O modelo nunca ve nada disso. Referencias: Selic e compra e      |
 //| manutencao. Nao interfere na decisao de operar.                  |
 //+------------------------------------------------------------------+

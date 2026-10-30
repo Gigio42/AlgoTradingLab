@@ -15,7 +15,7 @@ BEGIN { np = split("UsarGARCH Estrategia ModoLimiar Limiar_Percentil Limiar_Abso
 FNR == 1 { arq++; delete h; for(i = 1; i <= NF; i++) h[$i] = i
            if(arq == 1) { nc = NF; for(i = 1; i <= NF; i++) cab[i] = $i }
            next }
-{ k = ""; for(i = 1; i <= np; i++) k = k ";" $h[P[i]]
+{ k = ""; for(i = 1; i <= np; i++) k = k ";" ((P[i] in h) ? $h[P[i]] : "")
   m = ""; for(i = 1; i <= nc; i++) if(!(cab[i] in ehpar)) m = m ";" $h[cab[i]]
   if(arq == 1) { if(k in C) dup++; C[k] = m; ordem[++n] = k } else { if(k in T) dup++; T[k] = m } }
 END {

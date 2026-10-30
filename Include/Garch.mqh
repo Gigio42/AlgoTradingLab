@@ -13,8 +13,13 @@
 #define ALGOTRADINGLAB_GARCH_MQH
 
 #include <Math\Alglib\alglib.mqh>
-#include "Estatistica.mqh"
-#include "GarchDistribuicao.mqh"
+#include "Estatistica.mqh"   //@omitir
+//@apendice: 
+//@apendice: double LogDensidadeNormal(const double erro_quadrado, const double sigma2)
+//@apendice:   {
+//@apendice:    return(-0.5 * (MathLog(2.0 * M_PI) + MathLog(sigma2) + erro_quadrado / sigma2));
+//@apendice:   }
+#include "GarchDistribuicao.mqh"   //@omitir
 
 //--- O que a funcao objetivo precisa ler (a ALGLIB a chama com um CObject)
 class CDadosGarch : public CObject
@@ -26,11 +31,12 @@ public:
    int               q;
    int               inicio;               // primeiro periodo avaliado
    double            variancia_amostral;
-   int               distribuicao;         // ENUM_DISTRIBUICAO_GARCH
+   int               distribuicao;         // ENUM_DISTRIBUICAO_GARCH   //@omitir
 
-                     CDadosGarch(void) : tamanho(0), p(1), q(1), inicio(1), variancia_amostral(0.0),
-                                         distribuicao(DISTRIBUICAO_NORMAL) {}
-                    ~CDadosGarch(void) { ArrayFree(erros_quadrado); }
+                     //@apendice: CDadosGarch(void) : tamanho(0), p(1), q(1), inicio(1), variancia_amostral(0.0) {}
+                     CDadosGarch(void) : tamanho(0), p(1), q(1), inicio(1), variancia_amostral(0.0),   //@omitir
+                                         distribuicao(DISTRIBUICAO_NORMAL) {}   //@omitir
+                    ~CDadosGarch(void) { ArrayFree(erros_quadrado); }   //@omitir
   };
 
 //--- Menos a log-verossimilhanca. Parametros: omega relativo, alfas, betas e, com a t, eta = 1/nu.
@@ -39,11 +45,13 @@ double MenosLogVerossimilhancaGarch(CDadosGarch &dados, const double &parametros
    int n = dados.tamanho;
    int p = dados.p;
    int q = dados.q;
-   bool student = (dados.distribuicao == DISTRIBUICAO_STUDENT);
+   bool student = (dados.distribuicao == DISTRIBUICAO_STUDENT);   //@omitir
 
-   if(n <= dados.inicio || ArraySize(parametros) < 1 + p + q + (student ? 1 : 0))
+   //@apendice: if(n <= dados.inicio || ArraySize(parametros) < 1 + p + q)
+   if(n <= dados.inicio || ArraySize(parametros) < 1 + p + q + (student ? 1 : 0))   //@omitir
       return(1.0e10);
 
+   //@omitir-inicio
    double graus_liberdade = 0.0, constante_student = 0.0;
    if(student)
      {
@@ -53,6 +61,7 @@ double MenosLogVerossimilhancaGarch(CDadosGarch &dados, const double &parametros
       graus_liberdade = 1.0 / eta;
       constante_student = ConstanteStudent(graus_liberdade);
      }
+     //@omitir-fim
 
    double omega = parametros[0] * dados.variancia_amostral;
    if(omega <= 0.0 || !MathIsValidNumber(omega))
@@ -87,10 +96,13 @@ double MenosLogVerossimilhancaGarch(CDadosGarch &dados, const double &parametros
          return(1.0e10);
       sigma2[t] = variancia;
 
+      //@apendice: resultado -= LogDensidadeNormal(dados.erros_quadrado[t], variancia);
+      //@omitir-inicio
       if(student)
          resultado -= LogDensidadeStudent(dados.erros_quadrado[t], variancia, graus_liberdade, constante_student);
       else
          resultado -= LogDensidadeNormal(dados.erros_quadrado[t], variancia);
+         //@omitir-fim
      }
 
    return(MathIsValidNumber(resultado) ? resultado : 1.0e10);
@@ -128,18 +140,18 @@ private:
    double   m_omega;
    double   m_alfa[];
    double   m_beta[];
-   ENUM_DISTRIBUICAO_GARCH m_distribuicao;
-   double   m_graus_liberdade;           // so com a t de Student
+   ENUM_DISTRIBUICAO_GARCH m_distribuicao;   //@omitir
+   double   m_graus_liberdade;           // so com a t de Student   //@omitir
 
-   double   m_erros[];
+   double   m_erros[];   //@omitir
    double   m_erros_quadrado[];
    double   m_sigma2[];                  // variancia condicional ajustada
    double   m_variancia_amostral;
-   double   m_log_verossimilhanca;
+   double   m_log_verossimilhanca;   //@omitir
    int      m_inicio;
    int      m_tamanho;
    bool     m_ajustado;
-   string   m_erro;
+   string   m_erro;   //@omitir
 
    int      m_iteracoes_maximas;
    double   m_passo_diferencas;
@@ -148,22 +160,25 @@ private:
 
 public:
                      CGarch(void);
-                    ~CGarch(void);
+                    ~CGarch(void);   //@omitir
 
    void     Definir(const int p, const int q);
    void     DefinirOtimizador(const int iteracoes_maximas, const double passo_diferencas = 1.0e-6);
-   void     DefinirDistribuicao(const ENUM_DISTRIBUICAO_GARCH distribuicao) { m_distribuicao = distribuicao; m_ajustado = false; }
+   void     DefinirDistribuicao(const ENUM_DISTRIBUICAO_GARCH distribuicao) { m_distribuicao = distribuicao; m_ajustado = false; }   //@omitir
 
    //--- residuos do ARIMA em ordem cronologica
    bool     Ajustar(const double &residuos[]);
 
    //--- Um passo a frente: todos os termos ja foram observados, inclusive o ultimo residuo
    double   VolatilidadeProximoPeriodo(void) const;
-   double   VolatilidadeAtual(void) const;
+   double   VolatilidadeAtual(void) const;   //@omitir
    bool     ObterSerieVolatilidade(double &saida[]) const;
+   //@omitir-inicio
    //--- erro / sigma: o quadrado nao deve ter autocorrelacao se o GARCH capturou a heterocedasticidade
    bool     ObterResiduosPadronizados(double &saida[]) const;
+   //@omitir-fim
 
+   //@omitir-inicio
    double   Omega(void) const { return(m_omega); }
    double   Alfa(const int i) const { return((i >= 0 && i < ArraySize(m_alfa)) ? m_alfa[i] : 0.0); }
    double   Beta(const int j) const { return((j >= 0 && j < ArraySize(m_beta)) ? m_beta[j] : 0.0); }
@@ -177,11 +192,14 @@ public:
    bool     Ajustado(void) const { return(m_ajustado); }
    string   UltimoErro(void) const { return(m_erro); }
    string   Descricao(void) const;
+   //@omitir-fim
   };
 
-CGarch::CGarch(void) : m_p(1), m_q(1), m_omega(0.0), m_distribuicao(DISTRIBUICAO_NORMAL),
-                       m_graus_liberdade(0.0), m_variancia_amostral(0.0), m_log_verossimilhanca(0.0),
-                       m_inicio(1), m_tamanho(0), m_ajustado(false), m_erro(""),
+//@apendice: CGarch::CGarch(void) : m_p(1), m_q(1), m_omega(0.0), m_variancia_amostral(0.0),
+CGarch::CGarch(void) : m_p(1), m_q(1), m_omega(0.0), m_distribuicao(DISTRIBUICAO_NORMAL),   //@omitir
+                       //@apendice: m_inicio(1), m_tamanho(0), m_ajustado(false),
+                       m_graus_liberdade(0.0), m_variancia_amostral(0.0), m_log_verossimilhanca(0.0),   //@omitir
+                       m_inicio(1), m_tamanho(0), m_ajustado(false), m_erro(""),   //@omitir
                        m_iteracoes_maximas(200), m_passo_diferencas(1.0e-6)
   {
    ArrayResize(m_alfa, 1);
@@ -190,6 +208,7 @@ CGarch::CGarch(void) : m_p(1), m_q(1), m_omega(0.0), m_distribuicao(DISTRIBUICAO
    ArrayInitialize(m_beta, 0.0);
   }
 
+//@omitir-inicio
 CGarch::~CGarch(void)
   {
    ArrayFree(m_alfa);
@@ -199,6 +218,7 @@ CGarch::~CGarch(void)
    ArrayFree(m_sigma2);
   }
 
+//@omitir-fim
 void CGarch::Definir(const int p, const int q)
   {
    m_p = MathMax(1, p);
@@ -219,19 +239,19 @@ void CGarch::DefinirOtimizador(const int iteracoes_maximas, const double passo_d
 bool CGarch::Ajustar(const double &residuos[])
   {
    m_ajustado = false;
-   m_erro = "";
+   m_erro = "";   //@omitir
 
    int n = ArraySize(residuos);
    int minimo = m_p + m_q + 30;
    if(n < minimo)
      {
-      m_erro = StringFormat("Residuos: %d pontos; minimo %d", n, minimo);
+      m_erro = StringFormat("Residuos: %d pontos; minimo %d", n, minimo);   //@omitir
       return(false);
      }
 
-   ArrayResize(m_erros, n);
+   ArrayResize(m_erros, n);   //@omitir
    ArrayResize(m_erros_quadrado, n);
-   ArrayCopy(m_erros, residuos);
+   ArrayCopy(m_erros, residuos);   //@omitir
    for(int i = 0; i < n; i++)
       m_erros_quadrado[i] = residuos[i] * residuos[i];
 
@@ -244,7 +264,7 @@ bool CGarch::Ajustar(const double &residuos[])
    m_variancia_amostral = soma / (double)n;
    if(m_variancia_amostral <= 0.0 || !MathIsValidNumber(m_variancia_amostral))
      {
-      m_erro = "Variancia amostral dos residuos nula ou invalida";
+      m_erro = "Variancia amostral dos residuos nula ou invalida";   //@omitir
       return(false);
      }
 
@@ -256,11 +276,12 @@ bool CGarch::Ajustar(const double &residuos[])
    dados.q = m_q;
    dados.inicio = m_inicio;
    dados.variancia_amostral = m_variancia_amostral;
-   dados.distribuicao = m_distribuicao;
+   dados.distribuicao = m_distribuicao;   //@omitir
 
-   bool student = (m_distribuicao == DISTRIBUICAO_STUDENT);
-   int parametros_garch = 1 + m_p + m_q;
-   int k = parametros_garch + (student ? 1 : 0);
+   bool student = (m_distribuicao == DISTRIBUICAO_STUDENT);   //@omitir
+   //@apendice: int k = 1 + m_p + m_q;
+   int parametros_garch = 1 + m_p + m_q;   //@omitir
+   int k = parametros_garch + (student ? 1 : 0);   //@omitir
 
    //--- Partida tipica de serie diaria: alfa ~ 0,10 e beta ~ 0,85; com a t, nu ~ 6,7
    double x[];
@@ -270,30 +291,36 @@ bool CGarch::Ajustar(const double &residuos[])
       x[i] = 0.10 / (double)m_p;
    for(int j = 1; j <= m_q; j++)
       x[m_p + j] = 0.85 / (double)m_q;
+   //@omitir-inicio
    if(student)
       x[parametros_garch] = 0.15;
+      //@omitir-fim
 
    double limite_inferior[], limite_superior[];
    ArrayResize(limite_inferior, k);
    ArrayResize(limite_superior, k);
    limite_inferior[0] = 1.0e-8;
    limite_superior[0] = 10.0;
-   for(int i = 1; i < parametros_garch; i++)
+   //@apendice: for(int i = 1; i < k; i++)
+   for(int i = 1; i < parametros_garch; i++)   //@omitir
      {
       limite_inferior[i] = 0.0;
       limite_superior[i] = 1.0;
      }
+   //@omitir-inicio
    if(student)
      {
       limite_inferior[parametros_garch] = GARCH_ETA_MINIMO;
       limite_superior[parametros_garch] = GARCH_ETA_MAXIMO;
      }
+     //@omitir-fim
 
    //--- soma(alfa) + soma(beta) <= 0,9999: estacionariedade da variancia
    CMatrixDouble restricao(1, k + 1);
    for(int i = 0; i <= k; i++)
       restricao.Set(0, i, 0.0);
-   for(int i = 1; i < parametros_garch; i++)
+   //@apendice: for(int i = 1; i < k; i++)
+   for(int i = 1; i < parametros_garch; i++)   //@omitir
       restricao.Set(0, i, 1.0);
    restricao.Set(0, k, 0.9999);
    int tipo_restricao[];
@@ -319,7 +346,7 @@ bool CGarch::Ajustar(const double &residuos[])
    int codigo = relatorio.GetTerminationType();
    if(codigo <= 0 || ArraySize(x_final) < k)
      {
-      m_erro = StringFormat("Otimizador falhou (codigo %d)", codigo);
+      m_erro = StringFormat("Otimizador falhou (codigo %d)", codigo);   //@omitir
       return(false);
      }
 
@@ -334,10 +361,11 @@ bool CGarch::Ajustar(const double &residuos[])
 
    if(m_omega <= 0.0 || !MathIsValidNumber(m_omega))
      {
-      m_erro = "Omega estimado invalido";
+      m_erro = "Omega estimado invalido";   //@omitir
       return(false);
      }
 
+   //@omitir-inicio
    m_graus_liberdade = 0.0;
    if(student)
      {
@@ -349,6 +377,7 @@ bool CGarch::Ajustar(const double &residuos[])
         }
       m_graus_liberdade = 1.0 / eta;
      }
+     //@omitir-fim
 
    RecalcularVariancias();
    m_ajustado = true;
@@ -361,9 +390,11 @@ void CGarch::RecalcularVariancias(void)
    for(int t = 0; t < m_inicio; t++)
       m_sigma2[t] = m_variancia_amostral;
 
+   //@omitir-inicio
    bool student = (m_distribuicao == DISTRIBUICAO_STUDENT && m_graus_liberdade > 2.0);
    double constante_student = student ? ConstanteStudent(m_graus_liberdade) : 0.0;
    double log_verossimilhanca = 0.0;
+   //@omitir-fim
 
    for(int t = m_inicio; t < m_tamanho; t++)
      {
@@ -374,13 +405,15 @@ void CGarch::RecalcularVariancias(void)
          variancia += m_beta[j - 1] * m_sigma2[t - j];
       m_sigma2[t] = MathMax(variancia, 1.0e-300);
 
+      //@omitir-inicio
       if(student)
          log_verossimilhanca += LogDensidadeStudent(m_erros_quadrado[t], m_sigma2[t], m_graus_liberdade, constante_student);
       else
          log_verossimilhanca += LogDensidadeNormal(m_erros_quadrado[t], m_sigma2[t]);
+         //@omitir-fim
      }
 
-   m_log_verossimilhanca = log_verossimilhanca;
+   m_log_verossimilhanca = log_verossimilhanca;   //@omitir
   }
 
 double CGarch::VolatilidadeProximoPeriodo(void) const
@@ -397,6 +430,7 @@ double CGarch::VolatilidadeProximoPeriodo(void) const
    return(MathSqrt(MathMax(variancia, 1.0e-300)));
   }
 
+//@omitir-inicio
 double CGarch::VolatilidadeAtual(void) const
   {
    int n = ArraySize(m_sigma2);
@@ -404,6 +438,7 @@ double CGarch::VolatilidadeAtual(void) const
       return(0.0);
    return(MathSqrt(m_sigma2[n - 1]));
   }
+  //@omitir-fim
 
 bool CGarch::ObterSerieVolatilidade(double &saida[]) const
   {
@@ -420,6 +455,7 @@ bool CGarch::ObterSerieVolatilidade(double &saida[]) const
    return(true);
   }
 
+//@omitir-inicio
 bool CGarch::ObterResiduosPadronizados(double &saida[]) const
   {
    if(!m_ajustado)
@@ -488,5 +524,6 @@ string CGarch::Descricao(void) const
                          Persistencia(), MathSqrt(VarianciaLongoPrazo()), m_log_verossimilhanca, AIC());
    return(texto);
   }
+  //@omitir-fim
 
 #endif

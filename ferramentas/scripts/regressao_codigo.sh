@@ -46,7 +46,7 @@ rm -f "$COMUM"/traco_RG_*.csv
 ea RG_filtro_targeting $T3 100000 1:1 $GR Arquivo_Traco=RG_filtro_targeting
 ea RG_arima_puro       $T3 100000 1:1 UsarGARCH=false Janela_Estimacao=240 Limiar_Sinal=0.001 Arquivo_Traco=RG_arima_puro
 ea RG_filtro_pandemia  $T5 100000 1:1 $GS Arquivo_Traco=RG_filtro_pandemia Diagnostico=true RelatorioInicial=true
-ea RG_intervalo        $T3 100000 1:1 UsarGARCH=true Estrategia=2 K_Confianca=0.05 SomenteCompra=false
+# RG_intervalo (Estrategia=2) saiu em 21/10/2026 com o intervalo de confianca (fora do escopo, pedido do autor)
 ea RG_targeting_fixo   $T3 100000 1:1 UsarGARCH=true Estrategia=1 Vol_Alvo=0.01 ModoVolume=0 Volume_Base=100 SomenteCompra=false
 ea RG_manual_sltp      $T3 100000 1:1 UsarGARCH=true ModoOrdens=1 IncluirConstante=true StopLoss_Points=300 TakeProfit_Points=600 PermitirReversao=false SomenteCompra=false
 ea RG_preco_bruto      $T3 100000 1:1 UsarGARCH=false Transformacao=1
