@@ -49,7 +49,7 @@ datas supostas.
    grandeza batem, e a taxa de acerto (37,8%) é compatível com o padrão dele.
 3. **2007–2011 bate em sinal e ordem de grandeza, não em contagem** (62 saídas
    contra 52). Como 2008–2010 fecha exatamente, a diferença está em 2007 e 2011,
-   não na lógica da média móvel. As hipóteses estão em `notas/INCERTEZAS.md`, item 7.
+   não na lógica da média móvel. As hipóteses estão em `ia/INCERTEZAS.md`, item 7.
 4. **A série dele já era ajustada por desdobramento.** No preço bruto o prejuízo
    de 2007–2011 fica 3× a 13× maior que o dele.
 5. **O resultado escala com o volume, e o risco também**: em 2007–2011 com 1.000

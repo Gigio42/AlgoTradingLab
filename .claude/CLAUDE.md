@@ -8,6 +8,25 @@ O texto do TG em LaTeX fica em `tg/`. **O código e o texto precisam concordar**
 foi executado de determinada maneira. Toda afirmação metodológica lá tem que ter
 contrapartida no código.
 
+## Onde fica o material da IA (organização de 30/10/2026, pedido do autor)
+
+Tudo o que a IA produz para trabalhar fica separado do trabalho dos autores:
+
+- **este arquivo** mora em `.claude/CLAUDE.md` (o Claude Code lê daí sozinho);
+- **notas internas** em `ia/`: `PENDENCIAS.md` (ler primeiro num chat novo),
+  `INCERTEZAS.md`, `NORMAS-FATEC.md`, `PARAMETROS.md`, `TG-LATEX.md`;
+- **cópias de segurança** antes de mexer no texto em `ia/rascunhos/` (fora do git);
+- **pesquisa bibliográfica** (buscas, candidatos, fichas, lista de obras) em
+  `ia/bibliografia/` (fora do git). Os PDFs das obras continuam em
+  `bibliografia/pdfs/`.
+
+Nota, backup ou levantamento novo vai para `ia/`, **nunca** para a raiz, `tg/`,
+`dados/` ou `bibliografia/`. Exceção: o `LEIAME.md`/`PROTOCOLO.md` de cada pasta
+de `dados/resultados/` e o `dados/FONTES.md` ficam junto do dado que descrevem
+(regra nº 2). Índices de navegação: `dados/resultados/LEIAME.md` (o que é cada
+rodada e o que vale) e `ferramentas/LEIAME.md` (o que faz cada script); ao criar
+pasta de resultado ou script novo, acrescentar uma linha no índice.
+
 ## Regra número 1: não misturar Python
 
 Decisão do autor, firme: **tudo em MQL5**. Não sugerir statsmodels, arch, pandas
@@ -28,7 +47,7 @@ origem.
   `dados/fontes/`; a série pronta que o MT5 lê vai para `dados/series/`.
 - **Nunca digitar valor à mão** nem escrever número de memória. Se um número não
   saiu de um arquivo ou log gerado nesta análise, ele não existe.
-- **Estimativa, suposição ou coisa não confirmada** vai para `notas/INCERTEZAS.md` e é
+- **Estimativa, suposição ou coisa não confirmada** vai para `ia/INCERTEZAS.md` e é
   dita explicitamente ao autor, com a palavra "estimativa" ou "não confirmado".
 - **Arquivo de dado e obra que se cita moram em lugares diferentes, e nunca nos
   dois.** Obra (artigo, livro, TCC — coisa que entra no `.bib`) vai para
@@ -85,10 +104,10 @@ comparação entre modelos, parar e perguntar.
 ## Regra número 4: as normas da FATEC-ID mandam no texto
 
 O autor trouxe as normas oficiais em 28/09/2026 e foi explícito: **tem que
-obedecer tudo.** O resumo operacional está em **`notas/NORMAS-FATEC.md`** (na raiz) e as fontes em
-`dados/fontes/normas-fatec/` e no `Manual-de-Normas-2021.pdf` da raiz.
+obedecer tudo.** O resumo operacional está em **`ia/NORMAS-FATEC.md`** e as fontes em
+`dados/fontes/normas-fatec/` (inclusive o `Manual-de-Normas-2021.pdf`).
 
-**Antes de escrever ou alterar qualquer coisa em `tg/`, ler `notas/NORMAS-FATEC.md`.**
+**Antes de escrever ou alterar qualquer coisa em `tg/`, ler `ia/NORMAS-FATEC.md`.**
 O que mais pega neste trabalho:
 
 - **Estrutura**: Capítulo I Fundamentação · Capítulo II Percurso Metodológico ·
@@ -110,11 +129,11 @@ O que mais pega neste trabalho:
 - **Considerações Finais** têm de responder à pergunta-problema, revisitar cada
   hipótese confirmando ou refutando, e dizer se os objetivos foram alcançados.
 - **Sem afastamento entre parágrafos** no texto — hoje o `main.tex` faz o
-  contrário (ver `notas/NORMAS-FATEC.md`, item 6).
+  contrário (ver `ia/NORMAS-FATEC.md`, item 6).
 
 **Os `.md` deste repositório são notas internas, não material do TG.** Eles
 existem para eu obedecer às regras e para o autor acompanhar o que foi feito.
-Nenhum deles é fonte: não se cita `notas/NORMAS-FATEC.md`, `FONTES.md`, `notas/INCERTEZAS.md`
+Nenhum deles é fonte: não se cita `ia/NORMAS-FATEC.md`, `FONTES.md`, `ia/INCERTEZAS.md`
 nem `CLAUDE.md` no trabalho. Toda definição que precise aparecer no TG — a
 classificação da pesquisa, o delineamento, um critério de avaliação — é decisão
 do autor, vai escrita no `.tex` e cita a obra original (o livro, o artigo). **Documentos da própria FATEC-ID
@@ -123,8 +142,8 @@ do autor, vai escrita no `.tex` e cita a obra original (o livro, o artigo). **Do
 arquivo de apoio da IA como definição do trabalho fica ruim na apresentação.
 
 **A pasta `tg/` só contém o que vai ser entregue**: `.tex`, `.bib`, figuras,
-gráficos e o `Makefile`. Nota de trabalho, dado bruto e script vão para a raiz,
-`dados/` ou `ferramentas/`.
+gráficos e o `Makefile`. Nota de trabalho vai para `ia/`, dado bruto para
+`dados/` e script para `ferramentas/`.
 
 **O manual vigente foi obtido em 01/10/2026**: biênio **2026-2027**, 45 páginas,
 em `dados/fontes/normas-fatec/Manual-de-Normas-2026-2028.pdf`. Comparado com o de
@@ -137,7 +156,7 @@ inclusive dentro dos parênteses**, ou seja `(Almeida, 2016)` e não
 ## Arquitetura
 
 ```
-Include/
+robos/Include/
   Numerico.mqh             MQO sobre ALGLIB. Única porta de entrada para
                            álgebra linear.
   Estatistica.mqh          ADF (valor crítico a 5% de MacKinnon 2010),
@@ -156,14 +175,14 @@ Include/
   Desempenho.mqh           Avaliação em camadas no Strategy Tester e
                            CompararCurvas. Usado pelos dois EAs.
 
-ARIMA-GARCH/
+robos/ARIMA-GARCH/
   ARIMA_GARCH_EA.mq5 O EA: inputs, OnInit, OnTick e execução. `UsarGARCH`
                      alterna entre ARIMA puro e ARIMA-GARCH.
   Diagnostico.mqh    CDiagnostico: mensagens, contadores e traço por barra.
   Avaliacao.mqh      Registro por barra e OnTester (linha de métricas).
                      Os dois leem os inputs do EA e só observam.
 
-MediasMoveis2/
+robos/MediasMoveis2/
   MediasMoveis2.mq5  A MM 10/20 de Almeida, reimplementada.
 ```
 
@@ -185,7 +204,7 @@ EA** com comentários: `//@omitir-inicio`/`//@omitir-fim` (bloco), linha
 terminada em `//@omitir`, e `//@apendice: CODIGO` (o que entra no lugar). São só
 comentários: o EA sem comentários ficou idêntico ao de antes dos marcadores
 (conferido com `diff`). Desde a limpeza de 18/10/2026 o log mora em
-`ARIMA-GARCH/Diagnostico.mqh` e a avaliação em `Avaliacao.mqh`; no EA sobram
+`robos/ARIMA-GARCH/Diagnostico.mqh` e a avaliação em `Avaliacao.mqh`; no EA sobram
 chamadas de uma linha com `//@omitir`, e o script ainda tira as linhas que só
 tinham comentário e as chaves de um `if` que ficou com uma instrução. A listagem
 reduzida (216 linhas desde 29/10/2026, quando saíram também as opções que os experimentos não usam: preço bruto, ordens manuais, volume fixo, StopLoss/TakeProfit, reversão desligável, GARCH_p/q trocado por `Definir(1, 1)`, input group, validação, Iteracoes_GARCH, tipo de ADF e destrutores; INCERTEZAS item 81) e o EA compilam com 0 erros e 0 avisos. **Ao acrescentar
@@ -221,14 +240,22 @@ comparando o contador de ordens antes e depois, e diz se o EA **de fato** mandou
 ordem naquela barra. Não dá para inferir isso de fora: "o modelo decidiu uma
 direção" (377 dias nesta janela) é diferente de "o EA enviou ordem" (69). Uma
 versão anterior do painel de demonstração desenhou uma seta por decisão e
-sugeria um giro cinco vezes maior que o real.
+sugeria um giro cinco vezes maior que o real. **Só conta entrada** (compra ou
+venda nova): fechar a posição não sobe o contador, e as saídas só aparecem pela
+passagem de `posicao` de 1 para 0 (INCERTEZAS item 83).
 
 O mapa completo do repositório está no `README.md` da raiz. As pastas, em uma
-linha cada: `Include/` e `ARIMA-GARCH/` e `MediasMoveis2/` são o código que roda;
+linha cada: `robos/` é o código que roda (os dois EAs em `ARIMA-GARCH/` e
+`MediasMoveis2/`, os módulos em `Include/`, e a implementação antiga em `legado/`);
 `ferramentas/` são scripts de apoio (.mq5 e .sh); `dados/` é fonte, série pronta,
 verificação e resultado; `bibliografia/` é a literatura; `tg/` é só o que vai ser
-entregue; `notas/` são as notas internas; `legado/` é a implementação antiga,
-guardada para consulta.
+entregue; `apresentacao/` são os slides da defesa; `ia/` são as notas internas
+da IA. Os `#include` dos EAs são relativos (`..\Include\`), então `robos/` só
+funciona inteira: `ARIMA-GARCH/`, `MediasMoveis2/` e `Include/` andam juntas. O caminho do EA no `.ini`
+do testador é `Expert=AlgoTradingLab\robos\ARIMA-GARCH\ARIMA_GARCH_EA`
+(desde 30/10/2026). Os `comandos*.sh` guardados nas rodadas antigas de
+`dados/resultados/` registram o que foi rodado na época e ainda usam o caminho
+sem `robos\`: não reaproveitar sem corrigir.
 
 Dependência externa: **nenhuma**. A ALGLIB (`MQL5/Include/Math/Alglib/`) e a
 `Math/Stat/` já acompanham qualquer instalação do MetaTrader 5.
@@ -337,7 +364,7 @@ ao ajustar o parâmetro, contar o veto real no log em vez de supor.
 
 ## Bugs da versão anterior — não reintroduzir
 
-O código antigo (`legado/ARIMA_EA.mq5` e `legado/GARCH.mq5`, mantidos no
+O código antigo (`robos/legado/ARIMA_EA.mq5` e `robos/legado/GARCH.mq5`, mantidos no
 histórico do git) tinha:
 
 1. **Sinal do gradiente invertido no GARCH.** Calculava ∂ℓ/∂σ² da
@@ -405,8 +432,8 @@ Outros fatos do ambiente:
 
 ```bash
 cd "/home/dark/.wine-mt5-novo/drive_c/Program Files/MetaTrader 5"
-WINEPREFIX=~/.wine-mt5-novo wine MetaEditor64.exe /compile:"MQL5\Experts\AlgoTradingLab\ARIMA-GARCH\ARIMA_GARCH_EA.mq5" /log
-iconv -f UTF-16LE -t UTF-8 "MQL5/Experts/AlgoTradingLab/ARIMA-GARCH/ARIMA_GARCH_EA.log" | grep -i "error\|Result:"
+WINEPREFIX=~/.wine-mt5-novo wine MetaEditor64.exe /compile:"MQL5\Experts\AlgoTradingLab\robos\ARIMA-GARCH\ARIMA_GARCH_EA.mq5" /log
+iconv -f UTF-16LE -t UTF-8 "MQL5/Experts/AlgoTradingLab/robos/ARIMA-GARCH/ARIMA_GARCH_EA.log" | grep -i "error\|Result:"
 ```
 
 **Rodar pelo `/config:`** (script ou backtest). O `.ini` pode ficar em qualquer
@@ -569,7 +596,7 @@ iconv -f UTF-16LE -t UTF-8 "$HOME/.wine-mt5-novo/drive_c/Program Files/MetaTrade
 > código (recuperação de parâmetros, ADF em séries artificiais, ADF/Ljung-Box na
 > PETR4) fogem do escopo apresentado. Os números abaixo continuam valendo e
 > podem voltar ao texto depois; o trecho antigo está em
-> `notas/rascunhos/antes_tirar_validacao_2026-10-18/`. **Não reinserir sem
+> `ia/rascunhos/antes_tirar_validacao_2026-10-18/`. **Não reinserir sem
 > pedido.**
 
 Recuperação de parâmetros em dados sintéticos com verdade conhecida:
@@ -826,7 +853,7 @@ GARCH × ARIMA pareado (mesmos dias):
 ## Refação de 05–06/10/2026 — RESULTADO VIGENTE
 
 Todos os experimentos do ARIMA e do ARIMA-GARCH foram refeitos com o EA
-corrigido (erros com d = 0 e no ADF; `notas/INCERTEZAS.md`, itens 43 a 47).
+corrigido (erros com d = 0 e no ADF; `ia/INCERTEZAS.md`, itens 43 a 47).
 Pasta `dados/resultados/refeito_2026-10-05/` (LEIAME, PROTOCOLO,
 `analise_grades.txt`, `testes/comparacoes.csv`). **Os números das seções
 "Rodada 3", "Rodada 4" e "Rodada 5" abaixo são do EA antigo** e servem só de
@@ -891,7 +918,7 @@ novo ("Desenvolvimento e comparação de modelos de negociação algorítmica:
 ARIMA-GARCH e médias móveis"); validação do código fora do texto (ver "Validação
 numérica já feita"); seção de verificação estatística oculta com
 `\iffalse` e **removida de vez em 21/10/2026** (pedido do autor; cópia em
-`notas/rascunhos/antes_remover_estatistica_2026-10-21/`); **seção de camadas do
+`ia/rascunhos/antes_remover_estatistica_2026-10-21/`); **seção de camadas do
 Cap. III (custos, Selic, proventos) também removida em 21/10/2026** (voltou
 em 27/10/2026 com os proventos da B3, a pedido do autor depois da leitura da
 orientadora; INCERTEZAS item 80): o Cap. III
@@ -1036,7 +1063,7 @@ vendido dobra a exposição ao erro.
 idêntico aos CSVs nos 4 ativos; passagem da grade = backtest individual =
 recálculo externo em 4 configurações sorteadas; Selic íntegra; séries
 reconstruíveis a partir das linhas originais da B3. Dois erros achados e
-corrigidos estão em `notas/INCERTEZAS.md` (itens 21 e 22).
+corrigidos estão em `ia/INCERTEZAS.md` (itens 21 e 22).
 
 ## Rodada 5 (30/09/2026) — períodos longos e a primeira significância — histórico (EA antigo; a significância não sobreviveu à refação)
 
@@ -1099,7 +1126,7 @@ MM simples 10/20 no fechamento, sem SL/TP, sem custo, R$ 50 mil, long-short):
 dos relatórios do MT5 e a conclusão anterior ("dois dos três testes fecham")
 **caiu**: ela valia para a contagem de operações, não para o dinheiro. Só
 2013–2016 fecha nas duas coisas. O detalhamento e as hipóteses estão em
-`notas/INCERTEZAS.md`, item 7. **No TG, a réplica é evidência de que a
+`ia/INCERTEZAS.md`, item 7. **No TG, a réplica é evidência de que a
 reimplementação reproduz o comportamento do algoritmo dele, não de que reproduz
 os resultados financeiros.**
 
@@ -1153,11 +1180,11 @@ Se forem úteis a longo prazo, mover para dentro do repositório.
      os valores exatos" de SL/TP foi substituída pelo fato (o anexo dele traz
      zero nos dois).
 - **Introdução: três versões em 29/09/2026.** As anteriores estão em
-  `notas/rascunhos/`. A v2 foi feita editando a v1 parágrafo a parágrafo e o autor
+  `ia/rascunhos/`. A v2 foi feita editando a v1 parágrafo a parágrafo e o autor
   a rejeitou: **colcha de retalhos**. **Lição: quando a mudança é de foco,
   reescrever inteiro.** A v3 tem encadeamento explícito, um parágrafo por elo.
 - **TEXTO REESTRUTURADO EM 30/09/2026.** O TG foi de 47 para **56 páginas** e
-  compila limpo, sem referência quebrada. Backups em `notas/rascunhos/`.
+  compila limpo, sem referência quebrada. Backups em `ia/rascunhos/`.
   - **Capítulo II reescrito** na numeração obrigatória da FATEC (2.1
     Caracterização · 2.1.1 objetivos · 2.1.2 delineamento · 2.2 lugar e amostra ·
     2.3 procedimentos · 2.3.1 técnicas · 2.3.2 natureza da análise), mais seções
@@ -1174,7 +1201,7 @@ Se forem úteis a longo prazo, mover para dentro do repositório.
     exige: responde à pergunta-problema, revisita cada hipótese confirmando ou
     refutando, declara o cumprimento dos objetivos, limitações e trabalhos
     futuros. O texto anterior era placeholder do PTG (afirmava desempenho sem
-    número e falava só de LSTM); está em `notas/rascunhos/cap3conclusao_removido.tex`.
+    número e falava só de LSTM); está em `ia/rascunhos/cap3conclusao_removido.tex`.
   - **Resumo e abstract reescritos** com resultados, como pede a NBR 6028.
   - **Reparos de norma**: as duas tabelas comparativas do `cap1` viraram
     **Quadro** (dado qualitativo; ambiente declarado no `main.tex` via
@@ -1213,7 +1240,7 @@ Se forem úteis a longo prazo, mover para dentro do repositório.
 - Os símbolos `_B3` precisam ser reimportados (defeito de `CHART_MODE_LAST`).
 - O EA não calcula p-valor do ADF (o aproximado saiu na limpeza de 18/10/2026):
   a decisão usa o valor crítico a 5% de MacKinnon. Não reportar p-valor do ADF no TG.
-- `legado/` guarda a implementação antiga (`ARIMA_EA.mq5`, `GARCH.mq5`), que
+- `robos/legado/` guarda a implementação antiga (`ARIMA_EA.mq5`, `GARCH.mq5`), que
   não compila mais junto com o resto e serve só de consulta para os bugs
   documentados acima. O Apêndice A do TG é o EA atual sem comentários, não
   estes.
@@ -1222,7 +1249,7 @@ Se forem úteis a longo prazo, mover para dentro do repositório.
 
 Pedido do autor: o texto estava "com muita coisa de IA", não fluido, e ainda
 falava de LSTM e de indicadores. Tudo reescrito; backup em
-`notas/rascunhos/antes_revisao_2026-10-05/`. O TG ficou com **48 páginas** (com o apêndice reduzido),
+`ia/rascunhos/antes_revisao_2026-10-05/`. O TG ficou com **48 páginas** (com o apêndice reduzido),
 compila sem aviso de referência e sem estouro de margem.
 
 **Regras de escrita (além das do Manual):**
@@ -1245,7 +1272,7 @@ do GARCH(1,1) e a ponte média móvel → AR; Cap. II com o Quadro 2 (grade de
 344 configurações) e prosa no lugar das listas; Cap. III com a seção
 "Significância das diferenças" (Tabela 8 desde a refação de 06/10: GARCH × gêmea, 1 de 11 com p < 0,05,
 nenhuma pior; × MM, 0 de 12, p de 0,11 a 0,95, incluído 2017–2024); Considerações finais sem número e em texto corrido;
-Apêndice A com o EA. Detalhes de norma em `notas/NORMAS-FATEC.md`, seção 7.
+Apêndice A com o EA. Detalhes de norma em `ia/NORMAS-FATEC.md`, seção 7.
 
 **Atenção ao reler:** o Cap. I ganhou duas equações (ARIMA e GARCH(1,1)) e o
 parágrafo da ponte média móvel → AR. É conteúdo que o autor precisa dominar para

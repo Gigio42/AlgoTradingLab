@@ -24,7 +24,7 @@ B="$TRAB/regressao_base.txt"
 { cat "$A/dados/resultados/rodada3_b3_oficial/testes/in_r3_base.txt"
   echo "MetodoARIMA=0"; echo "SelecaoPorBIC=false"; echo "DistribuicaoGARCH=0"; echo "Arquivo_Traco="; } | tr -d '\r' > "$B"
 M="$A/dados/resultados/rodada3_b3_oficial/testes/in_mm.txt"
-EA='ARIMA-GARCH\ARIMA_GARCH_EA'; MMEA='MediasMoveis2\MediasMoveis2'
+EA='robos\ARIMA-GARCH\ARIMA_GARCH_EA'; MMEA='robos\MediasMoveis2\MediasMoveis2'
 T3="2025.01.02 2026.09.19"; T5="2020.01.02 2021.12.30"
 
 GR="UsarGARCH=true Estrategia=3 ModoLimiar=1 Limiar_Percentil=70 Vol_Alvo=0.01 ZerarNoVeto=true Janela_Estimacao=240 Limiar_Sinal=0.001"

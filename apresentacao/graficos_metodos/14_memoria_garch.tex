@@ -1,0 +1,40 @@
+% A memória do GARCH(1,1) com parâmetros reais: como um choque de hoje mexe na
+% volatilidade de amanhã (curva de impacto) e quantos dias leva para passar
+% (decaimento). Dois conjuntos de parâmetros: a janela da validação (figuras 1
+% a 7) e o pregão liberado da figura 8. O choque é o maior resíduo da janela
+% da validação (10/04/2025).
+\documentclass[border=6pt]{standalone}
+\input{comum}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[base, name=imp, width=8.2cm, height=7cm, xmin=-8, xmax=8, ymin=0, ymax=7,
+  xlabel={Choque de hoje $\varepsilon_t$ (\%)}, ylabel={$\sigma$ prevista para amanhã (\%)},
+  title={\passo{1} Quanto um choque de hoje\\aumenta a volatilidade de amanhã},
+  legend style={at={(0.5,0.98)}, anchor=north, font=\footnotesize}]
+\addplot[cmod] table[x=eps, y=sigma]{\arqr{memoria_impacto_Val.csv}};
+\addlegendentry{validação: $\alpha=\vRMemAlfaVal$, $\beta=\vRMemBetaVal$}
+\addplot[cari] table[x=eps, y=sigma]{\arqr{memoria_impacto_Rob.csv}};
+\addlegendentry{robô em \vRDiaLib: $\alpha=\vRMemAlfaRob$, $\beta=\vRMemBetaRob$}
+\draw[black!40, dashed] (axis cs:\pRMemChoque,0) -- (axis cs:\pRMemChoque,7);
+\node[font=\footnotesize, anchor=south west, rotate=90, black!60] at (axis cs:\pRMemChoque,0.1) {choque de $\vRMemChoque\%$};
+\end{axis}
+\begin{axis}[base, name=dec, at={(imp.east)}, anchor=west, xshift=1.6cm, width=8.2cm, height=7cm,
+  xmin=0, xmax=40, ymin=0, ymax=7, xlabel={Dias depois do choque}, ylabel={$\sigma$ prevista (\%)},
+  title={\passo{2} Quantos dias o choque leva para passar}]
+\addplot[cmod, mark=*, mark size=1pt] table[x=h, y=sigma]{\arqr{memoria_decaimento_Val.csv}};
+\addplot[cmod, dashed, line width=0.6pt] table[x=h, y=lp]{\arqr{memoria_decaimento_Val.csv}};
+\addplot[cari, mark=*, mark size=1pt] table[x=h, y=sigma]{\arqr{memoria_decaimento_Rob.csv}};
+\addplot[cari, dashed, line width=0.6pt] table[x=h, y=lp]{\arqr{memoria_decaimento_Rob.csv}};
+\node[cmod, font=\footnotesize, anchor=north east, align=right] at (axis cs:39,\pRMemSigLPVal) {nível de longo prazo $\vRMemSigLPVal\%$\\persistência $\vRMemPersistVal$: meia-vida de $\vRMemMeiaVidaVal$ dias};
+\node[cari, font=\footnotesize, anchor=north east, align=right] at (axis cs:39,6.8) {persistência $\vRMemPersistRob$: meia-vida de $\vRMemMeiaVidaRob$ dias\\nível de longo prazo $\vRMemSigLPRob\%$};
+\end{axis}
+\node[font=\footnotesize, text=black!75, align=left, anchor=north west, text width=17cm]
+  at ([yshift=-0.2cm]imp.outer south west) {Como ler: a equação do GARCH(1,1) é
+  $\sigma^2_{t+1} = \omega + \alpha\,\varepsilon_t^2 + \beta\,\sigma_t^2$. À esquerda, com $\sigma_t$ no nível de longo prazo, a curva mostra
+  que choque grande, para cima ou para baixo, aumenta a volatilidade prevista (o sinal não importa, só o tamanho). Quanto maior o $\alpha$,
+  mais a curva abre. À direita, o mesmo choque de $\vRMemChoque\%$ e o caminho de volta ao nível de longo prazo: a distância cai pela
+  persistência $\alpha+\beta$ a cada dia. Meia-vida é o número de dias para a distância cair pela metade, $\ln 0{,}5 / \ln(\alpha+\beta)$.
+  Com persistência perto de 1, como em boa parte de 2020 (figura 11), a volatilidade prevista quase não volta ao normal,
+  e o veto se prolonga.};
+\end{tikzpicture}
+\end{document}

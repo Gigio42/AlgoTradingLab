@@ -38,7 +38,7 @@ raiz unitária.
 ### 1.4 Valores críticos do ADF: MacKinnon (2010) — **teoria**
 A distribuição nula do ADF não é padrão; usa-se a superfície de resposta de
 MacKinnon. A decisão do teste usa os valores críticos (exatos); o p-valor
-reportado é interpolado e **aproximado** (ver `notas/INCERTEZAS.md`).
+reportado é interpolado e **aproximado** (ver `ia/INCERTEZAS.md`).
 
 ### 1.5 Termo determinístico do ADF: constante, sem tendência — **convenção**
 Preços têm média diferente de zero; manter a constante também nas diferenças é

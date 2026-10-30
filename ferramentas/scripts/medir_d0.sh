@@ -9,7 +9,7 @@ S="$A/ferramentas/scripts"; cd "$S" || exit 1
 B="$A/dados/resultados/rodada3_b3_oficial/testes/in_r3_base.txt"
 R="$A/dados/resultados"
 roda(){ local rot=$1 de=$2 ate=$3 dep=$4 alav=$5; shift 5
-  bash rodar.sh "FX_$rot" 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL "$de" "$ate" "$dep" "$alav" "$B" \
+  bash rodar.sh "FX_$rot" 'robos\ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL "$de" "$ate" "$dep" "$alav" "$B" \
     "$@" Arquivo_Traco=FX_$rot >/dev/null 2>&1; echo "rodou $rot"; }
 
 # Rodada 6 (2017-2024, escolhidas em 2014-2016) -- mesmas linhas de teste_2017_2024.sh

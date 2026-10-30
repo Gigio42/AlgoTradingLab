@@ -191,7 +191,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
     em especial as que a OpenAlex não indexa: TCCs, anais de congresso e
     literatura cinzenta, que só aparecem no Google Scholar.
 27. **[dado] Cinco clássicos casaram com obras erradas** na primeira busca por
-    título. Foram corrigidos conferindo autor e ano (ver `bibliografia/BUSCA.md`).
+    título. Foram corrigidos conferindo autor e ano (ver `ia/bibliografia/BUSCA.md`).
     Qualquer referência acrescentada depois precisa passar pela mesma conferência.
 28. **[dado] Memmel (2003) não está indexado** no Crossref. A correção dele ao
     teste de Jobson-Korkie está implementada no código; no texto, citar Ledoit e
@@ -218,7 +218,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
     aplicada, hard, nomotética); o Capítulo II precisa declarar **quanto aos
     objetivos** e **quanto ao delineamento** segundo o caderno da FATEC. A
     leitura proposta — quase experimental, explicativa com parte descritiva,
-    análise quantitativa — está justificada em `notas/NORMAS-FATEC.md`, seção 5, mas
+    análise quantitativa — está justificada em `ia/NORMAS-FATEC.md`, seção 5, mas
     **não foi validada pela orientadora**.
 
 ## Revisão do texto (05/10/2026)
@@ -404,7 +404,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
 52. **[dado] Resultado da refação (06/10/2026, 01h).** Detalhe em
     `dados/resultados/refeito_2026-10-05/LEIAME.md`. O Cap. III, as
     Considerações finais e a seção 2.4 foram atualizados com os números novos
-    (backup em `notas/rascunhos/antes_refacao_2026-10-06/`). O que mudou de
+    (backup em `ia/rascunhos/antes_refacao_2026-10-06/`). O que mudou de
     conclusão, e que o autor precisa saber para a banca:
     - **Proteção: se manteve.** Queda máxima menor que a gêmea nos 11 pares,
       retorno maior em 9 de 11, e o padrão nos 4 ativos.
@@ -452,7 +452,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
     Achado lateral: no cenário de Almeida 2013–2016, GARCH × ARIMA tem p = 0,040
     (`comparacoes.csv`, linha cenA_1316), que o texto não menciona.
     **CORRIGIDO em 12/10/2026, a pedido do autor ("o que eu menos quero é mostrar
-    dados errados")**; backup em `notas/rascunhos/antes_revisao_2026-10-12/`:
+    dados errados")**; backup em `ia/rascunhos/antes_revisao_2026-10-12/`:
     - cap2 (2.3.2): proventos fora da medida para algoritmos e compra e
       manutenção (só preço); proventos do Yahoo usados em duas verificações;
     - cap3: notas das tabelas principal, janelas e longo dizem "sem proventos" /
@@ -491,7 +491,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
     volatilidade no lugar de Sharpe e p, nova tabela de volatilidade com
     Pitman-Morgan, seletividade no mecanismo, 1ª limitação), Considerações (risco
     primeiro, parágrafo sobre a sugestão de Almeida, hipóteses), resumo e
-    abstract. Backup em `notas/rascunhos/antes_foco_risco_2026-10-13/`. Números em
+    abstract. Backup em `ia/rascunhos/antes_foco_risco_2026-10-13/`. Números em
     `refeito_2026-10-05/LEIAME.md`, seção de 13/10. TG com 51 páginas.
     **Pendente do autor:** ler Pitman (1939) e Morgan (1939) (marcação
     `% REFERÊNCIA` no Cap. II) e dominar duas coisas novas para a banca: o teste
@@ -511,7 +511,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
     Também: Cap. II define a razão de seletividade (equação) e cita a suposição de
     normalidade do Pitman-Morgan (com Thomaz, 2019). Legendas dos gráficos de
     curva e anual dizem "versão A/B". TG com 53 páginas, 0 estouros. Backup em
-    `notas/rascunhos/antes_legibilidade_2026-10-14/`.
+    `ia/rascunhos/antes_legibilidade_2026-10-14/`.
     **Arredondamento conferido com 3 casas**: L2 versão B × gêmea = 73,497% → 73%.
 59. **[texto] Capítulos II e III reestruturados (14/10/2026), a pedido do autor**
     ("parece que os capítulos têm coisas mescladas, metodologia no resultado,
@@ -539,7 +539,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
       em T2 o ARIMA oscilou menos (0,020) e em 2017–2024 mais (0,036)
       (`testes/comparacoes_risco.csv`).
     TG com 49 páginas, 0 estouros, sem referência quebrada. Backup em
-    `notas/rascunhos/antes_reestruturacao_2026-10-14/`.
+    `ia/rascunhos/antes_reestruturacao_2026-10-14/`.
 60. **[texto] Simplificação no molde do Almeida (14/10/2026, à noite), a pedido do
     autor** ("algo simples que nem o do Almeida", "sem parecer mestrado", "foco
     em risco, lucro secundário"). Nenhum experimento novo.
@@ -570,9 +570,9 @@ sobre o experimento · **[resultado]** sobre como ler um número.
       apaga o .log; se rodar junto com o `make`, o `main.aux` sai corrompido.
       Esperar ele terminar e rodar `make` sem salvar .tex.
     TG com 50 páginas, 0 estouros, citações em caixa mista. Backup em
-    `notas/rascunhos/antes_simplificacao_2026-10-14/`.
+    `ia/rascunhos/antes_simplificacao_2026-10-14/`.
 61. **[texto] Varredura do autor (15/10/2026), lista colada na conversa.** Backup
-    em `notas/rascunhos/antes_varredura_autor_2026-10-15/`. TG com 52 páginas,
+    em `ia/rascunhos/antes_varredura_autor_2026-10-15/`. TG com 52 páginas,
     0 estouros, sem referência quebrada.
     - Cap. I: figuras e tabelas fixas no lugar (REVOGADO em 22/10/2026, a pedido do autor: ilustrações em `[htbp]`, pacote `float` retirado; ver item 76) (`[H]`, pacote `float` carregado
       DEPOIS dos `\newfloat` do Quadro e do Gráfico no `main.tex`; carregado
@@ -660,7 +660,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
 
 64. **[código e texto] Sessão de 18/10/2026: limpeza do código e preparação da
     entrega à orientadora**, a pedido do autor. Resumo e pendências em
-    `PENDENCIAS.md`, seção 0.
+    `ia/PENDENCIAS.md`, seção 0.
     - **Código**: reorganizado sem mudar resultado. Regressão byte a byte em 13
       casos (`ferramentas/scripts/regressao_codigo.sh`, 29 arquivos idênticos) e
       os três validadores em EA repetiram os arquivos de `dados/verificacao/`.
@@ -693,7 +693,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
 66. **[resultado] A camada do retorno nas tabelas do Cap. III (19/10/2026).**
     As Tabelas 3 a 6 e os Gráficos 1 a 3 usam `ret_selic`/`dd_selic`/`vol_selic`
     (camada 3: retorno puro − custos + fração parada × Selic do dia,
-    `Include/Desempenho.mqh`, linhas 362-366). Proventos não entram em nenhuma
+    `robos/Include/Desempenho.mqh`, linhas 362-366). Proventos não entram em nenhuma
     tabela (só na nota da Tabela 5). As Tabelas 1 e 2 são puras. O autor tinha
     pedido "pura primeiro", e a bateria de 15/10 seguiu isso, mas o Cap. III é da
     refação de 05/10 e continuou na camada 3. Efeito: favorece quem fica fora do
@@ -709,7 +709,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
     (corrigido na mesma conversa).
 67. **[referência] Busca dos PDFs das obras citadas (19/10/2026, pedido do autor).**
     Baixados e conferidos pela 1ª página: Bollerslev (1986) e Araya (2024), em
-    `bibliografia/pdfs/` (procedência em `bibliografia/OBRAS-DO-TG.md`). Dois erros
+    `bibliografia/pdfs/` (procedência em `ia/bibliografia/OBRAS-DO-TG.md`). Dois erros
     no `tg/referencias.bib`, **ainda não corrigidos** (decisão do autor):
     (a) `araya2024`: autores e periódico errados. Confirmado no PDF e no Crossref:
     Araya, Hailabe T.; Aduda, Jane; Berhane, Tesfahun, *Journal of Applied
@@ -725,7 +725,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
     l. 58 e 69; introdução, l. 103) **não pôde ser conferido** contra as obras nesta
     sessão. Todas essas citações são indiretas, sem página.
     **Atualização (19/10/2026, mais tarde):** o autor obteve os PDFs do Wazlawick e
-    do Fernandes (ver `bibliografia/OBRAS-DO-TG.md`). O Fernandes confirmou (b):
+    do Fernandes (ver `ia/bibliografia/OBRAS-DO-TG.md`). O Fernandes confirmou (b):
     editor é o próprio autor, não a Campus, 1. ed. 2014, ISBN 978-85-917091-0-6.
     O Wazlawick é a **3. ed. (LTC, 2021)**, não a 2. ed. (Elsevier, 2014) do `.bib`.
     Feito a pedido do autor: `.bib` corrigido nas três entradas (`araya2024`,
@@ -767,7 +767,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
     "ARIMA-GARCH Sharpe/Calmar" no Cap. II, no Cap. III (prosa, tabelas, seção
     oculta) e nas legendas dos gráficos. O Cap. II diz que o nome indica só o
     critério de escolha, não o resultado no teste. Backup em
-    `notas/rascunhos/antes_nomes_sharpe_calmar_2026-10-19/`. Ao fazer esse backup,
+    `ia/rascunhos/antes_nomes_sharpe_calmar_2026-10-19/`. Ao fazer esse backup,
     o de `antes_cap3_cru_2026-10-19/` foi sobrescrito por engano (cap2 e cap3);
     restaurado do histórico de arquivos da sessão (cap2) e de duas reconstruções
     independentes que deram idênticas (cap3).
@@ -776,25 +776,25 @@ sobre o experimento · **[resultado]** sobre como ler um número.
     `refeito_2026-10-05/grades/r3_*.txt`, e o texto passou a dizer que elas foram
     geradas pelo otimizador do testador do MT5 (algoritmo completo), uma forma
     por vez, com o critério aplicado sobre os arquivos que o robô gravou. Backup em
-    `notas/rascunhos/antes_grade_cap2_2026-10-19/`.
+    `ia/rascunhos/antes_grade_cap2_2026-10-19/`.
     **Outras ações no Cap. III (19/10, pedido do autor):** seção curta "Outras
     ações", no fim do capítulo, com VALE3, USIM5 e POMO4 (resultado bruto das
     escolhas só compra, `cru/outras_acoes.txt`). Três escolhas não operaram no
     teste (VALE3 2025-26 Sharpe, USIM5 2025-26 Sharpe e Calmar); o motivo não foi
     investigado (não confirmado se foi veto permanente ou previsão mínima). Sem
-    médias móveis nessas ações. Backup em `notas/rascunhos/antes_outras_acoes_2026-10-19/`.
+    médias móveis nessas ações. Backup em `ia/rascunhos/antes_outras_acoes_2026-10-19/`.
 69. **[texto] Hannan e Rissanen (1982) citado no Cap. II (20/10/2026), autorizado
     pelo autor** para o funcionamento do método. Dados conferidos no Crossref
     (DOI 10.2307/2335856; o Crossref só dá a página inicial, 81; o fim, 94, vem do
     resumo da Oxford). O texto original não foi lido (pago). Para o porquê da
     escolha, recomendado só Gómez e Maravall (1998), p. 10 e 27-28, ainda **não
     inserido**: falta o autor ler. Backup em
-    `notas/rascunhos/antes_citar_hannan_2026-10-20/`.
+    `ia/rascunhos/antes_citar_hannan_2026-10-20/`.
     **Atualização (20/10):** Gómez e Maravall (1998) inserido no Cap. II, a pedido
     do autor, como a única referência do porquê (frase no fim do parágrafo do HR).
     No `.bib` como `@book` com `series` (o `@techreport` do abntex2 perdia a
     editora) e acentos em comando LaTeX (UTF-8 saía "GóMEZ" na lista). Backup em
-    `notas/rascunhos/antes_citar_gomez_2026-10-20/`.
+    `ia/rascunhos/antes_citar_gomez_2026-10-20/`.
 70. **[texto] Formas de uso do GARCH explicadas e Harvey et al. (2018) citado
     (21/10/2026, pedido do autor).** O autor achava que todos os robôs do Cap. III
     usavam só o filtro; o texto nunca dizia a forma de cada um. Conferido nos
@@ -828,7 +828,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
       mesma correção.
     - O sumário ocupa duas páginas (desde a seção "Outras ações", de 19/10), não
       por causa desta mudança.
-    Backup em `notas/rascunhos/antes_formas_garch_2026-10-21/`.
+    Backup em `ia/rascunhos/antes_formas_garch_2026-10-21/`.
     **Atualização (21/10, mais tarde), pedido do autor:** o Quadro "Formas de uso
     do GARCH" saiu ("fica feio"). O conceito (filtro, volatility targeting com
     Harvey, combinação) foi para o Cap. I, nova subseção 1.4.4 "Uso da
@@ -838,7 +838,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
     robô), só com o "como foi implementado". Texto novo, sem número novo; a frase
     "restrições impostas dentro da rotina de otimização" vem do `Garch.mqh`
     (MinBLEICSetBC/SetLC). O sumário passou a ter 7 linhas a mais. Backup em
-    `notas/rascunhos/antes_subtopicos_implementacao_2026-10-21/`.
+    `ia/rascunhos/antes_subtopicos_implementacao_2026-10-21/`.
 71. **[escopo] Intervalo de confiança fora do TG (21/10/2026, pedido do autor:
     "só quero F e T, retire tudo que foi testado com essa parte").** Motivo
     declarado: tamanho do escopo, não o resultado. A forma continua no código do
@@ -867,7 +867,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
       `cru/analise_grades_cru_sem_ic.txt`: grupo que reduz 84-92% / 91-98% / 51-95%
       (antes 84-92 / 91-97 / 53-95); grupo que só congela 31-68% (antes 28-65%).
     - A seção estatística oculta ainda tem os números com IC (aviso no `.tex`).
-    Backup em `notas/rascunhos/antes_tirar_intervalo_confianca_2026-10-21/`.
+    Backup em `ia/rascunhos/antes_tirar_intervalo_confianca_2026-10-21/`.
 72. **[texto] Fóruns do MetaTrader 5 (21/10/2026, pedido do autor).** O autor leu
     artigos e fóruns da comunidade MQL5 durante o desenvolvimento, sem anotar
     todos. Entrou uma frase genérica, sem referência, na abertura da seção 2.4 do
@@ -878,7 +878,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
     Os dois artigos que ele confirmou ter lido (Dube, 2023, ARIMA por Powell; Dube,
     2024, ADF) chegaram a entrar como citação e saíram a pedido dele; ficam num
     comentário do `.tex` para a banca. Nenhum rastro deles no código. Backup em
-    `notas/rascunhos/antes_citar_dube_2026-10-21/`.
+    `ia/rascunhos/antes_citar_dube_2026-10-21/`.
     **Atualização (21/10):** a pedido do autor, a frase passou a dizer que o
     conteúdo da comunidade de desenvolvedores do MetaTrader 5 foi "uma das
     principais fontes" para entender como implementar os métodos em MQL5, sem
@@ -904,7 +904,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
     móveis, compra e manutenção e a mesma configuração sem GARCH) e testes
     complementares. Nenhum fato ou número novo; saiu a frase repetida sobre a
     comparação no resultado bruto. Backup em
-    `notas/rascunhos/antes_subtopicos_plano_2026-10-21/`.
+    `ia/rascunhos/antes_subtopicos_plano_2026-10-21/`.
 74. **[réplica] Tentativa de chegar aos números de Almeida (21/10/2026, pedido do
     autor: "tente de tudo").** Resultados em
     `dados/resultados/replica_almeida_v2_2026-10-21/LEIAME.md`. O que é fato e o
@@ -986,7 +986,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
       eles).
     - **Seção estatística oculta: removida** (não só oculta). Ficaram as frases
       alternativas que já apareciam no PDF. Cópia anterior dos `.tex` em
-      `notas/rascunhos/antes_remover_estatistica_2026-10-21/`. As colunas de
+      `ia/rascunhos/antes_remover_estatistica_2026-10-21/`. As colunas de
       teste continuam no código e nos resultados (`comparacoes*.csv`).
     - **Intervalo de confiança: retirado do código** (`Estrategia.mqh`, input
       `K_Confianca`, coluna `K_Confianca` das métricas, caso `RG_intervalo` da
@@ -1007,11 +1007,11 @@ sobre o experimento · **[resultado]** sobre como ler um número.
       Selic e a de "janela curta para o GARCH"; o limite dos proventos virou uma
       frase. Os números das camadas continuam em `refeito_2026-10-05/cru/tabelas.txt`
       e `proventos_b3/tabelas_camadas.txt`. Cópia anterior dos `.tex` em
-      `notas/rascunhos/antes_auditoria_2026-10-21/`.
+      `ia/rascunhos/antes_auditoria_2026-10-21/`.
 
 76. **[texto] Hipóteses e objetivos reescritos; polimento da auditoria (22/10/2026,
     pedido do autor).** Cópia anterior dos `.tex` em
-    `notas/rascunhos/antes_polimento_2026-10-22/`.
+    `ia/rascunhos/antes_polimento_2026-10-22/`.
     - **REVERTIDO no mesmo dia, a pedido do autor: as hipóteses voltaram às do
       PTG** (texto idêntico ao de antes, inclusive "formuladas antes dos
       experimentos", que vale para elas), assim como a frase da taxa de acerto no
@@ -1074,7 +1074,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
       terceiro gráfico grande seguido de 2017–2024, depois de uma página só de
       texto); nenhuma antes da citação nem fora da sua seção. Buracos que sobram:
       fins de capítulo e fins de seção. Cópia anterior em
-      `notas/rascunhos/antes_ajuste_paginas_2026-10-22/`. **Para voltar ao fixo**:
+      `ia/rascunhos/antes_ajuste_paginas_2026-10-22/`. **Para voltar ao fixo**:
       trocar `[htbp]` por `[H]` nos `.tex` (e opcionalmente tirar o placeins).
 
       **Adendo (22/10/2026, pedido do autor): Cap. III com subseções nos anos de
@@ -1091,7 +1091,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
       gráficos dos anos de crise ficaram mais baixos (6,2 + 3,9 cm e 4,6 + 4,6 cm)
       para caberem dois por página, e há `\FloatBarrier` antes de cada "O ano de",
       para os gráficos do período completo não invadirem o ano. TG com 62 páginas.
-      Cópia anterior: `notas/rascunhos/antes_ajuste_paginas_2026-10-22/cap3-resultados_antes_subsecoes.tex`.
+      Cópia anterior: `ia/rascunhos/antes_ajuste_paginas_2026-10-22/cap3-resultados_antes_subsecoes.tex`.
       Atenção: o `Makefile` do `tg/` não depende dos PDFs dos gráficos; depois
       de rodar `graficos_cru.sh`, dar `touch main.tex` antes do `make`.
 
@@ -1106,7 +1106,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
       página da citação ou na seguinte, nenhuma antes da citação. Os vãos que
       sobram são fins de capítulo e um de 28% no fim de 2008. Testado e
       descartado: placeins sem `[section]` (ilustração antes da citação). Cópia
-      anterior em `notas/rascunhos/antes_imagens_2026-10-22/`.
+      anterior em `ia/rascunhos/antes_imagens_2026-10-22/`.
 
 77. **[texto] Tabela "Risco nas condições originais, 2013 a 2016" retirada
     (22/10/2026, pedido do autor).** O teste punha o ARIMA e o ARIMA-GARCH nas
@@ -1122,7 +1122,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
     do estudo de referência" das Considerações. Os números continuam em
     `refeito_2026-10-05/testes/metricas_cenA_1316_*`. Compila sem referência
     quebrada, 61 páginas; a antiga Tabela 3 virou a 2. Cópia anterior em
-    `notas/rascunhos/antes_remover_condicoes_originais_2026-10-22/`.
+    `ia/rascunhos/antes_remover_condicoes_originais_2026-10-22/`.
 
       **Adendo 3 (22/10/2026, tarde, pedido do autor): figuras do Cap. III
       rearrumadas de novo.** Gráficos de patrimônio 5,6 + 3,5 cm (antes 6,2 + 3,9),
@@ -1135,7 +1135,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
       ilustração antes da citação; duas ficam duas páginas depois da citação
       (saldos do MT5 de 2007–2011 e 2017–2024), logo após uma página cheia de
       gráficos anteriores. Testados e descartados: `\floatpagefraction` 0,85 e 0,6.
-      Cópia anterior em `notas/rascunhos/antes_imagens2_2026-10-22/`.
+      Cópia anterior em `ia/rascunhos/antes_imagens2_2026-10-22/`.
 
 78. **[método] Janelas fixas: ARIMA 240 e GARCH 500 (26/10/2026, crítica da
     orientadora e pedido do autor).** A orientadora apontou que o GARCH estimado
@@ -1241,7 +1241,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
     - Os modelos assimétricos (GJR) ficaram para depois da faxina do código.
 
 80. **[texto] Correções da leitura da orientadora (27/10/2026, pedido do autor).**
-    Backup do `tg/` em `notas/rascunhos/antes_correcoes_orientadora_2026-10-27/`.
+    Backup do `tg/` em `ia/rascunhos/antes_correcoes_orientadora_2026-10-27/`.
     - **Proventos de volta, só B3** (Cap. II 2.3.1 e Medição; Cap. III, seção
       "Efeito dos custos, da Selic e dos proventos", Tabelas 9 a 12; números de
       `refeito_2026-10-05/proventos_b3/metricas_*.csv`). **Estimativa**: valor =
@@ -1303,3 +1303,107 @@ sobre o experimento · **[resultado]** sobre como ler um número.
     - **Ficou de propósito**: o GARCH genérico (p, q) dentro da classe, que o EA
       chama com (1, 1); reescrever a classe só para (1, 1) faria o apêndice
       diferente do código que rodou.
+
+82. **[método] Gráficos que explicam os métodos (30/10/2026, pedido do autor).**
+    - `ferramentas/MetodosIlustrados.mq5` roda as funções do robô (MQO,
+      `CArima`, `MenosLogVerossimilhancaGarch`, o MinBLEIC com as opções do
+      `CGarch::Ajustar`, `TesteLjungBox`, `TesteADF`, `BuscarMelhorPQ`) na
+      janela da validação numérica (PETR4_OFICIAL, 500 pregões até 18/09/2026).
+      Dados em `dados/resultados/metodos_ilustrados_2026-10-30/`, figuras em
+      `apresentacao/graficos_metodos/`. **Conferido**: ADF, ARIMA(1,1,1),
+      GARCH(1,1), volatilidade prevista e os dois Ljung-Box idênticos aos da
+      validação de 05/10; os dois estágios do Hannan-Rissanen refeitos passo a
+      passo dão os mesmos φ e θ do `CArima`; o otimizador refeito com registro
+      das iterações chega aos mesmos ω, α e β do `CGarch`. Não estão no TG.
+    - **Escolha de ilustração**: os gráficos usam ARIMA(1,1,1) (o da validação)
+      para o Hannan-Rissanen ter os dois estágios. Nessa janela o AIC escolheria
+      (4,0); a figura do AIC mostra isso, e o (1,1) fica a 2,7 de AIC do melhor.
+    - **Observação 1, não investigada**: na grade do AIC, modelos maiores podem
+      ter log L **menor** que menores (ex.: (2,2) com 1338,0 contra (0,0) com
+      1341,4). Esperado, porque o Hannan-Rissanen é MQO em dois estágios e não
+      maximiza a verossimilhança; é o mesmo motivo de a máxima verossimilhança
+      ter sido testada como opção (item 62). Pode virar pergunta da banca.
+    - **Observação 2, não investigada**: no traço vigente
+      (`refeito_2026-10-05/traco_demo/traco_demo_GARCH.csv`, jul/2019 a
+      jun/2021), a persistência α + β está no limite da restrição (≥ 0,9998,
+      limite 0,9999) em 140 de 496 pregões. Ou seja, em boa parte dos dias o
+      otimizador para na parede da restrição. Possível causa (não confirmada):
+      a janela inclui a crise de 2020. Não se verificou se isso muda alguma
+      decisão do robô.
+
+83. **[método] Gráficos do robô funcionando (30/10/2026, pedido do autor).**
+    Figuras 08 a 14 de `apresentacao/graficos_metodos/`, lidas do traço da
+    refação de 05/10 por `ferramentas/scripts/robo_em_acao.sh` (dados em
+    `dados/resultados/robo_em_acao_2026-10-30/`). Não estão no TG.
+    - **`ordem_enviada` conta só entradas.** O contador de `CNegociacao` só sobe
+      em `Comprar` e `Vender`; `Fechar` não conta. Então "o EA enviou ordem"
+      (72 com GARCH, 76 sem, nesta janela) quer dizer **entrou**; as saídas
+      (71 e 75) só aparecem pela passagem de `posicao` de 1 para 0. O
+      `.claude/CLAUDE.md` foi ajustado para dizer isso.
+    - **Na queda de março de 2020 o GARCH não fez diferença nesta janela.** O
+      ARIMA puro deu sinal de venda em 27/02/2020, o mesmo pregão em que o GARCH
+      começou a vetar, e as duas versões ficaram fora durante a queda. A
+      diferença entre elas está em 56 pregões em que só o ARIMA puro estava
+      comprado (abril de 2020 e fevereiro de 2021, entre outros). Cuidado ao
+      falar de "proteção na crise" com base no traço: ela não vem daqui.
+    - **Acerto de direção do ARIMA no traço**: 249 de 490 pregões (50,8%), sem
+      teste formal. Coerente com o walk-forward antigo (51,0%).
+    - **O exemplo da figura 8 (19 e 22/02/2021) foi escolhido** por mostrar o
+      mecanismo com o mesmo ARIMA(3,1,0) nos dois dias. Não é representativo do
+      resultado: o GARCH reagiu à queda de sexta, não previu a de segunda.
+
+84. **[método] Relatório de estudo sobre o Hannan-Rissanen (30/10/2026, pedido
+    do autor).** `ia/relatorios/hannan-rissanen/relatorio.pdf`, dados em
+    `dados/resultados/hannan_rissanen_2026-10-30/`. Não está no TG.
+    - **Conferido**: os pregões de 13/05/2021 (ARIMA(0,1,1)) e 05/06/2020
+      (ARIMA(0,1,4)), refeitos fora do robô, dão constante, θ e previsão
+      idênticos aos do traço da refação de 05/10.
+    - **O código não faz o terceiro passo** (correção do viés) que Gómez e
+      Maravall (1998, p. 29) descrevem quando há MA, estima o AR longo por MQO
+      em vez de Durbin-Levinson e usa a ordem max(⌊ln² N⌋, p+q+1), limitada a
+      N/5, em vez de max(⌊log² N⌋, 2 max(p,q)). Nas mil simulações de ARMA(1,1)
+      com θ = 0,4, o θ do HR teve média 0,380 (desvio 0,089) e o da máxima
+      verossimilhança 0,410 (0,074). São escolhas de implementação, não erros,
+      mas podem virar pergunta da banca.
+    - **Ordem do AR longo numa janela pequena, não investigado**: com N = 239 a
+      regra dá m = 29 (com d = 0, N = 240 e m = 30; o item 78 fala em "30
+      defasagens sobre ~209 equações", que é o caso d = 0 arredondado). Numa série
+      simulada, a qualidade dos erros estimados caiu à medida que m cresceu
+      (correlação com o erro verdadeiro 0,99 com m = 4, 0,92 com m = 29). É uma
+      série só, com coeficientes maiores que os da PETR4. Não se testou se uma
+      ordem menor mudaria alguma decisão do robô.
+    - **Tamanho do θ do robô**: num MA(1) simulado com o θ do pregão real
+      (−0,093), o desvio da estimativa foi 0,077 e o sinal saiu certo em 90%
+      das séries. O θ que o robô estima é do tamanho do próprio erro de
+      estimação.
+    - **Onde o HR roda**: no traço, os dois estágios rodaram em 105 de 496
+      pregões (q > 0); nos outros, MQO direto ou média. Na seleção de ordens,
+      20 dos 25 candidatos passam pelos dois estágios.
+
+85. **[método] Relatório dos testes do código (30/10/2026, pedido do autor).**
+    `ia/relatorios/testes-do-codigo/relatorio.pdf`, dados em
+    `dados/verificacao/testes_formulas_2026-10-30/`
+    (`ferramentas/TestesFormulas.mq5`). Não está no TG (validação fora do texto
+    desde 18/10).
+    - **Conferido**: 20 identidades entre o código do robô e a conta refeita à
+      parte (MQO, ADF, valor crítico, Ljung-Box, log L e AIC do ARIMA, amostra
+      comum, ARIMA(2,0,0) × MQO, log L e previsão do GARCH, previsão no nível,
+      percentil). 11 com diferença zero; as outras até 3,1e-14. O GARCH na
+      janela da validação deu os mesmos α = 0,126435 e β = 0,587799 do arquivo
+      de 05/10. Grade 41 × 41 em volta do ótimo: nenhum ponto com log L maior.
+    - **ADF um pouco acima de 5%**: com as defasagens pelo AIC, rejeitou 5,6% de
+      5000 passeios aleatórios (desvio 0,3 p.p.); com zero defasagens, 5,0%. A
+      conta e o valor crítico estão certos; o excesso vem da escolha das
+      defasagens em amostra pequena (estimativa, não investigado).
+    - **Ljung-Box com desconto de p+q rejeita demais nos resíduos do robô**:
+      7,9% em 2000 ARMA(1,1) ajustados pelo CArima (3,8% sem o desconto). Causa
+      **não confirmada**; hipótese: a regra foi deduzida para estimativas de
+      máxima verossimilhança e o HR é menos eficiente. O EA não usa o
+      Ljung-Box para decidir; afeta só a leitura dos diagnósticos (o p = 0,009
+      da validação de 05/10 continua significativo).
+    - **GARCH com 240 pontos**: em 300 séries com β = 0,89, β médio 0,824
+      (desvio 0,142) e 3,3% no limite α + β = 1; com 1000 pontos, 0,884
+      (0,027). Propriedade do tamanho da janela, não do código. **Não testado**
+      se o limiar por percentil é sensível a esse erro de β.
+    - **AIC**: ordem verdadeira escolhida em 70,8% (AR(1), φ = 0,5) e 74,6%
+      (passeio); quando erra, em geral põe termos a mais.

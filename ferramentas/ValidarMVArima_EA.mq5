@@ -1,11 +1,11 @@
 //| Copia versionada (15/10/2026). Para rodar: ferramentas/scripts/validar_mv.sh |
 //|  Roda como EA no TESTADOR (o calculo e todo no OnInit), porque   |
 //|  script pelo [StartUp] nao abre com o perfil de graficos cheio   |
-//|  (notas/INCERTEZAS.md, item 54), como o ValidarGarchT_EA.        |
+//|  (ia/INCERTEZAS.md, item 54), como o ValidarGarchT_EA.           |
 //+------------------------------------------------------------------+
 //| Comparacao Hannan-Rissanen x maxima verossimilhanca condicional  |
 //+------------------------------------------------------------------+
-//|  Passos 2 e 3 do PENDENCIAS.md, item 1. Decide (passo 4) se a    |
+//|  Passos 2 e 3 do ia/PENDENCIAS.md, item 1. Decide (passo 4) se a |
 //|  estimacao por maxima verossimilhanca vira o padrao do EA, ANTES  |
 //|  de qualquer teste de mercado.                                   |
 //|                                                                  |
@@ -19,7 +19,7 @@
 //|  4) Tempo medio por ajuste, janela 240.                          |
 //|  5) PETR4_OFICIAL, 500 pregoes: ARIMA(1,1,1) pelos dois metodos. |
 //+------------------------------------------------------------------+
-#include "AlgoTradingLab\Include\Arima.mqh"   // copiado para MQL5\Experts pelo validar_mv.sh
+#include "AlgoTradingLab\robos\Include\Arima.mqh"   // copiado para MQL5\Experts pelo validar_mv.sh
 
 int g_h = INVALID_HANDLE;
 

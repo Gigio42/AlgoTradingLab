@@ -9,7 +9,7 @@ S="$(cd "$(dirname "$0")" && pwd)"; A="$(cd "$S/../.." && pwd)"
 R="$A/dados/resultados/refeito_2026-10-05"; O="$R/proventos_b3"; mkdir -p "$O"
 B="$A/dados/resultados/rodada3_b3_oficial/testes/in_r3_base.txt"
 M="$A/dados/resultados/rodada3_b3_oficial/testes/in_mm.txt"
-EA='ARIMA-GARCH\ARIMA_GARCH_EA'; MMEA='MediasMoveis2\MediasMoveis2'
+EA='robos\ARIMA-GARCH\ARIMA_GARCH_EA'; MMEA='robos\MediasMoveis2\MediasMoveis2'
 cp "$N/MQL5/Files/proventos_PETR4.csv" "$TRAB/proventos_PETR4_yahoo_backup.csv"
 cp "$A/dados/series/proventos_PETR4.csv" "$N/MQL5/Files/proventos_PETR4.csv"
 LOG="$O/execucao.log"; : > "$LOG"

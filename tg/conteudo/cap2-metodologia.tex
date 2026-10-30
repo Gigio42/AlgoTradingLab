@@ -19,13 +19,13 @@
 %  validação reescrita (por que AR(2), ARMA(1,1) e
 %  GARCH(1,1), tamanho das séries, semente); plano experimental com um quadro de
 %  períodos e menos detalhe; sem "equação (x.y)" e com menos remissões internas.
-%  Versão anterior em notas/rascunhos/antes_varredura_autor_2026-10-15/.
+%  Versão anterior em ia/rascunhos/antes_varredura_autor_2026-10-15/.
 %
 %  Em 2026-10-18, a pedido do autor, saiu a seção "Validação das
 %  implementações" (testes do código em séries sintéticas, ADF em séries
 %  artificiais e diagnóstico ADF/Ljung-Box na PETR4): foge do escopo
 %  apresentado; pode voltar depois. Texto guardado em
-%  notas/rascunhos/antes_tirar_validacao_2026-10-18/.
+%  ia/rascunhos/antes_tirar_validacao_2026-10-18/.
 %
 %  % REFERÊNCIA: marcações assim indicam onde uma citação deve entrar
 %  depois que o autor ler a obra. Nenhuma foi inserida sem leitura.
@@ -47,7 +47,7 @@
 %   - 14.976 simulações (624 configurações x 4 ativos x 6 janelas; eram 688 e
 %     16.512 com o intervalo de confiança):
 %     dados/resultados/refeito_2026-10-05/analise_grades.txt
-%   - janela de 120/240 pregões, reseleção a cada 21: ARIMA-GARCH/ARIMA_GARCH_EA.mq5
+%   - janela de 120/240 pregões, reseleção a cada 21: robos/ARIMA-GARCH/ARIMA_GARCH_EA.mq5
 % =====================================================================
 \setdiv{CAPÍTULO II}
 \chapter{Percurso metodológico}
@@ -240,7 +240,7 @@ precisam ser estimadas, por exigir apenas regressões lineares e fornecer
 estimativas próximas às de máxima verossimilhança \cite{gomez1998}.
 % Hannan e Rissanen (1982) e Gómez e Maravall (1998, p. 10 e 27-28) citados em
 % 20/10/2026, autorizados pelo autor. PDF em bibliografia/pdfs/Gomez-1998.pdf.
-% PENDENCIAS.md, item 1: pode ser trocado por máxima verossimilhança condicional
+% ia/PENDENCIAS.md, item 1: pode ser trocado por máxima verossimilhança condicional
 % (Thomaz, 2019, p. 42-43), partindo das estimativas de Hannan-Rissanen.
 
 A inclusão da constante $c$ do modelo foi tratada como parâmetro da configuração.
@@ -486,7 +486,7 @@ autor não existe mais e não há como conferir o histórico que ele baixou.
 % dos números do autor). Série PETR4_DESDE2008 (series_replica_almeida.sh); adiamento
 % no log inicio_adiado_testador.log ("start time changed to 2008.05.31").
 % Versão anterior, com proventos e arredondamento:
-% notas/rascunhos/antes_objetivos_risco_2026-10-29/cap2-metodologia_antes_replica.tex.
+% ia/rascunhos/antes_objetivos_risco_2026-10-29/cap2-metodologia_antes_replica.tex.
 
 \subsection{Configurações testadas}
 

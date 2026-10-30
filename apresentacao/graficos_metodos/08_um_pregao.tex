@@ -1,0 +1,54 @@
+% Um pregão passo a passo, com os números reais do robô (configuração ARIMA-GARCH
+% Sharpe, traço da refação de 05/10/2026). Dois pregões seguidos com o mesmo
+% ARIMA(3,1,0): no primeiro o GARCH libera a compra, no segundo veta.
+\documentclass[border=6pt]{standalone}
+\input{comum}
+\begin{document}
+\begin{tikzpicture}[
+  rotulo/.style={anchor=west, text width=4.3cm, font=\small, align=left},
+  caixa/.style={draw=#1, fill=#1!6, rounded corners=3pt, text width=6.1cm, minimum height=1.25cm,
+    font=\small, align=left, inner sep=5pt},
+  caixa/.default=cmod, seta/.style={-{Stealth[length=5pt]}, black!50, line width=0.8pt}]
+\def\dy{1.75}
+% cabeçalhos
+\node[font=\bfseries, align=center] at (7.6,1.35) {\vRDiaLib\\[-1pt]{\normalfont\small (sexta-feira)}};
+\node[font=\bfseries, align=center] at (14.4,1.35) {\vRDiaVet\\[-1pt]{\normalfont\small (o pregão seguinte)}};
+% passos
+\foreach \i/\txt in {
+  1/{\passo{1} \textbf{Dados}\\240 fechamentos, até a véspera},
+  2/{\passo{2} \textbf{Teste ADF}\\(refeito a cada 21 pregões)},
+  3/{\passo{3} \textbf{Grade do AIC}\\(refeita a cada 21 pregões)},
+  4/{\passo{4} \textbf{Hannan-Rissanen}\\(todo pregão)},
+  5/{\passo{5} \textbf{Previsão do ARIMA}\\$\Rightarrow$ direção},
+  6/{\passo{6} \textbf{GARCH(1,1)} nos resíduos\\$\Rightarrow$ risco},
+  7/{\passo{7} \textbf{Decisão}},
+  8/{\passo{8} \textbf{O que aconteceu}\\(não é previsão do robô)}}
+  \node[rotulo] (r\i) at (0,-\i*\dy+\dy) {\txt};
+% coluna do pregão liberado
+\node[caixa=cdad] (a1) at (7.6,0) {Último fechamento: R\$ \vRPrecoLib\\Série usada: log do preço};
+\node[caixa=cdad] (a2) at (7.6,-\dy) {Log-preço não estacionário $\Rightarrow$ $d = \vRDLib$\\O modelo trabalha com o log-retorno};
+\node[caixa=cdad] (a3) at (7.6,-2*\dy) {Menor AIC: ARIMA(\vRPLib,\vRDLib,\vRQLib)\\três retornos passados, nenhum erro};
+\node[caixa=cmod] (a4) at (7.6,-3*\dy) {$\phi_1 = \vRPhiUmLib$, $\phi_2 = \vRPhiDoisLib$, $\phi_3 = \vRPhiTresLib$\\constante $= \vRConstLib\%$ ao dia};
+\node[caixa=cmod] (a5) at (7.6,-4*\dy) {Retorno previsto: $+\vRPrevLib\%$\\Positivo $\Rightarrow$ sinal de \textbf{compra}};
+\node[caixa=cmod] (a6) at (7.6,-5*\dy) {$\alpha = \vRAlfaLib$, $\beta = \vRBetaLib$\\$\sigma$ prevista $\vRVolLib\%$ $\le$ limiar $\vRLimLib\%$};
+\node[caixa=cok] (a7) at (7.6,-6*\dy) {\textbf{Liberada}: o robô compra na abertura};
+\node[caixa=cdad] (a8) at (7.6,-7*\dy) {Variação do dia: $\vRRealLib\%$\\(o robô está comprado)};
+% coluna do pregão vetado
+\node[caixa=cdad] (b1) at (14.4,0) {Último fechamento: R\$ \vRPrecoVet\\(a queda de sexta já entra na janela)};
+\node[caixa=cdad] (b2) at (14.4,-\dy) {Mesmo $d = \vRDVet$};
+\node[caixa=cdad] (b3) at (14.4,-2*\dy) {Mesmo ARIMA(\vRPVet,\vRDVet,\vRQVet)};
+\node[caixa=cmod] (b4) at (14.4,-3*\dy) {$\phi_1 = \vRPhiUmVet$, $\phi_2 = \vRPhiDoisVet$, $\phi_3 = \vRPhiTresVet$\\coeficientes reestimados, quase iguais};
+\node[caixa=cmod] (b5) at (14.4,-4*\dy) {Retorno previsto: $+\vRPrevVet\%$\\Positivo $\Rightarrow$ sinal de \textbf{compra}};
+\node[caixa=cdes] (b6) at (14.4,-5*\dy) {$\alpha = \vRAlfaVet$, $\beta = \vRBetaVet$\\$\sigma$ prevista $\vRVolVet\%$ $>$ limiar $\vRLimVet\%$};
+\node[caixa=cdes] (b7) at (14.4,-6*\dy) {\textbf{Vetada}: não compra, e a posição de\\sexta é zerada na abertura};
+\node[caixa=cdad] (b8) at (14.4,-7*\dy) {Variação do dia: $\vRRealVet\%$. O ARIMA puro,\\sem o veto, só saiu em \vRDiaSaidaA};
+\foreach \i [evaluate=\i as \j using int(\i+1)] in {1,...,7} {
+  \draw[seta] (a\i) -- (a\j); \draw[seta] (b\i) -- (b\j); }
+% nota
+\node[font=\footnotesize, text=black!75, align=left, anchor=north west, text width=17.6cm]
+  at (0,-7*\dy-0.95) {Os dois pregões usam o mesmo modelo e preveem alta. A diferença está só no passo 6: a queda de sexta
+  entrou nos resíduos, o GARCH elevou a volatilidade prevista acima do limiar (percentil 70 da volatilidade ajustada
+  na janela) e vetou. O GARCH reage ao que já aconteceu: ele não previu a queda de segunda, e a sexta foi perdida do mesmo jeito.
+  Este é um exemplo escolhido para mostrar o mecanismo, não um resultado médio.};
+\end{tikzpicture}
+\end{document}

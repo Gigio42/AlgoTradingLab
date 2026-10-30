@@ -113,13 +113,17 @@ As tabelas completas estão no Capítulo III do trabalho e em
 
 | Pasta | Conteúdo |
 |---|---|
-| `ARIMA-GARCH/` | o Expert Advisor (`ARIMA_GARCH_EA.mq5`), com o registro (`Diagnostico.mqh`) e a avaliação no testador (`Avaliacao.mqh`) em arquivos à parte |
-| `Include/` | os módulos: ARIMA, GARCH, estatística (ADF, Ljung-Box, AIC), seleção de ordens, estratégia, negociação e avaliação de desempenho; as opções experimentais ficam em `ArimaVerossimilhanca.mqh` e `GarchDistribuicao.mqh` |
-| `MediasMoveis2/` | a estratégia de médias móveis de Almeida (2016), reimplementada |
-| `ferramentas/` | importador de séries, comparador de estratégias, validações e os scripts que rodam as baterias de testes (`scripts/`) |
-| `dados/` | dados brutos (`fontes/`), séries prontas para o MetaTrader (`series/`), conferências (`verificacao/`) e resultados dos experimentos (`resultados/`) |
+| `robos/` | os robôs (Expert Advisors) e os módulos que eles usam. Ver [`robos/LEIAME.md`](robos/LEIAME.md) |
+| `robos/ARIMA-GARCH/` | o robô ARIMA-GARCH (`ARIMA_GARCH_EA.mq5`), com o registro (`Diagnostico.mqh`) e a avaliação no testador (`Avaliacao.mqh`) em arquivos à parte |
+| `robos/MediasMoveis2/` | a estratégia de médias móveis de Almeida (2016), reimplementada |
+| `robos/Include/` | os módulos compartilhados: ARIMA, GARCH, estatística (ADF, Ljung-Box, AIC), seleção de ordens, estratégia, negociação e avaliação de desempenho; as opções experimentais ficam em `ArimaVerossimilhanca.mqh` e `GarchDistribuicao.mqh` |
+| `robos/legado/` | a primeira implementação, substituída. Guardada só para consulta |
+| `ferramentas/` | importador de séries, comparador de estratégias, validações e os scripts que rodam as baterias de testes (`scripts/`). Índice em [`ferramentas/LEIAME.md`](ferramentas/LEIAME.md) |
+| `dados/` | dados brutos (`fontes/`), séries prontas para o MetaTrader (`series/`), conferências (`verificacao/`) e resultados dos experimentos (`resultados/`). Procedência de cada arquivo em [`dados/FONTES.md`](dados/FONTES.md); o que vale de cada experimento em [`dados/resultados/LEIAME.md`](dados/resultados/LEIAME.md) |
 | `tg/` | o texto do trabalho em LaTeX e o PDF final |
-| `legado/` | a primeira implementação, substituída. Guardada só para consulta |
+| `apresentacao/` | os slides da defesa e, em `graficos_metodos/`, as figuras que explicam os métodos |
+| `bibliografia/` | as obras citadas, em PDF (fora do git por direitos autorais) |
+| `ia/` | material de trabalho do assistente de IA (notas, cópias de segurança, levantamentos). Não faz parte do TG. Ver [`ia/LEIAME.md`](ia/LEIAME.md) |
 
 ## Como reproduzir
 
@@ -134,7 +138,7 @@ mesmo que de demonstração, porque o testador exige conexão com uma corretora.
    nome (input `InpSufixo`). Para obter o `PETR4_OFICIAL` usado no trabalho,
    copie `dados/series/PETR4_OFICIAL.csv` como `PETR4.csv` nessa pasta e use o
    sufixo `_OFICIAL`.
-3. Compile `ARIMA-GARCH/ARIMA_GARCH_EA.mq5` no MetaEditor.
+3. Compile `robos/ARIMA-GARCH/ARIMA_GARCH_EA.mq5` no MetaEditor.
 4. No Testador de Estratégias, escolha o símbolo importado (por exemplo
    `PETR4_OFICIAL`), barras diárias e o modelo "somente preços de abertura".
    Ao final, o EA mostra no log as métricas contra a Selic e contra a compra e

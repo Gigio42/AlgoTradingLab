@@ -1,12 +1,12 @@
 # Rodada 3 — ARIMA × ARIMA-GARCH × Médias Móveis (Almeida), dados oficiais B3
 
 > **SUPERADO em 06/10/2026** pela refação com o EA corrigido
-> (`../refeito_2026-10-05/LEIAME.md`; erros em `notas/INCERTEZAS.md`, itens 43 a
+> (`../refeito_2026-10-05/LEIAME.md`; erros em `ia/INCERTEZAS.md`, itens 43 a
 > 47). Os números desta pasta foram produzidos com o EA antigo e não vão para o TG.
 
 
 Executada em 22/09/2026, segundo o `PROTOCOLO.md` (escrito antes dos
-resultados). Dados em `dados/FONTES.md`; limitações em `notas/INCERTEZAS.md`.
+resultados). Dados em `dados/FONTES.md`; limitações em `ia/INCERTEZAS.md`.
 Todos os números abaixo saem dos arquivos desta pasta.
 
 ## Como ler
@@ -175,7 +175,7 @@ corrigido por desdobramento; o preço bruto só difere em 2007–2011.
 | 2013–2016, 1.000 ações | +R$ 10.430 · 38 op. | +R$ 12.380 · 49 op. · FL 1,42 | +R$ 8.830 · 49 op. · FL 1,72 |
 | 2007–2011, 100 ações | −R$ 2.542 · 52 op. | −R$ 1.274 · 63 op. · FL 0,83 | +R$ 450 · 63 op. · FL 1,23 |
 
-A mesma ordem de grandeza, mas não o número exato (ver `notas/INCERTEZAS.md`).
+A mesma ordem de grandeza, mas não o número exato (ver `ia/INCERTEZAS.md`).
 Arquivos em `replica_almeida/`.
 
 ## Conclusões desta rodada

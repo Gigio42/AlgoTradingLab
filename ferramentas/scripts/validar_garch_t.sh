@@ -2,7 +2,7 @@
 # Validacao do GARCH com erros t de Student em series sinteticas
 # (ferramentas/ValidarGarchT_EA.mq5). Roda no TESTADOR, como o comparar.sh:
 # o calculo e todo no OnInit, e script pelo [StartUp] nao abre com o perfil
-# de graficos cheio (notas/INCERTEZAS.md, item 54).
+# de graficos cheio (ia/INCERTEZAS.md, item 54).
 # Uso: bash validar_garch_t.sh <arquivo_de_saida>
 source "$(dirname "$0")/comum.sh"
 A="$(cd "$(dirname "$0")/../.." && pwd)"

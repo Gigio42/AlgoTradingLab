@@ -1,0 +1,21 @@
+ordem;id;descricao;diferenca;log10
+1;Aum;MQO recupera y = 2 + 3x - 0,5x^2 sem ruido;1.924387e-15;-14.7157
+2;Adois;Coeficientes da regressao simples (formula fechada Sxy/Sxx);1.142588e-15;-14.9421
+3;Atres;Erros-padrao da regressao simples (formula fechada);4.659566e-16;-15.3317
+4;Aquatro;Soma dos quadrados dos residuos;2.172486e-16;-15.6630
+5;Acinco;AR(5): ALGLIB contra eliminacao de Gauss independente;4.163336e-17;-16.3806
+6;Aseis;Ortogonalidade X'e = 0 (cosseno entre cada coluna e o residuo);6.537626e-17;-16.1846
+7;Bum;Estatistica de Dickey-Fuller sem defasagens (t da regressao simples);3.144051e-14;-13.5025
+8;Bdois;Valor critico 5 por cento com constante, T infinito (tabela: -2,86154);2.890300e-09;-8.5391
+9;Cum;Estatistica Q de Ljung-Box (residuos reais do ARIMA(1,1,1));0.000000e+00;-17.0000
+10;Cdois;p-valor contra qui-quadrado com 10 - 2 graus de liberdade;0.000000e+00;-17.0000
+11;Dum;log L gaussiana do ARIMA(1,1,1): -n/2 [ln 2pi + ln sigma2 + 1];0.000000e+00;-17.0000
+12;Ddois;AIC = -2 log L + 2k, com k = p + q + constante + variancia;0.000000e+00;-17.0000
+13;Dtres;Amostra comum: maior menos menor numero de observacoes entre os 25 candidatos;0.000000e+00;-17.0000
+14;Eum;ARIMA(2,0,0) do robo contra MQO independente (Gauss);1.387779e-17;-16.8577
+15;Fum;log L do GARCH(1,1) refeita pela recursao sigma2 = w + a e^2 + b sigma2;0.000000e+00;-17.0000
+16;Fdois;Previsao de um passo sqrt(w + a e(N)^2 + b sigma2(N));0.000000e+00;-17.0000
+17;Ftres;Variancia de longo prazo w / (1 - a - b);0.000000e+00;-17.0000
+18;Gum;Previsao no nivel com d = 1: y(N) + z previsto;0.000000e+00;-17.0000
+19;Gdois;Previsao no nivel com d = 2: 2y(N) - y(N-1) + z previsto;0.000000e+00;-17.0000
+20;Gtres;Percentil 70 de 1..10 por interpolacao linear (7,3);0.000000e+00;-17.0000

@@ -3,7 +3,7 @@
 bibliografia/
 
 # Partes escritas q n foram pra frente
-notas/rascunhos/
+ia/rascunhos/
 
 # LaTeX
 tg/*.aux
@@ -36,3 +36,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 *~
+
+# Pesquisa bibliográfica feita pela IA (nunca foi versionada)
+ia/bibliografia/

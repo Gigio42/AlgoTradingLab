@@ -2,7 +2,7 @@
 
 Escrito antes de rodar. Origem: crítica da orientadora sobre a janela curta do
 GARCH e pedido do autor de ver o Cap. III refeito nessas condições, sem mexer
-no TG (notas/INCERTEZAS.md, item 78).
+no TG (ia/INCERTEZAS.md, item 78).
 
 ## O que muda em relação à refação de 05/10/2026
 

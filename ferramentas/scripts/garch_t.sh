@@ -14,7 +14,7 @@ OUT="$1"; [ -n "$OUT" ] || { echo "uso: $0 <pasta_de_saida>"; exit 1; }
 OUT="$(mkdir -p "$OUT" && cd "$OUT" && pwd)"
 R="$A/dados/resultados/refeito_2026-10-05"
 B="$A/dados/resultados/rodada3_b3_oficial/testes/in_r3_base.txt"
-EA='ARIMA-GARCH\ARIMA_GARCH_EA'
+EA='robos\ARIMA-GARCH\ARIMA_GARCH_EA'
 mkdir -p "$OUT/testes"; LOG="$OUT/testes/execucao.log"; : > "$LOG"
 cfg(){ awk -v k="$2" '$1 == k { sub(/^[^|]*\| /, ""); print }' "$R/escolhas/$1.txt"; }
 roda(){ local rot=$1 de=$2 ate=$3; shift 3

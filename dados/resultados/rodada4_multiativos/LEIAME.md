@@ -1,7 +1,7 @@
 # Rodada 4 — quatro ativos, com e sem venda a descoberto (23–24/09/2026)
 
 > **SUPERADO em 06/10/2026** pela refação com o EA corrigido
-> (`../refeito_2026-10-05/LEIAME.md`; erros em `notas/INCERTEZAS.md`, itens 43 a
+> (`../refeito_2026-10-05/LEIAME.md`; erros em `ia/INCERTEZAS.md`, itens 43 a
 > 47). Os números desta pasta foram produzidos com o EA antigo e não vão para o TG.
 
 
@@ -19,7 +19,7 @@ passagens. Arquivos: `grades/pareado_<ativo>_<calib>_<teste>.csv` (calibração 
 teste lado a lado), `escolhidas_r4.csv` e `analise4_saida.txt`.
 
 **Atenção:** a primeira execução destes três ativos foi descartada por erro nas
-séries (desdobramento aplicado no próprio dia do evento). Ver `notas/INCERTEZAS.md`.
+séries (desdobramento aplicado no próprio dia do evento). Ver `ia/INCERTEZAS.md`.
 Os resultados aqui são da série corrigida, reconferida contra a reconstrução
 independente (diferença 0,00) e contra o histórico dentro do MetaTrader
 (diferença 0,00).

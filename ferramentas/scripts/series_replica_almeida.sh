@@ -18,7 +18,7 @@ linhas_para_csv(){ # campos do layout COTAHIST (ver dados/FONTES.md, item 1)
 linhas_para_csv "$F/VLID3_linhas_COTAHIST_2011_2016.txt" > "$S/VLID3_OFICIAL.csv"
 
 # Data-ex e fator (acoes depois / antes). ESTIMATIVA: razao redonda mais
-# proxima do salto fechamento anterior -> abertura (notas/INCERTEZAS.md).
+# proxima do salto fechamento anterior -> abertura (ia/INCERTEZAS.md).
 linhas_para_csv "$F/CIEL3_linhas_COTAHIST_2011_2016.txt" | awk -F, -v OFS=, '
   BEGIN{ n=split("2012.04.23 1.2 2013.04.29 1.2 2014.04.01 2.0 2015.04.13 1.2 2016.04.11 1.15",e," ")
          for(i=1;i<=n;i+=2){d[i]=e[i]; f[i]=e[i+1]} }

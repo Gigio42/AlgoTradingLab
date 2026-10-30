@@ -19,9 +19,9 @@ AR="UsarGARCH=false ModoLimiar=0 Janela_Estimacao=240 IncluirConstante=true Limi
 
 for c in "R6_GS $GS" "R6_GC $GC" "R6_GSgemeo $GSg" "R6_GCgemeo $GCg" "R6_ARIMA $AR"; do
   set -- $c; rot=$1; shift
-  bash rodar.sh "$rot" 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL $DE $ATE 100000 1:1 "$B" "$@" >/dev/null 2>&1
+  bash rodar.sh "$rot" 'robos\ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL $DE $ATE 100000 1:1 "$B" "$@" >/dev/null 2>&1
 done
-bash rodar.sh R6_MM 'MediasMoveis2\MediasMoveis2' PETR4_OFICIAL $DE $ATE 100000 1:1 "$M" \
+bash rodar.sh R6_MM 'robos\MediasMoveis2\MediasMoveis2' PETR4_OFICIAL $DE $ATE 100000 1:1 "$M" \
   Volume_Fixo_Input=0 Fracao_Capital=0.95 SomenteCompra=true Custo_Por_Lado=0.0003 >/dev/null 2>&1
 
 C="$HOME/.wine-mt5-novo/drive_c/users/dark/AppData/Roaming/MetaQuotes/Terminal/Common/Files/AlgoLab"

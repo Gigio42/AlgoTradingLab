@@ -12,7 +12,7 @@ volatilidade, não o resultado de operar. É isso que se mede aqui.
 
 ## O que muda e o que não muda
 
-- Muda só a verossimilhança do GARCH (`Include/Garch.mqh`, `DIST_STUDENT`): os
+- Muda só a verossimilhança do GARCH (`robos/Include/Garch.mqh`, `DIST_STUDENT`): os
   graus de liberdade ν são estimados junto com ω, α e β, a cada barra.
 - Não muda: a equação da variância, a previsão, o ARIMA, o limiar, a estratégia,
   as janelas e os custos. O input `DistribuicaoGARCH` tem padrão normal.

@@ -73,7 +73,7 @@ série são eventos reais (09/03/2020, −29,7%, COVID-19; 22/02/2021, −21,5%)
 guardada em `fontes/b3/proventos_PETR_api_b3.json`) só traz os proventos dos
 últimos ~2 anos. Nos 4 eventos da PN em comum, 3 valores são idênticos e 1
 difere em 0,9% (data-com 22/12/2025: B3 R$ 0,9432; Yahoo R$ 0,9521). Limitações
-em `notas/INCERTEZAS.md`.
+em `ia/INCERTEZAS.md`.
 
 Uso: só na camada 4 da avaliação (`Desempenho.mqh`). **Os modelos não veem
 proventos**, e a escolha de parâmetros não os usa.
@@ -267,8 +267,8 @@ conferência.
 ## 10. Referências bibliográficas (28/09/2026)
 
 A busca de literatura, suas fontes (OpenAlex, BDTD/IBICT, Crossref, Unpaywall),
-as consultas usadas e o critério de seleção estão em `../bibliografia/BUSCA.md`.
-O arquivo `../bibliografia/candidatos.bib` traz as 43 referências conferidas.
+as consultas usadas e o critério de seleção estão em `../ia/bibliografia/BUSCA.md`.
+O arquivo `../ia/bibliografia/candidatos.bib` traz as 43 referências conferidas.
 
 ## 10. Normas e documentos oficiais da FATEC-ID
 
@@ -356,7 +356,7 @@ Observações:
 
 Pedido do autor: explicar os índices com a documentação do MetaTrader 5 e com
 os próprios autores. Texto no Cap. II (2.3.2). As fórmulas seguem o código
-(`Include/Desempenho.mqh`: Sharpe = média do excesso diário sobre a Selic /
+(`robos/Include/Desempenho.mqh`: Sharpe = média do excesso diário sobre a Selic /
 desvio-padrão × √252; Calmar = retorno anualizado da camada 3 / queda máxima).
 
 | Chave `.bib` | Fonte | Usado para | Cópia (sha256, início) |
@@ -397,7 +397,7 @@ Pedido do autor: testar outras séries para tentar chegar aos números de Almeid
   2,0 (01/04/2014), 1,2 (13/04/2015) e 1,15 (11/04/2016). São as razões
   redondas mais próximas do salto entre o fechamento anterior e a abertura da
   data-ex. **Não há fonte oficial**: a API da B3 só traz os eventos de 2024 e o
-  Yahoo não tem mais a CIEL3 (deslistada em 2024). Ver `notas/INCERTEZAS.md`.
+  Yahoo não tem mais a CIEL3 (deslistada em 2024). Ver `ia/INCERTEZAS.md`.
 - `series/PETR4_DESDE2008.csv`: `PETR4_OFICIAL` a partir de 02/01/2008. Não é
   dado novo. Serve para testar a hipótese de o histórico do servidor de Almeida
   começar em 2008.
@@ -446,7 +446,7 @@ cópia do Internet Archive de 08/05/2016
 o site original recusou conexão). sha256 `8fae3e76c881152e8e3956e06156a8311c44b1e68d1f6f6761d14d82f2027614`,
 arquivos com data de 05/01/2013. Licença Creative Commons BY-NC 3.0 (no
 cabeçalho de cada arquivo). **Não versionado** (obra de terceiro; só lido, fora
-do repositório). O que se conferiu está em `notas/INCERTEZAS.md`, item 74.
+do repositório). O que se conferiu está em `ia/INCERTEZAS.md`, item 74.
 
 **Percentual de ajuste publicado pela B3** (conferido em 21/10/2026): cada
 provento da API traz `closingPricePriorExDate` (fechamento na data-com) e

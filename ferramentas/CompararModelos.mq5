@@ -13,7 +13,7 @@
 //| CompararCurvas(), no Desempenho.mqh do EA.                       |
 //+------------------------------------------------------------------+
 #property script_show_inputs false
-#include "..\Experts\AlgoTradingLab\Include\Desempenho.mqh"
+#include "..\Experts\AlgoTradingLab\robos\Include\Desempenho.mqh"
 #include "CompararModelos.mqh"
 
 void OnStart() { CompararPares(); }

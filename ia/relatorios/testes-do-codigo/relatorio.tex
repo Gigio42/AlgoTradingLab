@@ -1,0 +1,621 @@
+% Relatório dos testes do código (30/10/2026, pedido do autor): mostra, com dados, que
+% as funções do robô calculam o que as fórmulas dizem. Material de estudo, não é parte
+% do TG (a validação do código saiu do texto em 18/10/2026 e não volta sem pedido).
+% Todo número vem de dados/verificacao/testes_formulas_2026-10-30/
+% (ferramentas/scripts/testes_formulas.sh), salvo onde o texto aponta outro arquivo.
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{mathptmx}
+\usepackage[a4paper,margin=2.4cm]{geometry}
+\usepackage{booktabs,array,tabularx}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots,statistics,fillbetween}
+\usetikzlibrary{arrows.meta,positioning,babel}
+\pgfplotsset{compat=1.18}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+
+\definecolor{cmod}{RGB}{0,90,181}
+\definecolor{cdes}{RGB}{220,50,32}
+\definecolor{cdad}{RGB}{120,120,120}
+\definecolor{cari}{RGB}{230,140,0}
+\definecolor{cok}{RGB}{0,140,70}
+
+\newcommand{\arq}[1]{../../../dados/verificacao/testes_formulas_2026-10-30/#1}
+\newcommand{\arqh}[1]{../../../dados/resultados/hannan_rissanen_2026-10-30/#1}
+\input{\arq{valores.tex}}
+\input{\arqh{valores.tex}}
+
+\pgfplotsset{base/.style={table/col sep=comma, grid=major, grid style={gray!20},
+    tick label style={font=\small}, label style={font=\small},
+    title style={font=\small\bfseries, align=center},
+    every axis plot/.append style={line width=0.9pt},
+    /pgf/number format/use comma, /pgf/number format/1000 sep={.}}}
+
+\newtcolorbox{ideia}[1][]{colback=cmod!5, colframe=cmod!70, fonttitle=\bfseries, title={#1}, arc=2pt, boxrule=0.6pt}
+\newtcolorbox{cuidado}[1][]{colback=cdes!4, colframe=cdes!70, fonttitle=\bfseries, title={#1}, arc=2pt, boxrule=0.6pt}
+\newtcolorbox{banca}{colback=black!3, colframe=black!50, fonttitle=\bfseries, title=Se a banca perguntar, arc=2pt, boxrule=0.6pt}
+\newcommand{\ok}{\textcolor{cok}{\textbf{passou}}}
+\newcommand{\atencao}{\textcolor{cari}{\textbf{atenção}}}
+
+\title{\textbf{O código faz o que a fórmula diz?}\\[2pt]\large os testes das funções do robô, com dados e gráficos}
+\author{Material de estudo para os autores do TG (não faz parte do texto)}
+\date{30 de outubro de 2026}
+
+\begin{document}
+\maketitle
+
+\begin{ideia}[Em uma página]
+\textbf{A pergunta.} As funções em MQL5 do robô (MQO, ADF, Ljung-Box, verossimilhança e AIC, Hannan-Rissanen,
+GARCH, previsão) calculam de fato o que as fórmulas dos livros dizem?
+
+\textbf{Como se respondeu.} Com dois tipos de teste, todos num programa só
+(\texttt{ferramentas/TestesFormulas.mq5}), que chama as \emph{mesmas} funções que o robô usa.
+\begin{itemize}[nosep,leftmargin=1.2em]
+\item \textbf{Identidade}: a conta é refeita do zero, escrita à parte a partir da fórmula, e comparada com o
+número que o código do robô dá. Tem de dar igual, a menos do arredondamento do computador.
+\item \textbf{Simulação}: geram-se milhares de séries com propriedades conhecidas (por exemplo, um passeio
+aleatório, em que o ADF \emph{não} deveria rejeitar a raiz unitária) e confere-se se o código se comporta como
+a teoria prevê.
+\end{itemize}
+
+\textbf{O resultado.} As \vTNumIdent{} identidades passaram. Onze deram diferença exatamente zero, e das outras a
+maior foi $\vTIdBum$, no nível do arredondamento do computador (a do valor crítico do ADF é um caso à parte,
+explicado na seção \ref{sec:adf}). Nas simulações, os testes estatísticos rejeitam perto de 5\% quando deveriam rejeitar
+5\%, os coeficientes conhecidos são recuperados e o GARCH acha o máximo da verossimilhança.
+
+\textbf{O que apareceu de novo} (seções \ref{sec:ljung} e \ref{sec:garch}). O Ljung-Box com o desconto de
+graus de liberdade rejeita \vTLbArmaCom\% nos resíduos de um ARMA(1,1) ajustado, acima dos 5\%. E com 240
+observações, que é a janela do robô, o $\beta$ do GARCH sai com muita incerteza. Nenhum dos dois é erro de
+código, mas ambos são bons de saber.
+\end{ideia}
+
+\tableofcontents
+
+%=====================================================================
+\section{Como ler este relatório}
+
+\subsection{O que é ``dar igual'' num computador}
+
+Um número real no computador (tipo \texttt{double}) guarda cerca de 16 algarismos significativos. Duas contas
+matematicamente iguais, feitas em ordem diferente, podem discordar no último algarismo. A menor diferença
+relativa que o \texttt{double} consegue distinguir perto de 1 é $2{,}2\times10^{-16}$ (a ``precisão da
+máquina'').
+
+Por isso, num teste de identidade, \textbf{diferença da ordem de $10^{-14}$ a $10^{-17}$ é igualdade}: é o
+arredondamento, não a fórmula. Diferença \emph{zero} aparece quando a conta independente faz exatamente as mesmas
+operações na mesma ordem. Um erro de fórmula (um sinal trocado, um índice deslocado, um $n$ no lugar de
+$n-1$) apareceria como diferença de $10^{-3}$ ou maior.
+
+As diferenças são relativas (divididas pelo tamanho do número) quando o número pode ser grande, e absolutas
+quando é uma probabilidade, uma contagem ou um valor perto de 1.
+
+\subsection{O que é ``dar perto'' numa simulação}
+
+Quando o teste é ``o ADF a 5\% rejeita cerca de 5\% das vezes'', o número observado nunca é exatamente 5,0\%,
+porque as séries são sorteadas. Com $R$ simulações, a taxa observada oscila em torno da verdadeira com desvio
+$\sqrt{p(1-p)/R}$. Para $p = 5\%$ e $R = \vTAdfR$, isso dá $\vTAdfEp$ ponto percentual. Uma taxa entre 4,4\% e
+5,6\% (dois desvios) é compatível com 5\%.
+
+Todas as simulações usam semente fixa. O programa foi rodado duas vezes e deu os mesmos números nas duas.
+
+\subsection{De onde vêm os dados reais}
+
+Onde o teste precisa de dados reais, usa a mesma janela da validação numérica de 05/10/2026: os 500 fechamentos
+diários da \texttt{PETR4\_OFICIAL} (B3) até 18/09/2026, em log-preço. Os resíduos reais são os do ARIMA(1,1,1)
+ajustado a essa janela.
+
+%=====================================================================
+\section{As identidades, todas de uma vez}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[base, width=12.5cm, height=12cm, y dir=reverse, ymin=0.3, ymax=20.7, ytick={1,...,20},
+    yticklabels={MQO: polinômio sem ruído, MQO: coeficientes (fórmula fechada), MQO: erros-padrão,
+      MQO: soma dos quadrados, MQO: ALGLIB $\times$ Gauss em AR(5), {MQO: $X'e = 0$}, ADF: $t$ de Dickey-Fuller,
+      ADF: valor crítico de MacKinnon, Ljung-Box: $Q$, Ljung-Box: p-valor, ARIMA: log-verossimilhança,
+      ARIMA: AIC, AIC: amostra comum, {ARIMA(2,0,0) $\times$ MQO à parte}, GARCH: log-verossimilhança,
+      GARCH: previsão de $\sigma$, GARCH: variância de longo prazo, {Previsão no nível, $d = 1$},
+      {Previsão no nível, $d = 2$}, Percentil},
+    xmin=-17.8, xmax=-7, xtick={-17,-16,...,-8},
+    xticklabels={0, $10^{-16}$, , $10^{-14}$, , $10^{-12}$, , $10^{-10}$, , $10^{-8}$},
+    xlabel={Diferença entre o código do robô e a fórmula refeita à parte (escala logarítmica)},
+    ymajorgrids=false]
+  \fill[cok!10] (axis cs:-17.8,0.3) rectangle (axis cs:-15.66,20.7);
+  \draw[cok, dashed, line width=0.8pt] (axis cs:-15.66,0.3) -- (axis cs:-15.66,20.7);
+  \node[font=\scriptsize, text=cok!70!black, align=center, anchor=north] at (axis cs:-16.7,0.4)
+    {arredondamento\\da máquina};
+  \addplot[only marks, mark=*, mark size=2.6pt, color=cmod]
+    table[col sep=semicolon, x=log10, y=ordem] {\arq{identidades.csv}};
+\end{axis}
+\end{tikzpicture}
+\caption{As \vTNumIdent{} identidades. Cada ponto é a diferença entre o número do robô e o refeito à parte. Ponto
+em 0 é igualdade exata. A faixa verde vai até a precisão da máquina ($2{,}2\times10^{-16}$). O único ponto
+fora dela, o do valor crítico, é explicado na seção \ref{sec:adf}: ele é o próprio termo $b_1/T$ da fórmula,
+não erro.}
+\label{fig:identidades}
+\end{figure}
+
+A Figura~\ref{fig:identidades} resume tudo. A Tabela~\ref{tab:identidades} diz o que cada linha compara. As
+seções seguintes explicam cada grupo, e nelas estão também as simulações.
+
+\begin{table}[htbp]
+\centering\small
+\caption{O que cada identidade compara.}
+\label{tab:identidades}
+\begin{tabularx}{\textwidth}{@{}lXr@{}}
+\toprule
+& Código do robô \emph{contra} conta refeita à parte & Diferença \\
+\midrule
+A1 & \texttt{MQO} em $y = 2 + 3x - 0{,}5x^2$ sem ruído \emph{contra} os coeficientes verdadeiros & \vTIdAum \\
+A2 & \texttt{MQO} na regressão do retorno de hoje no de ontem \emph{contra} $b = S_{xy}/S_{xx}$, $a = \bar y - b\bar x$ & \vTIdAdois \\
+A3 & erros-padrão do \texttt{MQO} \emph{contra} as fórmulas fechadas da regressão simples & \vTIdAtres \\
+A4 & soma dos quadrados dos resíduos \emph{contra} a soma refeita & \vTIdAquatro \\
+A5 & \texttt{MQO} (ALGLIB) num AR(5) com constante \emph{contra} eliminação de Gauss escrita à parte & \vTIdAcinco \\
+A6 & resíduo do \texttt{MQO} \emph{contra} a condição $X'e = 0$ (cosseno entre cada coluna e o resíduo) & \vTIdAseis \\
+B1 & \texttt{RegressaoADF} sem defasagens \emph{contra} o $t$ da regressão $\Delta y_t = a + \gamma y_{t-1}$ & \vTIdBum \\
+B2 & \texttt{ValorCriticoADF5} com $T = 10^9$ \emph{contra} o $-2{,}86154$ da tabela de MacKinnon & \vTIdBdois \\
+C1 & \texttt{TesteLjungBox} \emph{contra} $Q = n(n+2)\sum r_k^2/(n-k)$ com autocorrelação escrita à parte & \vTIdCum \\
+C2 & p-valor do \texttt{TesteLjungBox} \emph{contra} a qui-quadrado com $10 - 2$ graus de liberdade & \vTIdCdois \\
+D1 & \texttt{LogVerossimilhanca} do ARIMA \emph{contra} $-\tfrac{n}{2}[\ln 2\pi + \ln\hat\sigma^2 + 1]$ & \vTIdDum \\
+D2 & \texttt{AIC} do ARIMA \emph{contra} $-2\ln L + 2k$, $k = p + q + 1 + 1$ & \vTIdDdois \\
+D3 & número de observações: maior menos menor entre os 25 candidatos da grade & \vTIdDtres \\
+E1 & \texttt{CArima} ARIMA(2,0,0) \emph{contra} MQO com eliminação de Gauss escrita à parte & \vTIdEum \\
+F1 & \texttt{LogVerossimilhanca} do GARCH \emph{contra} a recursão $\sigma^2_t = \omega + \alpha e^2_{t-1} + \beta\sigma^2_{t-1}$ & \vTIdFum \\
+F2 & \texttt{VolatilidadeProximoPeriodo} \emph{contra} $\sqrt{\omega + \alpha e_N^2 + \beta\sigma_N^2}$ & \vTIdFdois \\
+F3 & \texttt{VarianciaLongoPrazo} \emph{contra} $\omega/(1-\alpha-\beta)$ & \vTIdFtres \\
+G1 & \texttt{PreverNivel} com $d = 1$ \emph{contra} $y_N + \hat z_{N+1}$ & \vTIdGum \\
+G2 & \texttt{PreverNivel} com $d = 2$ \emph{contra} $2y_N - y_{N-1} + \hat z_{N+1}$ & \vTIdGdois \\
+G3 & \texttt{Percentil} 70 de $\{1, \dots, 10\}$ \emph{contra} $1 + 0{,}7 \times 9 = 7{,}3$ & \vTIdGtres \\
+\bottomrule
+\end{tabularx}
+
+\smallskip\footnotesize Fonte: \nolinkurl{dados/verificacao/testes_formulas_2026-10-30/identidades.csv}.
+\end{table}
+
+%=====================================================================
+\section{Mínimos quadrados (\texttt{Numerico.mqh})}
+
+O MQO é a peça mais usada do robô: está no ADF, nos dois estágios do Hannan-Rissanen e na escolha das ordens. Se
+ele errasse, tudo o resto erraria junto. Ele foi testado de quatro jeitos diferentes (A1 a A6 na tabela).
+
+\textbf{Com dados sem ruído} (A1), a resposta certa é conhecida de antemão: $2$, $3$ e $-0{,}5$. O código acha
+esses três números, com diferença de $\vTIdAum$.
+
+\textbf{Com a fórmula do livro} (A2 a A4). Na regressão simples (uma variável e a constante), o coeficiente tem
+fórmula fechada, $b = \sum(x-\bar x)(y-\bar y)/\sum(x-\bar x)^2$, e o erro-padrão também,
+$\mathrm{ep}(b) = \sqrt{s^2/\sum(x-\bar x)^2}$ com $s^2 = \text{SQR}/(n-2)$. Aplicadas aos retornos reais da
+PETR4 (retorno de hoje contra o de ontem), dão os mesmos números que o código, que resolve o sistema matricial
+pela ALGLIB.
+
+\textbf{Com outro algoritmo} (A5). Num AR(5) com constante (seis coeficientes), a solução da ALGLIB foi comparada
+com uma eliminação de Gauss escrita no próprio programa de teste, sem ALGLIB. Dois caminhos diferentes,
+mesmo resultado.
+
+\textbf{Com a propriedade que define o MQO} (A6). O MQO é, por definição, o coeficiente que deixa o resíduo sem
+correlação com cada coluna de $X$ ($X'e = 0$, as ``equações normais''). O cosseno entre cada coluna e o
+resíduo deu $\vTIdAseis$, ou seja, zero.
+
+\textbf{Os erros-padrão, em média.} A identidade A3 confere a fórmula, mas não diz se o erro-padrão
+\emph{funciona}. Para isso: em \vTCoberturaR{} regressões simuladas com coeficiente verdadeiro $0{,}5$, montou-se
+o intervalo de 95\% ($b \pm t_{0{,}975}\,\mathrm{ep}$) com o erro-padrão do código. O intervalo cobriu o valor
+verdadeiro em $\vTCobertura\%$ das vezes (desvio da simulação: $\vTCoberturaEp$ ponto). É o esperado. \ok
+
+%=====================================================================
+\section{O teste ADF (\texttt{Estatistica.mqh}, \texttt{SelecaoModelo.mqh})}\label{sec:adf}
+
+O ADF decide o $d$ do ARIMA, e o $d$ decide o que o modelo enxerga (preço ou retorno). Testou-se a conta, o valor
+crítico, e o comportamento do teste inteiro.
+
+\subsection{A conta e o valor crítico}
+
+Sem defasagens, o ADF é só o teste $t$ do coeficiente $\gamma$ na regressão $\Delta y_t = a + \gamma y_{t-1} +
+\varepsilon_t$. Refeito pela fórmula fechada da regressão simples nos log-preços reais, deu o mesmo número que a
+função do robô (B1, diferença $\vTIdBum$).
+
+O valor crítico vem da fórmula de MacKinnon (2010), $b_0 + b_1/T + b_2/T^2 + b_3/T^3$. Quando $T$ cresce sem
+limite, ela tem de dar $b_0 = -2{,}86154$, que é o número da tabela dele para o caso com constante. Com
+$T = 10^9$ o código dá $-2{,}86154$ mais $\vTIdBdois$, e essa sobra é exatamente $b_1/T$ com $b_1 = -2{,}8903$:
+a fórmula está certa e ainda não chegou ao limite. Na janela do robô ($T$ por volta de 225 a 239) o valor crítico
+fica perto de $\vTVcDuzentos$ (com $T = 225$).
+
+\subsection{O teste rejeita 5\% quando deveria rejeitar 5\%?}
+
+Esse é o teste mais importante de um teste estatístico: o \emph{tamanho}. Foram gerados \vTAdfR{} passeios
+aleatórios de 240 pontos, que têm raiz unitária por construção. Um ADF a 5\% bem implementado deve rejeitar a
+raiz unitária em cerca de 5\% deles, por puro acaso.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[base, width=13cm, height=6cm, xmin=-4.6, xmax=2.5, ymin=0, xlabel={Estatística ADF},
+    ylabel={Densidade}, ymajorgrids=false, legend style={font=\scriptsize, at={(0.98,0.97)}, anchor=north east}]
+  \addplot[hist={bins=71, data min=-4.6, data max=2.5, density}, fill=cdad!35, draw=cdad!80, line width=0.3pt]
+    table[y=estatistica] {\arq{adf_h0.csv}};
+  \addlegendentry{\vTAdfR{} passeios aleatórios}
+  \draw[cdes, line width=1.2pt] (axis cs:\pTVcDuzentos,0) -- (axis cs:\pTVcDuzentos,0.62);
+  \addlegendimage{cdes, line width=1.2pt}\addlegendentry{valor crítico do código ($\vTVcDuzentos$)}
+  \draw[black, dashed, line width=1pt] (axis cs:\pTAdfQuantil,0) -- (axis cs:\pTAdfQuantil,0.62);
+  \addlegendimage{black, dashed, line width=1pt}\addlegendentry{5\% mais baixos da simulação ($\vTAdfQuantil$)}
+  \node[font=\scriptsize, text=cdes, align=center] at (axis cs:-3.9,0.25) {rejeita a\\raiz unitária};
+\end{axis}
+\end{tikzpicture}
+\caption{Distribuição da estatística ADF quando a série tem raiz unitária. À esquerda da linha vermelha o teste
+rejeita. A distribuição não é a normal (centrada em zero): é a de Dickey-Fuller, deslocada para a esquerda, e é
+por isso que o valor crítico é $-2{,}87$ e não $-1{,}65$.}
+\label{fig:adfh0}
+\end{figure}
+
+O resultado está na Figura~\ref{fig:adfh0}. Com a escolha de defasagens pelo AIC, exatamente como o robô faz, o
+teste rejeitou $\vTAdfTamanho\%$ dos passeios. Fixando zero defasagens, rejeitou $\vTAdfTamanhoZero\%$. O desvio
+da simulação é $\vTAdfEp$ ponto. \ok
+
+\begin{cuidado}[O 5{,}6\% está no limite]
+$\vTAdfTamanho\%$ fica a quase dois desvios de 5\%, e o quantil de 5\% da simulação ($\vTAdfQuantil$) está um
+pouco à esquerda do valor crítico. Sem escolher defasagens, o teste acerta os 5\% em cheio. A diferença vem da
+escolha das defasagens pelo AIC em amostra pequena, que torna o teste um pouco mais propenso a rejeitar. Não é
+erro de fórmula: a conta (B1) e o valor crítico (B2) estão certos. Para o robô, o efeito é que, numa série com
+raiz unitária, ele escolheria $d = 0$ em cerca de 5{,}6\% das janelas em vez de 5\%.
+\end{cuidado}
+
+\subsection{E quando a série é estacionária, ele percebe?}
+
+O outro lado é o \emph{poder}: a chance de rejeitar quando a série \emph{não} tem raiz unitária. Foram geradas
+\vTAdfPoderR{} séries AR(1), $y_t = \phi y_{t-1} + \varepsilon_t$, para cada $\phi$ (Figura~\ref{fig:adfpoder}).
+Com $\phi = 0{,}80$ a série volta depressa à média e o teste percebe quase sempre ($\vTAdfPoderOitenta\%$). Com
+$\phi = 0{,}98$ ela é quase um passeio aleatório, e em 240 pontos o teste só percebe em $\vTAdfPoderNoventaOito\%$
+das vezes. É o comportamento conhecido do ADF: pouco poder perto de $\phi = 1$.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1, horizontal sep=2.2cm}, base, height=5.8cm]
+\nextgroupplot[width=7cm, xmin=0.78, xmax=1.01, ymin=0, ymax=105, xlabel={$\phi$ do AR(1)},
+    ylabel={Rejeitou a raiz unitária (\%)}, title={Poder do ADF (240 pontos)},
+    xtick={0.80,0.85,0.90,0.95,1.00}, /pgf/number format/fixed, /pgf/number format/precision=2]
+  \addplot[cmod, mark=*, mark size=2pt] table[x=phi, y=rejeicao] {\arq{adf_poder.csv}};
+  \draw[cdes, dashed] (axis cs:0.78,5) -- (axis cs:1.01,5) node[pos=0.03, above, font=\scriptsize, anchor=south west] {5\%};
+  \node[font=\scriptsize, align=right, anchor=east] at (axis cs:1.0,22) {$\phi = 1$: raiz\\unitária};
+\nextgroupplot[width=7cm, ybar stacked, bar width=0.55cm, ymin=0, ymax=100, xmin=-0.6, xmax=2.6,
+    xtick={0,1,2}, xticklabels={I(0), I(1), I(2)}, xlabel={Série gerada}, ylabel={$d$ escolhido (\%)},
+    title={$d$ escolhido pelo ADF em sequência}, legend style={font=\scriptsize, at={(0.5,-0.32)}, anchor=north,
+    legend columns=3}, ymajorgrids=true, xmajorgrids=false]
+  \addplot[fill=cmod, draw=none] table[x=serie, y=d0] {\arq{adf_ordem_d.csv}};
+  \addplot[fill=cari, draw=none] table[x=serie, y=d1] {\arq{adf_ordem_d.csv}};
+  \addplot[fill=cdes!70, draw=none] table[x=serie, y=d2] {\arq{adf_ordem_d.csv}};
+  \legend{$d = 0$, $d = 1$, $d = 2$}
+\end{groupplot}
+\end{tikzpicture}
+\caption{À esquerda, a chance de o ADF rejeitar a raiz unitária conforme a série se aproxima de um passeio
+aleatório ($\phi \to 1$); em $\phi = 1$ é o tamanho do teste. À direita, \vTDR{} séries de cada tipo passadas
+pela função \texttt{DeterminarOrdemD} do robô, com $d$ máximo 2, como no robô.}
+\label{fig:adfpoder}
+\end{figure}
+
+\textbf{O $d$ escolhido.} O robô não usa o ADF sozinho: ele aplica o teste, diferencia se não rejeitar, e testa
+de novo (\texttt{DeterminarOrdemD}). À direita na Figura~\ref{fig:adfpoder}, o $d$ certo foi escolhido em
+$\vTDCertoZero\%$ das séries I(0), $\vTDCertoUm\%$ das I(1) e $\vTDCertoDois\%$ das I(2). O log-preço da PETR4 é
+o caso I(1). \ok
+
+%=====================================================================
+\section{O teste de Ljung-Box (\texttt{Estatistica.mqh})}\label{sec:ljung}
+
+\begin{cuidado}[Onde ele é usado]
+O EA \emph{não} usa o Ljung-Box para decidir nada: ele aparece nos diagnósticos e na validação numérica (por
+exemplo, ``sobra autocorrelação nos resíduos do ARIMA(1,1,1)''). O que está nesta seção afeta essas conclusões,
+não as operações do robô.
+\end{cuidado}
+
+A conta foi refeita nos resíduos reais do ARIMA(1,1,1): autocorrelações escritas à parte, $Q =
+n(n+2)\sum_{k=1}^{10} r_k^2/(n-k)$, e p-valor pela qui-quadrado com $10 - 2$ graus de liberdade. Os dois números
+saíram iguais aos do código, com diferença zero (C1 e C2). \ok
+
+\textbf{O tamanho.} Em \vTLbR{} séries de ruído branco de 239 pontos, o $Q$ do código deve seguir uma
+qui-quadrado com 10 graus de liberdade, e o teste deve rejeitar cerca de 5\%. A Figura~\ref{fig:lb} mostra que o
+histograma acompanha a curva teórica. A rejeição foi $\vTLbTamanho\%$ (desvio $\vTLbEp$). \ok
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[base, width=13cm, height=5.8cm, xmin=0, xmax=40, ymin=0, xlabel={Estatística $Q$ (10 defasagens)},
+    ylabel={Densidade}, ymajorgrids=false, legend style={font=\scriptsize, at={(0.98,0.97)}, anchor=north east}]
+  \addplot[hist={bins=80, data min=0, data max=40, density}, fill=cdad!35, draw=cdad!80, line width=0.3pt]
+    table[y=q] {\arq{lb_h0.csv}};
+  \addlegendentry{$Q$ do código em \vTLbR{} ruídos brancos}
+  \addplot[cmod, line width=1.3pt] table[x=q, y=densidade] {\arq{lb_densidade.csv}};
+  \addlegendentry{qui-quadrado com 10 graus de liberdade (teoria)}
+\end{axis}
+\end{tikzpicture}
+\caption{Sem autocorrelação na série, o $Q$ calculado pelo código segue a distribuição teórica.}
+\label{fig:lb}
+\end{figure}
+
+\textbf{O desconto de graus de liberdade.} Quando o Ljung-Box é aplicado aos resíduos de um ARMA($p$,$q$)
+ajustado, a regra usual desconta $p + q$ graus de liberdade (a qui-quadrado passa de 10 para 8), porque o ajuste
+já ``gastou'' parte da autocorrelação. O código faz esse desconto. Para ver o efeito, foram ajustados ARMA(1,1)
+pelo código do robô em \vTLbArmaR{} séries ARMA(1,1) simuladas, e os resíduos foram testados das duas formas.
+
+\begin{cuidado}[Achado: com o desconto, o teste rejeita demais]
+Com 8 graus de liberdade (a regra, e o que o código faz), o teste rejeitou $\vTLbArmaCom\%$ dos resíduos. Sem o
+desconto (10 graus), $\vTLbArmaSem\%$. O modelo ajustado é o certo nas duas contas, então o ideal seria 5\%:
+o desconto corrige demais, e a versão sem desconto corrige de menos.
+
+A causa \textbf{não foi confirmada}. A explicação mais provável (estimativa) é que a regra de $p + q$ graus foi
+deduzida para coeficientes estimados por máxima verossimilhança, e o Hannan-Rissanen é um pouco menos preciso
+(seção \ref{sec:hr} e o relatório do Hannan-Rissanen), deixando um pouco mais de autocorrelação nos resíduos.
+Consequência prática: um p-valor do Ljung-Box perto de 0,05 nos resíduos do robô não é evidência forte. Um
+p-valor bem menor, como o 0,009 da validação de 05/10, continua sendo.
+\end{cuidado}
+
+\textbf{O poder.} Numa série AR(1) com $\phi = 0{,}2$ (autocorrelação fraca, do tamanho das que aparecem em
+retornos), o teste com 10 defasagens percebeu a autocorrelação em $\vTLbPoder\%$ das \vTLbPoderR{} séries de 239
+pontos.
+
+%=====================================================================
+\section{Verossimilhança, AIC e a escolha das ordens}
+
+\textbf{As fórmulas} (D1 e D2). Com resíduos gaussianos e $\hat\sigma^2 = \text{SQR}/n$, a log-verossimilhança do
+ARIMA é $\ln L = -\tfrac{n}{2}[\ln(2\pi) + \ln\hat\sigma^2 + 1]$, e o AIC é $-2\ln L + 2k$, com $k$ contando
+$p$, $q$, a constante e a variância. Refeitas a partir dos resíduos que o próprio \texttt{CArima} devolve, deram
+diferença zero.
+
+\textbf{A amostra comum} (D3). O AIC só compara modelos de forma justa se todos somarem a verossimilhança sobre
+as mesmas observações (é a correção descrita no \texttt{CLAUDE.md}, ``AIC sempre sobre amostra comum''). Os 25
+candidatos da grade, de ARIMA(0,1,0) a ARIMA(4,1,4), usaram todos \vTAmostraComum{} observações. Diferença entre
+o maior e o menor: zero. \ok
+
+\textbf{A grade escolhe a ordem certa?} Foram geradas \vTSelArR{} séries cujo retorno é um AR(1) com
+$\phi = 0{,}5$ e \vTSelPasseioR{} passeios aleatórios puros (retorno sem memória, ordem verdadeira (0,1,0)). Cada
+uma passou pela \texttt{BuscarMelhorPQ} do robô, com $p$ e $q$ de 0 a 4 (Figura~\ref{fig:aic}).
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.6cm}, width=6.6cm, height=6.6cm,
+    colormap={azul}{color=(white) color=(cmod!80)}, point meta min=0, point meta max=80,
+    xtick={0,...,4}, ytick={0,...,4}, xlabel={$q$ (termos MA)}, ylabel={$p$ (termos AR)},
+    tick label style={font=\small}, label style={font=\small}, title style={font=\small\bfseries},
+    enlargelimits=false, axis on top, y dir=reverse,
+    nodes near coords={\pgfmathprintnumber[fixed, precision=1, use comma]{\pgfplotspointmeta}},
+    every node near coord/.append style={font=\scriptsize, anchor=center, black}]
+\nextgroupplot[title={Verdade: ARIMA(1,1,0)}]
+  \addplot[matrix plot*, mesh/cols=5, point meta=explicit] table[col sep=comma, x=q, y=p, meta=pct] {\arq{aic_selecao_ar1.csv}};
+\nextgroupplot[title={Verdade: ARIMA(0,1,0)}]
+  \addplot[matrix plot*, mesh/cols=5, point meta=explicit] table[col sep=comma, x=q, y=p, meta=pct] {\arq{aic_selecao_passeio.csv}};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Porcentagem das vezes em que a grade do AIC escolheu cada $(p, q)$, em séries de 240 pontos com ordem
+verdadeira conhecida.}
+\label{fig:aic}
+\end{figure}
+
+A ordem verdadeira foi a mais escolhida nos dois casos: $\vTSelArCerto\%$ no AR(1) e $\vTSelPasseioCerto\%$ no
+passeio. Quando erra, o AIC em geral escolhe um modelo com \emph{mais} termos que o verdadeiro (no AR(1), o
+segundo mais escolhido foi o ARIMA(2,1,0)). Isso é propriedade conhecida do AIC, que penaliza pouco cada parâmetro, e não erro do código. Vale
+lembrar ao ler o Cap.~III: quando a grade escolhe uma ordem alta na PETR4, parte disso pode ser esse excesso. \ok
+
+%=====================================================================
+\section{Hannan-Rissanen (\texttt{Arima.mqh})}\label{sec:hr}
+
+O relatório próprio (\nolinkurl{ia/relatorios/hannan-rissanen/}) explica o método e refaz dois pregões reais: os
+coeficientes e a previsão saíram \textbf{idênticos} aos do traço do robô, com diferença zero
+(\nolinkurl{dados/resultados/hannan_rissanen_2026-10-30/resumo.txt}). Aqui ficam dois testes que faltavam.
+
+\textbf{Sem termo MA, é MQO} (E1). Quando $q = 0$ o Hannan-Rissanen não precisa do estágio 1, e o ARIMA($p$,0,0)
+é uma regressão comum. O ARIMA(2,0,0) do \texttt{CArima} nos retornos reais deu os mesmos três coeficientes que
+uma eliminação de Gauss escrita à parte (diferença $\vTIdEum$).
+
+\textbf{Recupera coeficientes conhecidos?} Para cada valor verdadeiro de $-0{,}6$ a $0{,}6$ foram simuladas
+\vTHrR{} séries de 239 pontos, AR(1) e MA(1), e ajustadas pelo \texttt{CArima}. A Figura~\ref{fig:hr} mostra a
+média das estimativas e o desvio (barra). Os pontos caem na diagonal: em média o método acerta. O desvio é maior
+no MA do que no AR, porque o MA depende dos erros estimados no estágio 1. \ok
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[base, width=10cm, height=8cm, xmin=-0.75, xmax=0.75, ymin=-0.8, ymax=0.8,
+    xlabel={Coeficiente verdadeiro}, ylabel={Estimado pelo robô (média $\pm$ 1 desvio)},
+    legend style={font=\scriptsize, at={(0.03,0.97)}, anchor=north west},
+    /pgf/number format/fixed, /pgf/number format/precision=1, unbounded coords=discard]
+  \addplot[cdad, dashed, line width=0.7pt, domain=-0.75:0.75, samples=2] {x};
+  \addlegendentry{estimativa perfeita}
+  \addplot[cmod, only marks, mark=*, mark size=2.2pt, error bars/.cd, y dir=both, y explicit]
+    table[x expr={\thisrow{tipo}==0 ? \thisrow{verdadeiro}-0.015 : nan}, y=media, y error=dp] {\arq{hr_recuperacao.csv}};
+  \addlegendentry{$\phi$ do AR(1)}
+  \addplot[cari, only marks, mark=square*, mark size=2.2pt, error bars/.cd, y dir=both, y explicit]
+    table[x expr={\thisrow{tipo}==1 ? \thisrow{verdadeiro}+0.015 : nan}, y=media, y error=dp] {\arq{hr_recuperacao.csv}};
+  \addlegendentry{$\theta$ do MA(1)}
+\end{axis}
+\end{tikzpicture}
+\caption{Recuperação de coeficientes conhecidos pelo \texttt{CArima}, \vTHrR{} séries de 239 pontos por ponto.
+Os pontos foram afastados um pouco na horizontal para não se sobreporem.}
+\label{fig:hr}
+\end{figure}
+
+%=====================================================================
+\section{GARCH(1,1) (\texttt{Garch.mqh})}\label{sec:garch}
+
+\subsection{As fórmulas}
+
+A log-verossimilhança do GARCH foi refeita à parte: variância inicial igual à média de $e^2$, depois a recursão
+$\sigma^2_t = \omega + \alpha e^2_{t-1} + \beta \sigma^2_{t-1}$ e a soma de
+$-\tfrac12[\ln 2\pi + \ln\sigma^2_t + e^2_t/\sigma^2_t]$. Com os parâmetros que o robô estimou nos resíduos reais,
+deu o mesmo número (F1). A previsão de um passo $\sqrt{\omega + \alpha e_N^2 + \beta\sigma_N^2}$ (F2), que é o
+número comparado com o limiar, e a variância de longo prazo $\omega/(1-\alpha-\beta)$ (F3) também. Diferença
+zero nas três. \ok
+
+Os parâmetros estimados nessa janela foram $\omega = \vTGOmega\times10^{-5}$, $\alpha = \vTGAlfa$ e
+$\beta = \vTGBeta$, com $\ln L = \vTGLogL$. São os mesmos da validação de 05/10/2026
+(\nolinkurl{dados/verificacao/validacao_numerica_2026-10-05.txt}): o código não mudou de comportamento desde então.
+
+\subsection{O otimizador acha mesmo o máximo?}
+
+As identidades conferem a \emph{conta} da verossimilhança. Falta conferir se o otimizador (MinBLEIC, da ALGLIB)
+devolve o ponto mais alto dela. Dois testes:
+
+\textbf{Grade.} Com $\omega$ fixo, calculou-se a verossimilhança em \vTGradeViaveis{} combinações de $\alpha$ e
+$\beta$ em volta do ponto estimado, de 0,005 em 0,005 (Figura~\ref{fig:garchgrade}). Nenhuma passou o ponto do
+robô: \vTGradeMelhores{} de \vTGradeViaveis. O vizinho mais alto ficou $\vTGradeGanho$ abaixo.
+
+\textbf{Perturbação.} Mexendo um parâmetro de cada vez (1\% em $\omega$, 0,001 em $\alpha$ e em $\beta$), para
+mais e para menos, a verossimilhança sempre caiu. A menor queda foi $\vTPerturbMaior$. Num máximo, a
+verossimilhança cai para os dois lados, e é o que se vê. \ok
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=10cm, height=9cm, view={0}{90}, enlargelimits=false, axis on top,
+    xlabel={$\alpha$}, ylabel={$\beta$}, tick label style={font=\small}, label style={font=\small},
+    /pgf/number format/use comma, /pgf/number format/fixed, /pgf/number format/precision=2,
+    colormap={verossim}{color=(white) color=(cmod!25) color=(cmod!60) color=(cmod)},
+    point meta min=-4, point meta max=0, colorbar, colorbar style={ylabel={$\ln L - \ln L_{\text{robô}}$},
+      ylabel style={font=\small}, tick label style={font=\scriptsize}}]
+  \addplot[matrix plot*, mesh/cols=41, mesh/ordering=y varies, point meta={max(\thisrow{dl},-4)}]
+    table[col sep=comma, x=alfa, y=beta] {\arq{garch_grade.csv}};
+  \addplot[only marks, mark=x, mark size=5pt, line width=1.6pt, black] coordinates {(\pTGAlfa,\pTGBeta)};
+  \node[font=\scriptsize, anchor=south west, fill=white, fill opacity=0.8, text opacity=1, inner sep=1.5pt]
+    at (axis cs:\pTGAlfa,\pTGBeta) {o robô};
+\end{axis}
+\end{tikzpicture}
+\caption{Log-verossimilhança do GARCH(1,1) nos resíduos reais, em volta do ponto estimado pelo robô ($\omega$
+fixo). Quanto mais azul, mais alto. O ponto do robô está no topo: nenhuma das \vTGradeViaveis{} combinações
+fica acima dele. Abaixo de $-4$ fica branco. A faixa azul inclinada mostra que $\alpha$ e $\beta$ se
+compensam: subir um e descer o outro muda pouco a verossimilhança, e é por isso que estimá-los separadamente
+é difícil (seção \ref{sec:garchmc}).}
+\label{fig:garchgrade}
+\end{figure}
+
+\subsection{Recupera parâmetros conhecidos?}\label{sec:garchmc}
+
+Foram simuladas séries GARCH(1,1) com $\omega = 10^{-5}$, $\alpha = 0{,}09$ e $\beta = 0{,}89$ (os mesmos da
+validação de 05/10/2026), \vTMcCurtoR{} com 240 pontos e \vTMcMilR{} com 1000 pontos, e cada uma foi ajustada pelo
+\texttt{CGarch} (Figura~\ref{fig:garchmc}).
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.5cm}, base, width=7.4cm, height=6.6cm,
+    xmin=0, xmax=0.35, ymin=0, ymax=1.02, xlabel={$\alpha$ estimado}, /pgf/number format/fixed,
+    /pgf/number format/precision=2]
+\nextgroupplot[title={240 observações (a janela do robô)}, ylabel={$\beta$ estimado}]
+  \addplot[only marks, mark=*, mark size=1.1pt, cmod, fill opacity=0.45, draw opacity=0.45]
+    table[x=alfa, y=beta] {\arq{garch_mc_240.csv}};
+  \addplot[only marks, mark=star, mark size=6pt, line width=1.4pt, cdes] coordinates {(0.09,0.89)};
+  \addplot[cdad, dashed, line width=0.6pt, domain=0:0.35, samples=2] {0.9999-x};
+\nextgroupplot[title={1000 observações}]
+  \addplot[only marks, mark=*, mark size=1.1pt, cmod, fill opacity=0.45, draw opacity=0.45]
+    table[x=alfa, y=beta] {\arq{garch_mc_1000.csv}};
+  \addplot[only marks, mark=star, mark size=6pt, line width=1.4pt, cdes] coordinates {(0.09,0.89)};
+  \addplot[cdad, dashed, line width=0.6pt, domain=0:0.35, samples=2] {0.9999-x};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Cada ponto é um ajuste do \texttt{CGarch} numa série simulada. A estrela é o valor verdadeiro. A linha
+tracejada é o limite $\alpha + \beta < 1$, que o otimizador respeita (nenhum ponto passa dela).}
+\label{fig:garchmc}
+\end{figure}
+
+Com 1000 pontos as estimativas se juntam em volta da estrela: $\alpha$ médio $\vTMcMilAlfa$ (desvio
+$\vTMcMilAlfaDp$) e $\beta$ médio $\vTMcMilBeta$ (desvio $\vTMcMilBetaDp$). A implementação recupera os
+parâmetros. \ok
+
+\begin{cuidado}[Achado: com 240 pontos, o $\beta$ é incerto]
+Com 240 pontos, o $\alpha$ médio ainda acerta ($\vTMcCurtoAlfa$), mas o $\beta$ médio cai para $\vTMcCurtoBeta$
+com desvio de $\vTMcCurtoBetaDp$: a nuvem se espalha para baixo, e $\vTMcCurtoLimite\%$ dos ajustes encostaram no
+limite $\alpha + \beta = 1$. É uma propriedade do GARCH, não do código (com mais dados a mesma função acerta): a
+persistência da volatilidade é difícil de medir em menos de um ano de pregões.
+
+Para o robô, isso quer dizer que o $\alpha$ e o $\beta$ estimados em cada janela de 240 pregões oscilam bastante
+de uma janela para outra por puro erro de estimação. O que o robô usa é a volatilidade prevista comparada a um
+percentil da própria janela, e não os parâmetros em si. Se essa comparação é menos sensível ao erro de $\beta$ é
+algo \textbf{não testado} aqui.
+\end{cuidado}
+
+%=====================================================================
+\section{Previsão e percentil}
+
+A previsão do ARIMA é feita no espaço diferenciado ($\hat z_{N+1}$, o retorno) e depois volta ao nível. Com
+$d = 1$, $\hat y_{N+1} = y_N + \hat z_{N+1}$. Com $d = 2$, $\hat y_{N+1} = 2y_N - y_{N-1} + \hat z_{N+1}$. As duas
+saíram iguais à função \texttt{PreverNivel}, com diferença zero (G1 e G2).
+
+O percentil, que define o limiar do filtro, usa interpolação linear entre os valores ordenados. Para os números
+de 1 a 10, o percentil 70 fica na posição $0{,}7 \times 9 = 6{,}3$ (contando do zero), ou seja, $7 + 0{,}3 \times
+(8 - 7) = 7{,}3$. Foi o que o código deu (G3). \ok
+
+%=====================================================================
+\section{Outras conferências já feitas, e onde estão}
+
+Este relatório se soma a conferências anteriores, cada uma com o seu arquivo:
+
+\begin{itemize}[leftmargin=1.2em]
+\item \textbf{Recuperação de parâmetros em uma série sintética} (05/10/2026): ARMA(1,1), AR(2) e GARCH(1,1)
+recuperados perto do verdadeiro, e o ADF distinguindo passeio aleatório de série estacionária.
+\nolinkurl{dados/verificacao/validacao_numerica_2026-10-05.txt}.
+\item \textbf{Hannan-Rissanen contra o traço do robô} (30/10/2026): dois pregões reais refeitos fora do robô,
+constante, $\theta$ e previsão idênticos. \nolinkurl{dados/resultados/hannan_rissanen_2026-10-30/resumo.txt}.
+\item \textbf{Teste de regressão} (18/10/2026): \texttt{ferramentas/scripts/regressao\_codigo.sh}, 13 casos que
+passam por todos os caminhos dos dois EAs, comparados byte a byte antes e depois da limpeza do código. Não foi
+rodado de novo nesta sessão, porque o código do robô não mudou.
+\item \textbf{GARCH com $t$ de Student e máxima verossimilhança no ARIMA} (13 e 15/10/2026): as duas opções
+experimentais têm validação própria em \nolinkurl{dados/verificacao/}. Não fazem parte do TG nem deste relatório.
+\end{itemize}
+
+%=====================================================================
+\section{O que estes testes provam, e o que não provam}
+
+\textbf{Provam} que cada função testada calcula a fórmula que diz calcular: os mesmos números saem quando a conta é
+refeita por outro caminho (fórmula fechada, outro algoritmo, propriedade que define o método). E provam que, em
+dados com resposta conhecida, o código se comporta como a teoria manda: testes com o tamanho certo, coeficientes
+recuperados, máximo encontrado.
+
+\textbf{Não provam} três coisas.
+\begin{itemize}[leftmargin=1.2em]
+\item As contas independentes foram escritas a partir da mesma leitura das fórmulas. Se a fórmula tivesse sido
+mal lida dos livros, o erro estaria dos dois lados. O que protege contra isso são os testes que não dependem da
+leitura: os valores verdadeiros das simulações, o valor da tabela de MacKinnon e a distribuição qui-quadrado da
+biblioteca estatística do MetaTrader. Uma conferência a mais, possível e fora do repositório, seria rodar a mesma
+série num software estatístico estabelecido e comparar os coeficientes.
+\item Não testam a parte de execução do robô (ordens, posição, volume). Essa parte é coberta pelo teste de
+regressão e pelo traço por barra.
+\item Não testam se as escolhas de método são as melhores (por exemplo, AIC em vez de BIC, ou Hannan-Rissanen em
+vez de máxima verossimilhança). Testam que as escolhas feitas estão implementadas corretamente.
+\end{itemize}
+
+%=====================================================================
+\section{Perguntas que a banca pode fazer}
+
+\begin{banca}
+\textbf{``Como vocês sabem que o ARIMA e o GARCH em MQL5 estão certos, se não usaram uma biblioteca pronta?''}\\
+Cada função foi testada de duas formas. Primeiro, refazendo a conta por outro caminho e conferindo que o
+resultado é o mesmo até o arredondamento do computador. Segundo, com séries simuladas de propriedades conhecidas:
+o código recupera os coeficientes verdadeiros e os testes estatísticos rejeitam na proporção certa.
+
+\medskip
+\textbf{``O otimizador do GARCH pode parar num ponto que não é o máximo?''}\\
+Na janela real testada, nenhuma das \vTGradeViaveis{} combinações vizinhas teve verossimilhança maior que a do
+ponto devolvido, e qualquer perturbação pequena fez a verossimilhança cair.
+
+\medskip
+\textbf{``Com 240 pregões dá para estimar um GARCH?''}\\
+Dá, mas com incerteza grande no $\beta$: nas simulações o desvio da estimativa foi $\vTMcCurtoBetaDp$ com 240
+pontos, contra $\vTMcMilBetaDp$ com 1000. É uma limitação do tamanho da janela, que é escolha do experimento.
+
+\medskip
+\textbf{``Por que o valor crítico do ADF é $-2{,}87$ e não $-1{,}65$?''}\\
+Porque, sob a hipótese de raiz unitária, a estatística não segue a normal: segue a distribuição de Dickey-Fuller,
+deslocada para a esquerda (Figura~\ref{fig:adfh0}). Os valores críticos vêm das tabelas de MacKinnon.
+\end{banca}
+
+\vfill
+\footnotesize
+Para refazer: \texttt{bash ferramentas/scripts/testes\_formulas.sh} (cerca de um minuto) e \texttt{make} nesta
+pasta. Código dos testes: \nolinkurl{ferramentas/TestesFormulas.mq5}. Dados:
+\nolinkurl{dados/verificacao/testes_formulas_2026-10-30/}.
+\end{document}

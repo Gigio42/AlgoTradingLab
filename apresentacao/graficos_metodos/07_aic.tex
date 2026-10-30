@@ -1,0 +1,32 @@
+% Seleção de p e q pelo AIC (a mesma grade do BuscarMelhorPQ, amostra comum):
+% a diferença de AIC para o melhor em cada célula, e a troca entre ajuste
+% (log L) e número de parâmetros k que o AIC = -2 log L + 2k arbitra.
+\documentclass[border=4pt]{standalone}
+\input{comum}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[base, group style={group size=2 by 1, horizontal sep=2.0cm}, height=6.6cm]
+\nextgroupplot[width=6.6cm, title={Diferença de AIC para o melhor\\(quanto mais escuro, melhor)},
+  xlabel={$q$ (termos MA)}, ylabel={$p$ (termos AR)}, xtick={0,...,4}, ytick={0,...,4},
+  xmin=-0.5, xmax=4.5, ymin=-0.5, ymax=4.5, enlargelimits=false, grid=none, y dir=reverse,
+  colormap={aic}{color=(cmod) color=(cmod!30) color=(white)}, point meta min=0, point meta max=19,
+  nodes near coords={\pgfmathprintnumber[fixed,fixed zerofill,precision=1]{\pgfplotspointmeta}},
+  every node near coord/.append style={font=\footnotesize, anchor=center}]
+\addplot[matrix plot*, mesh/cols=5, point meta=explicit] table[x=q, y=p, meta=delta]{\arq{aic_grade.csv}};
+\draw[cdes, line width=1.6pt] (axis cs:\pMelhorQ-0.5,\pMelhorP-0.5) rectangle (axis cs:\pMelhorQ+0.5,\pMelhorP+0.5);
+\nextgroupplot[width=8.4cm, title={AIC $= -2\log L + 2k$: cada parâmetro a mais\\precisa subir o $\log L$ em pelo menos 1},
+  xlabel={Número de parâmetros $k$}, ylabel={$\log L$}, xmin=1.5, xmax=10.5, xtick={2,...,10},
+  /pgf/number format/precision=0, /pgf/number format/fixed,
+  legend style={font=\footnotesize, at={(0.5,-0.22)}, anchor=north, legend columns=2, cells={anchor=west}, draw=none, column sep=4pt}]
+\addplot[name path=iso, cmod, line width=1.2pt, domain=1.5:10.5, samples=2] {x - \pMelhorAIC/2};
+\addplot[name path=iso2, draw=none, forget plot, domain=1.5:10.5, samples=2] {x - \pMelhorAIC/2 - 1};
+\addplot[cmod!15, area legend] fill between[of=iso and iso2];
+\addplot[only marks, mark=*, mark size=2pt, cdad] table[x=k, y=logl]{\arq{aic_grade.csv}};
+\addplot[only marks, mark=star, mark size=5pt, line width=1.2pt, cdes] coordinates {(\pMelhorK,\pMelhorLogL)};
+\legend{mesmo AIC do melhor, diferença de AIC menor que 2, os 25 modelos, {melhor: $(p,q) = (\vMelhorP,\vMelhorQ)$}}
+\node[font=\footnotesize, align=right, anchor=south east] (nota) at (rel axis cs:0.98,0.06)
+  {$(4,4)$: $\log L$ maior que o do\\melhor, mas com 4 parâmetros\\a mais: AIC pior};
+\draw[-{Stealth[length=5pt]}, cdad!70!black] (nota.north east) -- (axis cs:\pMaiorK,\pMaiorLogL);
+\end{groupplot}
+\end{tikzpicture}
+\end{document}

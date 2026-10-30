@@ -18,7 +18,7 @@ DEST="${2:-$A/dados/resultados/traco_demo_2019_2021}"; mkdir -p "$DEST"
 for v in "GARCH true" "ARIMA false"; do
   set -- $v; nome=$1; flag=$2
   matar; rm -f "$LOGDIR"/*.log
-  bash rodar.sh "demo_$nome" 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL $DE $ATE 100000 1:1 "$B" \
+  bash rodar.sh "demo_$nome" 'robos\ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL $DE $ATE 100000 1:1 "$B" \
     UsarGARCH=$flag $GS Arquivo_Traco=demo_$nome >/dev/null 2>&1
   f=$(ls -t "$LOGDIR"/*.log 2>/dev/null | head -1)
   iconv -f UTF-16LE -t UTF-8 "$f" > "$OUT/log_$nome.txt" 2>/dev/null

@@ -18,7 +18,7 @@ D="$(cd "$1" && pwd)"; [ -d "$D/escolhas" ] || { echo "uso: $0 <pasta da bateria
 OUT="$D/exploratorio_estimacao"; mkdir -p "$OUT/testes"
 LOG="$OUT/execucao.log"; : > "$LOG"
 B="$TRAB/sub15/base.txt"; [ -s "$B" ] || { echo "falta $B (rode a bateria antes)"; exit 1; }
-EA='ARIMA-GARCH\ARIMA_GARCH_EA'
+EA='robos\ARIMA-GARCH\ARIMA_GARCH_EA'
 export ESPERA=5400
 cfg(){ awk -v k="$2" '$1 == k { sub(/^[^|]*\| /, ""); print }' "$1"; }
 JT=("" "T1 2007.01.02 2011.12.30" "T2 2013.01.02 2016.12.30" "T3 2025.01.02 2026.09.19"

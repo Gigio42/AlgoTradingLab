@@ -3,7 +3,7 @@
 ## Por que refazer
 
 Em 05/10/2026 a auditoria do código achou dois erros que mudam decisões de operar
-quando o teste ADF escolhe d = 0 (ver `notas/INCERTEZAS.md`, itens 43 e 44):
+quando o teste ADF escolhe d = 0 (ver `ia/INCERTEZAS.md`, itens 43 e 44):
 
 1. o EA usava `PreverDiferenciado()` como previsão de retorno também com d = 0,
    quando isso é o nível do log-preço (sinal de compra quase sempre);

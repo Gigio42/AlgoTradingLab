@@ -1,7 +1,7 @@
 //| Copia versionada (05/10/2026). Para rodar: copiar para MQL5\Scripts |
 //--- Script TEMPORARIO de validacao numerica. Nao faz parte do projeto.
-#include "..\Experts\AlgoTradingLab\Include\Arima.mqh"
-#include "..\Experts\AlgoTradingLab\Include\Garch.mqh"
+#include "..\Experts\AlgoTradingLab\robos\Include\Arima.mqh"
+#include "..\Experts\AlgoTradingLab\robos\Include\Garch.mqh"
 
 int g_h = INVALID_HANDLE;
 
@@ -155,7 +155,7 @@ void OnStart()
    //=================================================================
    Log("");
    //--- Serie OFICIAL (B3 COTAHIST, so desdobramentos), e nao a PETR4 da
-   //--- corretora. Trocado em 05/10/2026 (notas/INCERTEZAS.md, itens 33 e 42).
+   //--- corretora. Trocado em 05/10/2026 (ia/INCERTEZAS.md, itens 33 e 42).
    Log("--- 4) PETR4_OFICIAL D1 (dados reais, B3 COTAHIST) ---");
    double close[];
    int copiados = CopyClose("PETR4_OFICIAL", PERIOD_D1, 1, 500, close);

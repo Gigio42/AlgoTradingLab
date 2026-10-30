@@ -2,7 +2,7 @@ MAIN = main
 # Apêndice A: o código do EA sem comentários e sem log, diagnóstico e avaliação,
 # gerado a partir do arquivo que de fato roda (nunca copiado à mão). O que sai
 # fica marcado no próprio EA com //@omitir (ver codigo_apendice.sh).
-EA     = ../ARIMA-GARCH/ARIMA_GARCH_EA.mq5
+EA     = ../robos/ARIMA-GARCH/ARIMA_GARCH_EA.mq5
 # Apêndice B (27/10/2026): as classes e funções dos modelos, pelo mesmo processo
 MODELOS = Arima SelecaoModelo Garch Estrategia
 CODIGO = codigo/ARIMA_GARCH_EA.mq5 $(MODELOS:%=codigo/%.mqh)
@@ -19,7 +19,7 @@ codigo/ARIMA_GARCH_EA.mq5: $(EA) $(GERADOR)
 	mkdir -p codigo
 	bash ../ferramentas/scripts/codigo_apendice.sh $(EA) > $@
 
-codigo/%.mqh: ../Include/%.mqh $(GERADOR)
+codigo/%.mqh: ../robos/Include/%.mqh $(GERADOR)
 	mkdir -p codigo
 	bash ../ferramentas/scripts/codigo_apendice.sh $< > $@
 

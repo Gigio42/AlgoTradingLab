@@ -1,7 +1,7 @@
 #!/bin/bash
 # fatores_500.sh <pasta_de_saida> [calibrar] [testar]
 #
-# Estudo de fatores de 27/10/2026 (notas/INCERTEZAS.md, item 79): o estudo das
+# Estudo de fatores de 27/10/2026 (ia/INCERTEZAS.md, item 79): o estudo das
 # janelas fixas de 26/10 (ARIMA 240, GARCH 500, janelas_240_500.sh), só compra,
 # com três fatores a mais na grade, cada um com duas opções:
 #   DistribuicaoGARCH       normal (0) ou t de Student (1)

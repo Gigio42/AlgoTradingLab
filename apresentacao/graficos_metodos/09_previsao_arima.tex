@@ -1,0 +1,42 @@
+% O que o ARIMA prevê e o que acontece: a previsão de cada pregão contra o
+% retorno realizado (traço da refação de 05/10/2026, jul/2019 a jun/2021).
+% A previsão é a mesma com e sem GARCH.
+\documentclass[border=6pt]{standalone}
+\input{comum}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[base, traco, name=serie, width=11cm, height=6.4cm, ymin=-12, ymax=12, clip=true,
+  ylabel={Retorno do dia (\%)},
+  title={\passo{1} No tempo: a previsão (azul) é pequena perto do que acontece (cinza)},
+  legend style={at={(0.5,0.02)}, anchor=south, font=\footnotesize, legend columns=2, fill=white, fill opacity=0.9}]
+\addplot[ycomb, cdad!70, line width=0.5pt, mark=none] table[x=data, y=real]{\arqr{dia_a_dia.csv}};
+\addlegendentry{retorno realizado}
+\addplot[cmod, line width=1pt] table[x=data, y=prev]{\arqr{dia_a_dia.csv}};
+\addlegendentry{retorno previsto pelo ARIMA}
+\node[font=\footnotesize, align=left, anchor=north west, fill=white, fill opacity=0.85, text opacity=1]
+  at (rel axis cs:0.01,0.99) {desvio-padrão: previsto $\vRPrevDP\%$, realizado $\vRRealDP\%$\\(dias além de $\pm 12\%$ cortados)};
+\end{axis}
+\begin{axis}[base, name=disp, at={(serie.east)}, anchor=west, xshift=1.9cm, width=7.6cm, height=7.6cm,
+  xmin=-12, xmax=12, ymin=-12, ymax=12, axis equal image, clip=true,
+  xlabel={Retorno previsto (\%)}, ylabel={Retorno realizado (\%)},
+  title={\passo{2} Um ponto por pregão:\\acertou a direção em \vRPrevAcertos{} de \vRPrevN{} ($\vRPrevTaxa\%$)}]
+\fill[cok!10] (axis cs:0,0) rectangle (axis cs:12,12);
+\fill[cok!10] (axis cs:0,0) rectangle (axis cs:-12,-12);
+\fill[cdes!8] (axis cs:0,0) rectangle (axis cs:-12,12);
+\fill[cdes!8] (axis cs:0,0) rectangle (axis cs:12,-12);
+\draw[black!40, dashed] (axis cs:-12,-12) -- (axis cs:12,12);
+\addplot[only marks, mark=*, mark size=1.1pt, cok, opacity=0.7] table[x=prev, y=real]{\arqr{prev_acerto.csv}};
+\addplot[only marks, mark=*, mark size=1.1pt, cdes, opacity=0.7] table[x=prev, y=real]{\arqr{prev_erro.csv}};
+\node[cok!70!black, font=\footnotesize\bfseries] at (axis cs:6,10.5) {acerto};
+\node[cok!70!black, font=\footnotesize\bfseries] at (axis cs:-6,-10.5) {acerto};
+\node[cdes, font=\footnotesize\bfseries] at (axis cs:-6,10.5) {erro};
+\node[cdes, font=\footnotesize\bfseries] at (axis cs:6,-10.5) {erro};
+\node[black!55, font=\scriptsize, rotate=45, anchor=south] at (axis cs:7,7) {previsão perfeita};
+\end{axis}
+\node[font=\footnotesize, text=black!75, align=left, anchor=north west, text width=19cm]
+  at ([yshift=-0.15cm]serie.outer west |- disp.outer south) {Como ler: se o ARIMA previsse bem, os pontos da direita ficariam sobre a diagonal. Eles formam uma faixa
+  vertical estreita: a previsão varia pouco ($\vRPrevDP\%$ de desvio-padrão) e o mercado varia cerca de $\vRRazaoDP$ vezes mais.
+  O robô usa só o sinal da previsão (compra se positiva), e a direção acertou em $\vRPrevTaxa\%$ dos pregões, praticamente o mesmo
+  que uma moeda. A previsão saiu positiva em $\vRPrevPosPct\%$ dos dias. Os saltos de abril de 2020 são do trecho em que o ADF escolheu $d = 0$ (figura 10).};
+\end{tikzpicture}
+\end{document}

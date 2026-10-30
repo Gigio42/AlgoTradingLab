@@ -6,7 +6,7 @@
 //| O testador nao abre grafico e o agente le e grava Common\Files.   |
 //| Para rodar: comparar.sh (copia este arquivo para MQL5\Experts).   |
 //+------------------------------------------------------------------+
-#include "AlgoTradingLab\Include\Desempenho.mqh"
+#include "AlgoTradingLab\robos\Include\Desempenho.mqh"
 #include "CompararModelos.mqh"
 
 int OnInit()

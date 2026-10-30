@@ -1,0 +1,41 @@
+% O GARCH reestimado todo pregão: volatilidade prevista, limiar e vetos; os
+% parâmetros e a persistência (traço da refação de 05/10/2026).
+\documentclass[border=6pt]{standalone}
+\input{comum}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[base, traco, group style={group size=1 by 3, vertical sep=1.05cm, xticklabels at=edge bottom},
+  width=15cm, height=4.6cm]
+\nextgroupplot[ymin=0, ymax=12, ylabel={\% ao dia},
+  title={\passo{1} Volatilidade prevista contra o limiar (faixas vermelhas: \vRVetos{} pregões vetados, $\vRVetosPct\%$)},
+  legend style={at={(0.005,0.97)}, anchor=north west, font=\footnotesize, legend columns=3}]
+\faixa{\thisrow{vetou}==1}{cdes!15}{0}{12}
+\addplot[ycomb, cdad!60, line width=0.5pt, forget plot] table[x=data, y=absreal]{\arqr{dia_a_dia.csv}};
+\addplot[cmod] table[x=data, y=vol]{\arqr{dia_a_dia.csv}};
+\addplot[cari, dashed] table[x=data, y=lim]{\arqr{dia_a_dia.csv}};
+\addlegendimage{cdad!60, line width=2pt}
+\legend{$\sigma$ prevista pelo GARCH, limiar (percentil 70), $|$retorno$|$ realizado}
+\node[font=\footnotesize, anchor=north east, align=right, fill=white, fill opacity=0.85, text opacity=1]
+  at (rel axis cs:0.995,0.97) {em \vRDiaVolMax{} a $\sigma$ prevista\\chegou a $\vRVolMax\%$ (cortada)};
+\nextgroupplot[ymin=0, ymax=1.25, ylabel={Parâmetro}, /pgf/number format/fixed,
+  title={\passo{2} Os parâmetros, reestimados todo pregão com os resíduos da janela},
+  legend style={at={(0.005,0.97)}, anchor=north west, font=\footnotesize, legend columns=2}]
+\addplot[cmod] table[x=data, y=alfa]{\arqr{dia_a_dia.csv}};
+\addlegendentry{$\alpha$ (peso do choque de ontem)}
+\addplot[cari] table[x=data, y=beta]{\arqr{dia_a_dia.csv}};
+\addlegendentry{$\beta$ (peso da volatilidade de ontem)}
+\nextgroupplot[ymin=0, ymax=1.12, ylabel={$\alpha+\beta$}, /pgf/number format/fixed,
+  title={\passo{3} Persistência: perto de 1, um choque demora a passar (faixas: no limite, \vRDiasLimite{} pregões)}]
+\faixa{\thisrow{limite}==1}{cdes!15}{0}{1.12}
+\addplot[black!50, dashed, forget plot] coordinates {(2019-07-01,1) (2021-06-30,1)};
+\addplot[cmod] table[x=data, y=persist]{\arqr{dia_a_dia.csv}};
+\end{groupplot}
+\node[font=\footnotesize, text=black!75, align=left, anchor=north west, text width=14.2cm]
+  at ([yshift=-0.75cm]group c1r3.south west) {Como ler: todo pregão o GARCH é reajustado aos resíduos do ARIMA e prevê a volatilidade
+  do dia seguinte (azul, em cima). Quando ela passa do limiar (laranja), a operação é vetada. O limiar também se move, porque é o
+  percentil 70 da volatilidade ajustada dentro da própria janela. Na crise de março de 2020 a previsão disparou e o GARCH vetou
+  por semanas seguidas. Os parâmetros costumam mudar pouco de um dia para o outro, mas às vezes saltam, quando um trecho agitado entra
+  ou sai da janela. Em \vRDiasLimite{} pregões a persistência ficou encostada no limite imposto ao otimizador ($\alpha + \beta < 1$):
+  ali o modelo tratava a volatilidade alta como quase permanente.};
+\end{tikzpicture}
+\end{document}

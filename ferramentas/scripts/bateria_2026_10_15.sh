@@ -76,7 +76,7 @@ done; done; fi
 cfg(){ awk -v k="$2" '$1 == k { sub(/^[^|]*\| /, ""); print }' "$1"; }
 
 # --- 3. testes individuais ------------------------------------------------------
-EA='ARIMA-GARCH\ARIMA_GARCH_EA'; MMEA='MediasMoveis2\MediasMoveis2'
+EA='robos\ARIMA-GARCH\ARIMA_GARCH_EA'; MMEA='robos\MediasMoveis2\MediasMoveis2'
 ROT=""
 roda(){ local rot=$1 de=$2 ate=$3; shift 3; ROT="$ROT $rot"
   echo "== $rot $*" >> "$LOG"

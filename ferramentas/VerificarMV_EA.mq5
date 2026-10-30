@@ -16,7 +16,7 @@
 //|     e BIC; e quanto a log-verossimilhanca do maior modelo, (4,4),|
 //|     sobe em relacao ao verdadeiro, em cada metodo.               |
 //+------------------------------------------------------------------+
-#include "AlgoTradingLab\Include\Arima.mqh"
+#include "AlgoTradingLab\robos\Include\Arima.mqh"
 
 int g_h = INVALID_HANDLE;
 void Log(string s) { Print(s); if(g_h != INVALID_HANDLE) FileWrite(g_h, s); }

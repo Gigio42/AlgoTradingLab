@@ -1,0 +1,65 @@
+================ TESTES DAS FORMULAS ================
+--- A. MQO
+  [Aum] MQO recupera y = 2 + 3x - 0,5x^2 sem ruido: diferenca = 1.924e-15
+  [Adois] Coeficientes da regressao simples (formula fechada Sxy/Sxx): diferenca = 1.143e-15
+  [Atres] Erros-padrao da regressao simples (formula fechada): diferenca = 4.660e-16
+  [Aquatro] Soma dos quadrados dos residuos: diferenca = 2.172e-16
+  [Acinco] AR(5): ALGLIB contra eliminacao de Gauss independente: diferenca = 4.163e-17
+  [Aseis] Ortogonalidade X'e = 0 (cosseno entre cada coluna e o residuo): diferenca = 6.538e-17
+  [A5] cobertura do IC 95% em 2000 simulacoes: 95.35% (ep 0.49 p.p.)
+--- B. ADF
+  [Bum] Estatistica de Dickey-Fuller sem defasagens (t da regressao simples): diferenca = 3.144e-14
+  [Bdois] Valor critico 5% com constante, T infinito (tabela: -2,86154): diferenca = 2.890e-09
+  [B3] H0 verdadeira, 5000 passeios de 240: rejeitou 5.58% (defasagens pelo AIC) e 4.98% (sem defasagens); quantil 5% empirico = -2.918
+  [B4] phi=0.80: rejeitou 99.5%
+  [B4] phi=0.85: rejeitou 98.8%
+  [B4] phi=0.90: rejeitou 92.6%
+  [B4] phi=0.95: rejeitou 45.2%
+  [B4] phi=0.98: rejeitou 12.3%
+  [B5] I(0): d=0 99.8%  d=1 0.2%  d=2 0.0%
+  [B5] I(1): d=0 7.0%  d=1 92.8%  d=2 0.2%
+  [B5] I(2): d=0 4.8%  d=1 5.2%  d=2 90.0%
+--- C. Ljung-Box
+  [Cum] Estatistica Q de Ljung-Box (residuos reais do ARIMA(1,1,1)): diferenca = 0.000e+00
+  [Cdois] p-valor contra qui-quadrado com 10 - 2 graus de liberdade: diferenca = 0.000e+00
+  [C3] ruido branco, 5000 series: rejeitou 5.50% (ep 0.31 p.p.)
+  [C4] residuos de ARMA(1,1) ajustado, 2000 series: rejeitou 7.90% com gl = 8 e 3.80% com gl = 10
+  [C5] AR(1) phi=0,2: rejeitou 51.1%
+--- D. Verossimilhanca, AIC e selecao
+  [Dum] log L gaussiana do ARIMA(1,1,1): -n/2 [ln 2pi + ln sigma2 + 1]: diferenca = 0.000e+00
+  [Ddois] AIC = -2 log L + 2k, com k = p + q + constante + variancia: diferenca = 0.000e+00
+  [Dtres] Amostra comum: maior menos menor numero de observacoes entre os 25 candidatos: diferenca = 0.000e+00
+  [D3] ar1: 500 series, ordem verdadeira escolhida em 70.8%
+  [D3] passeio: 500 series, ordem verdadeira escolhida em 74.6%
+--- E. Hannan-Rissanen
+  [Eum] ARIMA(2,0,0) do robo contra MQO independente (Gauss): diferenca = 1.388e-17
+  [E2] AR(1) phi verdadeiro -0.60: media -0.5976, desvio 0.0504
+  [E2] AR(1) phi verdadeiro -0.30: media -0.2998, desvio 0.0611
+  [E2] AR(1) phi verdadeiro 0.00: media -0.0050, desvio 0.0658
+  [E2] AR(1) phi verdadeiro 0.30: media 0.2901, desvio 0.0635
+  [E2] AR(1) phi verdadeiro 0.60: media 0.5909, desvio 0.0529
+  [E2] MA(1) theta verdadeiro -0.60: media -0.5999, desvio 0.0734
+  [E2] MA(1) theta verdadeiro -0.30: media -0.3001, desvio 0.0755
+  [E2] MA(1) theta verdadeiro 0.00: media -0.0037, desvio 0.0753
+  [E2] MA(1) theta verdadeiro 0.30: media 0.2892, desvio 0.0782
+  [E2] MA(1) theta verdadeiro 0.60: media 0.5903, desvio 0.0744
+--- F. GARCH(1,1)
+  [Fum] log L do GARCH(1,1) refeita pela recursao sigma2 = w + a e^2 + b sigma2: diferenca = 0.000e+00
+  [Fdois] Previsao de um passo sqrt(w + a e(N)^2 + b sigma2(N)): diferenca = 0.000e+00
+  [Ftres] Variancia de longo prazo w / (1 - a - b): diferenca = 0.000e+00
+  estimado: omega=7.3630e-05 alfa=0.126435 beta=0.587799 logL=1359.524779
+  [F2] grade: 1681 pontos viaveis, 0 com log L maior que o estimado; maior diferenca -8.588e-03
+  [F2] omega -: delta log L = -7.333e-03
+  [F2] omega +: delta log L = -7.177e-03
+  [F2] alfa -: delta log L = -7.234e-04
+  [F2] alfa +: delta log L = -7.165e-04
+  [F2] beta -: delta log L = -7.931e-04
+  [F2] beta +: delta log L = -7.953e-04
+  [F3] n=240: 300 ajustes (0 s); alfa 0.0916 (dp 0.0494), beta 0.8242 (dp 0.1423), omega medio 3.591e-05; no limite 3.3%
+  [F3] n=1000: 300 ajustes (1 s); alfa 0.0889 (dp 0.0211), beta 0.8839 (dp 0.0265), omega medio 1.289e-05; no limite 0.0%
+--- G. Previsao e percentil
+  [Gum] Previsao no nivel com d = 1: y(N) + z previsto: diferenca = 0.000e+00
+  [Gdois] Previsao no nivel com d = 2: 2y(N) - y(N-1) + z previsto: diferenca = 0.000e+00
+  [Gtres] Percentil 70 de 1..10 por interpolacao linear (7,3): diferenca = 0.000e+00
+Tempo total: 50 s
+================ FIM ================

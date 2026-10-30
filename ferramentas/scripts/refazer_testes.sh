@@ -18,7 +18,7 @@ S="$(cd "$(dirname "$0")" && pwd)"; A="$(cd "$S/../.." && pwd)"
 OUT="$1"; [ -d "$OUT/calibracao" ] || { echo "uso: $0 <pasta_de_saida com calibracao/>"; exit 1; }
 B="$A/dados/resultados/rodada3_b3_oficial/testes/in_r3_base.txt"
 M="$A/dados/resultados/rodada3_b3_oficial/testes/in_mm.txt"
-EA='ARIMA-GARCH\ARIMA_GARCH_EA'; MMEA='MediasMoveis2\MediasMoveis2'
+EA='robos\ARIMA-GARCH\ARIMA_GARCH_EA'; MMEA='robos\MediasMoveis2\MediasMoveis2'
 mkdir -p "$OUT/pareados" "$OUT/escolhas" "$OUT/testes" "$OUT/relatorios_mt5"
 LOG="$OUT/testes/execucao.log"; : > "$LOG"
 echo "inicio $(date '+%F %T')"

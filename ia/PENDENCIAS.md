@@ -2,7 +2,7 @@
 
 Lista de trabalho do TG, por ordem de prioridade. **Atualizada em 18/10/2026**,
 ao fim da sessão que preparou a entrega à orientadora. Detalhes e números de
-cada decisão ficam em `notas/INCERTEZAS.md` (o de hoje é o item 64).
+cada decisão ficam em `ia/INCERTEZAS.md` (o de hoje é o item 64).
 
 ## Prazos
 
@@ -18,7 +18,7 @@ Fonte: `dados/fontes/normas-fatec/TG-Cronograma-2o-2026.pdf` (conferido em 18/10
 ## 0a. Sessão de 19/10/2026 (ler antes da seção 0)
 
 **Feito no texto (ainda sem commit; cópia anterior em
-`notas/rascunhos/antes_correcoes_coerencia_2026-10-19/`).** Revisão de coerência
+`ia/rascunhos/antes_correcoes_coerencia_2026-10-19/`).** Revisão de coerência
 pedida pelo autor, depois de o Bruno notar a tensão entre a hipótese 1 e o Cap. III:
 - hipótese 1 × "o GARCH foi incluído para controlar o risco": 2.3.2, 3.7 e
   considerações reescritos como "esperava-se melhora indireta no acerto, não
@@ -43,7 +43,7 @@ TG com 47 páginas, sem referência indefinida.
 reorganizado (um período por seção, custos/Selic/proventos no fim, gráficos do MT5),
 Elder retirado, "natureza" corrigida (Wazlawick 3. ed.), `.bib` corrigido (Araya,
 Fernandes, Wazlawick). TG com 59 páginas. Backup em
-`notas/rascunhos/antes_cap3_cru_2026-10-19/`. **O autor precisa ler o Cap. III novo.**
+`ia/rascunhos/antes_cap3_cru_2026-10-19/`. **O autor precisa ler o Cap. III novo.**
 O texto abaixo é o registro da decisão:
 
 ~~DECISÃO PENDENTE, a mais importante: camada das tabelas~~ (INCERTEZAS item 66).
@@ -71,10 +71,10 @@ algorítmica: ARIMA-GARCH e médias móveis".
 
 - **Código limpo e reorganizado** (pedido do autor: sem código-documentação,
   nomes por extenso, log fora do EA). Estrutura nova no `CLAUDE.md`, seção
-  "Arquitetura". Log e traço em `ARIMA-GARCH/Diagnostico.mqh`, avaliação no
-  testador em `ARIMA-GARCH/Avaliacao.mqh`, opções experimentais em
-  `Include/ArimaVerossimilhanca.mqh` e `Include/GarchDistribuicao.mqh`,
-  negociação em `Include/Negociacao.mqh` (usada pelos dois EAs). 4.849 linhas
+  "Arquitetura". Log e traço em `robos/ARIMA-GARCH/Diagnostico.mqh`, avaliação no
+  testador em `robos/ARIMA-GARCH/Avaliacao.mqh`, opções experimentais em
+  `robos/Include/ArimaVerossimilhanca.mqh` e `robos/Include/GarchDistribuicao.mqh`,
+  negociação em `robos/Include/Negociacao.mqh` (usada pelos dois EAs). 4.849 linhas
   (1.148 de comentário) viraram 3.710 (206). Inputs e colunas dos CSVs com os
   mesmos nomes.
 - **Regressão byte a byte passou**: `ferramentas/scripts/regressao_codigo.sh`, 13
@@ -90,7 +90,7 @@ algorítmica: ARIMA-GARCH e médias móveis".
   `.bbl` linha a linha e deixava em caixa alta citação de nome longo (agora lê o
   arquivo inteiro); `codigo_apendice.sh`/`sem_comentarios.sh` tiram linha que só
   tinha comentário e as chaves de um `if` que ficou com uma instrução.
-- **Texto** (pedidos do autor, backups em `notas/rascunhos/antes_*_2026-10-18/`):
+- **Texto** (pedidos do autor, backups em `ia/rascunhos/antes_*_2026-10-18/`):
   - saiu a validação do código (seção do Cap. II, seção e Tabela do Cap. III,
     menções na introdução, nas considerações e no resumo/abstract). O parágrafo
     "o d variou" (83,1%) ficou, movido para "Como o GARCH protege";
@@ -114,7 +114,7 @@ algorítmica: ARIMA-GARCH e médias móveis".
 Pedido do autor em 18/10. **Ainda não implementado.**
 
 - [ ] Implementar o **gradiente descendente** como terceira opção, num módulo
-      próprio (ex.: `Include/ArimaGradiente.mqh`), fiel ao `legado/ARIMA_EA.mq5`
+      próprio (ex.: `robos/Include/ArimaGradiente.mqh`), fiel ao `robos/legado/ARIMA_EA.mq5`
       (taxa 0,001, 300 iterações, linhas 60, 90–91 e 414–420 do legado), sem
       entrar no Apêndice A.
 - [ ] Rodar o mesmo validador nos três (HR, MV, GD): precisão, tempo, acerto de
@@ -165,7 +165,7 @@ não é possível (autor, 21/10).
 
 ## 5. Seção estatística: removida em 21/10/2026
 
-Pedido do autor. Cópia anterior em `notas/rascunhos/antes_remover_estatistica_2026-10-21/`.
+Pedido do autor. Cópia anterior em `ia/rascunhos/antes_remover_estatistica_2026-10-21/`.
 Pitman, Morgan, Lo, Jobson e Korkie e Memmel deixaram de ser pendência.
 
 ## 6. Leituras e citações (nenhuma citação entra antes da leitura)
@@ -207,7 +207,7 @@ INCERTEZAS item 75. Regressão em `/tmp/algolab-trabalho/regressao_*_ic`.
 Pedido do autor. O Cap. III fica só com o resultado bruto. O Cap. II (medição
 dos resultados) diz que custo de 0,03% e Selic entraram apenas na escolha das
 configurações. INCERTEZAS item 75. Cópia anterior em
-`notas/rascunhos/antes_auditoria_2026-10-21/`.
+`ia/rascunhos/antes_auditoria_2026-10-21/`.
 
 ## 10. Auditoria de 21/10/2026: aplicada em 22/10/2026
 
@@ -229,7 +229,8 @@ considerações.
   `/tmp/algolab-trabalho/regressao_antes`, que some no reboot: rodar de novo a
   partir do commit, se preciso).
 - Testes rodam no prefixo `~/.wine-mt5-novo`, que tem um clone próprio: copiar
-  `Include/`, `ARIMA-GARCH/` e `MediasMoveis2/` para lá e recompilar. As
+  a pasta `robos/` inteira para lá e recompilar (desde 30/10/2026; antes eram
+  `Include/`, `ARIMA-GARCH/` e `MediasMoveis2/` soltas na raiz). As
   ferramentas em EA ficam em `MQL5/Experts/` desse prefixo.
 - O terminal precisa estar autenticado na conta demo da Clear (última
   autenticação vista: 15/10).

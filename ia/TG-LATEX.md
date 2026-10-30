@@ -42,10 +42,10 @@ tg/
     apendice-a           código do EA
 ```
 
-Figuras e textos que saíram do TG estão em `notas/rascunhos/` (versões
+Figuras e textos que saíram do TG estão em `ia/rascunhos/` (versões
 anteriores dos capítulos, as figuras do PTG de LSTM e indicadores) e em
 `dados/resultados/rodada2_yahoo_2026-09-21/graficos_tg/` (gráficos da rodada 2).
 
 ## Formatação
 
-Ver `notas/NORMAS-FATEC.md`, seção 7, para o que foi aplicado e por quê.
+Ver `ia/NORMAS-FATEC.md`, seção 7, para o que foi aplicado e por quê.

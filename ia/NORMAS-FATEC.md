@@ -161,7 +161,7 @@ executado, e serve de espinha dorsal do capítulo:
 |---|---|
 | a) Formulação do problema | pergunta-problema da introdução |
 | b) Construção das hipóteses | as hipóteses do PTG (Adequação ao Risco etc.) |
-| c) Operacionalização das variáveis | `notas/PARAMETROS.md`: cada input do EA e seu papel |
+| c) Operacionalização das variáveis | `ia/PARAMETROS.md`: cada input do EA e seu papel |
 | d) Definição do plano experimental | `dados/resultados/rodada3_b3_oficial/PROTOCOLO.md`, escrito **antes** dos resultados |
 | e) Determinação dos sujeitos | os ativos (PETR4 e, na rodada 4, VALE3, USIM5, POMO4) e as janelas T1/T2/T3 |
 | f) Determinação do ambiente | MetaTrader 5 sob Wine, Strategy Tester, versão do build |
@@ -239,7 +239,7 @@ aplicou ao `tg/`:
 - Medido no PDF com PyMuPDF (conferência descartável): texto 12, títulos 14,
   tabela, quadro, legenda e fonte 10, título da capa 16.
 
-O que ficou para o autor decidir está em `notas/INCERTEZAS.md`, item 35.
+O que ficou para o autor decidir está em `ia/INCERTEZAS.md`, item 35.
 
 ### Tabelas e quadros (corrigido em 05/10/2026, a pedido do autor)
 

@@ -6,7 +6,7 @@ regras antes de qualquer resultado de mercado. O que não estiver aqui e for
 decidido depois de ver números vai marcado como **análise posterior**.
 
 Base: a refação de 05/10 (`../refeito_2026-10-05/PROTOCOLO.md`). Mudam três
-coisas, todas combinadas com o autor e anotadas em `PENDENCIAS.md`.
+coisas, todas combinadas com o autor e anotadas em `ia/PENDENCIAS.md`.
 
 ## 1. Estimação do ARIMA (passo 4 do PENDENCIAS, item 1)
 
