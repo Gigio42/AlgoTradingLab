@@ -1,0 +1,38 @@
+% Retorno por ano civil na camada 1 (crua), de dados/.../cru/anual_<P>.csv,
+% gerado por ferramentas/scripts/dados_cru.sh. PETR4 pela variação do preço.
+% Compilar: pdflatex -jobname=anual_T1 "\def\periodo{T1}\def\comb{0}\input{anual}"
+\documentclass[border=4pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\providecommand{\periodo}{T1}
+\providecommand{\comb}{0}
+\definecolor{cgs}{RGB}{0,90,181}
+\definecolor{cgc}{RGB}{120,40,160}
+\definecolor{car}{RGB}{220,50,32}
+\definecolor{cmm}{RGB}{120,120,120}
+\definecolor{cbh}{RGB}{26,133,55}
+\newcommand{\arq}{../../cru/anual_\periodo.csv}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[ybar, bar width=6pt, width=14.6cm, height=6cm, ylabel={Retorno no ano (\%)},
+  xtick=data, xticklabel style={/pgf/number format/1000 sep=}, table/col sep=comma,
+  enlarge x limits=0.12, grid=major, grid style={gray!20}, ymajorgrids, xmajorgrids=false,
+  legend style={font=\normalsize, cells={anchor=west}, at={(0.5,1.03)}, anchor=south, legend columns=3, column sep=5pt, draw=none},
+  extra y ticks={0}, extra y tick style={grid style={black, thin}}]
+\addplot[fill=cbh, draw=none] table[x=ano, y=BH]{\arq};
+\addplot[fill=cmm, draw=none] table[x=ano, y=MM]{\arq};
+\addplot[fill=car, draw=none] table[x=ano, y=ARIMA]{\arq};
+\ifnum\comb=1
+\addplot[fill=cgs, draw=none] table[x=ano, y=A]{\arq};
+\addplot[fill=cgc, draw=none] table[x=ano, y=B]{\arq};
+\legend{PETR4, Médias móveis reproduzidas, ARIMA, ARIMA-GARCH Sharpe, ARIMA-GARCH Calmar}
+\else
+\addplot[fill=cgs, draw=none] table[x=ano, y=AB]{\arq};
+\legend{PETR4, Médias móveis reproduzidas, ARIMA, ARIMA-GARCH}
+\fi
+\end{axis}
+\end{tikzpicture}
+\end{document}

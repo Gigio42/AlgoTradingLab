@@ -117,8 +117,9 @@ existem para eu obedecer às regras e para o autor acompanhar o que foi feito.
 Nenhum deles é fonte: não se cita `notas/NORMAS-FATEC.md`, `FONTES.md`, `notas/INCERTEZAS.md`
 nem `CLAUDE.md` no trabalho. Toda definição que precise aparecer no TG — a
 classificação da pesquisa, o delineamento, um critério de avaliação — é decisão
-do autor, vai escrita no `.tex` e cita a obra original (o manual da FATEC-ID, o
-caderno de delineamentos, o artigo). Dito pelo autor em 28/09/2026: usar um
+do autor, vai escrita no `.tex` e cita a obra original (o livro, o artigo). **Documentos da própria FATEC-ID
+(manual, caderno de delineamentos) não entram como referência** (pedido do autor,
+19/10/2026): eles guiam a forma, mas não são citados. Dito pelo autor em 28/09/2026: usar um
 arquivo de apoio da IA como definição do trabalho fica ruim na apresentação.
 
 **A pasta `tg/` só contém o que vai ser entregue**: `.tex`, `.bib`, figuras,
@@ -137,26 +138,44 @@ inclusive dentro dos parênteses**, ou seja `(Almeida, 2016)` e não
 
 ```
 Include/
-  Numerico.mqh       MQO (mínimos quadrados) sobre ALGLIB. Única porta de
-                     entrada para álgebra linear.
-  Estatistica.mqh    ADF (valores críticos de MacKinnon 2010), Ljung-Box,
-                     autocorrelação, AIC/BIC, média/variância.
-  Arima.mqh          CArima — estimação por Hannan-Rissanen.
-  Garch.mqh          CGarch — máxima verossimilhança com restrições (MinBLEIC).
-  SelecaoModelo.mqh  'd' por ADF sequencial; (p,q) por busca em grade no AIC.
-  Estrategia.mqh     As três formas de usar o GARCH + limiar absoluto/percentil.
-  Desempenho.mqh     Avaliação no Strategy Tester: custo B3, caixa parado na
-                     Selic, Sharpe/Sortino/Calmar/alfa contra Selic e
-                     buy-and-hold, curva diária, comparação entre modelos.
-                     Só no OnTester; não interfere na decisão de operar.
-                     Usado também pelo MediasMoveis2.
+  Numerico.mqh             MQO sobre ALGLIB. Única porta de entrada para
+                           álgebra linear.
+  Estatistica.mqh          ADF (valor crítico a 5% de MacKinnon 2010),
+                           Ljung-Box, AIC/BIC, média, variância, percentil.
+  Arima.mqh                CArima — Hannan-Rissanen.
+  ArimaVerossimilhanca.mqh Opção experimental: refino por máxima
+                           verossimilhança (MetodoARIMA=1). Fora do TG.
+  Garch.mqh                CGarch — máxima verossimilhança com restrições
+                           (MinBLEIC). Previsão de um passo.
+  GarchDistribuicao.mqh    Normal (a do TG) e t de Student (experimental).
+  SelecaoModelo.mqh        'd' por ADF sequencial; (p,q) por grade no AIC
+                           (BIC opcional, experimental).
+  Estrategia.mqh           DecidirOperacao: as formas de usar o GARCH.
+  Negociacao.mqh           CNegociacao (ordens, posição, volume) e
+                           VolumePorCapital. Usado pelos dois EAs.
+  Desempenho.mqh           Avaliação em camadas no Strategy Tester e
+                           CompararCurvas. Usado pelos dois EAs.
 
 ARIMA-GARCH/
-  ARIMA_GARCH_EA.mq5 O EA. `UsarGARCH` alterna entre ARIMA puro e ARIMA-GARCH.
+  ARIMA_GARCH_EA.mq5 O EA: inputs, OnInit, OnTick e execução. `UsarGARCH`
+                     alterna entre ARIMA puro e ARIMA-GARCH.
+  Diagnostico.mqh    CDiagnostico: mensagens, contadores e traço por barra.
+  Avaliacao.mqh      Registro por barra e OnTester (linha de métricas).
+                     Os dois leem os inputs do EA e só observam.
 
 MediasMoveis2/
   MediasMoveis2.mq5  A MM 10/20 de Almeida, reimplementada.
 ```
+
+**Limpeza de 18/10/2026 (pedido do autor):** código sem comentário-documentação
+(só uma linha por input e o "porquê" curto onde não é óbvio), nomes por extenso,
+log e avaliação fora do EA, opções experimentais em módulos próprios, código
+morto retirado (p-valor aproximado do ADF, previsão do GARCH h passos, campos da
+decisão que ninguém lia). **Os nomes dos inputs e das colunas dos CSVs não
+mudaram** (scripts, `.set` e resultados guardados dependem deles). Regressão em
+`ferramentas/scripts/regressao_codigo.sh`: 13 casos que passam por todos os
+caminhos dos dois EAs, comparados byte a byte (métricas, curva e traço) antes e
+depois. **Rodar de novo a cada mudança que não deveria alterar resultado.**
 
 Desde 05/10/2026 o **Apêndice A do TG é o ARIMA_GARCH_EA.mq5 reduzido**: sem
 comentários e sem log, diagnóstico, traço e avaliação no testador ("só o modelo
@@ -165,9 +184,18 @@ puro", pedido do autor). Gerado pelo `tg/Makefile` em `tg/codigo/` com
 EA** com comentários: `//@omitir-inicio`/`//@omitir-fim` (bloco), linha
 terminada em `//@omitir`, e `//@apendice: CODIGO` (o que entra no lugar). São só
 comentários: o EA sem comentários ficou idêntico ao de antes dos marcadores
-(conferido com `diff`). A listagem reduzida (423 linhas) e o EA compilam com
-0 erros e 0 avisos. **Ao acrescentar log ou diagnóstico novo no EA, marcar com
-`//@omitir`** e recompilar a listagem para conferir.
+(conferido com `diff`). Desde a limpeza de 18/10/2026 o log mora em
+`ARIMA-GARCH/Diagnostico.mqh` e a avaliação em `Avaliacao.mqh`; no EA sobram
+chamadas de uma linha com `//@omitir`, e o script ainda tira as linhas que só
+tinham comentário e as chaves de um `if` que ficou com uma instrução. A listagem
+reduzida (216 linhas desde 29/10/2026, quando saíram também as opções que os experimentos não usam: preço bruto, ordens manuais, volume fixo, StopLoss/TakeProfit, reversão desligável, GARCH_p/q trocado por `Definir(1, 1)`, input group, validação, Iteracoes_GARCH, tipo de ADF e destrutores; INCERTEZAS item 81) e o EA compilam com 0 erros e 0 avisos. **Ao acrescentar
+log ou diagnóstico novo, pôr no `Diagnostico.mqh` e chamar com uma linha
+terminada em `//@omitir`** (chamada de várias linhas quebra o marcador), e
+recompilar a listagem para conferir.
+**Desde 27/10/2026 há o Apêndice B** (`tg/conteudo/apendice-b.tex`): `Arima`,
+`SelecaoModelo`, `Garch` e `Estrategia` reduzidos pelo mesmo script (regra
+`codigo/%.mqh` do `tg/Makefile`), sem as opções experimentais. **Opção
+experimental nova nesses `.mqh` tem de levar o marcador** (INCERTEZAS item 80).
 
 ```
 ```
@@ -336,7 +364,7 @@ histórico do git) tinha:
 | "estacionariedade dos resíduos por ADF" (l. 132) | `TesteADF` + `TesteLjungBox` |
 | "resíduos do ARIMA como entrada do GARCH" (l. 100) | `CArima::ObterResiduos()` → `CGarch::Ajustar()` |
 | "foco na especificação GARCH(1,1)" (l. 104) | `GARCH_p=1`, `GARCH_q=1` |
-| Filtro de volatilidade como "abordagem mais prudente" (cap1) | `EST_FILTRO_VOLATILIDADE`, padrão |
+| Filtro de volatilidade como "abordagem mais prudente" (cap1) | `FILTRO_VOLATILIDADE`, padrão |
 
 Ligar `RelatorioInicial=true` faz o EA imprimir a sequência do ADF e a grade de
 AIC completa no log — é o material das tabelas do TG.
@@ -413,11 +441,28 @@ já pagas:
   ao início do teste.** Teste começando em 02/01/2025 enxerga ~250 barras.
   Com `Janela_Selecao=500` a seleção de ordens fica adiada por meses, sem erro
   (aparece `Selecao adiada` só no log). Por isso os experimentos usam 240.
+- **Sem 100 barras de histórico antes da data inicial, o testador adia o
+  início sozinho**, sem erro: só o log diz `start time changed to ... to
+  provide data at beginning`. Símbolo com histórico desde 02/01/2008 começa o
+  teste em 02/06/2008. Provável origem da contagem de Almeida (réplica v2,
+  21/10/2026, INCERTEZAS item 74).
+- **Importar com `PERFIL=AlgoLab`** (`importar.sh`): o perfil Default do autor
+  está no limite de 100 gráficos e bloqueia o script; o `common.ini` dele é
+  devolvido no fim.
 - **Input que não está no `[TesterInputs]` NÃO vem do padrão do código**: vem
   de `MQL5/Profiles/Tester/ARIMA_GARCH_EA.set`, gravado automaticamente com os
   últimos valores usados. Em 21/09 um teste "com os padrões" rodou com
   Janela 500 e percentil 70 da semana anterior. Pelo `/config`, listar todos
   os inputs; pela interface, clicar em "Redefinir" na aba Entradas.
+- **Na otimização, listar o input não basta: linha sem `||` herda do `.set` a
+  marca de otimizar (`Y`) e a faixa.** Em 26/10/2026, depois de uma grade com
+  `Limiar_Percentil=50||50||20||90||Y`, a grade seguinte com
+  `Limiar_Percentil=50` também variou o percentil, e a C3 da PETR4 rodou 960
+  passagens em vez de 312, sem erro nenhum. Toda linha numérica ou lógica de
+  grade vai com a faixa explícita e `N` (`k=v||v||1||v||N`), e o `.set` é
+  apagado antes de cada otimização (`janelas_240_500.sh`, função `explicitar`).
+  Conferir a contagem de passagens de cada grade. A refação de 05/10 não foi
+  afetada (688 passagens em toda janela, 344 na C4, conferido em 26/10).
 - **Otimização refeita com os mesmos parâmetros vem do cache**
   (`Tester/cache/`) e o `OnTester` não roda: os CSVs de resultado não saem.
   Apagar o cache antes.
@@ -519,6 +564,13 @@ iconv -f UTF-16LE -t UTF-8 "$HOME/.wine-mt5-novo/drive_c/Program Files/MetaTrade
   `Custom\B3` (`PETR4_B3`).
 
 ## Validação numérica já feita
+
+> **Fora do texto do TG desde 18/10/2026, a pedido do autor**: os testes do
+> código (recuperação de parâmetros, ADF em séries artificiais, ADF/Ljung-Box na
+> PETR4) fogem do escopo apresentado. Os números abaixo continuam valendo e
+> podem voltar ao texto depois; o trecho antigo está em
+> `notas/rascunhos/antes_tirar_validacao_2026-10-18/`. **Não reinserir sem
+> pedido.**
 
 Recuperação de parâmetros em dados sintéticos com verdade conhecida:
 
@@ -788,8 +840,8 @@ sumiram porque a calibração corrigida escolheu outras configurações.
 **Auditoria de 12/10/2026 (INCERTEZAS, item 55):** Cap. III conferido número a
 número, tudo bate. Corrigido no texto: a comparação com a compra e manutenção e
 com as médias móveis é **sem proventos** (`bh_preco`, `ret_selic`). Com
-proventos, em 2017–2024, compra e manutenção +726,5% e MM +396,1% passam a GS
-(+353,4%); GARCH × gêmea não muda de sentido. **Ao comparar com a PETR4 no texto,
+proventos (B3 desde 21/10/2026, INCERTEZAS item 75), em 2017–2024, compra e manutenção +777,9%, MM +396,0% e ARIMA +356,6% passam a GS
+(+353,0%); GARCH × gêmea não muda de sentido. **Ao comparar com a PETR4 no texto,
 dizer sempre que é pela variação do preço.**
 
 **Foco do texto mudou para o risco (13/10/2026, INCERTEZAS item 57), pedido do
@@ -801,9 +853,16 @@ GARCH oscilou menos que a gêmea (11/11) e que as médias móveis (todas as jane
 p < 0,001; ARIMA isolado × médias móveis sem padrão. Seletividade
 (`seletividade.sh`): GARCH 0,65–0,91 em 11 de 12, demais 0,87–1,14.
 
-**Nomes no texto desde 14/10/2026 (INCERTEZAS item 58):** "escolha por Sharpe" =
-**versão A** (GS), "escolha por Calmar" = **versão B** (GC); gêmea = grupo de
-controle. Ao escrever, não voltar a usar "escolha por Sharpe/Calmar".
+**Nomes no texto desde 19/10/2026 (INCERTEZAS item 68), pedido do autor:**
+**ARIMA-GARCH Sharpe** (GS) e **ARIMA-GARCH Calmar** (GC); "versão A/B" (de
+14/10, item 58) saiu. O nome é o critério da escolha, não o resultado no teste.
+Gêmea = grupo de controle.
+
+**Intervalo de confiança fora do escopo desde 21/10/2026 (INCERTEZAS item 71),
+pedido do autor**: o texto só usa filtro e ajuste da posição (volatility
+targeting, com Harvey et al., 2018, no Cap. I). Grade do texto = 312 (rodada 4:
+624 e 14.976 simulações). A PETR4 não muda; nas outras ações, scripts com
+`SEM_IC`. **Desde a noite de 21/10 a forma saiu também do código** (enum, input `K_Confianca` e coluna das métricas; `FILTRO_E_TARGETING` continua = 3; INCERTEZAS item 75). Resultados antigos com `Estrategia=2` não são reproduzíveis com o EA atual.
 
 **Capítulos separados desde 14/10/2026 (INCERTEZAS item 59), pedido do autor:**
 Cap. II diz só COMO (definições de versão A/B e gêmea ficam no plano
@@ -817,11 +876,34 @@ estatística formal (Pitman-Morgan, testes de Sharpe) só na ÚLTIMA SEÇÃO do 
 (o Apêndice B foi extinto em 15/10, a pedido do autor); sem "gêmea" nem "razão de
 seletividade" no corpo; nas tabelas e gráficos com dados nossos, "médias móveis
 reproduzidas", e "Almeida (2016)" só para os números dele. Sem "equação (x.y)" no
-texto. **Build (15/10, INCERTEZAS 61):** o pacote `float` ([H]) tem de vir DEPOIS
-dos `\newfloat` do Quadro e do Gráfico no `main.tex`; e o `tg/.latexmkrc` faz a
+texto. **Ilustrações em `[htbp]` com placeins desde 22/10/2026** (pedido do autor,
+menos espaço em branco). **A regra das figuras fixas (`[H]`, de 15/10) foi
+retirada pelo autor em 22/10 e o pacote `float` saiu**: não voltar a ela sem pedido
+(INCERTEZAS item 76). **Cap. III com 3.3.1/3.3.2 (2008) e 3.5.1/3.5.2 (2020) desde 22/10**: o ano da crise é recorte do mesmo teste; `\FloatBarrier` antes de cada "O ano de". **Build (15/10, INCERTEZAS 61):** se o pacote `float` voltar, ele tem de vir DEPOIS
+dos `\newfloat` do Quadro e do Gráfico no `main.tex`; o `Makefile` não depende dos
+PDFs dos gráficos (depois do `graficos_cru.sh`, `touch main.tex`); e o `tg/.latexmkrc` faz a
 compilação automática do VS Code rodar o `citacoes_abnt.pl` (sem ele, as citações
 saem em caixa alta). Régua: "não pode parecer mestrado". Mudanças novas entram
 em camadas pequenas, uma por vez, com o autor digerindo antes da próxima.
+
+**Preparação da entrega à orientadora (18/10/2026), a pedido do autor:** título
+novo ("Desenvolvimento e comparação de modelos de negociação algorítmica:
+ARIMA-GARCH e médias móveis"); validação do código fora do texto (ver "Validação
+numérica já feita"); seção de verificação estatística oculta com
+`\iffalse` e **removida de vez em 21/10/2026** (pedido do autor; cópia em
+`notas/rascunhos/antes_remover_estatistica_2026-10-21/`); **seção de camadas do
+Cap. III (custos, Selic, proventos) também removida em 21/10/2026** (voltou
+em 27/10/2026 com os proventos da B3, a pedido do autor depois da leitura da
+orientadora; INCERTEZAS item 80): o Cap. III
+mostra só o resultado bruto, e custo e Selic aparecem no Cap. II apenas como
+parte da escolha das configurações (INCERTEZAS item 75); em 22/10/2026 as
+hipóteses foram reescritas e **voltaram às do PTG no mesmo dia**, a pedido do
+autor (INCERTEZAS item 76): não trocar as hipóteses de novo sem pedido; caderno de
+delineamentos da FATEC-ID citado e depois retirado em 19/10 (o autor não quer
+referência da própria faculdade); `citacoes_abnt.pl`
+passou a ler o `.bbl` inteiro (nome longo quebrava em duas linhas e saía em caixa
+alta). Os 252 dias continuam sem fonte: nenhuma obra do projeto traz a convenção,
+nem a página da Selic do BCB.
 
 **Bateria de 15/10/2026 (INCERTEZAS item 62; NÃO está no TG ainda):**
 `dados/resultados/bateria_2026-10-15/` (LEIAME, PROTOCOLO, resumo.txt). Critério
@@ -1129,9 +1211,8 @@ Se forem úteis a longo prazo, mover para dentro do repositório.
     `.tex`, depois que o autor ler cada obra. Nenhuma foi inserida sem leitura,
     conforme a regra nº 3.
 - Os símbolos `_B3` precisam ser reimportados (defeito de `CHART_MODE_LAST`).
-- O p-valor do ADF é **aproximado** (interpolação entre os valores críticos).
-  A decisão do teste usa os valores críticos, que são exatos. Não reportar o
-  p-valor do ADF no TG como se fosse exato.
+- O EA não calcula p-valor do ADF (o aproximado saiu na limpeza de 18/10/2026):
+  a decisão usa o valor crítico a 5% de MacKinnon. Não reportar p-valor do ADF no TG.
 - `legado/` guarda a implementação antiga (`ARIMA_EA.mq5`, `GARCH.mq5`), que
   não compila mais junto com o resto e serve só de consulta para os bugs
   documentados acima. O Apêndice A do TG é o EA atual sem comentários, não

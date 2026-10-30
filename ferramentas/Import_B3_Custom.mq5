@@ -39,7 +39,8 @@ input double InpLote = 100;               // Lote minimo e passo (1 para serie r
 string g_tickers[] =
   {
    "PETR4","VALE3","ITUB4","BBDC4","ABEV3","MGLU3","WEGE3","B3SA3",
-   "PRIO3","BBAS3","RENT3","RAIZ4","SUZB3","IBOV"
+   "PRIO3","BBAS3","RENT3","RAIZ4","SUZB3","IBOV",
+   "USIM5","POMO4","VLID3","CIEL3"
   };
 
 //+------------------------------------------------------------------+

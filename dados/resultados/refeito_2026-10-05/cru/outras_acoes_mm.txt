@@ -1,0 +1,12 @@
+Médias móveis reproduzidas (10/20, só compra, 95%), camada 1 (bruta). Gerado em 29/10/2026 por outras_acoes_mm.sh.
+Conferência PETR4 T1 refeita (R3_T1_MM_conf) = metricas_R3_T1_MM.csv em ret_puro, dd_puro, vol_puro e negócios; só a camada 4 difere (proventos da B3 desde 21/10).
+Colunas: ret_puro, dd_puro, vol_puro, saidas | bh_preco, dd_bh_preco
+VALE3 T1 MM ret=  +37.5 queda= 34.0 vol= 20.5 saidas=  33 | B&H ret=  +23.9 queda= 67.7
+VALE3 T2 MM ret=   +2.1 queda= 58.1 vol= 31.8 saidas=  29 | B&H ret=  -40.3 queda= 79.9
+VALE3 T3 MM ret=   +6.3 queda= 21.2 vol= 14.2 saidas=  10 | B&H ret=  +34.1 queda= 21.0
+USIM5 T1 MM ret=  -16.9 queda= 51.5 vol= 27.3 saidas=  33 | B&H ret=  -42.7 queda= 79.1
+USIM5 T2 MM ret=  +14.2 queda= 57.2 vol= 45.5 saidas=  24 | B&H ret=  -68.8 queda= 94.3
+USIM5 T3 MM ret=  +32.6 queda= 29.2 vol= 28.9 saidas=  11 | B&H ret=  +29.2 queda= 48.1
+POMO4 T1 MM ret= +109.4 queda= 51.1 vol= 28.5 saidas=  30 | B&H ret= +138.3 queda= 71.1
+POMO4 T2 MM ret=  -13.9 queda= 40.3 vol= 26.0 saidas=  27 | B&H ret=  -58.0 queda= 77.8
+POMO4 T3 MM ret=   +7.2 queda= 27.3 vol= 22.1 saidas=   7 | B&H ret=  -36.2 queda= 54.3

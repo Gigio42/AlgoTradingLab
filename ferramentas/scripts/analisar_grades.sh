@@ -16,9 +16,14 @@
 #     teste, do Sharpe e do Calmar, so-compra e todas.
 #  6. Volatilidade pareada (vol_selic, anualizada): GARCH - gemea, mesma
 #     separacao do bloco 2 (acrescentado em 13/10/2026).
+# CAMADA=puro (variavel de ambiente) troca dd, ret e vol da camada 3 pelos da
+# camada 1 (crua); o padrao continua sendo a camada 3 (acrescentado em 19/10/2026).
+# SEM_IC=1 descarta as passagens com intervalo de confianca (Estrategia=2),
+# fora do escopo do TG desde 21/10/2026, a pedido do autor; o padrao (SEM_IC
+# vazio) mantem todas e reproduz as saidas anteriores.
 # Diferencas: dDD e dRet em fracao (0,10 = 10 p.p.), dSR em unidades de Sharpe.
 ARQS=(); for a in "$@"; do ARQS+=("${a#*:*:}"); done
-gawk -F';' -v rot="$(for a in "$@"; do printf '%s ' "${a%:*}"; done)" '
+gawk -F';' -v cam="${CAMADA:-selic}" -v semic="${SEM_IC:-0}" -v rot="$(for a in "$@"; do printf '%s ' "${a%:*}"; done)" '
 BEGIN { nrot = split(rot, ROT, " ") }
 function col(c) { return (c in h) ? h[c] : ((c "_c") in h ? h[c "_c"] : 0) }
 function med(a, n,   b, m) { if(n == 0) return "nan"; m = asort(a, b)
@@ -47,7 +52,8 @@ FNR == 1 { delete h; for(i = 1; i <= NF; i++) h[$i] = i
            cL = col("Limiar_Sinal"); next }
 {
   g = $cG + 0; e = $cE + 0; z = $cZ + 0; so = $cS + 0
-  dd = $h["dd_selic_t"]; rt = $h["ret_selic_t"]; sr = $h["sharpe_t"]; vo = $h["vol_selic_t"]
+  if(semic == 1 && g == 1 && e == 2) next
+  dd = $h["dd_" cam "_t"]; rt = $h["ret_" cam "_t"]; sr = $h["sharpe_t"]; vo = $h["vol_" cam "_t"]
   ref[ap] = sprintf("%7.1f %7.1f %6.1f %7.2f", $h["selic_t"]*100, $h["bh_preco_t"]*100,
                     $h["dd_bh_preco_t"]*100, $h["sharpe_bh_t"])
   arima = ap SUBSEP ($cJ+0) SUBSEP ($cK+0) SUBSEP ($cL+0) SUBSEP so

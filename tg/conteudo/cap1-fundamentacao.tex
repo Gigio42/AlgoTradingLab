@@ -9,27 +9,40 @@
 %
 %  Títulos só com a inicial maiúscula (Manual FATEC-ID, item 4.1.2.10).
 %
-%  Varredura do autor em 2026-10-15: figuras fixas no lugar ([H]); "pregão"
+%  Varredura do autor em 2026-10-15: figuras fixas no lugar ([H], retirado em 22/10/2026 a pedido do autor: agora [htbp]); "pregão"
 %  definido; ADF (raiz unitária e valor-p) e AIC explicados com Thomaz (2019,
 %  p. 28, 40-41, 44-45); ARMA e AR como casos do ARIMA (Thomaz, 2019, p. 33);
 %  citação dupla "(Xing; Araya; Araya)" virou narrativa; frase do agrupamento
 %  de volatilidade reescrita; saiu a remissão às considerações finais; as três
-%  formas de usar o GARCH foram para o Cap. II (decisão de projeto, sem fonte);
+%  formas de usar o GARCH foram para o Cap. II (decisão de projeto, sem fonte).
+%  Em 21/10/2026, a pedido do autor, o conceito voltou para cá como subseção
+%  "Uso da volatilidade prevista na operação" (filtro e volatility targeting, este
+%  com Harvey et al., 2018); o Cap. II ficou só com a implementação;
 %  "Medidas de desempenho e risco" virou "Métricas de avaliação", com quadro de
 %  todas as métricas e a explicação da raiz de 252 (Sharpe, 1994, regra da raiz
 %  do tempo; 252 = convenção, marcado para fonte; média de 247,8 pregões/ano em
 %  dados/series/PETR4_OFICIAL.csv). Equações sem rótulo: o texto não as cita
 %  mais pelo número. Versão anterior em
 %  notas/rascunhos/antes_varredura_autor_2026-10-15/.
+%
+%  Reorganizado em 27/10/2026, a pedido do autor ("fluido, intuitivo, sem muitas
+%  referências"): mercado, MetaTrader 5, séries temporais financeiras (seção nova,
+%  retorno logarítmico e propriedades, com Thomaz), análise técnica e médias
+%  móveis, ARIMA, GARCH, integração, métricas, trabalhos relacionados. ARIMA,
+%  GARCH e integração subiram de subseção para seção. O parágrafo da ação (ON e
+%  PN) segue sem citação, como o anterior. Versão anterior em
+%  notas/rascunhos/antes_thomaz_cap1_2026-10-27/.
 % =====================================================================
 \setdiv{CAPÍTULO I}
 \chapter{Fundamentação teórica}
 
-Este capítulo reúne os conceitos sobre os quais o trabalho se apoia. Parte do
-ambiente em que as operações acontecem, isto é, a bolsa de valores e a plataforma
-de negociação, passa pela análise técnica e pelas médias móveis empregadas por
-\citeonline{almeida2016} e chega aos modelos estatísticos ARIMA e GARCH e às medidas usadas para avaliar uma estratégia. Ao
-final, são apresentados os trabalhos relacionados.
+Este capítulo apresenta os conceitos sobre os quais o trabalho se apoia, na ordem
+em que um depende do outro. Começa pelo mercado de ações, onde as operações
+acontecem, e pela plataforma MetaTrader 5, onde os robôs são programados e
+testados. Em seguida, trata do dado que os robôs leem, a série de preços, e das
+regras que eles usam para decidir, primeiro as médias móveis de
+\citeonline{almeida2016} e depois os modelos ARIMA e GARCH. Termina com as
+métricas usadas para comparar os robôs e com os trabalhos relacionados.
 
 \section{Mercado de ações}
 
@@ -39,12 +52,15 @@ operações de compra e venda de títulos e valores mobiliários, em mercado liv
 aberto, organizado e fiscalizado por seus membros e pela Comissão de Valores
 Mobiliários. No Brasil, esse papel é exercido pela B3.
 
-Para a empresa, a abertura de capital é uma forma de obter recursos de terceiros.
-Em troca do capital recebido, ela cede aos acionistas uma participação no negócio
-proporcional ao valor investido. Para o investidor, a ação passa a ser um ativo
-cujo preço varia a cada pregão, isto é, a cada sessão diária de negociação na
-bolsa, conforme a oferta e a procura, e é essa variação
-que as estratégias de negociação procuram aproveitar.
+Quando uma empresa abre o capital, ela o divide em ações e as vende a
+investidores. Cada ação é uma pequena parte da empresa, e quem a compra se torna
+sócio do negócio, com direito a uma parte dos lucros distribuídos, os dividendos.
+As ações ordinárias dão direito a voto nas decisões da empresa. As preferenciais
+não dão esse direito, mas têm prioridade no recebimento dos dividendos. Depois
+dessa primeira venda, as ações passam a ser negociadas entre os próprios
+investidores na bolsa, e o preço de cada uma muda a cada pregão, isto é, a cada
+dia de negociação, conforme a oferta e a procura. É dessa variação que as
+estratégias de negociação procuram tirar proveito.
 
 O investidor não negocia diretamente na bolsa. O acesso se dá por meio de
 corretoras, instituições que intermediam as operações e oferecem serviços como
@@ -52,14 +68,111 @@ plataformas de negociação pela internet, custódia dos títulos e financiament
 a compra de ações, cobrando por isso comissões e taxas \cite{bcbCorretoras}. É
 pela corretora que uma plataforma como o MetaTrader 5 se conecta ao mercado.
 
-Toda decisão de investimento envolve um compromisso entre risco e retorno, uma vez
-que os recursos são limitados e precisam ser distribuídos entre alternativas
-\cite{elder2002}. No Brasil, a principal referência para essa comparação é a taxa
-Selic, a taxa básica de juros da economia, que serve de base para as demais taxas
-praticadas no mercado e influencia tanto o custo do crédito quanto o retorno das
+A taxa Selic é a taxa básica de juros da economia brasileira. Ela serve de base
+para as demais taxas praticadas no mercado e influencia tanto o custo do crédito quanto o retorno das
 aplicações financeiras \cite{bcbSelic}. Por esse motivo, o capital que uma
 estratégia mantém fora do mercado costuma ser comparado ao que renderia se
 estivesse aplicado a essa taxa.
+
+\section{MetaTrader 5}
+
+O MetaTrader 5 é uma plataforma de negociação multimercado desenvolvida pela
+MetaQuotes, que reúne em um mesmo ambiente a execução de ordens, a análise gráfica
+e o desenvolvimento de sistemas automatizados para ações, futuros, moedas e outros
+instrumentos \cite{metaquotes2024}. Sua interface, mostrada na
+Figura~\ref{fig:interface-mt}, organiza em janelas as cotações em tempo real, os
+gráficos de preços e o navegador, que dá acesso às contas, aos indicadores e aos
+programas instalados.
+
+\begin{figure}[htbp]
+\centering
+\caption{Interface do MetaTrader 5}
+\label{fig:interface-mt}
+\includegraphics[width=0.72\textwidth]{fig01-interface-metatrader.png}
+\fonte{\citeonline{metaquotes2024}.}
+\end{figure}
+
+Os programas que negociam de forma automática na plataforma são chamados de
+\textit{Expert Advisors} (EAs), também conhecidos como robôs de negociação. Um EA
+abre, modifica e encerra posições segundo regras programadas, sem intervenção
+manual \cite{almeida2016}. Os EAs são escritos em MQL5, linguagem própria da
+plataforma, de sintaxe próxima à do C++, no ambiente de desenvolvimento chamado
+MetaEditor, que oferece editor, compilador e depurador integrados. O programa
+funciona por eventos, cada um tratado por uma função própria. A função
+\texttt{OnInit} é chamada uma vez, quando o EA é carregado no gráfico, a função
+\texttt{OnTick}, a cada novo preço recebido, e a função \texttt{OnDeinit}, antes
+de o EA ser retirado \cite{metaquotesMql5}. A Figura~\ref{fig:fluxograma-ea}
+apresenta o ciclo de funcionamento de um EA, com a função responsável por cada
+etapa.
+% Manual MQL5, "Funções de manipulação de eventos"
+% (https://www.mql5.com/pt/docs/basis/function/events), salva em 29/10/2026 em
+% bibliografia/paginas/MetaQuotes-manual-mql5-eventos.html.
+
+\begin{figure}[htbp]
+\centering
+\caption{Ciclo de funcionamento de um \textit{Expert Advisor}}
+\label{fig:fluxograma-ea}
+\includegraphics{fig02-fluxograma-ea.pdf}
+\fonte{Elaboração própria.}
+\end{figure}
+% 2026-10-29: a pedido do autor, o texto seguinte só começa depois da figura.
+\FloatBarrier
+
+Para avaliar uma estratégia antes de usá-la, a
+plataforma dispõe do testador de estratégias, o \textit{Strategy Tester}, que
+executa o EA sobre dados históricos, simulando as ordens como se o mercado
+estivesse aberto, e produz relatórios de desempenho \cite{metaquotes2024}. Esse
+procedimento é conhecido como \textit{backtesting}, e foi por meio dele que todos
+os experimentos deste trabalho foram conduzidos.
+
+O testador também faz muitos testes de uma só vez, recurso chamado de otimização.
+Nele, o robô é executado várias vezes sobre o mesmo período, cada vez com uma
+combinação diferente de parâmetros, e os resultados ficam lado a lado para que se
+escolha a combinação mais adequada \cite{metaquotesTeste}. A otimização pode
+percorrer todas as combinações possíveis, no modo de busca completa, que é o mais
+lento, ou apenas parte delas, no modo rápido, guiado por um algoritmo
+\cite{metaquotesOtimizacao}.
+
+Escolher a melhor combinação no mesmo período em que ela é avaliada, porém,
+favorece a que apenas se ajustou bem àquele trecho do passado. Para evitar isso,
+o testador oferece o teste avançado, também chamado de teste \textit{forward}, que
+divide o período em duas partes. Os parâmetros são escolhidos na primeira e
+verificados na segunda, que não participou da escolha \cite{metaquotesTeste}.
+Neste trabalho, as duas etapas foram feitas no testador do MetaTrader 5, com a
+otimização em um período e o teste da combinação escolhida no período seguinte,
+como se descreve no Capítulo II.
+% Páginas salvas em bibliografia/paginas/MetaQuotes-estrategias-de-teste-MT5.html
+% (otimização: "a estratégia de negociação é iniciada várias vezes com diferentes
+% conjuntos de parâmetros"; teste avançado: "período de backtest" e "período de
+% teste avançado") e MetaQuotes-tipos-de-otimizacao-MT5.html ("Lenta (busca
+% completa...)" e "Rápida (algoritmo genético)"), baixadas em 27/10/2026 20:59.
+
+\section{Séries temporais financeiras}
+\label{sec:series}
+
+Uma série temporal é uma sequência de observações ordenadas no tempo. Neste
+trabalho, é a sequência dos preços de fechamento de uma ação, um por pregão, e é
+esse o dado que os robôs leem para decidir. Como o que interessa a quem investe
+são os ganhos e as perdas, e não o preço em si, as séries financeiras costumam
+ser estudadas pela variação do preço de um dia para o outro, chamada de retorno.
+O retorno tem ainda a vantagem de não depender do nível do preço, o que permite
+comparar ativos e períodos diferentes \cite{thomaz2019}.
+
+As séries de preços e de retornos de ações têm comportamentos bem conhecidos
+\cite{thomaz2019}. O preço anda sem rumo definido, como um passeio aleatório, e
+não tende a voltar a uma média. O retorno, ao contrário, oscila em torno de zero.
+Além disso, o retorno de um dia diz pouco sobre o do dia seguinte, mas o tamanho
+das oscilações se repete. Dias agitados costumam vir seguidos de dias agitados, e
+dias calmos de dias calmos, fenômeno conhecido como agrupamento de volatilidade.
+% Thomaz (2019): retorno logarítmico, p. 28-29; propriedades das séries de
+% retornos, p. 29-30 (itens 1, 2 e 4).
+
+Essas duas características explicam a divisão de tarefas entre os modelos deste
+trabalho. Como a direção do preço é difícil de prever, ela fica a cargo de um
+modelo que procura aproveitar a pouca dependência que existe entre os retornos, o
+ARIMA. Como o tamanho das oscilações é mais previsível, ele fica a cargo de um
+modelo feito para isso, o GARCH. Antes deles, apresenta-se a regra mais simples
+aplicada à série de preços, a média móvel usada por \citeonline{almeida2016}.
 
 \section{Análise técnica}
 
@@ -101,7 +214,7 @@ uma média rápida, de janela curta, e uma lenta, de janela longa, e interpreta 
 cruzamento entre elas como sinal de compra ou de venda, como ilustra a
 Figura~\ref{fig:cruzamento-mm}.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
 \caption{Cruzamento de médias móveis}
 \label{fig:cruzamento-mm}
@@ -118,58 +231,7 @@ relatados tenham sido conduzidos com ambos nulos. O próprio autor alertou para 
 limitações de se usar apenas essa técnica em mercados de alta volatilidade
 \cite{almeida2016}.
 
-\section{MetaTrader 5}
-
-O MetaTrader 5 é uma plataforma de negociação multimercado desenvolvida pela
-MetaQuotes, que reúne em um mesmo ambiente a execução de ordens, a análise gráfica
-e o desenvolvimento de sistemas automatizados para ações, futuros, moedas e outros
-instrumentos \cite{metaquotes2024}. Sua interface, mostrada na
-Figura~\ref{fig:interface-mt}, organiza em janelas as cotações em tempo real, os
-gráficos de preços e o navegador, que dá acesso às contas, aos indicadores e aos
-programas instalados.
-
-\begin{figure}[H]
-\centering
-\caption{Interface do MetaTrader 5}
-\label{fig:interface-mt}
-\includegraphics[width=0.72\textwidth]{fig01-interface-metatrader.png}
-\fonte{\citeonline{metaquotes2024}.}
-\end{figure}
-
-Os programas que negociam de forma automática na plataforma são chamados de
-\textit{Expert Advisors} (EAs), também conhecidos como robôs de negociação. Um EA
-abre, modifica e encerra posições segundo regras programadas, sem intervenção
-manual \cite{almeida2016}. A Figura~\ref{fig:fluxograma-ea} apresenta o ciclo de
-funcionamento de um EA.
-
-\begin{figure}[H]
-\centering
-\caption{Ciclo de funcionamento de um \textit{Expert Advisor}}
-\label{fig:fluxograma-ea}
-\includegraphics[width=0.42\textwidth]{fig02-fluxograma-ea.png}
-\fonte{\citeonline{almeida2016}.}
-\end{figure}
-
-Os EAs são escritos em MQL5, linguagem própria da plataforma, de sintaxe próxima à
-do C++. O ambiente de desenvolvimento, chamado MetaEditor, oferece editor,
-compilador e depurador integrados. Para avaliar uma estratégia antes de usá-la, a
-plataforma dispõe do testador de estratégias, o \textit{Strategy Tester}, que
-executa o EA sobre dados históricos, simulando as ordens como se o mercado
-estivesse aberto, e produz relatórios de desempenho \cite{metaquotes2024}. Esse
-procedimento é conhecido como \textit{backtesting}, e foi por meio dele que todos
-os experimentos deste trabalho foram conduzidos.
-
-\section{Modelos estatísticos de séries temporais}
-
-Uma série temporal é uma sequência de observações ordenadas no tempo, como os
-preços de fechamento diários de uma ação. Os modelos de séries temporais procuram
-descrever a estrutura dessa sequência, isto é, de que forma cada observação se
-relaciona com as anteriores, e utilizam essa descrição para projetar valores
-futuros. Neste trabalho são empregados dois desses modelos, com funções
-diferentes. O ARIMA descreve o valor esperado da série, e o GARCH descreve o
-tamanho esperado dos erros em torno desse valor.
-
-\subsection{ARIMA}
+\section{ARIMA}
 
 O modelo autorregressivo integrado de médias móveis, conhecido pela sigla ARIMA,
 do inglês \textit{Autoregressive Integrated Moving Average}, é um dos modelos mais
@@ -219,13 +281,14 @@ período analisados.
 A aplicação do modelo segue as etapas representadas na
 Figura~\ref{fig:fluxo-arima}.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
 \caption{Etapas de aplicação do modelo ARIMA}
 \label{fig:fluxo-arima}
-\includegraphics[width=0.4\textwidth]{fig05-fluxo-arima.png}
+\includegraphics{fig05-fluxo-arima.pdf}
 \fonte{Elaboração própria.}
 \end{figure}
+\FloatBarrier
 
 A primeira etapa é verificar se a série é estacionária. Uma série estacionária
 oscila em torno de uma média estável, e um choque que a afasta dessa média tende a
@@ -272,12 +335,11 @@ ARIMA é tratar apenas relações lineares e supor que a variância dos erros é
 constante. Em séries financeiras essa segunda suposição raramente se verifica, e é
 dela que trata o modelo GARCH.
 
-\subsection{GARCH}
+\section{GARCH}
 
-Nas séries de retornos de ações, a volatilidade, que mede o grau de variação dos
-preços ao longo do tempo, não é constante. Ela costuma vir em ondas, com dias
-agitados seguidos de outros dias agitados e dias calmos seguidos de dias calmos, e
-conhecê-la é fundamental para a gestão de risco \cite{araya2024}.
+Como se viu na Seção~\ref{sec:series}, a volatilidade dos retornos de ações, que
+mede o grau de variação dos preços, não é constante e costuma vir em ondas.
+Conhecê-la é fundamental para a gestão de risco \cite{araya2024}.
 \citeonline{engle1982} propôs o modelo ARCH, em que a variância do erro de cada
 período depende dos erros dos períodos anteriores. \citeonline{bollerslev1986}
 generalizou essa proposta no modelo GARCH, do inglês \textit{Generalized
@@ -296,14 +358,6 @@ um choque recente, e o termo com $\beta$ representa a persistência da
 volatilidade passada \cite{bollerslev1986}. A Figura~\ref{fig:fluxo-garch}
 ilustra esse processo de retroalimentação.
 
-\begin{figure}[H]
-\centering
-\caption{Retroalimentação da variância no modelo GARCH}
-\label{fig:fluxo-garch}
-\includegraphics[width=0.7\textwidth]{fig06-fluxo-garch.png}
-\fonte{Elaboração própria.}
-\end{figure}
-
 Para que o modelo faça sentido, os parâmetros precisam respeitar restrições:
 $\omega$ deve ser positivo, $\alpha$ e $\beta$ não podem ser negativos e a soma
 $\alpha + \beta$ deve ser menor que um. A última condição garante que a
@@ -311,15 +365,25 @@ variância tenha um valor de longo prazo finito, igual a
 $\omega / (1 - \alpha - \beta)$, para o qual a volatilidade retorna depois de um
 choque \cite{bollerslev1986}.
 
+\begin{figure}[htbp]
+\centering
+\caption{Retroalimentação da variância no modelo GARCH}
+\label{fig:fluxo-garch}
+\includegraphics{fig06-fluxo-garch.pdf}
+\fonte{Elaboração própria.}
+\end{figure}
+\FloatBarrier
+
 O GARCH padrão trata de forma simétrica os choques positivos e os negativos de
 mesma magnitude. Nos mercados de ações, porém, as quedas costumam elevar a
 volatilidade mais do que as altas. Para representar essa assimetria foram
 propostas variações do modelo, como o EGARCH e o TGARCH, que acrescentam à
 equação termos capazes de fazer a volatilidade reagir de forma diferente a
 choques positivos e negativos \cite{araya2024}. Este trabalho emprega a
-especificação simétrica.
+especificação simétrica, e as variações assimétricas ficam como possibilidade
+para trabalhos futuros.
 
-\subsection{Integração entre ARIMA e GARCH}
+\section{Integração entre ARIMA e GARCH}
 
 Os dois modelos se complementam. O ARIMA estima a média condicional da série, ou
 seja, o valor esperado para o período seguinte. O GARCH estima a variância
@@ -335,6 +399,39 @@ compra ou de venda. O que ele pode fazer é condicionar a operação indicada pe
 ARIMA ao nível de risco esperado, impedindo a operação ou reduzindo o seu tamanho
 quando a volatilidade prevista é alta.
 
+\subsection{Uso da volatilidade prevista na operação}
+
+A volatilidade prevista pelo GARCH pode entrar na decisão de duas maneiras
+básicas, que respondem a perguntas diferentes.
+
+A primeira é o filtro de volatilidade, que decide se a operação é feita.
+Define-se um limiar, e a operação indicada pelo ARIMA só é realizada quando a
+volatilidade prevista está abaixo dele. Nos dias em que se espera uma oscilação
+acima do limiar, a operação é vetada, e o investidor deixa de se expor justamente
+quando o risco esperado é maior.
+
+A segunda é o ajuste do tamanho da posição, técnica conhecida como
+\textit{volatility targeting}, ou volatilidade-alvo, que decide quanto aplicar. Em
+vez de manter o valor aplicado constante, procura-se manter constante o nível de
+oscilação da carteira, aumentando a posição quando a volatilidade está baixa e
+reduzindo-a quando está alta \cite{harvey2018}. Define-se um nível de oscilação
+considerado aceitável, o alvo, e o tamanho da posição é multiplicado pela razão
+entre esse alvo e a volatilidade prevista. Se a volatilidade prevista dobra, a
+posição cai pela metade. A técnica parte do fato de que a volatilidade é
+persistente, isto é, períodos de oscilação alta tendem a ser seguidos por
+oscilação alta, a mesma característica que o GARCH modela. Em um estudo com mais
+de 60 ativos, \citeonline{harvey2018} observaram que esse ajuste reduziu a
+ocorrência de retornos extremos em todos eles e, nas ações, também melhorou a
+relação entre retorno e risco.
+% Harvey et al. (2018), p. 14: definição ("leveraging the portfolio at times of
+% low volatility and scaling down at times of high volatility"), persistência,
+% 60+ ativos, Sharpe maior em ações e crédito, menos retornos extremos em todos;
+% p. 16: retorno x alvo / volatilidade prevista. Leitura indicada ao autor: p. 14-16.
+
+As duas maneiras podem ser combinadas. Nesse caso, o filtro veta a operação nos
+dias de volatilidade prevista mais alta e, nos dias liberados, a posição é menor
+quanto maior for a volatilidade prevista.
+
 \section{Métricas de avaliação}
 \label{sec:medidas}
 
@@ -346,7 +443,7 @@ estratégias do MetaTrader 5 apresenta, ao lado do lucro, medidas de risco e
 Quadro~\ref{qua:metricas} resume as métricas usadas neste trabalho para avaliar e
 comparar os robôs.
 
-\begin{quadro}[H]
+\begin{quadro}[htbp]
 \centering
 \caption{Métricas de avaliação usadas no trabalho}
 \label{qua:metricas}
@@ -375,25 +472,34 @@ Sinais vetados & quantas vezes o GARCH impediu uma operação indicada pelo ARIM
 \fonte{Elaboração própria, com base em \citeonline{metaquotesRelatorio} e \citeonline{sharpe1994}.}
 \end{quadro}
 
-O risco é medido de duas formas complementares. A queda máxima, que o relatório
+Risco é a possibilidade de que um evento inesperado e desfavorável produza um
+retorno menor que o esperado, ou mesmo uma perda. Em finanças, ele costuma ser
+medido pela variância ou pelo desvio-padrão dos retornos, isto é, pela
+volatilidade. Volatilidade e risco, porém, não são a mesma coisa, porque a
+volatilidade mede a dispersão para os dois lados, enquanto o risco está ligado
+às perdas \cite[p.~22-23]{thomaz2019}.
+
+Por isso, o risco é medido aqui de duas formas complementares. A queda máxima, que o relatório
 da plataforma chama de rebaixamento relativo e que também é conhecida pelo termo em
 inglês \textit{drawdown}, é a maior queda percentual entre um máximo local do
-patrimônio e o mínimo local seguinte \cite{metaquotesRelatorio}. Ela responde à
-pergunta de qual foi o pior tombo do caminho. A volatilidade, por sua vez, é o
-desvio-padrão dos retornos e mede o quanto o patrimônio oscila no dia a dia.
+patrimônio e o mínimo local seguinte \cite{metaquotesRelatorio}. Ela olha apenas
+para as perdas e responde à pergunta de qual foi o pior tombo do caminho. A
+volatilidade, por sua vez, é o desvio-padrão dos retornos e mede o quanto o
+patrimônio oscila no dia a dia, para cima e para baixo.
+% Thomaz (2019), seção 2.3: definição de risco na p. 22; variância como medida
+% e a ressalva de que volatilidade não é o mesmo que risco na p. 23.
 
 Como os retornos são diários, a volatilidade é convertida para base anual, o que
 facilita a leitura e a comparação. Se os retornos de dias diferentes forem
 independentes entre si, a variância de um período de $T$ dias é $T$ vezes a
 variância diária, e o desvio-padrão, a raiz de $T$ vezes o diário
-\cite{sharpe1994}. Usou-se $T = 252$, número de dias úteis de um ano adotado por
-convenção no mercado brasileiro. Na série da PETR4 usada neste trabalho, a média
-foi de 248 pregões por ano. A volatilidade anual é, portanto, o desvio-padrão
+\cite{sharpe1994}. Usou-se $T = 252$, valor próximo da média de 248 pregões por
+ano observada na série da PETR4 usada neste trabalho. A volatilidade anual é, portanto, o desvio-padrão
 diário multiplicado pela raiz de 252, e uma oscilação típica de 2\% ao dia
 corresponde a cerca de 32\% ao ano.
-% REFERÊNCIA (convenção de 252 dias úteis, a buscar): Banco Central do Brasil,
-% taxa Selic anualizada com base 252. A média de 247,8 pregões por ano (2004 a
-% 2025) sai de dados/series/PETR4_OFICIAL.csv.
+% 252: sem fonte externa (decisão do autor em 21/10/2026: não acrescentar
+% referência). A frase se apoia só no dado: média de 247,8 pregões por ano (2004 a
+% 2025), de dados/series/PETR4_OFICIAL.csv.
 
 O índice de Sharpe relaciona o retorno de uma estratégia à sua volatilidade. Ele
 divide o retorno diferencial, isto é, a diferença entre o retorno da estratégia e
@@ -406,11 +512,7 @@ desvio-padrão. O índice indica quanto se ganhou além da referência por unida
 oscilação, e quanto maior, melhor a relação. Um índice negativo indica que a
 estratégia rendeu menos que a referência. O testador do MetaTrader 5 usa como
 referência um rendimento livre de risco igual a zero \cite{metaquotesRelatorio}, e
-neste trabalho a referência foi a taxa Selic. O próprio autor observa que o
-índice está ligado à estatística $t$ da média do retorno diferencial, que é igual
-a ele multiplicado pela raiz do número de observações \cite{sharpe1994}. Por isso,
-um mesmo valor de índice é estatisticamente mais forte quando medido em um período
-mais longo.
+neste trabalho a referência foi a taxa Selic.
 
 O índice de Calmar relaciona o retorno à queda máxima. Ele divide o retorno
 anualizado pela queda máxima do período,
@@ -469,7 +571,7 @@ mesma arquitetura adotada no algoritmo aqui desenvolvido.
 O Quadro~\ref{qua:comparativa} resume as características desses estudos e as
 deste trabalho.
 
-\begin{quadro}[H]
+\begin{quadro}[htbp]
 \centering
 \caption{Características dos estudos relacionados}
 \label{qua:comparativa}

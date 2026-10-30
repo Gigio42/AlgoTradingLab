@@ -1,0 +1,33 @@
+Camada 1 = crua; custos = camada 2; selic = camada 3; proventos = camada 4 (Yahoo, não oficial).
+Fonte: refeito_2026-10-05/testes/metricas_*.csv (ret_puro, dd_puro, vol_puro, ret_custos, ret_selic, ret_completo).
+
+== 2007 a 2011 (versões A e B são a mesma configuração)
+Médias móveis            neg=  31 acerto= 45.2 exp=0.48 | cru: ret=  -31.6 queda= 64.6 vol= 28.7 | custos=  -32.8 selic=  -11.6 proventos=   -5.9
+ARIMA                      neg= 320 acerto= 50.3 exp=0.43 | cru: ret=  -12.7 queda= 45.1 vol= 27.5 | custos=  -27.1 selic=   -2.1 proventos=   +3.2
+ARIMA-GARCH A e B          neg= 263 acerto= 49.8 exp=0.20 | cru: ret=   -8.4 queda= 17.5 vol= 10.5 | custos=  -15.2 selic=  +28.7 proventos=  +32.9
+PETR4                      preço: ret=  -14.0 queda= 67.2 vol= 43.2 | com proventos: ret=   -1.2 queda= 67.2
+Selic                      ret=  +68.1
+
+== 2013 a 2016
+Médias móveis            neg=  24 acerto= 37.5 exp=0.44 | cru: ret= +100.8 queda= 42.0 vol= 40.4 | custos=  +98.1 selic= +150.9 proventos= +176.0
+ARIMA                      neg= 266 acerto= 47.7 exp=0.46 | cru: ret=  -35.8 queda= 54.5 vol= 37.8 | custos=  -44.8 selic=  -30.5 proventos=  -27.9
+ARIMA-GARCH A              neg= 140 acerto= 42.1 exp=0.18 | cru: ret=  -13.8 queda= 28.6 vol= 14.1 | custos=  -18.8 selic=  +15.8 proventos=  +15.8
+ARIMA-GARCH B              neg= 140 acerto= 42.1 exp=0.09 | cru: ret=   -6.8 queda= 15.5 vol=  7.1 | custos=   -9.5 selic=  +34.0 proventos=  +34.0
+PETR4                      preço: ret=  -25.6 queda= 83.1 vol= 59.2 | com proventos: ret=  -17.7 queda= 83.1
+Selic                      ret=  +53.9
+
+== 2017 a 2024
+Médias móveis            neg=  56 acerto= 44.6 exp=0.55 | cru: ret=  +47.8 queda= 37.9 vol= 30.9 | custos=  +43.2 selic=  +90.4 proventos= +396.1
+ARIMA                      neg= 244 acerto= 55.7 exp=0.62 | cru: ret=  +95.7 queda= 40.5 vol= 32.0 | custos=  +70.5 selic= +114.6 proventos= +331.1
+ARIMA-GARCH A              neg= 238 acerto= 58.8 exp=0.44 | cru: ret= +199.5 queda= 27.2 vol= 24.2 | custos= +161.8 selic= +273.8 proventos= +353.4
+ARIMA-GARCH B              neg= 223 acerto= 55.6 exp=0.25 | cru: ret=  +42.9 queda= 40.2 vol= 16.3 | custos=  +34.4 selic= +114.1 proventos= +212.1
+PETR4                      preço: ret= +143.6 queda= 64.2 vol= 44.8 | com proventos: ret= +726.5 queda= 64.2
+Selic                      ret=  +86.1
+
+== 2025 a 2026
+Médias móveis            neg=  12 acerto= 25.0 exp=0.50 | cru: ret=  +18.1 queda= 31.1 vol= 22.7 | custos=  +17.2 selic=  +31.3 proventos=  +39.0
+ARIMA                      neg=  46 acerto= 41.3 exp=0.52 | cru: ret=  +14.2 queda= 20.1 vol= 22.0 | custos=  +11.3 selic=  +24.1 proventos=  +34.4
+ARIMA-GARCH A              neg=  37 acerto= 43.2 exp=0.28 | cru: ret=  -13.7 queda= 17.6 vol= 13.5 | custos=  -15.5 selic=   -0.4 proventos=   +5.5
+ARIMA-GARCH B              neg=  37 acerto= 43.2 exp=0.19 | cru: ret=   -7.4 queda= 12.2 vol=  9.2 | custos=   -8.8 selic=   +9.6 proventos=  +13.9
+PETR4                      preço: ret=  +33.2 queda= 25.1 vol= 29.1 | com proventos: ret=  +57.6 queda= 22.8
+Selic                      ret=  +25.7

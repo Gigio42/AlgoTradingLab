@@ -22,8 +22,9 @@ sobre o experimento · **[resultado]** sobre como ler um número.
    - Não se sabe se o JCP está bruto ou líquido de IR em cada fonte.
    - Por isso os proventos ficam só na camada 4 (adendo). A escolha de
      parâmetros e as comparações entre modelos usam a camada 3, sem proventos.
-2. **[dado] Custo de 0,03% por execução sem fonte primária.** A tabela de
-   tarifas da B3 não foi consultada. Emolumentos mudaram ao longo de
+2. **[dado] Custo de 0,03% por execução: CONFERIDO em 21/10/2026** com a
+   tabela oficial da B3 (FONTES, item 8): 0,0300% para ações à vista, sem day
+   trade, ADTV até R$ 3 milhões. Continua valendo a ressalva: Emolumentos mudaram ao longo de
    2003–2026 e o valor usado é o mesmo para todos os anos.
 3. **[dado] Desdobramento de 2005** (1→4, 01/09/2005): confirmado pelo Yahoo e
    pelo salto de preço no COTAHIST, mas não aparece na lista da API da B3.
@@ -573,7 +574,7 @@ sobre o experimento · **[resultado]** sobre como ler um número.
 61. **[texto] Varredura do autor (15/10/2026), lista colada na conversa.** Backup
     em `notas/rascunhos/antes_varredura_autor_2026-10-15/`. TG com 52 páginas,
     0 estouros, sem referência quebrada.
-    - Cap. I: figuras e tabelas fixas no lugar (`[H]`, pacote `float` carregado
+    - Cap. I: figuras e tabelas fixas no lugar (REVOGADO em 22/10/2026, a pedido do autor: ilustrações em `[htbp]`, pacote `float` retirado; ver item 76) (`[H]`, pacote `float` carregado
       DEPOIS dos `\newfloat` do Quadro e do Gráfico no `main.tex`; carregado
       antes, desmontou os dois); figuras 1 a 3 menores; "pregão" definido; ADF
       (raiz unitária, valor-p) e AIC explicados com Thomaz (p. 28, 40-41,
@@ -656,3 +657,649 @@ sobre o experimento · **[resultado]** sobre como ler um número.
     estimação (previsão frágil); **a proteção do GARCH vale em 20 de 20
     combinações (queda e volatilidade)**. Candidato a frase de robustez no TG,
     decisão do autor.
+
+64. **[código e texto] Sessão de 18/10/2026: limpeza do código e preparação da
+    entrega à orientadora**, a pedido do autor. Resumo e pendências em
+    `PENDENCIAS.md`, seção 0.
+    - **Código**: reorganizado sem mudar resultado. Regressão byte a byte em 13
+      casos (`ferramentas/scripts/regressao_codigo.sh`, 29 arquivos idênticos) e
+      os três validadores em EA repetiram os arquivos de `dados/verificacao/`.
+      Commit anterior à limpeza: `a3b21b9`. A limpeza ainda não foi commitada.
+    - **Texto**: validação do código retirada (o autor: foge do escopo
+      apresentado); seção estatística oculta com `\iffalse` (`OCULTO-18/10`);
+      considerações, resumo e abstract apoiados só no que ficou visível (11 de 11
+      em risco, 9 de 11 em retorno contra a mesma configuração sem GARCH);
+      objetivo específico "implementar e validar" virou "implementar" (**a
+      confirmar com a orientadora**: o PTG pode ter "validar"); título novo;
+      caderno de delineamentos da FATEC-ID citado.
+    - **Não confirmado**: o gradiente descendente da versão antiga divergir com a
+      escala do preço é dedução, nunca medida (PENDENCIAS, item 1). O Wazlawick
+      definir "quase experimental": não verificável sem o livro, por isso não foi
+      citado para isso. A gestão de dinheiro do Almeida voltar ao volume fixo com
+      stop zero: lembrança do livro, não conferida.
+    - **Sem fonte**: a convenção de 252 dias úteis (procurada em todas as obras
+      do projeto e na página da Selic do BCB).
+65. **[leitura] Almeida (2016) e a Selic (19/10/2026, pergunta do autor).** Almeida
+    afirma que, fora da crise, a PETR4 rendeu "superior a taxa da SELIC" (resultados e
+    conclusão). O resultado dele em 2013-2016 foi +R$ 10.430 sobre R$ 50 mil,
+    ou +20,9% em três anos, comparado no texto dele com a Selic anual de 14,25%
+    (2016). A Selic acumulada no mesmo intervalo, 22/05/2013 a 23/05/2016, calculada
+    de `dados/series/selic_diaria.csv` (SGS 11, 757 pregões), foi de **+39,3%**.
+    Leitura nossa, **não confirmada com o autor**: ele parece ter comparado o
+    retorno de três anos com a taxa de um ano. Nos testes deste TG, as médias móveis
+    reproduzidas ficaram acima da Selic em 4 de 5 períodos, mas em outras condições
+    (95% do patrimônio, só compra, caixa na Selic), nenhuma com p < 0,05. Nada disso
+    está no texto do TG.
+66. **[resultado] A camada do retorno nas tabelas do Cap. III (19/10/2026).**
+    As Tabelas 3 a 6 e os Gráficos 1 a 3 usam `ret_selic`/`dd_selic`/`vol_selic`
+    (camada 3: retorno puro − custos + fração parada × Selic do dia,
+    `Include/Desempenho.mqh`, linhas 362-366). Proventos não entram em nenhuma
+    tabela (só na nota da Tabela 5). As Tabelas 1 e 2 são puras. O autor tinha
+    pedido "pura primeiro", e a bateria de 15/10 seguiu isso, mas o Cap. III é da
+    refação de 05/10 e continuou na camada 3. Efeito: favorece quem fica fora do
+    mercado (exposição média GARCH 0,09-0,44 × MM/ARIMA 0,43-0,62). Na camada
+    pura (`ret_puro`, `dd_puro`, `vol_puro` dos mesmos `metricas_*`): risco 11 de
+    11 mantido; retorno GARCH > mesma configuração sem ele cai de 9 para 7 de 11;
+    2007-2011 GARCH −8,4% (texto +28,7%); 2008 −4,4% (texto +5,0%); fixas
+    2005-2026 B +33,5% (camada 3 +669,9%), MM +305,5% (camada 3 +985,2%), Selic
+    +795,8%. Contra a Selic, a comparação certa é a camada 3: o ARIMA-GARCH
+    passa em 2 de 11 testes (2017-2024, A e B), nenhum com p < 0,05 (melhor
+    p = 0,085). **Decisão do autor pendente.** Nesta conversa, eu tinha passado
+    ao autor números de longo prazo na camada 3 sem dizer qual era a camada
+    (corrigido na mesma conversa).
+67. **[referência] Busca dos PDFs das obras citadas (19/10/2026, pedido do autor).**
+    Baixados e conferidos pela 1ª página: Bollerslev (1986) e Araya (2024), em
+    `bibliografia/pdfs/` (procedência em `bibliografia/OBRAS-DO-TG.md`). Dois erros
+    no `tg/referencias.bib`, **ainda não corrigidos** (decisão do autor):
+    (a) `araya2024`: autores e periódico errados. Confirmado no PDF e no Crossref:
+    Araya, Hailabe T.; Aduda, Jane; Berhane, Tesfahun, *Journal of Applied
+    Mathematics*, v. 2024, Article ID 6305525. No texto sairia "Araya, Aduda e
+    Berhane (2024)".
+    (b) `fernandes2014`: a editora "Campus" **provavelmente está errada**. Pela busca
+    (Skoob, Magazine Luiza), o livro é edição do próprio autor, Alexandre Fernandes
+    (marca Palex), Rio de Janeiro, 1ª ed. 2014, 2ª ed. 2017, ISBN
+    978-85-917091-0-6. **Não confirmado** em fonte oficial (Biblioteca Nacional,
+    ficha catalográfica) nem em qual edição o ISBN se aplica.
+    Os três livros (Elder 2002, Fernandes 2014, Wazlawick 2014) não têm cópia legal
+    aberta. O que o texto atribui a eles (Cap. I, l. 57, 71, 73, 92, 99; Cap. II,
+    l. 58 e 69; introdução, l. 103) **não pôde ser conferido** contra as obras nesta
+    sessão. Todas essas citações são indiretas, sem página.
+    **Atualização (19/10/2026, mais tarde):** o autor obteve os PDFs do Wazlawick e
+    do Fernandes (ver `bibliografia/OBRAS-DO-TG.md`). O Fernandes confirmou (b):
+    editor é o próprio autor, não a Campus, 1. ed. 2014, ISBN 978-85-917091-0-6.
+    O Wazlawick é a **3. ed. (LTC, 2021)**, não a 2. ed. (Elsevier, 2014) do `.bib`.
+    Feito a pedido do autor: `.bib` corrigido nas três entradas (`araya2024`,
+    `fernandes2014`, `wazlawick2014` → `wazlawick2021`), chave trocada no
+    `cap0` e no `cap2`, TG recompilado (47 p., sem citação indefinida). Conferido
+    contra os PDFs: os quatro trechos do Fernandes e as definições de explicativa
+    e experimental do Wazlawick batem. Duas ressalvas para o autor decidir:
+    (1) na 3. ed., "quanto à natureza" é primária/secundária/terciária (seção 4.1);
+    "empírica" e "aplicada" vêm da classificação das **ciências** (2.2 e 2.3), não
+    da pesquisa. A frase da introdução ("Quanto à natureza, a pesquisa é empírica")
+    mistura as duas. (2) A seção 4.3 define quase experimento (objetos não
+    selecionados aleatoriamente), o que pode sustentar a frase marcada "sem fonte"
+    no `cap2` (l. 72). Não inserido: o autor lê e decide (regra nº 3).
+    Elder (2002) continua sem PDF e sem conferência.
+68. **[texto] Cap. III na camada crua (19/10/2026), decisão do autor sobre o item 66.**
+    O autor pediu a comparação dos modelos crua primeiro e custos, Selic e
+    proventos depois, um período por seção, sem tabelas juntas e com mais
+    gráficos. Feito: tabelas e gráficos dos períodos na camada 1
+    (`refeito_2026-10-05/cru/`, LEIAME); seção nova "Efeito dos custos, da Selic e
+    dos proventos" com uma tabela por período; Tabela 8 com as onze comparações
+    com e sem GARCH; gráficos do saldo do MT5 (ARIMA × ARIMA-GARCH) por período;
+    gráfico da exposição em 2007-2011. Frases que mudaram: 2007-2011 deixou de ser
+    "único com retorno positivo" (cru −8,4%, ainda o que menos perdeu); 2008 de
+    +5,0% para −4,4%; retorno maior que a mesma configuração sem GARCH de 9 para
+    **7 de 11**; risco 11 de 11 mantido; quatro ações com as faixas cruas. Cap. II
+    (plano experimental) descreve as quatro camadas e diz que a escolha foi na
+    camada 3. Considerações ajustadas (2008, "sete das onze", Selic "considerados
+    os custos e a remuneração do caixa", proventos). Na conferência dos gráficos do
+    MT5 pelos relatórios `.htm`, duas frases do rascunho estavam erradas e foram
+    corrigidas antes de entrar: o mínimo do ARIMA em 2007-2011 é R$ 70,5 mil, e a
+    queda perto da negociação 67 em 2017-2024 é de junho de 2018 (PETR4 −47,9%),
+    não da pandemia. Os gráficos antigos de `tg/graficos/rodada3/` deixaram de ser
+    usados. A seção estatística oculta continua na camada 3.
+    **Nome no texto (19/10, pedido do autor):** a camada 1 se chama "resultado
+    bruto" no TG (antes "cru"), no mesmo sentido do "lucro bruto" de Almeida:
+    antes de custos. Não confundir com o "Lucro Bruto" do relatório do MT5, que é
+    a soma das operações ganhadoras. Pastas e scripts continuam com `cru`.
+    **Nomes das versões (19/10, pedido do autor):** "versão A/B" virou
+    "ARIMA-GARCH Sharpe/Calmar" no Cap. II, no Cap. III (prosa, tabelas, seção
+    oculta) e nas legendas dos gráficos. O Cap. II diz que o nome indica só o
+    critério de escolha, não o resultado no teste. Backup em
+    `notas/rascunhos/antes_nomes_sharpe_calmar_2026-10-19/`. Ao fazer esse backup,
+    o de `antes_cap3_cru_2026-10-19/` foi sobrescrito por engano (cap2 e cap3);
+    restaurado do histórico de arquivos da sessão (cap2) e de duas reconstruções
+    independentes que deram idênticas (cap3).
+    **Grade no Cap. II (19/10, pedido do autor):** voltou um Quadro com as 344
+    configurações (8 de base × parâmetros de cada forma), conferido contra
+    `refeito_2026-10-05/grades/r3_*.txt`, e o texto passou a dizer que elas foram
+    geradas pelo otimizador do testador do MT5 (algoritmo completo), uma forma
+    por vez, com o critério aplicado sobre os arquivos que o robô gravou. Backup em
+    `notas/rascunhos/antes_grade_cap2_2026-10-19/`.
+    **Outras ações no Cap. III (19/10, pedido do autor):** seção curta "Outras
+    ações", no fim do capítulo, com VALE3, USIM5 e POMO4 (resultado bruto das
+    escolhas só compra, `cru/outras_acoes.txt`). Três escolhas não operaram no
+    teste (VALE3 2025-26 Sharpe, USIM5 2025-26 Sharpe e Calmar); o motivo não foi
+    investigado (não confirmado se foi veto permanente ou previsão mínima). Sem
+    médias móveis nessas ações. Backup em `notas/rascunhos/antes_outras_acoes_2026-10-19/`.
+69. **[texto] Hannan e Rissanen (1982) citado no Cap. II (20/10/2026), autorizado
+    pelo autor** para o funcionamento do método. Dados conferidos no Crossref
+    (DOI 10.2307/2335856; o Crossref só dá a página inicial, 81; o fim, 94, vem do
+    resumo da Oxford). O texto original não foi lido (pago). Para o porquê da
+    escolha, recomendado só Gómez e Maravall (1998), p. 10 e 27-28, ainda **não
+    inserido**: falta o autor ler. Backup em
+    `notas/rascunhos/antes_citar_hannan_2026-10-20/`.
+    **Atualização (20/10):** Gómez e Maravall (1998) inserido no Cap. II, a pedido
+    do autor, como a única referência do porquê (frase no fim do parágrafo do HR).
+    No `.bib` como `@book` com `series` (o `@techreport` do abntex2 perdia a
+    editora) e acentos em comando LaTeX (UTF-8 saía "GóMEZ" na lista). Backup em
+    `notas/rascunhos/antes_citar_gomez_2026-10-20/`.
+70. **[texto] Formas de uso do GARCH explicadas e Harvey et al. (2018) citado
+    (21/10/2026, pedido do autor).** O autor achava que todos os robôs do Cap. III
+    usavam só o filtro; o texto nunca dizia a forma de cada um. Conferido nos
+    arquivos de escolha (`refeito_2026-10-05/escolhas/r3_C*.txt`, `r6_C4.txt`) e
+    nas métricas dos testes: todos os escolhidos da PETR4 usam o filtro; o Calmar
+    é filtro e ajuste da posição em todos os períodos; o Sharpe é filtro e ajuste
+    em 2007-11 e 2013-16 e só filtro em 2017-24 e 2025-26; as fixas são filtro e
+    ajuste; o cenário de Almeida é só filtro, sem encerrar no veto. Nas outras
+    ações o intervalo de confiança foi escolhido 5 vezes. O ajuste da posição
+    sozinho nunca foi escolhido.
+    - **Cálculo exploratório, não está no TG:** se a escolha fosse restrita ao
+      filtro (mesmas grades, nada simulado de novo), a queda máxima do Sharpe em
+      2007-11 iria de 17,5% para 41,4% (ARIMA 45,1%). Script no scratchpad,
+      descartado. O autor decidiu manter as formas como estão.
+    - **Harvey et al. (2018)** citado para a definição de volatility targeting e
+      a persistência da volatilidade (p. 14; regra alvo/volatilidade na p. 16,
+      igual à do EA). PDF da página do próprio autor em Duke, em
+      `bibliografia/pdfs/Harvey-2018.pdf` (sha256 16052c1d...). **Citado a pedido
+      do autor antes de ele ler: leitura indicada das p. 14 a 16.** Moreira e Muir
+      (2017) não entrou (escalam pela variância, não pela volatilidade).
+    - Cap. II: Quadro "Formas de uso do GARCH"; escolha explicada em três passos,
+      refeita em cada período; 252 dias apoiado só na média de 248 pregões da
+      série; custo de 0,03% declarado como premissa; Wazlawick (2021) passou a
+      sustentar a frase do quase experimento; COTAHIST cita `b3Cotahist`.
+    - Cap. III: Quadro "Forma de uso do GARCH em cada robô escolhido"; frase do
+      Calmar 2017-24 corrigida (dizia "proteção mais consistente quando o robô
+      reduz a posição", mas esse robô também ajusta a posição; o que o distingue é
+      não encerrar no veto); a frase das quatro ações explica os dois grupos do
+      `analisar_grades.sh` (`Gred` = ajuste ou encerrar no veto) e não liga mais o
+      resultado ao Calmar 2017-24, que pertence ao primeiro grupo. Cap. IV com a
+      mesma correção.
+    - O sumário ocupa duas páginas (desde a seção "Outras ações", de 19/10), não
+      por causa desta mudança.
+    Backup em `notas/rascunhos/antes_formas_garch_2026-10-21/`.
+    **Atualização (21/10, mais tarde), pedido do autor:** o Quadro "Formas de uso
+    do GARCH" saiu ("fica feio"). O conceito (filtro, volatility targeting com
+    Harvey, combinação) foi para o Cap. I, nova subseção 1.4.4 "Uso da
+    volatilidade prevista na operação", com a frase dos 60+ ativos (Harvey, p. 14).
+    A seção 2.4 do Cap. II virou sete subseções (preparação dos preços, ARIMA,
+    GARCH, janela, funcionamento do robô, uso do GARCH na decisão, parâmetros do
+    robô), só com o "como foi implementado". Texto novo, sem número novo; a frase
+    "restrições impostas dentro da rotina de otimização" vem do `Garch.mqh`
+    (MinBLEICSetBC/SetLC). O sumário passou a ter 7 linhas a mais. Backup em
+    `notas/rascunhos/antes_subtopicos_implementacao_2026-10-21/`.
+71. **[escopo] Intervalo de confiança fora do TG (21/10/2026, pedido do autor:
+    "só quero F e T, retire tudo que foi testado com essa parte").** Motivo
+    declarado: tamanho do escopo, não o resultado. A forma continua no código do
+    EA (`INTERVALO_CONFIANCA`, input `K_Confianca`, que aparece numa linha do
+    Apêndice A); fica citada só no Cap. I como forma que existe e não foi usada.
+    - **As 32 configurações por janela foram simuladas e descartadas antes da
+      escolha.** Como cada simulação é independente, escolher entre as 312
+      restantes dá o mesmo que rodar só as 312. O texto descreve a grade de 312
+      (rodada 4: 624 e 14.976 simulações; eram 344, 688 e 16.512). A decisão veio
+      depois de o autor ver onde a forma tinha sido escolhida (5 células das
+      outras ações), registrado aqui por transparência.
+    - **PETR4 não muda em nada**: `escolher.sh` sem o IC dá as mesmas GS, GC e AS
+      em C1 a C4, só compra e com venda (conferido). Tabelas, gráficos, telas do
+      MT5, configurações fixas e cenário de Almeida ficam iguais.
+    - **Outras ações**: mudam 5 células (VALE3 Sharpe 2007-11, 2013-16 e 2025-26,
+      USIM5 Sharpe 2013-16, POMO4 Calmar 2013-16). `outras_acoes.sh` filtra o IC
+      por padrão (`SEM_IC=0` reproduz a versão antiga byte a byte, guardada em
+      `cru/outras_acoes_com_ic_2026-10-19.txt`). Tabela conferida célula a célula
+      (36 de 36). Só USIM5 2025-26 segue sem operar. Texto refeito: Calmar com a
+      menor queda em 7 de 9 (exceção da VALE3 2025-26 agora é o Sharpe); Sharpe caiu
+      mais que o ARIMA em 3 casos (antes 4), todos mantendo a posição no veto; a
+      contagem de retorno saiu porque a POMO4 2013-16 é quase empate (ARIMA
+      -20,975%, Calmar -20,996%).
+    - **Quatro ações, dois grupos**: `analisar_grades.sh` ganhou `SEM_IC=1` (o
+      padrão reproduz `analise_grades_cru.txt` byte a byte). Saída nova em
+      `cru/analise_grades_cru_sem_ic.txt`: grupo que reduz 84-92% / 91-98% / 51-95%
+      (antes 84-92 / 91-97 / 53-95); grupo que só congela 31-68% (antes 28-65%).
+    - A seção estatística oculta ainda tem os números com IC (aviso no `.tex`).
+    Backup em `notas/rascunhos/antes_tirar_intervalo_confianca_2026-10-21/`.
+72. **[texto] Fóruns do MetaTrader 5 (21/10/2026, pedido do autor).** O autor leu
+    artigos e fóruns da comunidade MQL5 durante o desenvolvimento, sem anotar
+    todos. Entrou uma frase genérica, sem referência, na abertura da seção 2.4 do
+    Cap. II ("foram consultados artigos e fóruns da comunidade do MetaTrader 5 para
+    entender como esses métodos podem ser escritos em MQL5"). Recusado escrever
+    que o código foi "validado" ou "feito" pelos fóruns: a validação foi com séries
+    sintéticas (fora do texto desde 18/10), e os métodos vêm da literatura citada.
+    Os dois artigos que ele confirmou ter lido (Dube, 2023, ARIMA por Powell; Dube,
+    2024, ADF) chegaram a entrar como citação e saíram a pedido dele; ficam num
+    comentário do `.tex` para a banca. Nenhum rastro deles no código. Backup em
+    `notas/rascunhos/antes_citar_dube_2026-10-21/`.
+    **Atualização (21/10):** a pedido do autor, a frase passou a dizer que o
+    conteúdo da comunidade de desenvolvedores do MetaTrader 5 foi "uma das
+    principais fontes" para entender como implementar os métodos em MQL5, sem
+    enumerar tipos de material (ele não quis a lista).
+    **Atualização 2 (21/10):** a frase passou ao plural ("os conteúdos produzidos e
+    compartilhados pela comunidade") e ganhou a documentação oficial da linguagem
+    como a outra fonte principal, citada como `metaquotesMql5` (Manual MQL5,
+    https://www.mql5.com/pt/docs; cópia em `bibliografia/paginas/`, registrada em
+    `dados/FONTES.md`). Com duas entradas da MetaQuotes de 2026, as citações saem
+    "2026a" (Manual) e "2026b" (Relatório de teste), automaticamente.
+    **Atualização 3 (21/10):** abertura da 2.4 reescrita em três parágrafos, a
+    pedido do autor ("não foi do zero"): a implementação se apoiou na documentação
+    e em exemplos e trechos de código da comunidade, adaptados (afirmação do autor
+    sobre o processo; não há rastro de código copiado no repositório). Entrou o
+    robô de médias móveis: reescrito a partir do algoritmo do anexo de Almeida
+    (2016), com o `iMA` da plataforma, compartilhando `Negociacao.mqh` e
+    `Desempenho.mqh` com o ARIMA-GARCH (conferido em `MediasMoveis2.mq5`).
+73. **[texto] Plano experimental em subseções (21/10/2026, pedido do autor).** A
+    seção 2.5 do Cap. II virou sete subseções, na ordem do Cap. III: condições das
+    simulações, medição dos resultados, reprodução do estudo de referência
+    (antes era o último parágrafo, "Antes de tudo isso"), configurações testadas,
+    escolha da configuração, robôs comparados (novo agrupamento: ARIMA, médias
+    móveis, compra e manutenção e a mesma configuração sem GARCH) e testes
+    complementares. Nenhum fato ou número novo; saiu a frase repetida sobre a
+    comparação no resultado bruto. Backup em
+    `notas/rascunhos/antes_subtopicos_plano_2026-10-21/`.
+74. **[réplica] Tentativa de chegar aos números de Almeida (21/10/2026, pedido do
+    autor: "tente de tudo").** Resultados em
+    `dados/resultados/replica_almeida_v2_2026-10-21/LEIAME.md`. O que é fato e o
+    que é hipótese:
+    - **Fato (log do testador):** sem histórico suficiente antes da data inicial,
+      o testador adia o início até ter 100 barras ("start time changed ... to
+      provide data at beginning"), sem erro. Com histórico desde 02/01/2008, os
+      testes de 2007 e 2008 começam em 02/06/2008.
+    - **Não confirmado:** que o servidor MetaBrazil-Demo tivesse a PETR4 só a
+      partir do início de 2008. É a explicação que melhor reproduz a Figura 13
+      (entradas de julho a dezembro iguais), mas a contagem 52/37 também sai de
+      outras datas de início (com uma data livre, é fácil acertar).
+    - **Não confirmado:** que a série dele fosse ajustada por proventos. Melhora o
+      lucro bruto em todos os testes (a menos de 6% do dele) e acerta a contagem
+      de T2, T3 e CIEL3, mas piora o desenho mensal de CIEL3 e VLID3.
+    - **Estimativa:** os fatores das bonificações da CIEL3 (a API da B3 não traz
+      2012 a 2016) e a leitura das barras das figuras dele.
+    - **Sem explicação:** a perda bruta dele é 4% a 15% maior que a nossa em todos
+      os testes; nenhum custo uniforme fecha os cinco ao mesmo tempo. E 4
+      operações a mais em T1, num zigue-zague de 03 a 08/06/2011.
+    - **Contagem do LEIAME antigo:** `replica_almeida_2026-09-28` comparava as
+      "saídas" do EA (37) com as 37 dele em 2008–2010, mas o relatório do MT5
+      conta também o fechamento forçado no fim (38). Os números de operações
+      desta rodada são todos o "Total Trades" do relatório, como os dele.
+    - **Figuras dele inconsistentes:** a Figura 14 (por dia da semana) soma 22
+      entradas, não 37; as Figuras 15 e 16 (MFE/MAE, ~350 pontos com lucro de
+      ±100) não podem ser do teste de 38 operações com 1.000 ações.
+    - **Ambiente:** a importação usa o perfil de gráficos `AlgoLab`
+      (`PERFIL=AlgoLab` no `importar.sh`), porque o Default está no limite de 100
+      gráficos (item 54); o `Config/common.ini` do autor é devolvido e conferido.
+      A armadilha do zsh (`set -- $p` sem separar palavras) voltou a acontecer e
+      reimportou os `_B3` com os mesmos CSVs (sem dano). O
+      `MQL5/Files/import_OFICIAL_resultado.txt` do prefixo novo foi sobrescrito
+      pela importação da VLID3 (mesmo sufixo; é só log).
+    - **Módulos do anexo conferidos (21/10, tarde):** o código-fonte oficial do
+      livro de Young (2013), de onde vêm os `.mqh` que o anexo inclui e não traz,
+      foi obtido (FONTES, item 13). O anexo é o EA "Moving Average Cross" do
+      livro com os nomes traduzidos. Confirmado: com `StopLoss = 0` a gestão de
+      dinheiro devolve o volume fixo (0,1, elevado ao mínimo do símbolo pelo
+      `VerifyVolume`); a inversão soma o volume da posição; a barra nova ignora a
+      primeira chamada. Diferença achada: o `CIndicator::Main` arredonda a média
+      para `_Digits` antes da comparação. Acrescentado ao `ReplicaAlmeidaEA`
+      (`ArredondarMedias`, padrão desligado) e rodado nas 14 séries (`_n1`):
+      muda de 0 a 2 operações e até R$ 1.940; resultado misto em relação a ele.
+      **Não confirmado** que o volume mínimo da PETR4 no servidor dele fosse 100
+      nem que ele usasse o módulo sem alterar.
+    - **TG (21/10, noite, pedido do autor):** a Tabela 1 continua a mesma; o
+      parágrafo seguinte agora explica o adiamento do testador e o ajuste por
+      proventos, com 54, 37 e 38 operações (linhas `_n1`), e diz que nada disso
+      pode ser confirmado.
+    - **TG (29/10/2026, pedido do autor): a coluna da hipótese passou a ser só o
+      histórico desde 2008**, sem proventos e sem arredondar as médias (linhas
+      `ra_T1d8`/`ra_T2d8_m2_e0_r0` e `ra_T3d8_m2_e0_r0`, este rodado em 29/10 com
+      `replica_almeida_v2d.sh` e igual ao `ra_T3of`). Líquido: 50 · −2.530,
+      35 · −1.482 e 37 · +10.050, contra 52 · −2.542, 37 · −1.595 e 38 · +10.430
+      dele. É a combinação mais próxima no líquido (soma das distâncias 505,
+      contra 1.061 com arredondamento e 1.562 com proventos e arredondamento).
+      **O líquido bate por compensação**: lucro bruto 1.003 e 844 acima do dele,
+      prejuízo bruto 991 e 731 acima. O texto diz isso, diz que proventos e
+      arredondamento foram testados sem aproximar o conjunto, e chama o início em
+      2008 de hipótese. O arredondamento está no código do livro de Young e foi
+      deixado de fora por escolha do autor, por não aproximar o resultado.
+
+75. **[dado/texto] Sem Yahoo no TG; custo e proventos com fonte oficial; seção
+    estatística e intervalo de confiança removidos (21/10/2026, pedido do autor).**
+    - **Custo de 0,03%:** conferido na tabela oficial da B3 (item 2, FONTES item 8)
+      e citado no Cap. II (`b3Tarifas`). A frase "premissa não conferida" saiu.
+      Continua sendo a tabela de 2026 aplicada a todos os anos (dito no texto).
+    - **Proventos:** a camada 4 passou do Yahoo para a B3 (FONTES item 3). Os 15
+      testes das tabelas de camadas foram refeitos
+      (`refeito_2026-10-05/proventos_b3/`); só as colunas de proventos mudaram.
+      Maiores mudanças: PETR4 com proventos em 2017–2024 +726,5% → +777,9%;
+      ARIMA 2017–2024 +331,1% → +356,6% (passa a GS, +353,0%); PETR4 2007–2011
+      −1,2% → +2,0%. 2013–2016 não muda na primeira casa decimal.
+    - **Desdobramento de 2005:** o texto cita o comunicado da Petrobras (Form 6-K,
+      SEC) no lugar do Yahoo. O arquivo não foi guardado (a SEC bloqueia download
+      automático sem e-mail; FONTES item 2). `yahooPetr4` saiu do `.bib`. O Yahoo
+      só aparece no Quadro 1, como fonte de dados de Xing e de Araya (fato sobre
+      eles).
+    - **Seção estatística oculta: removida** (não só oculta). Ficaram as frases
+      alternativas que já apareciam no PDF. Cópia anterior dos `.tex` em
+      `notas/rascunhos/antes_remover_estatistica_2026-10-21/`. As colunas de
+      teste continuam no código e nos resultados (`comparacoes*.csv`).
+    - **Intervalo de confiança: retirado do código** (`Estrategia.mqh`, input
+      `K_Confianca`, coluna `K_Confianca` das métricas, caso `RG_intervalo` da
+      regressão). `FILTRO_E_TARGETING` continua valendo 3. CSVs antigos têm a
+      coluna, os novos não; os scripts leem por nome. Regressão: ver
+      `/tmp/algolab-trabalho/regressao_*_ic` (resultado no fim deste item).
+      **Resultado (21/10, 23:02):** os 12 casos restantes saíram idênticos byte a
+      byte (12 curvas, 3 traços, 3 métricas das médias móveis) e as 9 métricas do
+      EA idênticas depois de tirar a coluna `K_Confianca` da versão anterior. EA
+      compilado no prefixo novo com 0 erros e 0 avisos; listagem do Apêndice A
+      regenerada (294 linhas). **O clone do prefixo novo está com os arquivos
+      copiados, não com `git pull`**: depois do commit, fazer `git checkout -- .`
+      e `git pull` lá.
+    - **Seção de camadas do Cap. III removida (21/10, pedido do autor).** As
+      quatro tabelas (custos, Selic, proventos) saíram; o Cap. III fica só com o
+      resultado bruto. O Cap. II diz que custo e Selic entraram apenas na escolha
+      das configurações (Sharpe e Calmar). Nas Considerações saíram a frase da
+      Selic e a de "janela curta para o GARCH"; o limite dos proventos virou uma
+      frase. Os números das camadas continuam em `refeito_2026-10-05/cru/tabelas.txt`
+      e `proventos_b3/tabelas_camadas.txt`. Cópia anterior dos `.tex` em
+      `notas/rascunhos/antes_auditoria_2026-10-21/`.
+
+76. **[texto] Hipóteses e objetivos reescritos; polimento da auditoria (22/10/2026,
+    pedido do autor).** Cópia anterior dos `.tex` em
+    `notas/rascunhos/antes_polimento_2026-10-22/`.
+    - **REVERTIDO no mesmo dia, a pedido do autor: as hipóteses voltaram às do
+      PTG** (texto idêntico ao de antes, inclusive "formuladas antes dos
+      experimentos", que vale para elas), assim como a frase da taxa de acerto no
+      Cap. II e os parágrafos das hipóteses nas Considerações (H1 parcialmente
+      confirmada, H2 confirmada quanto ao risco). Ficou só a correção "a única
+      escolhida na PETR4". O registro abaixo é da tentativa, guardado como histórico.
+    - **Hipóteses diferentes das do PTG (desfeito).** O PTG (1.2.1) esperava "maior eficácia,
+      aferida em termos de potencial de acerto e adequação ao risco"; a 1.2.2,
+      avanço sobre as médias móveis com o ARIMA "com maior refinamento" na
+      direção e o GARCH no risco. O texto agora diz: H1 = o GARCH reduz o risco
+      (volatilidade e queda máxima) **sem alterar o acerto direcional**, deduzida
+      da função de cada modelo (Cap. I); H2 = o ARIMA-GARCH tem risco menor que as
+      médias móveis de Almeida, sobretudo em crise. Ambas confirmadas (H2 com duas
+      ressalvas: GC 2017–2024 e a pandemia). **A frase "formuladas antes dos
+      experimentos" saiu**, porque estas não foram: a mudança veio depois dos
+      resultados e tem de ser dita à orientadora (o PTG aprovado tem as outras).
+      A H2 é um recorte da 1.2.2 do PTG (a parte do GARCH e do risco); a H1 muda
+      o sentido da expectativa sobre o acerto.
+    - **Objetivos específicos** sem repetir o geral: estimadores e ordens; formas
+      de uso da volatilidade; reprodução de Almeida conferida com os números dele;
+      comparação de risco e retorno.
+    - **Justificativa**: o mercado brasileiro como diferença em relação aos
+      estudos relacionados (Xing, NVIDIA; Araya, Apple, ambos nos EUA, conforme o
+      Quadro 1), resultados como referência para outras pesquisas.
+    - **Auditoria aplicada**: custo nas limitações (resultado sem custo favorece
+      quem negocia mais, o ARIMA; conferido: ARIMA tem mais negociações que o GS
+      nos quatro períodos); "única escolhida" → "único escolhido na PETR4"; "não
+      tende a repetir" → "nem sempre repetiu"; 2018 (outros robôs +50,1% a +53,9%,
+      `cru/anual_R6.csv`); "perda bruta" → "soma das negociações com prejuízo";
+      venda a descoberto com resultado no Cap. III (bloco 3 de
+      `cru/analise_grades_cru_sem_ic.txt`: mediana, queda maior nos 12 casos,
+      retorno menor em 7) e a escolha só compradora dita no Cap. II; parágrafo do
+      intervalo de confiança fora do Cap. I; "observou-se" no histórico do
+      testador; ADF a 5%; "Sharpe" no saldo de 2025–2026; Apêndice A com o envio
+      de ordens; resumo e abstract com "e com quanto".
+    - **Mantido**: PETR4 −48,6% na introdução (fechamento de 30/12/2019 a
+      02/04/2020, FONTES); a Tabela de 2020 mede outra coisa (pior queda no ano,
+      64,2%). As duas estão certas.
+    - **Aviso de identificadores repetidos do LaTeX**: testado sem `hypcap` e com
+      `hypertexnames=false`, não some; as duas âncoras ficam na página da própria
+      ilustração (Figura 1, p. 12), então o link não erra. Deixado como está.
+    - **Gráficos da pandemia (22/10, pedido do autor).** Dois gráficos novos na
+      seção de 2020 do Cap. III (patrimônio e queda; preço e patrimônio aplicado),
+      dados de `cru/curva_2020.csv`, `cru/exposicao_2020.csv` e
+      `cru/exposicao_mensal_2020.txt` (`dados_cru.sh`; a rodada inteira do script
+      não alterou nenhum arquivo antigo). Valores finais e quedas batem com
+      `recorte_2020.txt`. Achado que entrou no texto: **em março de 2020 o ARIMA
+      sozinho já estava quase todo fora (8,6% aplicado)**; o efeito do GARCH no GS
+      foi manter o robô fora em abril e maio, e o ano terminou empatado (+1,0% ×
+      +0,7%). A proteção grande do GARCH em 2020 é a do Calmar (37,7% × 59,2%).
+      A exposição usa média de 5 pregões (e não 21, como em 2008) porque a queda
+      durou um mês; está dito na nota do gráfico.
+    - **Menos espaço em branco (22/10, pedido do autor).** Todas as ilustrações
+      passaram de `[H]` (fixas, pedido do autor em 15/10, item 61) para `[htbp]`,
+      com `\usepackage[section]{placeins}` e frações de float no `main.tex`; os
+      saldos do MT5 foram a 85% da largura; o parágrafo dos Gráficos de
+      2025–2026 passou para antes deles. TG de 64 para 60 páginas, sem estouro.
+      Conferido por script (texto de cada página): 18 ilustrações na mesma página
+      da primeira citação, 14 na seguinte, 1 a duas páginas (Gráfico 9, o
+      terceiro gráfico grande seguido de 2017–2024, depois de uma página só de
+      texto); nenhuma antes da citação nem fora da sua seção. Buracos que sobram:
+      fins de capítulo e fins de seção. Cópia anterior em
+      `notas/rascunhos/antes_ajuste_paginas_2026-10-22/`. **Para voltar ao fixo**:
+      trocar `[htbp]` por `[H]` nos `.tex` (e opcionalmente tirar o placeins).
+
+      **Adendo (22/10/2026, pedido do autor): Cap. III com subseções nos anos de
+      crise.** 3.3 vira 3.3.1 O período completo e 3.3.2 O ano de 2008; 3.5 vira
+      3.5.1 O período completo e 3.5.2 O ano de 2020 (a antiga seção da pandemia).
+      A seção 3.2 explica que o ano da crise é recorte do mesmo teste, sem nova
+      simulação, medido a partir do fechamento do ano anterior. Novo em 2008:
+      Tabela "Resultado em 2008" (de `cru/recorte_2008.txt`), gráficos
+      `curva_2008.pdf` e `exposicao_2008.pdf` (de `cru/curva_2008.csv` e
+      `cru/exposicao_2008.csv`, gerados por `dados_cru.sh`), e o texto de outubro
+      (0,0% × 56,4%, de `cru/exposicao_mensal_T1.txt`). O gráfico de exposição de
+      2007–2011 saiu da seção "Como o GARCH protege", que agora remete aos dois
+      anos e dá a média do período (20,1% × 45,6% da gêmea, das métricas). Os
+      gráficos dos anos de crise ficaram mais baixos (6,2 + 3,9 cm e 4,6 + 4,6 cm)
+      para caberem dois por página, e há `\FloatBarrier` antes de cada "O ano de",
+      para os gráficos do período completo não invadirem o ano. TG com 62 páginas.
+      Cópia anterior: `notas/rascunhos/antes_ajuste_paginas_2026-10-22/cap3-resultados_antes_subsecoes.tex`.
+      Atenção: o `Makefile` do `tg/` não depende dos PDFs dos gráficos; depois
+      de rodar `graficos_cru.sh`, dar `touch main.tex` antes do `make`.
+
+      **Adendo 2 (22/10/2026, pedido do autor): regra das figuras fixas retirada.**
+      O pacote `float` saiu do `main.tex` (nenhuma ilustração usa mais `[H]`).
+      Ficam `[htbp]`, o `[section]` do placeins e os `\FloatBarrier` do Cap. III.
+      Para caber mais por página, todos os gráficos de patrimônio ficaram com a
+      mesma altura dos anos de crise (6,2 + 3,9 cm; antes 7,5 + 4,5) e os de retorno
+      por ano com 6 cm (antes 7). Em 2025–2026, o parágrafo que citava os dois
+      gráficos foi dividido, e cada parte ficou antes do seu gráfico (mesmo texto e
+      mesmos números). Medido por script: 61 páginas, todas as ilustrações na
+      página da citação ou na seguinte, nenhuma antes da citação. Os vãos que
+      sobram são fins de capítulo e um de 28% no fim de 2008. Testado e
+      descartado: placeins sem `[section]` (ilustração antes da citação). Cópia
+      anterior em `notas/rascunhos/antes_imagens_2026-10-22/`.
+
+77. **[texto] Tabela "Risco nas condições originais, 2013 a 2016" retirada
+    (22/10/2026, pedido do autor).** O teste punha o ARIMA e o ARIMA-GARCH nas
+    condições de execução de Almeida (R$ 50 mil, mil ações, sem custos, compra e
+    venda), mas os parâmetros do modelo (limiar, forma de uso, janela) não podiam
+    vir dele, que não fez ARIMA nem GARCH: vinham da configuração padrão do EA,
+    fixada numa calibração antiga, fora do protocolo. Era um terceiro tipo de
+    teste, híbrido, que exigiria explicar a origem da configuração. A seção 3.1
+    fica só com a reprodução das médias móveis (Tabela 1 e o parágrafo das
+    hipóteses da réplica de 21/10, item 74). Saíram também o parágrafo
+    correspondente do Cap. II ("Por fim, o ARIMA e o ARIMA-GARCH foram executados
+    nas condições declaradas...") e o trecho "inclusive nas condições originais
+    do estudo de referência" das Considerações. Os números continuam em
+    `refeito_2026-10-05/testes/metricas_cenA_1316_*`. Compila sem referência
+    quebrada, 61 páginas; a antiga Tabela 3 virou a 2. Cópia anterior em
+    `notas/rascunhos/antes_remover_condicoes_originais_2026-10-22/`.
+
+      **Adendo 3 (22/10/2026, tarde, pedido do autor): figuras do Cap. III
+      rearrumadas de novo.** Gráficos de patrimônio 5,6 + 3,5 cm (antes 6,2 + 3,9),
+      exposição 4,0 + 4,0 cm (antes 4,6 + 4,6), painéis do MetaTrader 5 com 0,7 da
+      largura do texto (antes 0,85). Em 2013–2016, o parágrafo que citava os
+      Gráficos de patrimônio e de saldo foi dividido, cada parte antes do seu
+      gráfico (mesmo texto). Página só de ilustrações agora empilha a partir do
+      topo (`\@fptop` = 0 no `main.tex`). Resultado medido por script: 60 páginas
+      (antes 61), Cap. III sem vão maior que 29% fora de fim de capítulo, nenhuma
+      ilustração antes da citação; duas ficam duas páginas depois da citação
+      (saldos do MT5 de 2007–2011 e 2017–2024), logo após uma página cheia de
+      gráficos anteriores. Testados e descartados: `\floatpagefraction` 0,85 e 0,6.
+      Cópia anterior em `notas/rascunhos/antes_imagens2_2026-10-22/`.
+
+78. **[método] Janelas fixas: ARIMA 240 e GARCH 500 (26/10/2026, crítica da
+    orientadora e pedido do autor).** A orientadora apontou que o GARCH estimado
+    por máxima verossimilhança precisa de séries de 500 a 1.000 observações e que
+    o robô usa no máximo 240. Conferido: o GARCH não tem janela própria, herda a
+    do ARIMA (`Janela_Estimacao`, 120 ou 240 pela grade), e várias configurações
+    escolhidas usam 120. No traço de 2019–2021 (janela 240) o β variou de 0,12 a
+    0,92 e a persistência encostou em 1 em 159 de 496 dias.
+    Nenhuma obra que já estava no projeto dá o tamanho da janela. O que existe:
+    - Hwang e Valls Pereira (2006; versão de trabalho de 2003 em
+      `bibliografia/pdfs/Hwang-2003.pdf`, baixada em 26/10): GARCH(1,1) por MV
+      precisa de pelo menos 500 observações (resumo, p. 4 do PDF; conclusão,
+      p. 30 do PDF / 26 impressa). Só fala de ARCH e GARCH, não de ARIMA.
+    - Gómez e Maravall (1998, p. 28 impressa / 30 do PDF), já citado: o AR longo
+      do 1º estágio de Hannan-Rissanen tem ordem log²(N) (com HR 1982, p. 88). Com
+      240 pregões são 30 defasagens sobre ~209 equações; com 120, 22 sobre ~97.
+    - Brooks e Persand (2003; `Brooks-2002.pdf`, p. 8 do PDF, não está no .bib):
+      janela longa o bastante para estimar, curta o bastante para não usar dado
+      que já não vale. Eles usam 1.250 dias.
+    - Bollerslev (1986) estimou o GARCH(1,1) de exemplo com 143 observações
+      trimestrais (contexto, não argumento).
+    Proposta (plano A): ARIMA com 240 fixo (acompanha o mercado; HR se resolve),
+    GARCH com 500 fixo (Hwang), janela fora da grade (312 → 156 configurações),
+    aquecimento antes de cada teste para o testador ter os 500 pregões. Plano B,
+    só texto: manter os testes e declarar a janela do GARCH como limitação.
+    **Em 26/10 o autor pediu o estudo do plano A em separado**, sem mexer no TG:
+    testes refeitos e um PDF só com o Cap. III nessas condições. Pasta:
+    `dados/resultados/janelas_240_500_2026-10-26/` (PROTOCOLO e LEIAME lá).
+    **Resultado (26/10, noite).** Bateria completa: 25 janelas de calibração com
+    312 passagens (156 na C4) e 31 testes individuais. PDF em
+    `documento/estudo.pdf` (17 páginas, Cap. III no mesmo molde). Números todos em
+    `cru/`, gerados por `ferramentas/scripts/estudo_janelas_dados.sh`.
+    - **Correção do que está acima:** "persistência encostou em 1 em 159 de 496
+      dias" não se reproduz. Com o corte > 0,999 (`traco_resumo.sh`) são 144 de
+      496 (29,0%); com ≥ 0,99, 171. O estudo usa 144 (29,0%).
+    - **A janela de 500 melhora a estimação do GARCH:** no mesmo intervalo
+      (07/2019 a 06/2021), persistência > 0,999 em 2,2% dos pregões, contra 29,0%
+      com os resíduos da janela do ARIMA. α₁ mediano 0,22 contra 0,31 (0,12 em
+      2017–2024 inteiro).
+    - **Para a MESMA configuração, a janela quase não muda o resultado:** 3.648
+      pares (4 ações × 3 períodos, ARIMA de 240): a queda máxima com 500 foi
+      menor em 46,8%, igual em 9,4% e maior em 43,8%; mediana da diferença entre
+      −2,8 e +1,8 p.p. em 22 de 24 grupos. As 96 passagens sem GARCH são
+      idênticas nas duas versões (o aquecimento não muda nada).
+    - **O que mudou foi a escolha.** A otimização passou a escolher, em 7 de 10
+      casos, configurações que mantêm a posição no veto. GARCH × gêmea: queda
+      menor em 9 de 12 (antes 11 de 11), volatilidade menor em 8 de 12. As
+      quatro exceções são todas do ARIMA-GARCH Sharpe com só o filtro e mantendo a
+      posição (2013–2016, 2025–2026 e as duas fixas). Nas oito em que o GARCH
+      ajusta o tamanho ou encerra no veto, queda e volatilidade sempre menores.
+    - Nas quatro ações, todas as configurações: o grupo que reduz a posição baixou
+      a queda em 86–95% (2007–2011) e 86–100% (2013–2016) dos pares, 48–86% em
+      2025–2026 (TG: 84–92, 91–98, 51–95). O outro grupo, 21–88%, sem padrão.
+    - Números de destaque (bruto): 2007–2011 Sharpe +31,4% / queda 13,5% (TG
+      −8,4% / 17,5%); 2013–2016 Sharpe −24,5% / 77,6% (TG −13,8% / 28,6%);
+      2017–2024 Sharpe +64,6% / 37,0% (TG +199,5% / 27,2%), Calmar −15,4% / 21,6%
+      com 4,4% de exposição média (limiar fixo de 2%).
+    - Leitura (para o autor decidir, não confirmado como conclusão): a crítica da
+      orientadora procede na estimação, e a janela de 500 a resolve. O efeito do
+      GARCH sobre o risco continua onde ele reduz a posição. Os números das
+      configurações escolhidas mudam muito, mas isso vem da fragilidade da escolha
+      entre muitas configurações parecidas, já registrada (item sobre
+      persistência entre calibração e teste), e não da janela.
+    - Hwang e Valls Pereira (2006) está citado só no `estudo.bib` do documento do
+      estudo. O autor ainda não leu a obra: ler p. 4 e p. 30 do PDF antes de levar
+      ao TG.
+    - Armadilha nova (CLAUDE.md): na otimização, linha sem `||` herda a marca Y do
+      `.set`. A 1ª tentativa desta bateria foi interrompida por isso na C3 da
+      PETR4 e retomada com faixa explícita; C1, T1, C2 e T2 da PETR4 foram
+      conferidas (312 cada) e mantidas.
+    - **Correção (27/10).** A leitura "vem da escolha, e não da janela" vale para 7
+      dos 8 robôs. No ARIMA-GARCH Sharpe de 2017–2024 a configuração é a MESMA nas
+      duas versões (`escolhas/r6_C4.txt` da refação e do estudo: filtro, pct 70,
+      zera no veto, com constante, janela 240), e +199,5% → +64,6% vem só da janela
+      do GARCH (e do limiar calculado sobre 500 dias). Os 3.648 pares cobrem só T1,
+      T2 e T3. Dito errado ao autor em 27/10 e corrigido na mesma conversa; PDF do
+      estudo e LEIAME corrigidos. De onde veio a diferença em 2017–2024: não
+      confirmado.
+    - Venda a descoberto com GARCH 500 (bloco 3 de `cru/analise_grades_cru.txt`):
+      aumentou a queda máxima nos 12 casos e melhorou o retorno em 5 de 12.
+
+79. **[método] Estudo de fatores com GARCH 500 (27/10/2026, pedido do autor).**
+    Fora do TG. Pasta `dados/resultados/fatores_500_2026-10-27/` (PROTOCOLO
+    escrito antes, LEIAME). Janelas fixas de 26/10 (item 78), só compra, e três
+    fatores na grade: t de Student × normal, BIC × AIC, reseleção 63 × 21.
+    1.232 passagens por janela, 25 janelas, 01h00 a 06h54. Passagens
+    normal/AIC/21 idênticas às de 26/10 (conferido em todas as grades).
+    - **Efeito pareado (grades de teste, 4 ações)**: t de Student com queda menor
+      em 37,5% dos pares e maior em 37,7% (neutro; ν mediano 7 a 11, então as
+      caudas pesadas existem, mas não mudam a decisão). BIC: menor 30,3%, maior
+      43,3% (pior; retorno mediano de −12 a −23 p.p. em 2007–2011 na PETR4 e na
+      VALE3). Reseleção 63: menor 37,6%, maior 45,0% (sem padrão).
+    - **Robôs escolhidos (PETR4, `comparacao.txt`)**: contra o TG atual, queda
+      menor em 5 de 12 e retorno maior em 6 de 12. Contra o estudo de 26/10,
+      queda menor em 7 de 12. Com GARCH, queda menor que a da mesma configuração
+      sem GARCH em 9 de 12 (as exceções: 2013–2016 Sharpe, 2005–2026 Calmar,
+      2017–2024 fixa Sharpe). Em 2017–2024 os dois critérios escolheram a mesma
+      configuração (filtro e ajuste com limiar fixo, t de Student), que ficou 8%
+      do tempo exposta: −8,8%, queda 21,2%.
+    - **Leitura**: nenhum dos três fatores melhora o robô de forma consistente.
+      Somar opções à grade não estabilizou a escolha. O que se mantém nos três
+      estudos é a proteção do GARCH em relação à mesma configuração sem ele.
+    - Os modelos assimétricos (GJR) ficaram para depois da faxina do código.
+
+80. **[texto] Correções da leitura da orientadora (27/10/2026, pedido do autor).**
+    Backup do `tg/` em `notas/rascunhos/antes_correcoes_orientadora_2026-10-27/`.
+    - **Proventos de volta, só B3** (Cap. II 2.3.1 e Medição; Cap. III, seção
+      "Efeito dos custos, da Selic e dos proventos", Tabelas 9 a 12; números de
+      `refeito_2026-10-05/proventos_b3/metricas_*.csv`). **Estimativa**: valor =
+      percentual da B3 × fechamento da série corrigida na data-com, creditado na
+      data-ex na proporção da exposição; sem imposto (JCP) e sem o prazo até o
+      pagamento. Conferido em 27/10: a ordem dos robôs na queda máxima é a mesma
+      em `dd_puro`, `dd_selic` e `dd_completo` nos quatro períodos, e só
+      2017–2024 muda a ordem do retorno entre as etapas.
+    - **Tabela 1 com a coluna das condições prováveis** (réplica v2, linhas
+      `_n1`: 38/+11.100, 37/−1.202, 54/−2.043). As três condições (histórico
+      desde 2008 com início adiado pelo testador, ajuste por proventos da B3,
+      médias arredondadas em 2 casas) **não estão confirmadas** (item 74). A
+      contagem é "Total Trades" do relatório do MT5 nas duas colunas nossas.
+    - **Apêndice B**: Arima, SelecaoModelo, Garch e Estrategia reduzidos pelos
+      mesmos marcadores do EA (`//@omitir`, `//@apendice:`), sem t de Student,
+      BIC, máxima verossimilhança, janela própria do GARCH, mensagens de erro e
+      relatório. Os `.mqh` mudaram só em comentário (saída do
+      `sem_comentarios.sh` idêntica antes e depois, nos quatro e no EA). EA
+      reduzido + quatro `.mqh` reduzidos compilam juntos: 0 erros, 0 avisos.
+    - "A biblioteca padrão não traz modelos de séries temporais" virou "não traz
+      os modelos ARIMA e GARCH" (Intro e Cap. II): a ALGLIB da plataforma tem SSA
+      (`SSACreate` em `Math/Alglib/dataanalysis.mqh`); nenhuma ocorrência de
+      ARIMA ou GARCH em `MQL5/Include` (grep em 27/10, build 6090).
+    - Retirada a oração "aprofundando o conhecimento sobre a relação entre
+      variáveis" (Cap. II 2.1.1), que não está em Wazlawick (2021).
+    - Venda a descoberto: motivo no Cap. II (Condições) e no Cap. III (Outras
+      ações); MM long-only dito em "Robôs comparados". Assimetria do GARCH em
+      trabalhos futuros (Cap. I e Considerações). Janela do GARCH: **pendente**,
+      decisão do autor.
+
+81. **[texto] Apêndice A sem as opções que os experimentos não usam (29/10/2026,
+    pedido do autor: "deixar puramente só o que está no texto").**
+    - Marcadores novos no `ARIMA_GARCH_EA.mq5` (só comentário; saída do
+      `sem_comentarios.sh` idêntica antes e depois, no EA e no `Garch.mqh`):
+      saem `#property tester_file`, `ENUM_TRANSFORMACAO` / `ENUM_MODO_VOLUME` /
+      `ENUM_MODO_ORDENS`, os inputs `Transformacao`, `ModoOrdens`,
+      `ARIMA_p/d/q`, `GARCH_p/q`, `ModoVolume`, `StopLoss_Points`,
+      `TakeProfit_Points`, `PermitirReversao` e o `Print` da validação. Na
+      listagem: série sempre em log, ordens sempre por ADF e AIC,
+      `g_garch.Definir(1, 1)`, ordens sem stop. No `Garch.mqh`, o
+      `#include "Estatistica.mqh"` (só servia ao AIC/BIC do GARCH, já omitidos).
+    - **Ficaram, porque estão no texto**: filtro, ajuste da posição (targeting)
+      e os dois combinados (Quadro 2 do Cap. II e Quadro 5 do Cap. III), limiar
+      fixo e por percentil, previsão mínima, constante, `SomenteCompra` (a venda
+      a descoberto foi simulada) e `ZerarNoVeto`.
+    - Listagem do EA de 293 para 231 linhas. EA reduzido + quatro `.mqh`
+      reduzidos compilam juntos (build 6090, prefixo antigo): 0 erros, 0 avisos.
+      O Apêndice A ganhou uma frase dizendo o que foi retirado. TG com 79 páginas.
+    - **Segunda passada no mesmo dia** ("a forma mais pura da parte escrita"):
+      saem os `input group`, a validação dos parâmetros no `OnInit`,
+      `Iteracoes_GARCH` (fica `DefinirOtimizador(300)`), o guarda de preço do
+      `VolumeDesejado` (o `Executar` já exige preço positivo), o parâmetro do
+      tipo de ADF (sempre `ADF_CONSTANTE`), o campo `aic` do `ResultadoSelecao`
+      (ninguém lia) e os destrutores do `CArima`, `CGarch` e `CDadosGarch` (só
+      liberavam vetores dinâmicos, que a linguagem libera sozinha). EA 216
+      linhas, Arima 373, Garch 300, Seleção 100, Estratégia 80. Código sem
+      comentários idêntico nos cinco arquivos; listagem reduzida compila com 0
+      erros e 0 avisos.
+    - **Ficou de propósito**: o GARCH genérico (p, q) dentro da classe, que o EA
+      chama com (1, 1); reescrever a classe só para (1, 1) faria o apêndice
+      diferente do código que rodou.

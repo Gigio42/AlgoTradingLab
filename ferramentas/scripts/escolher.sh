@@ -13,8 +13,14 @@
 #   GS sharpe=... calmar=... negocios=... | UsarGARCH=true Estrategia=3 ...
 #   GSgemeo | UsarGARCH=false Janela_Estimacao=... (o mesmo ARIMA, sem GARCH)
 # O CSV de entrada tem o cabecalho do OnTester do EA (colunas por nome).
+# EXTRA_GARCH e EXTRA_ARIMA (opcionais, nomes de colunas separados por espaco)
+# acrescentam inputs que tambem variaram na grade: os de EXTRA_ARIMA entram
+# tambem na gemea. Vazios, a saida e a de sempre.
 [ -s "$1" ] || { echo "uso: $0 <calibracao.csv> [so_compra]" >&2; exit 1; }
-awk -F';' -v so="$2" '
+awk -F';' -v so="$2" -v xg="$EXTRA_GARCH" -v xa="$EXTRA_ARIMA" '
+function extra(lista,   L, i, s) { s = ""; split(lista, L, " ")
+  for(i = 1; i in L; i++) s = s " " L[i] "=" (L[i] == "SelecaoPorBIC" ? b(v(L[i])) : v(L[i]))
+  return s }
 NR == 1 { for(i = 1; i <= NF; i++) h[$i] = i; next }
 function v(c) { return (c in h) ? $h[c] : "" }
 function b(x) { return (x + 0 == 1) ? "true" : "false" }
@@ -35,9 +41,9 @@ function melhor(fam, crit, val,   k) {
   if(g == "G")
     par = par " Estrategia=" v("Estrategia") " ModoLimiar=" v("ModoLimiar") \
           " Limiar_Percentil=" v("Limiar_Percentil") " Limiar_Absoluto=" v("Limiar_Absoluto") \
-          " K_Confianca=" v("K_Confianca") " Vol_Alvo=" v("Vol_Alvo") " ZerarNoVeto=" b(v("ZerarNoVeto"))
+          " K_Confianca=" v("K_Confianca") " Vol_Alvo=" v("Vol_Alvo") " ZerarNoVeto=" b(v("ZerarNoVeto")) extra(xg)
   arima = "Janela_Estimacao=" v("Janela_Estimacao") " IncluirConstante=" b(v("IncluirConstante")) \
-          " Limiar_Sinal=" v("Limiar_Sinal") " SomenteCompra=" b(v("SomenteCompra"))
+          " Limiar_Sinal=" v("Limiar_Sinal") " SomenteCompra=" b(v("SomenteCompra")) extra(xa)
   par = par " " arima
   gemeo = "UsarGARCH=false " arima
   melhor(g, "S", v("sharpe") + 0)

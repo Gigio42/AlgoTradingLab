@@ -84,33 +84,44 @@ móveis. Ambas são confrontadas com os resultados nas considerações finais.
 O objetivo geral foi desenvolver, em MQL5, um \textit{Expert Advisor} que
 integra os modelos ARIMA e GARCH e avaliar o efeito do GARCH sobre o desempenho e
 o risco das operações, em comparação com o ARIMA isolado e com a estratégia de
-\citeonline{almeida2016}. Os objetivos específicos foram implementar os
-modelos ARIMA e GARCH na própria linguagem da plataforma, automatizar a escolha
-das ordens do ARIMA, reproduzir a estratégia de médias móveis de
-\citeonline{almeida2016} e comparar os três algoritmos quanto a retorno e risco
-em diferentes períodos do mercado, incluindo períodos de crise.
+\citeonline{almeida2016}. Para isso, foram definidos quatro objetivos
+específicos. O primeiro foi aprofundar os conceitos de tendência e de
+volatilidade no mercado de ações. O segundo, implementar os modelos ARIMA e GARCH
+em MQL5 e integrá-los em um robô de negociação no MetaTrader 5. O terceiro,
+reproduzir a estratégia de médias móveis de \citeonline{almeida2016}. O quarto,
+avaliar e comparar os três algoritmos por simulação com dados históricos, em
+diferentes períodos do mercado, incluindo períodos de crise.
+% 2026-10-29: objetivos específicos devolvidos à forma genérica do PTG, a pedido
+% do autor (o como fica no Capítulo II). Cópia anterior em
+% notas/rascunhos/antes_objetivos_risco_2026-10-29/.
 
 A pesquisa se justifica, em primeiro lugar, por retomar uma recomendação deixada
-em aberto em um estudo da própria instituição. Justifica-se, também, por ter sido
-conduzida no mercado brasileiro, com o histórico oficial da B3 e atravessando as
-crises que atingiram a bolsa do país. Há, ainda, uma contribuição técnica. Como a
-biblioteca padrão da linguagem MQL5 não traz modelos de séries temporais, os
-estimadores foram construídos para este trabalho, e o controle de
-risco feito pelo GARCH, separado da previsão de direção, pode ser reaproveitado em
-outras estratégias para torná-las mais protetivas.
+em aberto em um estudo da própria instituição. Justifica-se, também, por levar à
+bolsa brasileira uma combinação de modelos que os estudos relacionados aplicaram
+a ações negociadas nos Estados Unidos \cite{xing2024,araya2024}. Os testes usaram
+o histórico oficial da B3 e atravessaram crises que atingiram a bolsa do país,
+como a de 2008 e a de 2020, de modo que os resultados podem servir de referência
+para outras pesquisas sobre esse mercado. Há, ainda, uma contribuição técnica.
+O código dos modelos ARIMA e GARCH foi escrito em MQL5 para este trabalho, está
+reproduzido nos apêndices e pode ser reaproveitado em outros robôs e pesquisas
+feitos na mesma plataforma. Além
+disso, o controle de risco feito pelo GARCH é separado da previsão de direção, o
+que permite, em princípio, acoplá-lo a outras estratégias, possibilidade que
+este trabalho testou apenas com o ARIMA.
 
-Quanto à natureza, a pesquisa é empírica, por investigar fenômenos observáveis
-por meio da experiência e da observação \cite{wazlawick2014}, e aplicada, por
-voltar esse conhecimento a um problema concreto de decisão. Quanto aos objetivos,
+Quanto à natureza, a pesquisa é primária, por produzir conhecimento novo a partir
+da realização de experimentos, e se apoia no método empírico, que fundamenta as
+conclusões em observações \cite{wazlawick2021}. É também aplicada, por voltar
+esse conhecimento a um problema concreto de decisão. Quanto aos objetivos,
 é explicativa, quanto ao delineamento, é quase experimental, e a análise dos
 dados é quantitativa. Os algoritmos foram testados por simulação no MetaTrader 5,
 sobre o histórico oficial de preços da B3, conforme detalhado no Capítulo II.
 
 O trabalho está organizado em três capítulos, seguidos das considerações finais.
 O Capítulo I apresenta a fundamentação teórica, que parte do mercado de ações e da
-plataforma MetaTrader 5, passa pela análise técnica e pelas médias móveis, chega
-aos modelos ARIMA e GARCH e às medidas de desempenho e risco, e encerra-se com os
-trabalhos relacionados. O
+plataforma MetaTrader 5, passa pelas séries de preços, pelas médias móveis e pelos
+modelos ARIMA e GARCH, e encerra-se com as métricas de avaliação e os trabalhos
+relacionados. O
 Capítulo II descreve o percurso metodológico, isto é, a caracterização da
 pesquisa, a amostra, a coleta dos dados, a implementação dos
 modelos, o plano experimental e os obstáculos encontrados. O Capítulo III apresenta a análise e a

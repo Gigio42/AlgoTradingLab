@@ -1,0 +1,13 @@
+Cada versão com GARCH × a mesma configuração sem GARCH, camada 1 (crua).
+teste               ret_G  ret_sem | queda_G   q_sem |   vol_G   v_sem | ret>  queda<  vol<
+R3_T1_GS            -8.4%    +7.2% |   17.5%   38.1% |   10.5%   28.2% | não  sim    sim 
+R3_T2_GS           -13.8%    -9.7% |   28.6%   51.9% |   14.1%   35.1% | não  sim    sim 
+R3_T2_GC            -6.8%    -9.7% |   15.5%   51.9% |    7.1%   35.1% | sim   sim    sim 
+R6_GS             +199.5%   +95.7% |   27.2%   40.5% |   24.2%   32.0% | sim   sim    sim 
+R6_GC              +42.9%   -50.1% |   40.2%   79.3% |   16.3%   31.4% | sim   sim    sim 
+R3_T3_GS           -13.7%   +14.2% |   17.6%   20.1% |   13.5%   22.0% | não  sim    sim 
+R3_T3_GC            -7.4%   +14.2% |   12.2%   20.1% |    9.2%   22.0% | não  sim    sim 
+L1_GS              +74.2%   +16.6% |   36.4%   82.9% |   14.3%   28.8% | sim   sim    sim 
+L1_GC              +33.5%   +16.6% |   24.4%   82.9% |    7.6%   28.8% | sim   sim    sim 
+L2_GS              +19.9%    +4.6% |   31.9%   57.7% |   17.0%   32.6% | sim   sim    sim 
+L2_GC               +7.5%    +4.6% |   18.4%   57.7% |    8.6%   32.6% | sim   sim    sim 

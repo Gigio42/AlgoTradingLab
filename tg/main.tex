@@ -47,11 +47,27 @@
 \newlistentry{grafico}{lof}{0}
 \renewcommand{\cftgraficoname}{Gráfico\space}
 \renewcommand*{\cftgraficoaftersnum}{\hfill\textendash\hfill}
-% [H] (pacote float): figura, tabela, quadro e gráfico ficam no ponto do texto que
-% os cita (Manual FATEC-ID, item 3: "o mais próximo possível do trecho"). Tem de
-% vir DEPOIS dos \newfloat acima: o float redefine \newfloat com outra sintaxe, e,
-% carregado antes, desmontou o Quadro e o Gráfico (legenda embaixo, "gráfico 1:").
-\usepackage{float}
+% Posição das ilustrações (22/10/2026, pedido do autor): sem posição fixa. Todas
+% usam [htbp] e ficam o mais próximo possível do trecho que as cita, na mesma
+% página ou no topo da seguinte (Manual FATEC-ID, item 3). O [section] do
+% placeins impede que uma ilustração atravesse o título da seção seguinte, e o
+% cap3 tem \FloatBarrier antes de cada "O ano de". A regra antiga de figuras
+% fixas ([H], pacote float, de 15/10) foi retirada; cópia em
+% notas/rascunhos/antes_imagens_2026-10-22/.
+\usepackage[section]{placeins}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{totalnumber}{4}
+% Página só de ilustrações: empilhadas a partir do topo, como numa página com
+% texto, em vez de espalhadas com vãos entre elas.
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpsep}{\floatsep}
+\setlength{\@fpbot}{0pt plus 1fil}
+\makeatother
 
 % ----------------------- Ajustes de formatação -----------------------
 % Manual FATEC: recuo de primeira linha 1,25 cm; espaçamento 1,5;
@@ -335,6 +351,7 @@
   \addtocontents{toc}{\protect\renewcommand*{\protect\cftchapteraftersnum}{~\textendash~}}%
   \addtocontents{toc}{\protect\cftsetindents{chapter}{0em}{1.6em}}%
   \input{conteudo/apendice-a}
+  \input{conteudo/apendice-b}
 \end{apendicesenv}
 
 \end{document}

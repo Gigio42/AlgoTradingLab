@@ -47,14 +47,18 @@ Formato das séries (exigido pelo importador): `AAAA.MM.DD,00:00,abertura,máxim
 
 | Data-ex | Evento | Confirmação |
 |---|---|---|
-| 01/09/2005 | 1 ação → 4 | Yahoo (`fontes/yahoo/yahoo_desdobramentos_PETR4.csv`); queda de −75,2% no COTAHIST nessa data |
+| 01/09/2005 | 1 ação → 4 | **Comunicado da Petrobras** (Form 6-K de 22/07/2005 na SEC, "Extraordinary General Meeting Approves Stock Split": 3 ações novas para cada 1, posição de 31/08/2005, negociação "ex" a partir de 01/09; ver abaixo); Yahoo (`fontes/yahoo/yahoo_desdobramentos_PETR4.csv`); queda de −75,2% no COTAHIST nessa data |
 | 28/04/2008 | 1 ação → 2 | API da B3 (`fontes/b3/proventos_PETR_api_b3.json`, "DESDOBRAMENTO", fator 100%); Yahoo; queda de −49,5% no COTAHIST |
 
-A lista da API da B3 não traz o de 2005. Os dois aparecem no Yahoo e nos saltos
+A lista da API da B3 não traz o de 2005. **Desde 21/10/2026 o texto do TG cita o comunicado da Petrobras, não o Yahoo** (pedido do autor: nada de Yahoo no trabalho). URL: `https://www.sec.gov/Archives/edgar/data/0001119639/000129281405001096/pbra20050722_6k2.htm`, lido em 21/10/2026 às 22:5x pelo WebFetch. **O arquivo não foi guardado**: a SEC recusa download automático sem e-mail de contato no cabeçalho, e o Internet Archive estava fora do ar. Pendente: o autor salvar a página pelo navegador em `fontes/petrobras/`. Os dois aparecem no Yahoo e nos saltos
 de preço da própria B3. Depois da correção, as maiores variações diárias da
 série são eventos reais (09/03/2020, −29,7%, COVID-19; 22/02/2021, −21,5%).
 
-## 3. Proventos (dividendos e JCP) — **não oficial, usado só como adendo**
+## 3. Proventos (dividendos e JCP)
+
+**Desde 21/10/2026 a camada 4 usa a B3** (pedido do autor). `series/proventos_PETR4.csv` é gerado por `ferramentas/scripts/proventos_b3.sh` a partir da API oficial (item 13): para cada provento da PN com data-com desde 2003, valor = percentual publicado pela B3 (`corporateActionPrice`) × fechamento da `PETR4_OFICIAL` na data-com (já na unidade corrigida por desdobramentos); data-ex = pregão seguinte; mesma data-ex somada. 69 datas-ex (o Yahoo tinha 62: faltavam 2003–2006 e o JCP de R$ 0,80 de 26/12/2008, e 2022 vinha com menos). Os testes das tabelas de camadas foram refeitos com ele (`refeito_2026-10-05/proventos_b3/`). **O que segue é o registro da base antiga do Yahoo**, que ficou em `series/proventos_PETR4_yahoo.csv` e não é mais usada para a PETR4 (VALE3, USIM5 e POMO4 continuam com o Yahoo, mas a camada 4 delas não aparece no TG).
+
+### Base antiga (Yahoo) — **não oficial**
 
 | | |
 |---|---|
@@ -211,7 +215,7 @@ precisa ser corrigida.
 
 | Parâmetro | Valor | Situação |
 |---|---|---|
-| Custo por execução (`Custo_Por_Lado`) | 0,03% do valor negociado | Aproximação de emolumentos + liquidação da B3 com corretagem zero. **A tabela de tarifas da B3 não foi consultada.** Conferir antes de citar. |
+| Custo por execução (`Custo_Por_Lado`) | 0,03% do valor negociado | **Conferido em 21/10/2026** com a tabela oficial da B3 (ações à vista, operações que não são day trade, investidor com ADTV mensal até R$ 3 milhões): negociação 0,00500% + CCP 0,02240% + TTA 0,0026% = **0,0300%**, de cada investidor, comprador e vendedor; corretagem zero. Página `https://www.b3.com.br/pt_br/produtos-e-servicos/tarifas/listados-a-vista-e-derivativos/renda-variavel/tarifas-de-acoes-e-fundos-de-investimento/a-vista/`, baixada às 07:55:12, guardada em `fontes/b3/tarifas_acoes_a_vista_b3_2026-10-21.html` (sha256 `0b6580fb`). Ressalvas: é a tabela vigente em 2026, aplicada a todos os anos; nos leilões de abertura e fechamento a negociação é 0,007% (total 0,032%). |
 | Capital inicial | R$ 100.000 (cenário justo); R$ 50.000 (réplica de Almeida) | Escolha de projeto |
 | Fração investida | 95% do patrimônio | Escolha de projeto |
 
@@ -358,6 +362,7 @@ desvio-padrão × √252; Calmar = retorno anualizado da camada 3 / queda máxim
 | Chave `.bib` | Fonte | Usado para | Cópia (sha256, início) |
 |---|---|---|---|
 | `metaquotesRelatorio` | MetaQuotes, "Relatório de teste", Ajuda do MetaTrader 5 (pt), sem data | Sharpe: "(Rendimento - Rendimento Livre de Risco)/Desvio Padrão do Rendimento. No testador de estratégia, assume-se que o rendimento livre de risco é zero"; rebaixamento relativo: "maior queda do saldo entre o máximo local e o próximo mínimo local, em porcentagem"; fator de recuperação: "relação entre lucro recebido e drawdown máximo" | `bibliografia/paginas/MetaQuotes-relatorio-de-teste-MT5.html` (`c96ea99c`) |
+| `metaquotesMql5` | MetaQuotes, "Manual MQL5" (Referência MQL5), documentação oficial da linguagem (pt), sem data; baixada em 21/10/2026 | Cap. II, 2.4: a documentação oficial foi uma das principais fontes para entender como implementar os métodos em MQL5 (afirmação do autor sobre o próprio processo; a página só sustenta que a documentação existe e é da MetaQuotes: "A MetaQuotes Language 5 (MQL5) é uma linguagem de programação para indicadores técnicos, para robôs de negociação...") | `bibliografia/paginas/MetaQuotes-manual-mql5.html` (`a00a7f6c`) |
 | `sharpe1994` | W. F. Sharpe, "The Sharpe Ratio", *The Journal of Portfolio Management*, 21(1):49–58, 1994; reimpressão no site do autor em Stanford | retorno diferencial d = fundo − referência; S = média(d)/desvio(d); "It is common practice to 'annualize'"; "The t-statistic will equal the Sharpe Ratio times the square root of T" | `bibliografia/paginas/Sharpe-1994-the-sharpe-ratio.html` (`51c9cc84`) |
 
 O Calmar não tem citação de autor: o texto original (Young, 1991, revista
@@ -368,3 +373,87 @@ retorno anualizado.
 Descartados no mesmo dia: o glossário do portal Bora Investir (B3) e o artigo
 de Magdon-Ismail e Atiya (2004), por preferência do autor; o Corporate Finance
 Institute bloqueia download (HTTP 403).
+
+## 13. Réplica de Almeida, rodada 2: CIEL3, VLID3 e séries de diagnóstico (21/10/2026)
+
+Pedido do autor: testar outras séries para tentar chegar aos números de Almeida
+(2016). Protocolo e resultados em `resultados/replica_almeida_v2_2026-10-21/`.
+
+| | |
+|---|---|
+| Fonte | B3 COTAHIST, mesma do item 1 (`COTAHIST_A2011.ZIP` a `COTAHIST_A2016.ZIP`) |
+| Obtido em | 21/10/2026, 03:47:24 a 03:47:27 (−03:00) |
+| Integridade | SHA-256 dos seis ZIPs **idênticos** aos registrados em `fontes/b3/COTAHIST_sha256.txt` (download de 21/09/2026) |
+| Filtro | o do item 1, códigos `CIEL3` e `VLID3`; fator de cotação = 1 em todas as linhas |
+| Arquivos guardados | `fontes/b3/CIEL3_linhas_COTAHIST_2011_2016.txt`, `fontes/b3/VLID3_linhas_COTAHIST_2011_2016.txt` (1.486 pregões cada, linhas originais) |
+| Conferência | as linhas da PETR4 extraídas desses ZIPs são idênticas às de `fontes/b3/PETR4_linhas_COTAHIST_2003_2026.txt` |
+
+**Séries derivadas** (`ferramentas/scripts/series_replica_almeida.sh`):
+- `series/VLID3_OFICIAL.csv`: sem ajuste. Não há evento societário entre 2012 e
+  2016 (o único no período baixado, bonificação 11:10 de 09/05/2011, é anterior
+  ao teste; maior variação diária de 2012 a 2016: +9,9%).
+- `series/CIEL3_ESTIMADO.csv`: a partir de 01/06/2011, com as bonificações
+  ajustadas por **fatores estimados**: 1,2 (23/04/2012), 1,2 (29/04/2013),
+  2,0 (01/04/2014), 1,2 (13/04/2015) e 1,15 (11/04/2016). São as razões
+  redondas mais próximas do salto entre o fechamento anterior e a abertura da
+  data-ex. **Não há fonte oficial**: a API da B3 só traz os eventos de 2024 e o
+  Yahoo não tem mais a CIEL3 (deslistada em 2024). Ver `notas/INCERTEZAS.md`.
+- `series/PETR4_DESDE2008.csv`: `PETR4_OFICIAL` a partir de 02/01/2008. Não é
+  dado novo. Serve para testar a hipótese de o histórico do servidor de Almeida
+  começar em 2008.
+
+**Yahoo (não oficial, só conferência):** eventos da VLID3 de 2011 a 2016
+(dividendos e a bonificação de 2011), da API pública de gráficos
+(`query1.finance.yahoo.com/v8/finance/chart/VLID3.SA?events=div|split`),
+baixados em 21/10/2026, 03:48. Arquivo: `fontes/yahoo/yahoo_eventos_VLID3_2011_2016.json`.
+Usados só no diagnóstico de nível de preço, nunca como série dos robôs.
+
+**Acréscimos da mesma rodada (21/10/2026, 04:25 a 04:45):**
+
+| | |
+|---|---|
+| Fonte | API pública da B3, proventos em dinheiro: `https://sistemaswebb3-listados.b3.com.br/listedCompaniesProxy/CompanyCall/GetListedCashDividends/<base64 de {"language":"pt-br","pageNumber":N,"pageSize":60,"tradingName":"PETROBRAS"}>` (e `"CIELO"`, `"VALID"`); eventos em ações por `GetListedSupplementCompany` (`{"issuingCompany":"CIEL"}` e `"VLID"`) |
+| Obtido em | PETROBRAS 21/10/2026, 04:34:55; CIELO, VALID e eventos em ações 04:39:07 (−03:00) |
+| Arquivos guardados | `fontes/b3/proventos_PETR_historico_api_b3_2026-10-21/p1.json` a `p6.json` (343 eventos, ON e PN, de 2007 em diante); `fontes/b3/proventos_CIEL_VLID_historico_api_b3_2026-10-21/` (`cash_CIELO_*.json` 65 eventos, `cash_VALID_*.json` 94, `sup_*.json`) |
+| Conferência | a lista em ações da CIEL traz o grupamento de 2011 e a bonificação de 2017, mas **não** as bonificações de 2012 a 2016 (e a da VLID não traz a de 2011, que o Yahoo e o preço mostram). A lista em ações da API está incompleta e os fatores da CIEL3 continuam estimados |
+
+Diferença em relação ao item 3: aqui o provento é **oficial** e o histórico vai
+até 2007. O Yahoo não tem o JCP de R$ 0,80 de 26/12/2008 da PETR4 e tem valores
+diferentes em vários eventos (ex.: data-com 21/03/2011, B3 R$ 0,1527 somando JCP
+e rendimento, Yahoo R$ 0,1734).
+
+**Séries derivadas** (todas em `series_replica_almeida.sh`, só diagnóstico):
+- `series/PETR4_SET2007.csv`: `PETR4_OFICIAL` a partir de 04/09/2007.
+- `series/PETR4_DIVAJ2016.csv`: `PETR4_OFICIAL` a partir de 04/09/2007, ajustada
+  pelos proventos do Yahoo (item 3, não oficial) com data-ex até 03/06/2016,
+  fator multiplicativo `1 − provento / fechamento anterior`.
+- `series/proventos_PETR4_B3.csv`: data-com e soma dos proventos da PN
+  (dividendo, JCP, rendimento), valores antes de 28/04/2008 divididos por 2
+  (desdobramento, item 2).
+- `series/PETR4_PROVB3_2008.csv`: `PETR4_OFICIAL` a partir de 02/01/2008,
+  ajustada pelos proventos oficiais com data-com até 03/06/2016, mesmo fator;
+  data-ex = pregão seguinte à data-com.
+- `series/CIEL3_PROVB3.csv` e `series/VLID3_PROVB3.csv`: idem sobre
+  `CIEL3_ESTIMADO` e `VLID3_OFICIAL` (ação ON). Na CIEL3 o valor por ação é
+  dividido pelas bonificações posteriores, com os **fatores estimados** acima.
+
+**Código-fonte do livro de Young (2013)** (21/10/2026, 07:10:08), para conferir os
+módulos que o anexo de Almeida inclui e não traz (`Trade.mqh`, `Preco.mqh`,
+`GerenciaDinheiro.mqh`, `TrailingStops.mqh`, `Timer.mqh`, `Indicators.mqh`):
+`MQL5BookSourceCode.zip`, distribuído no site do autor do livro, obtido pela
+cópia do Internet Archive de 08/05/2016
+(`http://web.archive.org/web/20160508125644id_/http://www.expertadvisorbook.com/MQL5BookSourceCode.zip`;
+o site original recusou conexão). sha256 `8fae3e76c881152e8e3956e06156a8311c44b1e68d1f6f6761d14d82f2027614`,
+arquivos com data de 05/01/2013. Licença Creative Commons BY-NC 3.0 (no
+cabeçalho de cada arquivo). **Não versionado** (obra de terceiro; só lido, fora
+do repositório). O que se conferiu está em `notas/INCERTEZAS.md`, item 74.
+
+**Percentual de ajuste publicado pela B3** (conferido em 21/10/2026): cada
+provento da API traz `closingPricePriorExDate` (fechamento na data-com) e
+`corporateActionPrice` (percentual do provento sobre esse fechamento). Nos 41
+eventos da PETR4 PN com data-com de 2007 a 03/06/2016, `valueCash ÷
+closingPricePriorExDate × 100` é igual ao `corporateActionPrice` (diferença
+máxima 0,000000 p.p.), e o fechamento informado pela B3 é igual ao do COTAHIST
+nos 41 (dividido por 2 antes do desdobramento de 28/04/2008). Ou seja, o fator
+`1 − provento ÷ fechamento da data-com` das séries `*_PROVB3` é o percentual
+publicado pela própria B3. A API traz a PETR4 PN desde 21/03/1996.
