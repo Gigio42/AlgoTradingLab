@@ -61,5 +61,17 @@
   [Gum] Previsao no nivel com d = 1: y(N) + z previsto: diferenca = 0.000e+00
   [Gdois] Previsao no nivel com d = 2: 2y(N) - y(N-1) + z previsto: diferenca = 0.000e+00
   [Gtres] Percentil 70 de 1..10 por interpolacao linear (7,3): diferenca = 0.000e+00
-Tempo total: 50 s
+--- H. Quanto os achados pesam nas decisoes
+  [H1] Ar, 2000 series, gl = 9: rejeitou 4.55% (Hannan-Rissanen) e 4.55% (max. verossimilhanca); ep 0.49 p.p.
+  [H1] Ma, 2000 series, gl = 9: rejeitou 7.95% (Hannan-Rissanen) e 4.75% (max. verossimilhanca); ep 0.49 p.p.
+  [H1] Arma, 2000 series, gl = 8: rejeitou 7.60% (Hannan-Rissanen) e 4.90% (max. verossimilhanca); ep 0.49 p.p.
+  [H2] PETR4, 5641 janelas de 240 (5880 barras): log-preco rejeitou em 312 (5.53%), 39 na faixa [quantil empirico, critico) (0.69%); log-retorno rejeitou em 5630 (99.80%), 1 na faixa; maior estatistica do log-retorno 1.693
+  [H3] n=240, percentil 50: 500 series, decisao igual a dos parametros verdadeiros em 91.8%; veto 47.0% (estimado) e 48.4% (verdadeiro); erro mediano da previsao de sigma 5.0%
+  [H3] n=240, percentil 70: 500 series, decisao igual a dos parametros verdadeiros em 95.2%; veto 32.6% (estimado) e 34.6% (verdadeiro); erro mediano da previsao de sigma 5.0%
+  [H3] n=500, percentil 50: 500 series, decisao igual a dos parametros verdadeiros em 96.4%; veto 46.0% (estimado) e 45.2% (verdadeiro); erro mediano da previsao de sigma 3.3%
+  [H3] n=500, percentil 70: 500 series, decisao igual a dos parametros verdadeiros em 95.2%; veto 26.6% (estimado) e 26.2% (verdadeiro); erro mediano da previsao de sigma 3.3%
+  [H3] n=1000, percentil 50: 500 series, decisao igual a dos parametros verdadeiros em 98.0%; veto 53.2% (estimado) e 53.2% (verdadeiro); erro mediano da previsao de sigma 2.5%
+  [H3] n=1000, percentil 70: 500 series, decisao igual a dos parametros verdadeiros em 97.6%; veto 34.4% (estimado) e 34.0% (verdadeiro); erro mediano da previsao de sigma 2.5%
+  [H4] PETR4, 1076 dias (um a cada 5 pregoes): decisao igual com 240 e 500 em 80.4% (percentil 50) e 82.2% (percentil 70); persistencia > 0,999 em 7.9% (240) e 0.3% (500)
+Tempo total: 66 s
 ================ FIM ================

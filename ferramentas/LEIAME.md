@@ -39,7 +39,7 @@ ficam em `scripts/comum.sh`.
 | Script | Para que serve |
 |---|---|
 | `regressao_codigo.sh` | Roda 13 casos e compara byte a byte com a execução anterior. Rodar depois de toda mudança que não deveria alterar resultado. |
-| `validar.sh` | Roda o `ValidacaoAlgoLab.mq5` e guarda a saída em `dados/verificacao/`. |
+| `validar.sh` | Compila o `ValidacaoAlgoLab.mq5` no `~/.wine-mt5`, roda no prefixo em uso (perfil AlgoLab) e guarda a saída em `dados/verificacao/` (Tabela 2 do TG desde 06/11/2026). |
 | `validar_garch_t.sh`, `validar_mv.sh`, `verificar_mv.sh` | Rodam os validadores das opções experimentais. |
 | `medir_d0.sh` | Mede o efeito da correção do d = 0 (05/10/2026). |
 
@@ -47,13 +47,17 @@ ficam em `scripts/comum.sh`.
 
 | Script | Para que serve |
 |---|---|
-| `codigo_apendice.sh`, `sem_comentarios.sh` | Geram as listagens dos Apêndices A e B a partir do código que roda (chamados pelo `tg/Makefile`). |
+| `codigo_apendice.sh`, `sem_comentarios.sh` | Geram as listagens dos Apêndices A, B e C a partir do código que roda (chamados pelo `tg/Makefile`). |
 | `citacoes_abnt.pl` | Ajusta as citações do `.bbl` para a caixa mista da NBR 6023:2025 (chamado pelo `Makefile` e pelo `.latexmkrc`). |
 | `dados_cru.sh` | Gera os dados do Cap. III a partir da refação de 05/10/2026. |
 | `graficos_cru.sh` | Compila os gráficos de `tg/graficos/cru/`. |
+| `docx/converter.sh` (e os demais de `docx/`) | Gera a versão em Word, `tg/main.docx`, a partir do LaTeX, pelo pandoc 3.8+ (`make docx` em `tg/`). Numeração, citações e referências saem do `main.aux` e do `main.bbl`, iguais às do PDF. |
 | `metodos_ilustrados.sh` | Roda o `MetodosIlustrados.mq5` e guarda a saída em `dados/resultados/metodos_ilustrados_2026-10-30/`. |
 | `robo_em_acao.sh` | Resume o traço da refação de 05/10/2026 para as figuras 08 a 14 de `apresentacao/graficos_metodos/` (só lê arquivos). |
+| `modelo_completo.sh` | Roda o `ModeloCompleto.mq5` (refaz os pregões de 19 e 22/02/2021 com as funções do robô), guarda a saída em `dados/resultados/modelo_completo_2026-11-06/` e confere contra o traço. Dados dos relatórios `ia/relatorios/modelo-completo/` e `garch-funcionando/`. |
 | `hannan_rissanen.sh` | Roda o `HannanRissanenDetalhado.mq5`, guarda a saída em `dados/resultados/hannan_rissanen_2026-10-30/` e confere os pregões reais contra o traço. |
+| `hannan_rissanen_exemplo.sh` | Tira dos arquivos do `hannan_rissanen.sh` os números das contas à mão da versão 2 do relatório (só lê arquivos). |
+| `otimizacao_teste.sh` | Junta, para as 312 configurações da PETR4, o resultado na otimização e no teste (pareados da refação de 05/10/2026) e grava em `dados/resultados/otimizacao_teste_2026-11-02/` os dados do relatório `ia/relatorios/otimizacao/` (só lê arquivos). |
 | `testes_formulas.sh` | Roda o `TestesFormulas.mq5` e guarda a saída em `dados/verificacao/testes_formulas_2026-10-30/`. |
 
 **Experimentos (rodam o testador)**, agrupados pela pasta de `dados/resultados/` onde gravam
@@ -66,6 +70,9 @@ ficam em `scripts/comum.sh`.
 | `bateria_2026-10-15/` | `bateria_2026_10_15.sh`, `exploratorio_estimacao.sh` |
 | `janelas_240_500_2026-10-26/` | `janelas_240_500.sh` |
 | `fatores_500_2026-10-27/` | `fatores_500.sh` |
+| `janela_garch_1000_2026-11-02/` | `serie_petr4_desde1999.sh` (monta a PETR4 oficial desde 1999), `janela_garch_1000.sh` |
+| `heterocedasticidade_2026-11-02/` | `heterocedasticidade.sh` (Gráfico 1 do Cap. I; só lê a série) |
+| `modelo_completo_2026-11-06/` | `modelo_completo.sh` (roda o `ModeloCompleto.mq5`; relatórios `modelo-completo` e `garch-funcionando`) |
 | históricos (rodadas 4 a 6, cenário de Almeida, traço) | `bateria_ativos.sh`, `calib_2014_2016.sh`, `teste_2017_2024.sh`, `periodos_longos.sh`, `cenario_almeida.sh`, `gerar_traco.sh` |
 
 **Análise (só leem os CSVs, não rodam o testador)**

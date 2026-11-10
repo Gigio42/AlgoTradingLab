@@ -215,6 +215,12 @@ recompilar a listagem para conferir.
 `SelecaoModelo`, `Garch` e `Estrategia` reduzidos pelo mesmo script (regra
 `codigo/%.mqh` do `tg/Makefile`), sem as opções experimentais. **Opção
 experimental nova nesses `.mqh` tem de levar o marcador** (INCERTEZAS item 80).
+**Desde 02/11/2026 há o Apêndice C** (`tg/conteudo/apendice-c.tex`): o
+`MediasMoveis2.mq5` reduzido pelo mesmo script (regra `codigo/MediasMoveis2.mq5`),
+sem avaliação, SL/TP e escolha de método/preço/deslocamento das médias
+(INCERTEZAS item 90). **Desde 06/11/2026 o texto do apêndice é um parágrafo só**:
+o que reproduz de Almeida (2016) e as diferenças estão no Cap. II, "Implementação
+dos modelos" (INCERTEZAS item 97, pedido do autor).
 
 ```
 ```
@@ -259,6 +265,13 @@ sem `robos\`: não reaproveitar sem corrigir.
 
 Dependência externa: **nenhuma**. A ALGLIB (`MQL5/Include/Math/Alglib/`) e a
 `Math/Stat/` já acompanham qualquer instalação do MetaTrader 5.
+
+Exceção só para a **versão em Word do TG** (02/11/2026): `make docx` em `tg/`
+gera `tg/main.docx` com o **pandoc ≥ 3.8** (instalado em
+`~/.local/opt/pandoc-3.13/`; ou `sudo pacman -S pandoc-cli`). Scripts em
+`ferramentas/scripts/docx/` (bash, Perl e um filtro Lua do pandoc, sem Python).
+Converte do LaTeX, nunca do PDF. Texto se corrige no `.tex` e o `.docx` se gera
+de novo.
 
 ### Um EA, dois modelos
 
@@ -593,11 +606,12 @@ iconv -f UTF-16LE -t UTF-8 "$HOME/.wine-mt5-novo/drive_c/Program Files/MetaTrade
 ## Validação numérica já feita
 
 > **Fora do texto do TG desde 18/10/2026, a pedido do autor**: os testes do
-> código (recuperação de parâmetros, ADF em séries artificiais, ADF/Ljung-Box na
-> PETR4) fogem do escopo apresentado. Os números abaixo continuam valendo e
-> podem voltar ao texto depois; o trecho antigo está em
-> `ia/rascunhos/antes_tirar_validacao_2026-10-18/`. **Não reinserir sem
-> pedido.**
+> código (ADF em séries artificiais, ADF/Ljung-Box na PETR4) fogem do escopo
+> apresentado. **Exceção desde 06/11/2026, também a pedido do autor**: a
+> recuperação de parâmetros (tabela abaixo) voltou, enxuta, como 2.5.4 no Cap. II e
+> 3.2 no Cap. III (INCERTEZAS item 96; rodada de novo com o código atual, saída
+> idêntica). O trecho antigo está em `ia/rascunhos/antes_tirar_validacao_2026-10-18/`.
+> **O resto não se reinsere sem pedido.**
 
 Recuperação de parâmetros em dados sintéticos com verdade conhecida:
 

@@ -15,6 +15,106 @@ cada decisão ficam em `ia/INCERTEZAS.md` (o de hoje é o item 64).
 
 Fonte: `dados/fontes/normas-fatec/TG-Cronograma-2o-2026.pdf` (conferido em 18/10).
 
+## O modelo inteiro e o GARCH funcionando (06/11/2026)
+
+**Só proposta, fora do TG.** Dois relatórios novos:
+`ia/relatorios/modelo-completo/relatorio.pdf` (um pregão do começo ao fim, 22/02/2021,
+com as séries reais em cada passo, e o caminho dos 496 pregões de 2019-2021 pelo
+ARIMA e pelo GARCH) e `ia/relatorios/garch-funcionando/relatorio.pdf` (a σ da janela,
+a variância montada em ω + memória + choque, e a sexta × a segunda). Dados de
+`ferramentas/ModeloCompleto.mq5`, conferidos contra o traço
+(`dados/resultados/modelo_completo_2026-11-06/`). **Falta do autor:** ler e decidir se
+algo entra no TG ou nos slides. Observação nova: de 19 para 22/02/2021 o α do GARCH
+caiu de 0,215 para 0,064 com a janela andando um pregão (não investigado).
+
+## Figuras dos períodos, da janela e da escolha (05/11/2026)
+
+INCERTEZAS item 92. **Só proposta, fora do TG** (o autor mandou desfazer a
+inserção direta). Relatório em `ia/relatorios/figuras-cap2/relatorio.pdf`: o
+Quadro 4 como linha do tempo, a janela deslizante e os passos da escolha.
+**Linha do tempo aplicada no TG em 05/11 (item 94)**: substituiu o Quadro 4, e as listas
+viraram a "LISTA DE ILUSTRAÇÕES" única. Janela e escolha continuam só no relatório;
+**falta do autor** decidir se entram.
+
+## Alternativas ao Quadro 3 (05/11/2026)
+
+INCERTEZAS item 95. Relatório em `ia/relatorios/quadro3-grade/relatorio.pdf`, duas propostas
+(grade desenhada ou barras). **Falta do autor:** escolher se alguma entra no TG.
+
+## Apêndice C enxugado (06/11/2026)
+
+INCERTEZAS item 97. As explicações saíram do apêndice e foram para o Cap. II
+(Implementação dos modelos, dois parágrafos sobre o robô de médias móveis).
+**Falta do autor:** reler esses dois parágrafos.
+
+## Validação dos estimadores de volta ao TG (06/11/2026)
+
+INCERTEZAS item 96. Só a recuperação de parâmetros em séries artificiais: subseção
+2.5.4 no Cap. II e seção 3.2 (Tabela 2) no Cap. III. **Falta do autor:** reler os dois
+trechos e ter na ponta da língua por que três casos (AR(2) = uma regressão,
+ARMA(1,1) = as duas do Hannan-Rissanen, GARCH = otimizador).
+
+## Configurações fixas como testes adicionais (05/11/2026)
+
+INCERTEZAS item 93. Saíram do Cap. II e ficaram numa tabela própria no Cap. III.
+O retorno do GARCH × mesma configuração sem ele passou de 7 em 11 para 3 em 7, e
+resumo, abstract e Considerações foram ajustados. **Falta do autor:** reler esses
+trechos e preparar a resposta para "por que o robô é reescolhido a cada período e
+as médias de Almeida não?" (antes respondida pelo teste fixo).
+
+## Apêndice C, robô de médias móveis (02/11/2026)
+
+INCERTEZAS item 90. **Falta do autor:** reler o texto do apêndice e a frase
+nova do Cap. II sobre a segunda forma da reprodução (regra de entrada do anexo).
+
+## Heterocedasticidade no começo da Seção 1.6 GARCH (02/11/2026)
+
+Pedido do autor. Texto novo no Cap. I, dentro da Seção 1.6 (sem subseção), com o Gráfico 1 (série simulada com
+variância constante × retorno da PETR4 de 2019 a 2021), INCERTEZAS item 89.
+**Falta do autor:** reler e reescrever com as próprias palavras (regra nº 3);
+os gráficos do Cap. III passaram a ser numerados a partir do 2.
+
+## Auditoria do texto de 02/11/2026
+
+Relatório em `ia/relatorios/auditoria-texto-2026-11-02.md`. **Aplicada no mesmo
+dia** (INCERTEZAS item 86), 82 páginas. Falta do autor: trocar a Figura 1 por uma
+captura própria do MT5 em português com a PETR4; reler o 3.3, o 3.8, o 3.10 e as
+limitações das Considerações, que mudaram; abrir o `.docx` no Word.
+
+## Crédito do código e trabalhos relacionados do MQL5 (02/11/2026) — APLICADO NO CAP. II
+
+Tudo em `ia/bibliografia/creditos-codigo-2026-11-02.md` (links, autores e datas conferidos).
+**Aplicado em 02/11/2026, a pedido do autor (INCERTEZAS item 91):** a seção "Implementação
+dos modelos" do Cap. II cita um artigo por conceito, na versão em português: Dube (2023,
+ARIMA), Dube (2024, ADF) e Chernish (2024, GARCH). As perguntas abertas abaixo foram
+respondidas. Falta só a explicação, que o autor vai escrever. Os demais artigos NÃO entram.
+Resumo:
+- **Nenhum trecho dos apêndices é cópia** de fórum, Code Base ou artigo; o crédito é ao
+  método (Hannan e Rissanen, Gómez e Maravall, Bollerslev, Akaike, Dickey e Fuller,
+  MacKinnon) e à ALGLIB. Faltam no `.bib`: Akaike (1974), Dickey e Fuller (1979) ou Said e
+  Dickey (1984), MacKinnon (2010) e a ALGLIB como software. Schwert (1989) não confirmado.
+- **Trabalhos relacionados na comunidade MQL5**: sugestão de 4 a 6 para o Cap. I, depois de
+  Almeida: Dube (2023, ARIMA), Chernish (2025, GARCH com MinBLEIC), Dube (2024, ADF),
+  Sandoval Espinosa (2026, AutoARIMA), Kirichenko (2011). Não há Hannan-Rissanen em MQL5
+  nem ARIMA+GARCH num EA.
+- **Perguntas abertas ao autor:** (1) leu Chernish (2025) ou Dube (2024)? Se sim, eles são o
+  "conteúdo da comunidade" que o Cap. II (l. 189–191) cita sem nomear; se nada específico
+  foi consultado, a frase deve sair. (2) Quais obras entram e onde (regra nº 3: ele lê antes).
+
+## Relatório do Hannan-Rissanen, versão 2 (02/11/2026)
+
+`ia/relatorios/hannan-rissanen/relatorio.pdf` reescrito a pedido do autor: Parte I só o conceito,
+Parte II o caminho do dado no código (trechos lidos de `tg/codigo/`, mesma numeração dos Apêndices
+A e B; o `Makefile` para se um trecho sair do lugar), Parte III simulações e literatura. Versão 1
+em `ia/rascunhos/hannan_rissanen_v1_2026-10-30/`. **Falta o autor ler.**
+
+## Relatório da otimização (02/11/2026)
+
+`ia/relatorios/otimizacao/relatorio.pdf`, separado do TG, pedido do autor. **Parte 1 de 3
+feita** (otimização × teste, 312 configurações da PETR4, dados em
+`dados/resultados/otimizacao_teste_2026-11-02/`). Partes 2 (mapa de calor percentil ×
+alvo) e 3 (queda máxima por forma de uso) só depois de o autor ler a 1.
+
 ## 0a. Sessão de 19/10/2026 (ler antes da seção 0)
 
 **Feito no texto (ainda sem commit; cópia anterior em
@@ -193,7 +293,12 @@ Pitman, Morgan, Lo, Jobson e Korkie e Memmel deixaram de ser pendência.
 - [ ] Commit de tudo o que foi feito em 18/10.
 - [ ] Termos de Ciência e de Autorização (modelo em `dados/fontes/normas-fatec/`).
 - [ ] Apresentação de 20 a 30 min (modelo da FATEC em `dados/fontes/normas-fatec/`).
-- [ ] Versão em Word (depois que o texto fechar).
+- [ ] Versão em Word (depois que o texto fechar). **Conversor pronto desde
+      02/11/2026**: `make docx` em `tg/` gera `tg/main.docx` do LaTeX
+      (`ferramentas/scripts/docx/`, pandoc 3.13 em `~/.local/opt/`). Conferido
+      contra o PDF no LibreOffice (títulos, legendas, equações e citações iguais);
+      **ainda não aberto no Microsoft Word**. Ao abrir, aceitar a atualização dos
+      campos (sumário e listas). Corrigir texto sempre no `.tex` e gerar de novo.
 - [ ] Corrigir a ordem no `.gitignore` (`!dados/resultados/**/execucao.log` vem
       antes de `*.log` e é anulado).
 - Aviso de identificadores repetidos do LaTeX: inofensivo (INCERTEZAS item 76).
@@ -237,3 +342,9 @@ considerações.
 - Otimização refeita com os mesmos parâmetros vem do cache: apagar
   `Tester/cache/` antes.
 - Laços de teste sempre dentro de `bash`, nunca direto no zsh.
+
+## Estudo do GARCH com 1000 resíduos (02/11/2026)
+
+Feito e documentado (`dados/resultados/janela_garch_1000_2026-11-02/LEIAME.md`,
+INCERTEZAS item 87). Não entra no TG por decisão do autor (janela do GARCH só
+como limitação). Pendente só se o autor pedir: levar algo ao texto ou à defesa.

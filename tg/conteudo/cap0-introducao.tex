@@ -45,8 +45,11 @@ A dificuldade apontada por ele continua atual, porque as crises voltam a
 acontecer, e é nelas que as maiores perdas se concentram. Em março de 2020, no
 início da pandemia de covid-19, o Ibovespa, principal índice de ações da bolsa
 brasileira, caiu 29,9\% em um único mês \cite{maximo2020}. A própria PETR4
-perdeu 48,6\% do seu valor entre o fim de 2019 e o início de abril de 2020,
-segundo as cotações oficiais da bolsa \cite{b3Cotahist}. Uma estratégia baseada
+chegou a perder 64,2\% do seu valor ao longo de 2020, do ponto mais alto ao mais
+baixo do ano, segundo as cotações oficiais da bolsa \cite{b3Cotahist}.
+% 64,2%: dados/resultados/refeito_2026-10-05/cru/recorte_2020.txt (PETR4,
+% queda_max 64,15%), o mesmo valor da tabela tab:pandemia (Cap. III). Antes: 48,6% até 03/04/2020.
+ Uma estratégia baseada
 apenas no cruzamento de médias responde a uma única pergunta, a de para que lado
 o preço parece estar indo, e nada diz sobre o quanto ele pode oscilar no caminho.
 Por isso, ela entra no mercado com a mesma convicção em um dia calmo e em um dia
@@ -64,8 +67,8 @@ depois, sobre o mesmo ativo e na mesma plataforma.
 
 Resta saber, porém, o que efetivamente se ganha ao acrescentar essa camada de
 modelagem. Acrescentar um modelo de volatilidade torna o algoritmo mais complexo,
-exige a estimação de parâmetros adicionais a cada operação e reduz o número de
-negócios realizados, e nada garante, de antemão, que o resultado compense esse
+exige a estimação de parâmetros adicionais a cada operação e pode reduzir o
+número de negócios realizados, e nada garante, de antemão, que o resultado compense esse
 custo. Coloca-se, assim, a questão norteadora deste trabalho: em que medida a
 integração dos modelos ARIMA e GARCH em um único algoritmo de negociação altera o
 desempenho e o risco das operações, em comparação com o uso do ARIMA isolado e com
@@ -75,9 +78,9 @@ Duas hipóteses foram formuladas antes dos experimentos. A primeira é a de que 
 integração entre a previsão de séries temporais pelo ARIMA e a modelagem de
 volatilidade condicional pelo GARCH gera sinais de negociação mais eficazes, tanto
 em acerto direcional quanto em adequação ao risco, do que o emprego isolado do
-ARIMA. A ideia de combinar técnicas com funções distintas para obter resultados
-superiores encontra respaldo em trabalhos como o de \citeonline{batista2024}, que
-integrou indicadores técnicos em um mesmo robô de negociação. A segunda é a de que
+ARIMA. A ideia de reunir, em um mesmo robô, técnicas com funções distintas aparece
+também em trabalhos como o de \citeonline{batista2024}, que combinou indicadores
+técnicos. A segunda é a de que
 essa combinação representa um avanço em relação às análises baseadas em médias
 móveis. Ambas são confrontadas com os resultados nas considerações finais.
 
@@ -107,7 +110,10 @@ reproduzido nos apêndices e pode ser reaproveitado em outros robôs e pesquisas
 feitos na mesma plataforma. Além
 disso, o controle de risco feito pelo GARCH é separado da previsão de direção, o
 que permite, em princípio, acoplá-lo a outras estratégias, possibilidade que
-este trabalho testou apenas com o ARIMA.
+este trabalho testou apenas com o ARIMA. A pesquisa é também viável com
+recursos gratuitos. O histórico de cotações da B3 e a taxa Selic do Banco Central
+são públicos, e a plataforma MetaTrader 5, o seu testador de estratégias e a
+biblioteca numérica que a acompanha podem ser usados sem custo.
 
 Quanto à natureza, a pesquisa é primária, por produzir conhecimento novo a partir
 da realização de experimentos, e se apoia no método empírico, que fundamenta as

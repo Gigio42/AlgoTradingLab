@@ -24,9 +24,13 @@ dados do Yahoo) ou é estudo à parte que não entrou no texto.
 | [`bateria_2026-10-15/`](bateria_2026-10-15/LEIAME.md) | Critério único pelo fator de recuperação, e ARIMA por máxima verossimilhança (rejeitado na validação). |
 | [`janelas_240_500_2026-10-26/`](janelas_240_500_2026-10-26/LEIAME.md) | ARIMA com janela de 240 e GARCH com 500 resíduos, em PDF separado (`documento/`). Pedido depois da crítica da orientadora. |
 | [`fatores_500_2026-10-27/`](fatores_500_2026-10-27/LEIAME.md) | Grade maior sobre o estudo anterior: distribuição do GARCH, BIC e intervalo de reseleção. |
+| [`janela_garch_1000_2026-11-02/`](janela_garch_1000_2026-11-02/LEIAME.md) | A parte principal do Cap. III (PETR4) com o GARCH sobre 1000 resíduos, comparada com o TG e com o estudo de 500. 2004–2006 e 2007–2011 na série oficial estendida a 1999. |
+| [`heterocedasticidade_2026-11-02/`](heterocedasticidade_2026-11-02/LEIAME.md) | Dados do Gráfico 1 do Cap. I (Seção 1.6, GARCH): retorno diário da PETR4 de 2019 a 2021 e uma série simulada com variância constante. **Está no TG.** |
 | [`metodos_ilustrados_2026-10-30/`](metodos_ilustrados_2026-10-30/LEIAME.md) | Dados dos gráficos que explicam os métodos (`apresentacao/graficos_metodos/`), na janela da validação numérica. |
 | [`robo_em_acao_2026-10-30/`](robo_em_acao_2026-10-30/LEIAME.md) | Dados dos gráficos do robô funcionando (`apresentacao/graficos_metodos/`, figuras 08 a 14), lidos do traço da refação de 05/10/2026. |
+| [`modelo_completo_2026-11-06/`](modelo_completo_2026-11-06/LEIAME.md) | Dois pregões (19 e 22/02/2021) refeitos com as funções do robô e conferidos contra o traço: dados dos relatórios `ia/relatorios/modelo-completo/` e `garch-funcionando/`. |
 | [`hannan_rissanen_2026-10-30/`](hannan_rissanen_2026-10-30/LEIAME.md) | Dados do relatório de estudo sobre o Hannan-Rissanen (`ia/relatorios/hannan-rissanen/`): séries simuladas, mil simulações e dois pregões reais refeitos e conferidos contra o traço. |
+| [`otimizacao_teste_2026-11-02/`](otimizacao_teste_2026-11-02/LEIAME.md) | Dados do relatório de estudo sobre a otimização (`ia/relatorios/otimizacao/`): as 312 configurações da PETR4 na otimização e no teste, lidas dos pareados da refação de 05/10/2026. Nada foi rodado de novo. |
 
 ## Histórico (superado, não usar no texto)
 

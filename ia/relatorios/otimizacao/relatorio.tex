@@ -1,0 +1,205 @@
+% Relatório de estudo sobre a otimização (02/11/2026, pedido do autor).
+% Material de estudo, não é parte do TG. Todo número vem de
+% dados/resultados/otimizacao_teste_2026-11-02/ (ferramentas/scripts/otimizacao_teste.sh),
+% que lê os pareados da refação de 05/10/2026 (dados/resultados/refeito_2026-10-05/pareados/).
+% Parte 1 de 3: otimização x teste. Mapa de calor e queda por forma de uso
+% ficam para depois de o autor ler esta (regra nº 3).
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{mathptmx}
+\usepackage[a4paper,margin=2.4cm]{geometry}
+\usepackage{booktabs,array}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage[most]{tcolorbox}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{shapes.geometric}
+\pgfplotsset{compat=1.18}
+\usepackage[hidelinks]{hyperref}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+
+\definecolor{cgarch}{RGB}{120,120,120}
+\definecolor{carima}{RGB}{230,140,0}
+\definecolor{cesc}{RGB}{220,50,32}
+\definecolor{cmod}{RGB}{0,90,181}
+
+\newcommand{\arq}[1]{../../../dados/resultados/otimizacao_teste_2026-11-02/#1}
+\input{\arq{valores.tex}}
+% número com vírgula decimal (os macros vêm com ponto)
+\newcommand{\num}[1]{\pgfmathprintnumber[fixed,zerofill,precision=2,use comma]{#1}}
+
+\pgfplotsset{base/.style={table/col sep=comma, grid=major, grid style={gray!20},
+    tick label style={font=\scriptsize}, label style={font=\footnotesize},
+    title style={font=\footnotesize\bfseries, align=center},
+    /pgf/number format/use comma, unbounded coords=discard,
+    width=7.4cm, height=5.6cm}}
+
+\newtcolorbox{ideia}[1][]{colback=cmod!5, colframe=cmod!70, fonttitle=\bfseries, title={#1}, arc=2pt, boxrule=0.6pt}
+\newtcolorbox{cuidado}[1][]{colback=cesc!4, colframe=cesc!70, fonttitle=\bfseries, title={#1}, arc=2pt, boxrule=0.6pt}
+\newtcolorbox{banca}{colback=black!3, colframe=black!50, fonttitle=\bfseries, title=Se a banca perguntar, arc=2pt, boxrule=0.6pt}
+
+% \painel{arquivo}{métrica: sharpe|calmar}{x da escolhida}{y da escolhida}{mediana do teste}{título}
+\newcommand{\painel}[6]{%
+  \nextgroupplot[title={#6}]
+  \addplot[only marks, mark=*, mark size=1.1pt, cgarch, fill opacity=0.45, draw opacity=0]
+    table[x=#2_otim, y expr={ifthenelse(\thisrow{garch}==1,\thisrow{#2_teste},nan)}]{\arq{#1}};
+  \addplot[only marks, mark=square*, mark size=1.8pt, carima]
+    table[x=#2_otim, y expr={ifthenelse(\thisrow{garch}==0,\thisrow{#2_teste},nan)}]{\arq{#1}};
+  \draw[cmod, dashed, thick] ({rel axis cs:0,0}|-{axis cs:0,#5}) -- ({rel axis cs:1,0}|-{axis cs:0,#5});
+  \addplot[only marks, mark=star, mark size=4.5pt, cesc, very thick] coordinates {(#3,#4)};
+}
+
+\title{\textbf{A otimização prevê o teste?}\\[2pt]\large as 312 configurações da PETR4, na otimização e no teste}
+\author{Material de estudo para os autores do TG (não faz parte do texto)}
+\date{2 de novembro de 2026 \quad$\cdot$\quad parte 1 de 3}
+
+\begin{document}
+\maketitle
+
+\begin{ideia}[Em uma página]
+\textbf{A pergunta.} A configuração escolhida como a melhor na otimização continua entre as melhores no período de
+teste? Se continuar, a otimização serve para escolher. Se não, a escolha foi em boa parte sorte.
+
+\textbf{Como se responde.} No período de teste, o robô só executou a configuração escolhida. Mas na refação de
+05/10/2026 a grade inteira também foi rodada no teste, então dá para ver como teriam ido \emph{todas} as 312
+configurações e onde a escolhida ficou entre elas.
+
+\textbf{A resposta curta.} Pelo Sharpe, a otimização não prevê o teste: nos três períodos, a escolhida ficou
+abaixo da mediana no teste. Pelo Calmar, prevê um pouco: a escolhida ficou acima da mediana em dois dos três.
+\end{ideia}
+
+\section{O que o gráfico mostra}
+
+O MetaTrader tem uma aba chamada \emph{Gráfico de otimização}, que desenha o resultado de cada passagem da grade.
+A Figura~\ref{fig:disp} usa a mesma ideia, com uma diferença: cada configuração aparece com \emph{dois}
+resultados, um em cada eixo.
+
+\begin{itemize}\setlength\itemsep{2pt}
+  \item \textbf{Cada ponto é uma configuração} da grade do TG (só compra, sem o intervalo de confiança):
+        \nA{} no total, \ngarchA{} com GARCH (cinza) e 8 sem GARCH (laranja).
+  \item \textbf{Eixo horizontal:} o resultado nos três anos de otimização, que foi o que se usou para escolher.
+  \item \textbf{Eixo vertical:} o resultado no período de teste, que a escolha não viu.
+  \item \textbf{Estrela vermelha:} a configuração escolhida (o ARIMA-GARCH Sharpe na coluna da esquerda, o
+        ARIMA-GARCH Calmar na da direita). Por definição, ela é o ponto mais à direita entre os cinza.
+  \item \textbf{Linha azul tracejada:} a mediana do teste. Metade das configurações ficou acima dela e metade
+        abaixo. É o que se esperaria, em média, escolhendo uma configuração ao acaso.
+\end{itemize}
+
+\textbf{Como ler.} Se a otimização previsse o teste, a nuvem subiria da esquerda para a direita, como uma
+diagonal, e a estrela ficaria lá no alto. Se a nuvem não tem inclinação, ir bem na otimização não diz nada sobre
+o teste.
+
+\begin{figure}[p]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[base, group style={group size=2 by 3, horizontal sep=1.6cm, vertical sep=2.7cm},
+    xlabel={na otimização}, ylabel={no teste}]
+  \painel{pontos_T1.csv}{sharpe}{\gsxA}{\gsyA}{\medSA}{Sharpe\\otimização 2004--2006 $\to$ teste 2007--2011}
+  \painel{pontos_T1.csv}{calmar}{\gcxA}{\gcyA}{\medCA}{Calmar\\otimização 2004--2006 $\to$ teste 2007--2011}
+  \painel{pontos_T2.csv}{sharpe}{\gsxB}{\gsyB}{\medSB}{Sharpe\\otimização 2010--2012 $\to$ teste 2013--2016}
+  \painel{pontos_T2.csv}{calmar}{\gcxB}{\gcyB}{\medCB}{Calmar\\otimização 2010--2012 $\to$ teste 2013--2016}
+  \painel{pontos_T3.csv}{sharpe}{\gsxC}{\gsyC}{\medSC}{Sharpe\\otimização 2022--2024 $\to$ teste 2025--set.~2026}
+  \painel{pontos_T3.csv}{calmar}{\gcxC}{\gcyC}{\medCC}{Calmar\\otimização 2022--2024 $\to$ teste 2025--set.~2026}
+\end{groupplot}
+\end{tikzpicture}
+
+\vspace{4pt}
+{\small\sloppy
+\tikz\fill[cgarch, opacity=0.6] (0,0) circle (1.6pt); com GARCH \quad
+\tikz\fill[carima] (0,0) rectangle (4pt,4pt); sem GARCH \quad
+\tikz\node[cesc, star, star points=5, fill, inner sep=1.6pt]{}; escolhida \quad
+\tikz\draw[cmod, dashed, thick] (0,0) -- (0.6,0); mediana do teste}
+
+\caption{Cada configuração na otimização (horizontal) e no teste (vertical), PETR4. Sharpe e Calmar calculados
+com custos e caixa parado na Selic, como na escolha.}
+\label{fig:disp}
+\end{figure}
+
+\section{O que deu}
+
+A Tabela~\ref{tab:pos} resume os seis painéis. A \emph{posição} é o lugar da escolhida quando as \nA{}
+configurações são ordenadas pelo resultado no teste: 1\textordfeminine{} é a melhor, \nA\textordfeminine{} é a pior.
+
+\begin{table}[ht]
+\centering
+\caption{Onde a escolhida ficou no teste, entre \nA{} configurações}
+\label{tab:pos}
+\small
+\begin{tabular}{l rr r rr r}
+\toprule
+ & \multicolumn{3}{c}{Escolha pelo Sharpe} & \multicolumn{3}{c}{Escolha pelo Calmar} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Teste & posição & acima da mediana? & $\rho$ & posição & acima da mediana? & $\rho$ \\
+\midrule
+2007--2011       & \posSA\textordfeminine{} & não & \num{\rhoSA} & \posCA\textordfeminine{} & sim & \num{\rhoCA} \\
+2013--2016       & \posSB\textordfeminine{} & não & \num{\rhoSB} & \posCB\textordfeminine{} & sim & \num{\rhoCB} \\
+2025--set.~2026  & \posSC\textordfeminine{} & não & \num{\rhoSC} & \posCC\textordfeminine{} & não & \num{\rhoCC} \\
+\bottomrule
+\end{tabular}
+
+\vspace{2pt}
+{\footnotesize $\rho$: correlação de Spearman entre a ordem na otimização e a ordem no teste, nas \nA{} configurações.}
+\end{table}
+
+\textbf{O que é o $\rho$ (correlação de Spearman).} Ordenam-se as configurações duas vezes, pela otimização e pelo
+teste, e mede-se o quanto as duas listas concordam. Vale 1 se a ordem é a mesma, 0 se não há relação nenhuma e
+$-1$ se uma é o inverso da outra. Ele resume numa conta a inclinação da nuvem.
+
+\textbf{Pelo Sharpe}, $\rho$ fica entre \num{\rhoSB} e \num{\rhoSA}: nenhuma relação. A escolhida ficou abaixo da
+mediana nos três testes. No mais recente, ficou em \posSC\textordfeminine{} de \nA{}, quase a última. Isso não quer dizer que o
+Sharpe seja um critério ruim em si. Quer dizer que, nesta grade e neste ativo, o Sharpe de três anos não carrega
+informação sobre o Sharpe dos anos seguintes.
+
+\textbf{Pelo Calmar}, $\rho$ fica entre \num{\rhoCB} e \num{\rhoCA}: uma relação fraca, mas no sentido certo. A
+escolhida ficou acima da mediana em 2007--2011 e em 2013--2016 (\posCB\textordfeminine{} de \nA{}), e abaixo em 2025--2026. O Calmar
+mede ganho por unidade de queda máxima, e a queda depende muito de \emph{como} o robô reduz a posição, que é uma
+característica da configuração e não do acaso do período. Essa é uma explicação provável para ele se manter mais,
+não algo que o gráfico prove.
+
+Os pontos laranja (sem GARCH) não concorrem à escolha do ARIMA-GARCH, que é feita só entre os cinza. Estão no
+gráfico para comparação. Com só 8 pontos, não dá para dizer mais nada sobre eles aqui.
+
+\begin{banca}
+\textbf{``O resultado de vocês não é só a sorte de ter escolhido a melhor configuração?''}
+
+É exatamente por isso que o teste foi feito num período que a escolha não viu. E este gráfico mostra que a
+preocupação tem fundamento: escolhida pelo Sharpe, a melhor da otimização ficou abaixo da mediana nos três testes.
+Por isso o Cap.~III mede o desempenho em períodos posteriores à escolha, com a configuração congelada. A única
+exceção é 2005--2026, e o texto já avisa que esse teste inclui os anos da escolha.
+
+\textbf{``Então por que usar o Sharpe?''} Porque é a medida padrão de ganho por risco, e o critério foi
+definido antes de ver os resultados. O gráfico mostra que o Calmar, que olha para a queda máxima, se mantém mais
+entre períodos. Isso combina com o foco do trabalho em risco: a parte que a otimização consegue prever é a
+proteção, não o retorno.
+\end{banca}
+
+\begin{cuidado}[O que este gráfico não diz]
+\begin{itemize}\setlength\itemsep{1pt}
+  \item São \textbf{três pares de períodos de um ativo só}. O padrão aparece nos três, mas três é pouco.
+  \item Sharpe e Calmar aqui são os da \textbf{escolha} (com custos e caixa na Selic). O Cap.~III mostra o
+        resultado bruto, então os valores do eixo não são os números das tabelas do TG.
+  \item O período 2014--2016 $\to$ 2017--2024 (o teste principal) \textbf{não está aqui}, porque a grade não foi
+        rodada inteira em 2017--2024. Só os robôs escolhidos e as referências foram.
+  \item Em 2007--2011 a escolha pelo Sharpe e pelo Calmar deu \textbf{a mesma configuração}, por isso as duas
+        estrelas de cima representam o mesmo robô.
+  \item O TG hoje não fala de persistência entre otimização e teste. Se o autor quiser levar isto ao texto, é
+        decisão dele, e as frases saem daqui só depois de ele dominar o gráfico.
+\end{itemize}
+\end{cuidado}
+
+\section*{De onde vêm os números}
+
+{\small\sloppy
+Script \texttt{ferramentas/scripts/otimizacao\_teste.sh}, que lê
+\texttt{dados/resultados/refeito\_2026-10-05/pareados/PETR4\_C\textit{n}\_T\textit{n}.csv} e grava em
+\texttt{dados/resultados/otimizacao\_teste\_2026-11-02/}. Conferências: (1) a escolha refeita pelo script
+coincide com a oficial (\texttt{escolhas/r3\_C\textit{n}.txt}) nos três períodos; (2) o Sharpe e o Calmar da
+escolhida no teste coincidem com os do teste individual dela (\texttt{testes/metricas\_R3\_T\textit{n}\_G*.csv});
+(3) com as 32 configurações do intervalo de confiança de volta (344), o $\rho$ reproduz o bloco 5 de
+\texttt{analise\_grades.txt} (0,10; $-0{,}05$; $-0{,}02$ e 0,46; 0,28; 0,37).
+\par}
+
+\end{document}

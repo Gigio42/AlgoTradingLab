@@ -36,6 +36,7 @@ validação do código saiu do texto em 18/10/2026).
 | `garch_grade.csv` | log L do GARCH em 41 × 41 pares (α, β) em volta do ponto estimado, ω fixo; `dl` = diferença para o ponto do robô (limitada em −60). |
 | `garch_perturbacao.csv` | Variação do log L ao mexer um parâmetro de cada vez. |
 | `garch_mc_240.csv`, `garch_mc_1000.csv` | Parâmetros estimados em 300 séries GARCH(1,1) simuladas de cada tamanho. |
+| `garch_decisao.csv` | Seção H (31/10): concordância da decisão do filtro com parâmetros estimados × verdadeiros, 500 séries por tamanho (240, 500, 1000) e percentil (50, 70). |
 
 ## O que deu (detalhes no relatório e em `ia/INCERTEZAS.md`, item 85)
 
@@ -46,3 +47,22 @@ validação do código saiu do texto em 18/10/2026).
   graus de liberdade, 3,8% sem.
 - GARCH com 240 pontos: β médio 0,824 (desvio 0,142) para β verdadeiro 0,89;
   com 1000 pontos, 0,884 (0,027).
+
+## Seção H, acrescentada em 31/10/2026: quanto os achados pesam nas decisões
+
+Pedido do autor. A seção roda no fim do programa, depois das outras: os números
+de A a G não mudaram (conferido no `resumo.txt`).
+
+- Ljung-Box, mesmas séries ajustadas pelos dois estimadores do `CArima`:
+  AR(1) 4,55% e 4,55%; MA(1) 7,95% (Hannan-Rissanen) e 4,75% (máxima
+  verossimilhança); ARMA(1,1) 7,60% e 4,90%. O excesso vem da estimação do termo
+  MA por Hannan-Rissanen, não do teste.
+- ADF nas 5.641 janelas de 240 pregões da PETR4_OFICIAL: o log-preço rejeitou
+  em 5,53%; 39 janelas (0,69%) caem entre o quantil empírico (−2,918) e o valor
+  crítico usado, e só nelas a decisão mudaria. O log-retorno rejeitou em 99,80%.
+- GARCH simulado (ω 1e-5, α 0,09, β 0,89): decisão do filtro igual à dos
+  parâmetros verdadeiros em 91,8% (240, percentil 50), 96,4% (500) e 98,0%
+  (1000); com percentil 70, 95,2%, 95,2% e 97,6%.
+- PETR4 real, 1.076 dias (um a cada 5 pregões), GARCH sobre log-retornos menos a
+  média: decisão igual com 240 e 500 em 80,4% (percentil 50) e 82,2% (70);
+  persistência > 0,999 em 7,9% (240) e 0,3% (500).

@@ -1,0 +1,35 @@
+% Preâmbulo comum das figuras de ia/relatorios/modelo-completo e garch-funcionando
+% (06/11/2026). Nenhum número é digitado aqui: vêm de valores.tex (\vX para o
+% texto, \pX para coordenada) e dos CSVs de
+% dados/resultados/modelo_completo_2026-11-06/ (ferramentas/ModeloCompleto.mq5)
+% e dados/resultados/robo_em_acao_2026-10-30/ (traço do robô).
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{mathptmx}
+\usepackage{pgfplots}
+\usepgfplotslibrary{dateplot,fillbetween}
+\usetikzlibrary{arrows.meta,positioning,calc,decorations.pathreplacing}
+\pgfplotsset{compat=1.18}
+\definecolor{cmod}{RGB}{0,90,181}     % ARIMA, ajuste
+\definecolor{cdes}{RGB}{220,50,32}    % GARCH acima do limiar, veto
+\definecolor{cdad}{RGB}{120,120,120}  % dado observado
+\definecolor{cok}{RGB}{0,140,70}      % compra liberada
+\definecolor{cgar}{RGB}{230,140,0}    % GARCH, limiar
+\newcommand{\arqm}[1]{../../../dados/resultados/modelo_completo_2026-11-06/#1}
+\newcommand{\arqr}[1]{../../../dados/resultados/robo_em_acao_2026-10-30/#1}
+\input{\arqm{valores.tex}}
+\input{\arqr{valores.tex}}
+\newcommand{\passo}[1]{\tikz[baseline=(n.base)]\node[circle,fill=black!75,text=white,inner sep=1pt,font=\footnotesize\bfseries](n){#1};}
+\pgfplotsset{
+  mini/.style={table/col sep=comma, scale only axis, unbounded coords=jump,
+    tick label style={font=\scriptsize}, label style={font=\scriptsize},
+    grid=major, grid style={gray!20}, every axis plot/.append style={line width=0.7pt},
+    /pgf/number format/use comma, /pgf/number format/1000 sep={.}},
+  datas/.style={date coordinates in=x},
+}
+\tikzset{
+  caixa/.style={draw=black!45, rounded corners=3pt, line width=0.6pt},
+  titulo/.style={anchor=north west, font=\small\bfseries, inner sep=0pt},
+  texto/.style={anchor=north west, font=\footnotesize, align=left, inner sep=0pt},
+  seta/.style={-{Stealth[length=2.6mm]}, line width=1pt, black!55},
+}

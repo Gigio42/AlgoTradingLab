@@ -8,60 +8,65 @@
 //+------------------------------------------------------------------+
 #property copyright "TG - FATEC Indaiatuba (ADS)"
 #property version   "2.00"
-#property tester_file "selic_diaria.csv"
-#property tester_file "proventos_PETR4.csv"
-#property tester_file "proventos_VALE3.csv"
-#property tester_file "proventos_USIM5.csv"
-#property tester_file "proventos_POMO4.csv"
+#property tester_file "selic_diaria.csv"   //@omitir
+#property tester_file "proventos_PETR4.csv"   //@omitir
+#property tester_file "proventos_VALE3.csv"   //@omitir
+#property tester_file "proventos_USIM5.csv"   //@omitir
+#property tester_file "proventos_POMO4.csv"   //@omitir
 
 #include "..\Include\Negociacao.mqh"
-#include "..\Include\Desempenho.mqh"
+#include "..\Include\Desempenho.mqh"   //@omitir
 
-input group "Medias moveis"
+input group "Medias moveis"   //@omitir
 input int                RapidaMM_Periodo   = 10;
-input ENUM_MA_METHOD     RapidaMM_Metodo    = MODE_SMA;
-input ENUM_APPLIED_PRICE RapidaMM_Preco     = PRICE_CLOSE;
-input int                RapidaMM_Shift     = 0;
+input ENUM_MA_METHOD     RapidaMM_Metodo    = MODE_SMA;   //@omitir
+input ENUM_APPLIED_PRICE RapidaMM_Preco     = PRICE_CLOSE;   //@omitir
+input int                RapidaMM_Shift     = 0;   //@omitir
 input int                DevagarMM_Periodo  = 20;
-input ENUM_MA_METHOD     DevagarMM_Metodo   = MODE_SMA;
-input ENUM_APPLIED_PRICE DevagarMM_Preco    = PRICE_CLOSE;
-input int                DevagarMM_Shift    = 0;
+input ENUM_MA_METHOD     DevagarMM_Metodo   = MODE_SMA;   //@omitir
+input ENUM_APPLIED_PRICE DevagarMM_Preco    = PRICE_CLOSE;   //@omitir
+input int                DevagarMM_Shift    = 0;   //@omitir
 
-input group "Negociacao"
+input group "Negociacao"   //@omitir
 input double             Volume_Fixo_Input  = 1.0;      // Volume fixo (acoes)
-input int                StopLoss_Points    = 50;       // Stop Loss em pontos (0 = sem)
-input int                TakeProfit_Points  = 100;      // Take Profit em pontos (0 = sem)
+input int                StopLoss_Points    = 50;       // Stop Loss em pontos (0 = sem)   //@omitir
+input int                TakeProfit_Points  = 100;      // Take Profit em pontos (0 = sem)   //@omitir
 input ulong              MagicNumber        = 12349;
 input int                Slippage_Points    = 10;
-input bool               TradeOnNewBarOnly  = true;     // Operar so na abertura da barra
+input bool               TradeOnNewBarOnly  = true;     // Operar so na abertura da barra   //@omitir
 input double             Fracao_Capital     = 0.0;      // > 0: volume = fracao do patrimonio
 input bool               SomenteCompra      = false;    // Sinal de venda so zera a compra
 
+//@omitir-inicio
 input group "Avaliacao (Strategy Tester)"
 input double             Custo_Por_Lado     = 0.0003;   // Custo B3 por execucao (fracao do valor)
 input string             Arquivo_Proventos  = "proventos_PETR4.csv"; // Proventos por data-ex
 input string             Rotulo             = "";       // Nome das metricas e da curva (vazio = nao grava)
+//@omitir-fim
 
 CNegociacao g_negociacao;
-CDesempenho g_desempenho;
-bool        g_no_testador = false;
+CDesempenho g_desempenho;   //@omitir
+bool        g_no_testador = false;   //@omitir
 
 int      g_media_rapida;
 int      g_media_lenta;
-int      g_casas_decimais;
+int      g_casas_decimais;   //@omitir
 double   g_volume_fixo;
 
 int OnInit()
   {
-   g_media_rapida = iMA(_Symbol, _Period, RapidaMM_Periodo, RapidaMM_Shift, RapidaMM_Metodo, RapidaMM_Preco);
-   g_media_lenta  = iMA(_Symbol, _Period, DevagarMM_Periodo, DevagarMM_Shift, DevagarMM_Metodo, DevagarMM_Preco);
+   g_media_rapida = iMA(_Symbol, _Period, RapidaMM_Periodo, RapidaMM_Shift, RapidaMM_Metodo, RapidaMM_Preco);   //@omitir
+   g_media_lenta  = iMA(_Symbol, _Period, DevagarMM_Periodo, DevagarMM_Shift, DevagarMM_Metodo, DevagarMM_Preco);   //@omitir
+   //@apendice: g_media_rapida = iMA(_Symbol, _Period, RapidaMM_Periodo, 0, MODE_SMA, PRICE_CLOSE);
+   //@apendice: g_media_lenta  = iMA(_Symbol, _Period, DevagarMM_Periodo, 0, MODE_SMA, PRICE_CLOSE);
    if(g_media_rapida == INVALID_HANDLE || g_media_lenta == INVALID_HANDLE)
       return(INIT_FAILED);
 
    g_negociacao.Configurar(_Symbol, MagicNumber, Slippage_Points);
-   g_casas_decimais = (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS);
+   g_casas_decimais = (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS);   //@omitir
    g_volume_fixo = VolumeFixoDoSimbolo(Volume_Fixo_Input);
 
+   //@omitir-inicio
    g_no_testador = (bool)MQLInfoInteger(MQL_TESTER);
    if(g_no_testador)
      {
@@ -71,6 +76,7 @@ int OnInit()
       if(!g_desempenho.CarregarProventos(Arquivo_Proventos))
          Print("AVISO: ", Arquivo_Proventos, " nao encontrado - camada de proventos = 0");
      }
+   //@omitir-fim
    return(INIT_SUCCEEDED);
   }
 
@@ -108,8 +114,9 @@ double VolumeDaOrdem(const double preco)
 void OnTick()
   {
    //--- Registro na abertura de cada barra, antes de qualquer ordem
-   static datetime barra_registrada = 0;
+   static datetime barra_registrada = 0;   //@omitir
    datetime barra = (datetime)SeriesInfoInteger(_Symbol, _Period, SERIES_LASTBAR_DATE);
+   //@omitir-inicio
    if(g_no_testador && barra != barra_registrada)
      {
       barra_registrada = barra;
@@ -123,6 +130,11 @@ void OnTick()
          return;
       barra_operada = barra;
      }
+   //@omitir-fim
+   //@apendice: static datetime barra_operada = 0;
+   //@apendice: if(barra == barra_operada)
+   //@apendice:    return;
+   //@apendice: barra_operada = barra;
 
    //--- Medias da ultima barra fechada (1) e da anterior (2)
    double valor[1];
@@ -140,7 +152,7 @@ void OnTick()
       return;
 
    ENUM_POSITION_TYPE posicao = g_negociacao.PosicaoAtual();
-   double distancia_minima = (double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL) * _Point;
+   double distancia_minima = (double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL) * _Point;   //@omitir
 
    if(rapida_agora > lenta_agora && rapida_antes <= lenta_antes)
      {
@@ -153,6 +165,7 @@ void OnTick()
         }
       if(posicao != POSITION_TYPE_BUY)
         {
+         //@omitir-inicio
          double preco = tick.ask, stop_loss = 0, take_profit = 0;
          if(StopLoss_Points > 0)
            {
@@ -169,6 +182,9 @@ void OnTick()
             if(take_profit <= preco) take_profit = 0;
            }
          g_negociacao.Comprar(VolumeDaOrdem(preco), preco, stop_loss, take_profit, "Compra MM Rev");
+         //@omitir-fim
+         //@apendice: double preco = tick.ask;
+         //@apendice: g_negociacao.Comprar(VolumeDaOrdem(preco), preco, 0, 0, "Compra MM Rev");
         }
       return;
      }
@@ -186,6 +202,7 @@ void OnTick()
          return;
       if(posicao != POSITION_TYPE_SELL)
         {
+         //@omitir-inicio
          double preco = tick.bid, stop_loss = 0, take_profit = 0;
          if(StopLoss_Points > 0)
            {
@@ -202,10 +219,14 @@ void OnTick()
             if(take_profit >= preco) take_profit = 0;
            }
          g_negociacao.Vender(VolumeDaOrdem(preco), preco, stop_loss, take_profit, "Venda MM Rev");
+         //@omitir-fim
+         //@apendice: double preco = tick.bid;
+         //@apendice: g_negociacao.Vender(VolumeDaOrdem(preco), preco, 0, 0, "Venda MM Rev");
         }
      }
   }
 
+//@omitir-inicio
 //--- Fim do teste: metricas contra a Selic e a compra e manutencao
 double OnTester()
   {
@@ -222,3 +243,4 @@ double OnTester()
    g_desempenho.Gravar(Rotulo, cabecalho, valores, resultado);
    return(resultado.excesso * 100.0);
   }
+//@omitir-fim

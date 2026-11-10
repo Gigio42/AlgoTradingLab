@@ -1,0 +1,14 @@
+Conferência contra /home/dark/.wine-mt5/drive_c/Program Files/MetaTrader 5/MQL5/Experts/AlgoTradingLab/dados/resultados/robo_em_acao_2026-10-30/dia_a_dia.csv
+(traço: prev, vol e lim em %, com 5 casas; script: valores.tex com 2 casas, resumo com 8)
+== 2021-02-19
+traço : p=3 d=1 q=0 prev=0.83439 vol=2.61508 lim=3.18074 vetou=0 alfa=0.215305 beta=0.707266 phi1=-0.132682 const=0.059446
+script: ARIMA(3,1,0): const=0.000594 phi1=-0.132682 phi2=0.107474 phi3=0.160645 phi4=0.000000 theta1=0.000000
+script: previsao=0.00834387  vol=0.02615077  limiar=0.03180743  sinal=1  vetada=0
+script: GARCH: omega=8.992032e-05 alfa=0.215305 beta=0.707266 persist=0.922571  residuos=236  sigmas=235
+script: Conferencia da recursao: maior diferenca de sigma = 2.776e-17; previsao refeita = 0.02615077
+== 2021-02-22
+traço : p=3 d=1 q=0 prev=1.56825 vol=3.12002 lim=2.89427 vetou=1 alfa=0.063508 beta=0.855470 phi1=-0.144656 const=0.075100
+script: ARIMA(3,1,0): const=0.000751 phi1=-0.144656 phi2=0.106209 phi3=0.155553 phi4=0.000000 theta1=0.000000
+script: previsao=0.01568245  vol=0.03120024  limiar=0.02894273  sinal=0  vetada=1
+script: GARCH: omega=5.702307e-05 alfa=0.063508 beta=0.855470 persist=0.918978  residuos=236  sigmas=235
+script: Conferencia da recursao: maior diferenca de sigma = 1.388e-17; previsao refeita = 0.03120024

@@ -23,4 +23,13 @@ $t =~ s{^\\abntrefinfo(\{(?:[^{}]++|(?1))*\})\s*(\{(?:[^{}]++|(?2))*\})\s*(\{(?:
   "\\abntrefinfo{$e}{$i}{$a}"
 }gme;
 $t =~ s/\) ---[ \t]*$/) --/gm; $t =~ s/\) --- /) -- /g;
+# Mesmo autor e mesmo ano: o estilo põe a letra (2026a, 2026b) só na citação.
+# O Manual (2.3.5, exemplo "AAP. 2020a.") põe a letra também na referência. O
+# ano da publicação é o primeiro ", AAAA." do corpo (o título pode ter o ano sem
+# vírgula antes, e o "Acesso em: dd mmm. AAAA" não tem vírgula).
+$t =~ s{(\\abntrefinfo\{[^\n]*?\}\{(\d{4})([a-z])\}\n)(.*?)(?=\n\n|\z)}{
+  my ($cab, $ano, $letra, $corpo) = ($1, $2, $3, $4);
+  $corpo =~ s/,(\s+)$ano\./,$1$ano$letra./ or warn "sem ano para a letra $ano$letra\n";
+  "$cab$corpo"
+}gse;
 print $t;

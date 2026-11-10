@@ -1,7 +1,14 @@
-% Relatório para o autor entender o Hannan-Rissanen (30/10/2026, pedido do autor).
+% Relatório para o autor entender o Hannan-Rissanen. Versão 2 (02/11/2026, pedido
+% do autor: "mais didático, com partes do código, primeiro o conceito e depois como
+% ele se aplica no ARIMA"). A versão 1 (30/10/2026) está em
+% ia/rascunhos/hannan_rissanen_v1_2026-10-30/.
 % Material de estudo, não é parte do TG. Todo número vem de
-% dados/resultados/hannan_rissanen_2026-10-30/ (ferramentas/scripts/hannan_rissanen.sh)
-% ou de dados/resultados/robo_em_acao_2026-10-30/ (traço da refação de 05/10/2026).
+% dados/resultados/hannan_rissanen_2026-10-30/ (ferramentas/scripts/hannan_rissanen.sh
+% e, para as contas à mão, ferramentas/scripts/hannan_rissanen_exemplo.sh) ou de
+% dados/resultados/robo_em_acao_2026-10-30/ (traço da refação de 05/10/2026).
+% Os trechos de código são lidos direto de tg/codigo/ (a versão reduzida que está
+% nos Apêndices A e B, com a mesma numeração de linhas) e de robos/Include/Numerico.mqh.
+% O Makefile confere, antes de compilar, se cada trecho ainda começa na linha certa.
 \documentclass[11pt,a4paper]{article}
 \usepackage[T1]{fontenc}
 \usepackage[brazilian]{babel}
@@ -12,9 +19,10 @@
 \usepackage[font=small,labelfont=bf]{caption}
 \usepackage{enumitem}
 \usepackage[most]{tcolorbox}
+\usepackage{listings}
 \usepackage{pgfplots}
 \usepgfplotslibrary{groupplots,dateplot,statistics}
-\usetikzlibrary{arrows.meta,positioning,babel,shapes.misc}
+\usetikzlibrary{arrows.meta,positioning,babel,shapes.misc,fit,calc}
 \pgfplotsset{compat=1.18}
 \usepackage[hidelinks]{hyperref}
 \setlength{\parskip}{0.45em}
@@ -28,8 +36,11 @@
 
 \newcommand{\arq}[1]{../../../dados/resultados/hannan_rissanen_2026-10-30/#1}
 \newcommand{\arqr}[1]{../../../dados/resultados/robo_em_acao_2026-10-30/#1}
+\newcommand{\cod}[1]{../../../tg/codigo/#1}
+\newcommand{\inc}[1]{../../../robos/Include/#1}
 \input{\arq{valores.tex}}
 \input{\arq{real_matrizes.tex}}
+\input{\arq{exemplo.tex}}
 
 \pgfplotsset{base/.style={table/col sep=comma, grid=major, grid style={gray!20},
     tick label style={font=\small}, label style={font=\small},
@@ -37,60 +48,144 @@
     every axis plot/.append style={line width=0.9pt},
     /pgf/number format/use comma, /pgf/number format/1000 sep={.}}}
 
+\lstdefinestyle{mql5}{language=C++, basicstyle=\ttfamily\footnotesize, keywordstyle=\color{cmod}\bfseries,
+  commentstyle=\color{cok}, numbers=left, numberstyle=\tiny\color{cdad}, numbersep=6pt,
+  showstringspaces=false, tabsize=3, columns=fullflexible, keepspaces=true, breaklines=true, frame=leftline, rulecolor=\color{cmod!40},
+  framesep=4pt, xleftmargin=1.6em, aboveskip=0.6em, belowskip=0.4em,
+  morekeywords={bool,double,int,void,const,CMatrixDouble}}
+\lstset{style=mql5}
+% \trecho{arquivo}{primeira}{última}{título}
+\newcommand{\trecho}[4]{\lstinputlisting[firstline=#2, lastline=#3, firstnumber=#2, title={\small\sffamily #4}]{#1}}
+
 \tikzset{fluxo/.style={draw=#1, fill=#1!7, rounded corners=3pt, text width=3.0cm, align=center, minimum height=1.35cm, font=\footnotesize}}
 \newtcolorbox{ideia}[1][]{colback=cmod!5, colframe=cmod!70, fonttitle=\bfseries, title={#1}, arc=2pt, boxrule=0.6pt}
 \newtcolorbox{cuidado}[1][]{colback=cdes!4, colframe=cdes!70, fonttitle=\bfseries, title={#1}, arc=2pt, boxrule=0.6pt}
 \newtcolorbox{banca}{colback=black!3, colframe=black!50, fonttitle=\bfseries, title=Se a banca perguntar, arc=2pt, boxrule=0.6pt}
+\newtcolorbox{leitura}{colback=cok!4, colframe=cok!60, fonttitle=\bfseries, title=Lendo o código, arc=2pt, boxrule=0.6pt}
 
-\title{\textbf{O método de Hannan-Rissanen no seu ARIMA}\\[2pt]\large como ele funciona, passo a passo, e o que ele fez no robô}
+\title{\textbf{O método de Hannan-Rissanen}\\[2pt]\large primeiro a ideia, depois o seu ARIMA, linha por linha}
 \author{Material de estudo para os autores do TG (não faz parte do texto)}
-\date{30 de outubro de 2026}
+\date{versão 2, 2 de novembro de 2026}
 
 \begin{document}
 \maketitle
 
 \begin{ideia}[Em uma página]
-\textbf{O que é.} Uma forma de estimar os coeficientes de um ARIMA usando só duas regressões de mínimos quadrados
-(MQO), sem otimização iterativa.
+\textbf{O problema.} O ARIMA usa duas coisas para prever o retorno de amanhã: os retornos passados (parte AR) e os
+\emph{erros} passados, as surpresas que o modelo não previu (parte MA). Os retornos estão nos dados. Os erros não:
+eles dependem dos próprios coeficientes que se quer estimar.
 
-\textbf{O problema que resolve.} O termo de médias móveis (MA) do ARIMA usa o \emph{erro} de ontem, e o erro não
-aparece nos dados. Sem ele não dá para montar a regressão.
+\textbf{A ideia central.} O erro de hoje pode ser escrito como uma soma ponderada dos retornos passados. Então um
+modelo que só usa retornos passados (um AR comprido) consegue \emph{estimar} os erros, sem precisar deles.
 
-\textbf{A solução, em duas frases.} Primeiro estima-se um modelo autorregressivo longo, cujos resíduos servem de
-estimativa dos erros (estágio 1). Depois esses erros estimados entram como mais uma coluna numa segunda
-regressão, que dá os coeficientes do modelo (estágio 2).
+\textbf{O método, em duas regressões.} Estágio 1: ajusta-se um AR comprido e guarda-se o que ele não explicou, que é
+a estimativa dos erros. Estágio 2: esses erros estimados viram uma coluna a mais numa segunda regressão, que dá os
+coeficientes do ARIMA. As duas regressões são mínimos quadrados (MQO), uma conta fechada, sem tentativa e erro.
 
-\textbf{No seu robô.} Refazendo fora do robô a estimação de dois pregões reais, os coeficientes e a previsão saíram
-\emph{idênticos} aos que o robô registrou (diferença zero). No traço de jul/2019 a jun/2021, os dois
-estágios rodaram em \vHTracoDois{} dos \vHTracoN{} pregões ($\vHTracoPct\%$). Nos outros, o modelo escolhido não
-tinha termo MA e o método se reduz a um MQO comum. Mas na escolha das ordens, a cada 21 pregões, 20 dos 25
-modelos candidatos passam pelos dois estágios.
+\textbf{No seu robô.} É a função \texttt{CArima::HannanRissanen}, chamada todo pregão para o modelo em uso e 25 vezes
+a cada 21 pregões, na escolha das ordens. Refazendo fora do robô dois pregões reais, os coeficientes e a previsão
+saíram idênticos aos que o robô registrou.
 
-\textbf{O que se descobriu.} Em séries simuladas o método acerta perto do valor verdadeiro, com um pouco mais de
-erro que a máxima verossimilhança. Para um $\theta$ do tamanho do que o robô estimou no pregão detalhado, o erro de
-estimação é quase do tamanho do próprio coeficiente.
+\textbf{Como ler.} A Parte I explica a ideia sem falar do robô. A Parte II segue o caminho do dado dentro do código,
+do fechamento da PETR4 até a previsão, com os trechos de código na mesma numeração dos Apêndices A e B do TG. A
+Parte III mostra quão bem o método estima e onde ele difere da literatura.
 \end{ideia}
 
 \tableofcontents
 
 %=====================================================================
-\section{O problema: o erro de ontem não está nos dados}
+\part{A ideia, sem o robô}
+%=====================================================================
 
-O ARIMA do robô, depois de diferenciar o log-preço ($d = 1$), descreve o log-retorno $z_t$ de cada dia assim
-(é a convenção do código, \texttt{Arima.mqh}):
+\section{A única ferramenta: regressão por mínimos quadrados}\label{sec:mqo}
+
+Tudo no Hannan-Rissanen é feito com uma ferramenta só, então vale começar por ela.
+
+Uma \textbf{regressão} é uma tabela. Cada linha é uma observação (aqui, um dia). Há uma coluna que se quer explicar,
+chamada $y$, e algumas colunas que explicam, $x_1, x_2, \dots$. A regressão procura os pesos $b_1, b_2, \dots$ tais
+que $b_1 x_1 + b_2 x_2 + \dots$ fique o mais perto possível de $y$ em todas as linhas ao mesmo tempo.
+
+\textbf{Mínimos quadrados ordinários (MQO)} é a regra para decidir o que é ``mais perto'': os pesos escolhidos são os
+que tornam mínima a soma dos erros ao quadrado,
+\[
+  \text{escolher } b \text{ que minimiza} \quad \sum_{\text{linhas}} \bigl(y - b_1x_1 - b_2x_2 - \dots\bigr)^2 .
+\]
+A vantagem do MQO é que a resposta sai de uma conta fechada. Escrevendo a tabela das colunas explicativas como uma
+matriz $X$ (uma linha por dia, uma coluna por variável), os pesos são a solução do sistema linear
+\[
+  (X^\top X)\, b = X^\top y .
+\]
+$X^\top X$ é uma tabela pequena (tantas linhas e colunas quantas forem as variáveis) com as somas dos produtos entre
+cada par de colunas. $X^\top y$ tem a soma dos produtos de cada coluna com $y$. Montadas as duas, resolve-se o sistema
+e pronto: não há chute inicial, número de iterações nem taxa de aprendizado.
+
+No projeto, essa conta mora num lugar só, a função \texttt{MQO} de \texttt{Numerico.mqh}:
+
+\trecho{\inc{Numerico.mqh}}{30}{57}{robos/Include/Numerico.mqh}
+
+\begin{leitura}
+\textbf{Linhas 30--48:} montam $X^\top y$ (variável \texttt{Xty}) e $X^\top X$ (\texttt{XtX}) somando, linha a linha
+($t$ = dia), os produtos das colunas. Como $X^\top X$ é simétrica, só metade é calculada e a outra é copiada
+(linhas 43--44).\\
+\textbf{Linha 55:} a ALGLIB resolve o sistema $(X^\top X)\,b = X^\top y$. O resultado vai para \texttt{coeficientes}.\\
+\textbf{Linha 56:} se a matriz for singular (duas colunas iguais, por exemplo), a função devolve falso e o modelo não é
+ajustado naquele dia.
+\end{leitura}
+
+\begin{cuidado}[O ponto que importa para o resto do relatório]
+O MQO só funciona se \textbf{todas as colunas da tabela forem números conhecidos}. Se uma coluna não pode ser
+calculada a partir dos dados, não há tabela, e não há regressão.
+\end{cuidado}
+
+%---------------------------------------------------------------------
+\section{Parte AR: o passado vira coluna}\label{sec:ar}
+
+O ARIMA do robô, depois de tirar o log do preço e diferenciar uma vez ($d = 1$), trabalha com o log-retorno
+$z_t$ de cada dia. Um modelo \textbf{AR($p$)} diz que o retorno de hoje é uma constante mais uma combinação dos $p$
+retornos anteriores, mais um erro:
+\[
+  z_t = c + \phi_1 z_{t-1} + \phi_2 z_{t-2} + \dots + \phi_p z_{t-p} + \varepsilon_t .
+\]
+Isso já é uma regressão. A coluna $y$ é o retorno do dia, e as colunas $x$ são uma coluna de 1 (para a constante) e
+os retornos dos dias anteriores, todos conhecidos. Veja as primeiras linhas montadas pelo robô num pregão real (que
+será detalhado na seção~\ref{sec:real}), com retornos em \%:
+
+\begin{center}\small
+\begin{tabular}{l r | c r r r c r}
+\toprule
+dia $t$ & $z_t$ & 1 & $z_{t-1}$ & $z_{t-2}$ & $z_{t-3}$ & & $z_{t-29}$\\
+\midrule
+\vHMatUma \vHMatUmb \vHMatUmc \vHMatUmd
+\multicolumn{8}{c}{$\vdots$}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Repare na diagonal: o $z_t$ de uma linha reaparece como $z_{t-1}$ na linha de baixo, e como $z_{t-2}$ na seguinte. É
+a mesma série, deslocada um dia em cada coluna. Montada a tabela, o MQO da seção anterior dá $c$ e os $\phi$.
+
+%---------------------------------------------------------------------
+\section{Parte MA: a coluna que falta}\label{sec:ma}
+
+O $\varepsilon_t$ da equação acima é o \textbf{erro} do dia: a parte do retorno que o modelo não conseguiu prever, a
+surpresa. Um modelo \textbf{MA($q$)} (médias móveis dos erros) usa as surpresas dos dias anteriores para prever hoje:
+\[
+  z_t = c + \theta_1 \varepsilon_{t-1} + \dots + \theta_q \varepsilon_{t-q} + \varepsilon_t .
+\]
+A intuição: se ontem o mercado surpreendeu para baixo, isso pode dizer algo sobre hoje. Um $\theta$ negativo, por
+exemplo, transforma uma surpresa negativa de ontem num empurrão para cima hoje, uma pequena correção.
+
+Juntando as duas partes tem-se o \textbf{ARMA($p,q$)}, que é o que o robô estima (o ``I'' do ARIMA é só a diferença
+feita antes):
 \[
   z_t \;=\; c \;+\; \underbrace{\phi_1 z_{t-1} + \dots + \phi_p z_{t-p}}_{\text{parte AR: retornos passados}}
   \;+\; \underbrace{\theta_1 \varepsilon_{t-1} + \dots + \theta_q \varepsilon_{t-q}}_{\text{parte MA: erros passados}}
   \;+\; \varepsilon_t .
 \]
-O $\varepsilon_t$ é o erro do dia: a parte do retorno que o modelo não consegue prever.
 
-Se o modelo só tivesse a parte AR, a estimação seria uma regressão comum. Cada linha da tabela seria um dia, a
-coluna da esquerda seria $z_t$ e as da direita seriam $z_{t-1}, z_{t-2}, \dots$, todos números conhecidos. O MQO
-escolhe os $\phi$ que deixam a soma dos erros ao quadrado a menor possível, numa conta fechada.
-
-Com a parte MA aparece o problema: para montar a coluna $\varepsilon_{t-1}$ é preciso saber o erro de ontem, e o erro
-depende dos próprios coeficientes que se quer estimar. É uma volta em círculo:
+Para estimar isso por MQO, a tabela precisaria de uma coluna $\varepsilon_{t-1}$. Mas o erro de ontem não está em
+lugar nenhum dos dados. Ele é a diferença entre o retorno de ontem e o que o modelo previa ontem, e o que o modelo
+previa depende de $\theta$. É uma volta em círculo:
 
 \begin{center}
 \begin{tikzpicture}[caixa/.style={draw, rounded corners=3pt, fill=#1!8, text width=4.2cm, align=center, minimum height=1cm, font=\small},
@@ -102,90 +197,261 @@ depende dos próprios coeficientes que se quer estimar. É uma volta em círculo
 \end{tikzpicture}
 \end{center}
 
-Há duas saídas. A primeira é a \textbf{máxima verossimilhança}: chutar coeficientes, calcular os erros, medir quão
-plausíveis eles são e repetir até não melhorar mais. Funciona, mas é iterativa: precisa de ponto de partida, de
-critério de parada e pode não convergir. A segunda é o \textbf{Hannan-Rissanen}, que quebra o círculo estimando os
-erros \emph{antes}, por um caminho que não depende de $\theta$.
+Há duas formas de sair do círculo. A \textbf{máxima verossimilhança} chuta valores de $\theta$, calcula os erros que
+eles implicam, mede o quão plausíveis eles são e repete até não melhorar mais. Funciona, mas é iterativa: precisa de
+um ponto de partida, de um critério de parada, e pode não convergir. O \textbf{Hannan-Rissanen} sai do círculo de outro
+jeito: estima os erros \emph{antes}, por um caminho que não passa por $\theta$. O caminho é a próxima seção.
 
 \begin{cuidado}[E se simplesmente ignorar a parte MA?]
-Numa simulação com $\phi = \vHSintPhi$ e $\theta = \vHSintTheta$ verdadeiros (seção~\ref{sec:montecarlo}), um AR(1) por MQO
-que ignora o MA estimou, em média, $\phi = \vHMcArmaIngenuo$ em vez de $\vHSintPhi$. O efeito do MA não some: ele vai
+Numa simulação com $\phi = \vHSintPhi$ e $\theta = \vHSintTheta$ verdadeiros (seção~\ref{sec:montecarlo}), um AR(1) que ignora
+o MA estimou, em média, $\phi = \vHMcArmaIngenuo$ em vez de $\vHSintPhi$. O efeito do MA não some quando é ignorado: ele vai
 parar dentro do coeficiente AR e o distorce.
 \end{cuidado}
 
-%=====================================================================
-\section{A ideia que destrava tudo: um ARMA é um AR comprido}
+%---------------------------------------------------------------------
+\section{A ideia central: o erro de hoje é uma soma de retornos passados}\label{sec:ideia}
 
-Se a parte MA for \emph{invertível} ($|\theta| < 1$ no caso de um termo), dá para reescrever o erro de hoje como
-uma soma de retornos passados. Para um ARMA(1,1), substituindo $\varepsilon_{t-1}$ pela própria equação de ontem,
-e depois $\varepsilon_{t-2}$, e assim por diante, chega-se a
+Este é o passo que destrava tudo, e vale fazê-lo devagar no caso mais simples, um MA(1):
 \[
-  z_t = \pi_1 z_{t-1} + \pi_2 z_{t-2} + \pi_3 z_{t-3} + \dots + \varepsilon_t,
-  \qquad \pi_j = (\phi + \theta)\,(-\theta)^{\,j-1}.
+  z_t = c + \varepsilon_t + \theta\,\varepsilon_{t-1}.
 \]
-Ou seja, um ARMA(1,1) é um AR com infinitos termos, cujos pesos $\pi_j$ encolhem a cada defasagem. Um AR
-\emph{comprido, mas finito} chega bem perto dele. E um AR se estima por MQO, sem precisar de $\varepsilon$.
+\textbf{Passo 1.} Isola-se o erro de hoje:
+\[
+  \varepsilon_t = (z_t - c) - \theta\,\varepsilon_{t-1}.
+\]
+\textbf{Passo 2.} A mesma equação vale para ontem: $\varepsilon_{t-1} = (z_{t-1} - c) - \theta\,\varepsilon_{t-2}$.
+Substituindo:
+\[
+  \varepsilon_t = (z_t - c) - \theta\,(z_{t-1} - c) + \theta^2\,\varepsilon_{t-2}.
+\]
+\textbf{Passo 3.} Repetindo para anteontem, e assim por diante:
+\[
+  \varepsilon_t = (z_t - c) - \theta\,(z_{t-1} - c) + \theta^2\,(z_{t-2} - c) - \theta^3\,(z_{t-3} - c) + \dots
+\]
+\textbf{O que apareceu.} Do lado direito só há retornos, que são conhecidos. O erro, que não se via, é uma soma
+ponderada dos retornos passados. Os pesos são potências de $\theta$: se $|\theta| < 1$ (a condição chamada
+\emph{invertibilidade}), eles encolhem a cada dia para trás, e a soma converge.
 
-A Figura~\ref{fig:pesos} mostra isso numa série simulada com $\phi = \vHSintPhi$ e $\theta = \vHSintTheta$, do mesmo tamanho
-da janela do robô ($\vHSintN$ retornos). As barras azuis são os pesos verdadeiros; os pontos laranja, o que o AR
-longo do estágio 1 estimou a partir dos dados.
+\textbf{Virando a conta ao contrário.} Isolando $z_t$ nessa última linha, o MA(1) vira
+\[
+  z_t = \text{constante} + \pi_1 z_{t-1} + \pi_2 z_{t-2} + \pi_3 z_{t-3} + \dots + \varepsilon_t,
+  \qquad \pi_j = -(-\theta)^j .
+\]
+Isso é um AR, só que com infinitos termos. Em palavras: \textbf{todo MA invertível é um AR comprido}. O mesmo vale para
+o ARMA($p,q$) completo; no ARMA(1,1) os pesos ficam $\pi_j = (\phi + \theta)(-\theta)^{j-1}$.
+
+\textbf{Com o número do robô.} No pregão real da seção~\ref{sec:real}, o robô estimou $\theta = \vHExTheta$. Os pesos do
+AR equivalente seriam $\pi_1 = \vHExPiA$, $\pi_2 = \vHExPiB$ e $\pi_3 = \vHExPiC$: a partir do terceiro dia para trás,
+o peso já é menor que um milésimo. Um AR que vai algumas dezenas de dias para trás carrega praticamente tudo.
+
+\textbf{A consequência.} Um AR comprido, mas finito, aproxima o ARMA. E um AR se estima por MQO, porque todas as
+colunas são retornos. Então dá para ajustar um AR comprido, olhar o que ele não explicou em cada dia, e usar isso
+como estimativa do erro, sem nunca ter precisado de $\theta$.
+
+A Figura~\ref{fig:pesos} mostra isso numa série simulada de um ARMA(1,1) com $\phi = \vHSintPhi$ e
+$\theta = \vHSintTheta$, do mesmo tamanho da janela do robô ($\vHSintN$ retornos). As barras azuis são os pesos verdadeiros
+do AR infinito. Os pontos laranja são o que um AR($\vHSintM$) ajustado por MQO estimou a partir dos dados.
 
 \begin{figure}[htbp]\centering
 \begin{tikzpicture}
-\begin{axis}[base, width=14cm, height=5.6cm, xmin=0, xmax=30, ymin=-0.6, ymax=1.1, xlabel={Defasagem $j$},
+\begin{axis}[base, width=14cm, height=5.6cm, xmin=0, xmax=30, ymin=-0.6, ymax=1.1, xlabel={Defasagem $j$ (dias para trás)},
   ylabel={Peso $\pi_j$}, /pgf/number format/fixed,
   legend style={at={(0.98,0.97)}, anchor=north east, font=\footnotesize}]
 \addplot[ybar, bar width=5pt, fill=cmod!70, draw=none] table[x=j, y=verdadeiro]{\arq{sint_pesos.csv}};
 \addlegendentry{peso verdadeiro $(\phi+\theta)(-\theta)^{j-1}$}
 \addplot[only marks, mark=*, mark size=1.8pt, cari] table[x=j, y=estimado]{\arq{sint_pesos.csv}};
-\addlegendentry{estimado pelo AR($\vHSintM$) do estágio 1}
+\addlegendentry{estimado por um AR($\vHSintM$) por MQO}
 \end{axis}
 \end{tikzpicture}
-\caption{Série simulada: o AR longo recupera os primeiros pesos, que são os que importam. Depois da quinta
+\caption{Série simulada: o AR comprido recupera os primeiros pesos, que são os que importam. Depois da quinta
 defasagem os pesos verdadeiros são quase zero, e o que o AR estima ali é ruído.}
 \label{fig:pesos}
 \end{figure}
 
-%=====================================================================
-\section{Estágio 1: o AR longo que estima os erros}
+%---------------------------------------------------------------------
+\section{O método completo, em duas regressões}\label{sec:metodo}
 
-\subsection{Quantas defasagens}
-O código escolhe a ordem $m$ do AR longo pela regra
-\[
-  m = \lfloor (\ln N)^2 \rfloor, \qquad \text{limitada por baixo a } p+q+1 \text{ e por cima a } N/5,
-\]
-em que $N$ é o número de retornos. A janela do robô tem 240 fechamentos e portanto $N = \vHRealN$ retornos.
-Com isso, $m = \vHRealM$. A regra vem da literatura: Gómez e Maravall (1998,
-p.~28) usam $\lfloor \log^2 N \rfloor$, apoiados em Hannan e Rissanen (1982, p.~88), que pedem que $m$ cresça com o
-tamanho da série, mas devagar.
+Com a ideia da seção anterior, o método de Hannan e Rissanen tem dois estágios, e cada um é um MQO.
 
-\subsection{A regressão}
-Cada linha é um dia $t$ a partir do $(m+1)$-ésimo, porque os primeiros $m$ dias não têm $m$ dias anteriores.
-São $N - m = \vHRealObsUm$ linhas e $m + 1 = \the\numexpr\pHRealM+1\relax$ colunas (a constante e os $\vHRealM$ retornos anteriores). A tabela
-mostra as primeiras linhas no pregão real que será detalhado na seção~\ref{sec:real} (retornos em \%):
-
-\begin{center}\small
-\begin{tabular}{l r | c r r r c r}
-\toprule
-dia $t$ & $z_t$ & 1 & $z_{t-1}$ & $z_{t-2}$ & $z_{t-3}$ & & $z_{t-29}$\\
-\midrule
-\vHMatUma \vHMatUmb \vHMatUmc \vHMatUmd
-\multicolumn{8}{c}{$\vdots$ \quad (\vHRealObsUm{} linhas)}\\
-\bottomrule
-\end{tabular}
-\end{center}
-Repare na diagonal: o $z_t$ de uma linha reaparece como $z_{t-1}$ na linha de baixo. É a mesma série, deslocada.
-
-\subsection{O que sai dele}
-O MQO dá os $\vHRealM$ coeficientes do AR longo. Com eles, o resíduo de cada dia,
+\textbf{Estágio 1, estimar os erros.} Ajusta-se um AR de ordem $m$ grande à série. O resíduo de cada dia,
 \[
   \hat\varepsilon_t = z_t - \bigl(\hat a_0 + \hat a_1 z_{t-1} + \dots + \hat a_m z_{t-m}\bigr),
 \]
-é a \textbf{estimativa do erro} daquele dia. Isso é tudo o que se quer do estágio 1: os coeficientes do AR
-longo são jogados fora.
+é a estimativa do erro daquele dia. Os coeficientes $\hat a$ do AR comprido são descartados: só os resíduos
+interessam.
 
-Na série simulada dá para conferir, porque ali o erro verdadeiro é conhecido (Figura~\ref{fig:erros}). A
-correlação entre o erro estimado e o verdadeiro foi de $\vHSintCorrUm$.
+\textbf{Estágio 2, estimar o modelo.} Agora existe a coluna que faltava. Regride-se $z_t$ contra a constante, os $p$
+retornos passados e os $q$ erros estimados passados:
+\[
+  z_t = c + \phi_1 z_{t-1} + \dots + \phi_p z_{t-p} + \theta_1 \hat\varepsilon_{t-1} + \dots + \theta_q \hat\varepsilon_{t-q} + \text{resto}.
+\]
+Os pesos dessa regressão são o resultado: $c$, os $\phi$ e os $\theta$.
+
+\textbf{Uma analogia.} Imagine que se quer medir o efeito de uma variável que não se observa diretamente. Primeiro,
+constrói-se uma estimativa dela a partir do que se observa. Depois, usa-se essa estimativa como se fosse o dado. A
+estimativa não é perfeita, e por isso o resultado é uma aproximação, mas é uma aproximação que se calcula com duas
+contas fechadas.
+
+\textbf{O que a literatura acrescenta.} Gómez e Maravall (1998, p.~28--29) descrevem um terceiro passo, uma correção
+do viés dos coeficientes do estágio 2 quando há termo MA. O robô \emph{não} faz esse terceiro passo (seção~\ref{sec:literatura}).
+
+\begin{center}
+\begin{tikzpicture}[seta/.style={-{Stealth[length=5pt]}, line width=0.8pt, black!60}]
+\node[fluxo=cdad] (z) {retornos\\$z_1, \dots, z_N$\\(conhecidos)};
+\node[fluxo=cmod, right=0.55cm of z] (e1) {\textbf{estágio 1}\\AR($m$) por MQO\\$\Rightarrow$ erros $\hat\varepsilon_t$};
+\node[fluxo=cmod, right=0.55cm of e1] (e2) {\textbf{estágio 2}\\$z_t$ contra $z_{t-i}$ e $\hat\varepsilon_{t-j}$\\$\Rightarrow$ $c, \phi, \theta$};
+\node[fluxo=cok, right=0.55cm of e2] (r) {\textbf{resultado}\\coeficientes\\do ARMA};
+\draw[seta] (z) -- (e1); \draw[seta] (e1) -- (e2); \draw[seta] (e2) -- (r);
+\end{tikzpicture}
+\end{center}
+
+Fim da Parte I. Daqui em diante, o mesmo método dentro do código do robô.
+
+%=====================================================================
+\part{O método dentro do seu ARIMA}
+%=====================================================================
+
+\section{O caminho do dado no robô}\label{sec:caminho}
+
+Antes de entrar na função \texttt{HannanRissanen}, vale ver de onde ela é chamada. A cada pregão novo, o
+\texttt{OnTick} do EA faz isto (Apêndice A):
+
+\trecho{\cod{ARIMA_GARCH_EA.mq5}}{60}{80}{tg/codigo/ARIMA\_GARCH\_EA.mq5 (Apêndice A)}
+
+\begin{leitura}
+\textbf{Linha 67:} a cada 21 pregões, reescolhe as ordens $(p,d,q)$ (seção~\ref{sec:selecao}). É ali que o
+Hannan-Rissanen roda mais vezes.\\
+\textbf{Linha 72:} carrega os últimos fechamentos (240 na configuração do TG) e tira o log de cada um.\\
+\textbf{Linha 75:} \texttt{Ajustar} estima o ARIMA com as ordens em uso. É dentro dele que o Hannan-Rissanen roda.\\
+\textbf{Linha 78:} a previsão do retorno de amanhã, que dá a direção da operação.
+\end{leitura}
+
+A Figura~\ref{fig:mapa} resume o caminho inteiro. As caixas azuis são as funções desta parte do relatório.
+
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}[f/.style={draw=#1, fill=#1!7, rounded corners=3pt, align=center, font=\footnotesize, minimum height=0.95cm, text width=3.2cm},
+  seta/.style={-{Stealth[length=5pt]}, line width=0.8pt, black!60}, node distance=0.45cm]
+\node[f=cdad] (fech) {240 fechamentos\\\texttt{CarregarSerie}: $\ln$};
+\node[f=cmod, below=of fech] (dif) {\texttt{Diferenciar}\\log-retornos $z_t$};
+\node[f=cmod, below=of dif] (hr) {\texttt{HannanRissanen}\\estágios 1 e 2};
+\node[f=cmod, below=of hr] (res) {\texttt{CalcularResiduos}\\erros finais $e_t$};
+\node[f=cmod, below left=0.6cm and -0.9cm of res] (prev) {\texttt{PreverDiferenciado}\\previsão $\Rightarrow$ direção};
+\node[f=cmod, below right=0.6cm and -0.9cm of res] (veros) {\texttt{Calcular-}\\\texttt{Verossimilhanca}\\$\Rightarrow$ AIC};
+\node[f=cok, below=0.6cm of prev] (dec) {decisão de compra\\ou venda};
+\node[f=cok, below=0.6cm of veros] (sel) {escolha das ordens\\(a cada 21 pregões)};
+\node[f=cari, right=1.6cm of res] (garch) {\texttt{ObterResiduos}\\$\Rightarrow$ GARCH (risco)};
+\draw[seta] (fech) -- (dif); \draw[seta] (dif) -- (hr); \draw[seta] (hr) -- (res);
+\draw[seta] (res) -- (prev); \draw[seta] (res) -- (veros); \draw[seta] (res) -- (garch);
+\draw[seta] (prev) -- (dec); \draw[seta] (veros) -- (sel);
+\node[draw=cmod!50, dashed, rounded corners, fit=(dif)(hr)(res), inner sep=5pt, label={[font=\footnotesize, cmod]left:\texttt{CArima::Ajustar}}] {};
+\end{tikzpicture}
+\caption{O caminho do fechamento até a decisão. O Hannan-Rissanen é a terceira caixa, mas os resíduos que ele permite
+calcular alimentam três lugares: a previsão, a escolha das ordens e o GARCH.}
+\label{fig:mapa}
+\end{figure}
+
+\subsection{\texttt{Ajustar}: a função que organiza tudo}
+
+\trecho{\cod{Arima.mqh}}{267}{308}{tg/codigo/Arima.mqh (Apêndice B)}
+
+\begin{leitura}
+\textbf{Linhas 276--278:} guarda os três últimos log-preços, para depois transformar a previsão do retorno em
+previsão do nível, se for preciso.\\
+\textbf{Linha 280:} diferencia a série $d$ vezes. Com $d = 1$, o log-preço vira log-retorno: $z_t = \ln P_t - \ln P_{t-1}$.\\
+\textbf{Linha 290:} o Hannan-Rissanen. Se falhar (série curta, matriz singular), o modelo não é ajustado naquele dia.\\
+\textbf{Linhas 293--298:} recusa coeficientes inválidos (\texttt{NaN} ou infinito).\\
+\textbf{Linhas 300--301:} com os coeficientes prontos, recalcula os resíduos e a verossimilhança (seções~\ref{sec:residuos}
+e~\ref{sec:selecao}).
+\end{leitura}
+
+A diferença é feita assim, com o índice 0 sendo o dia mais antigo:
+
+\trecho{\cod{Arima.mqh}}{77}{91}{tg/codigo/Arima.mqh}
+
+Cada passada do laço da linha 82 troca a série pela diferença entre dias vizinhos (linha 88) e a encurta em um
+(linha 89). Com 240 log-preços e $d = 1$, saem $N = \vHRealN$ log-retornos. É sobre eles que tudo o mais trabalha.
+
+%---------------------------------------------------------------------
+\section{Primeiro, o atalho: modelo sem termo MA}\label{sec:atalho}
+
+A função \texttt{HannanRissanen} começa verificando se há termo MA. Se não houver, o círculo da seção~\ref{sec:ma} não
+existe, e uma regressão comum resolve:
+
+\trecho{\cod{Arima.mqh}}{131}{171}{tg/codigo/Arima.mqh}
+
+\begin{leitura}
+\textbf{Linha 135:} sem MA ($q = 0$), entra no atalho.\\
+\textbf{Linhas 137--141:} sem MA e sem AR ($p = q = 0$), o modelo é só $z_t = c + \varepsilon_t$, e o melhor $c$ é a média
+dos retornos da janela.\\
+\textbf{Linhas 152--160:} monta a tabela da seção~\ref{sec:ar}: uma linha por dia a partir do $p$-ésimo, coluna de 1
+(se houver constante) e os $p$ retornos anteriores.\\
+\textbf{Linha 163:} o MQO.\\
+\textbf{Linhas 166--169:} lê os coeficientes na ordem em que as colunas foram montadas: primeiro a constante, depois
+os $\phi$.
+\end{leitura}
+
+Ou seja, para um ARIMA sem MA, o ``Hannan-Rissanen'' do código é só um MQO. O nome da função cobre os dois casos.
+
+%---------------------------------------------------------------------
+\section{Estágio 1 no código: o AR comprido}\label{sec:estagio1}
+
+\subsection{Quantos dias para trás}
+
+\trecho{\cod{Arima.mqh}}{173}{182}{tg/codigo/Arima.mqh}
+
+\begin{leitura}
+\textbf{Linha 173:} a ordem do AR comprido é $m = \lfloor (\ln N)^2 \rfloor$. Na janela do robô, $N = \vHRealN$,
+$\ln \vHRealN = \vHExLnN$ e $(\ln \vHRealN)^2 = \vHExLnNQuad$. Arredondando para baixo, $m = \vHRealM$.\\
+\textbf{Linha 174:} $m$ nunca é menor que $p + q + 1$.\\
+\textbf{Linha 175:} nem maior que $N/5$, para sobrarem linhas suficientes na regressão.\\
+\textbf{Linhas 177--178:} desiste se a série for curta demais.\\
+\textbf{Linha 181:} chama o AR comprido, que devolve os erros estimados em \texttt{erros\_estimados}.
+\end{leitura}
+
+A regra $\lfloor \log^2 N \rfloor$ é a de Gómez e Maravall (1998, p.~28), apoiados em Hannan e Rissanen (1982, p.~88), que
+pedem que $m$ cresça com o tamanho da série, mas devagar. A seção~\ref{sec:ordem} discute se ela é boa numa janela
+de 239 dias.
+
+\subsection{O AR comprido}
+
+\trecho{\cod{Arima.mqh}}{93}{129}{tg/codigo/Arima.mqh}
+
+\begin{leitura}
+\textbf{Linhas 96--97:} a tabela tem $N - m$ linhas (os primeiros $m$ dias não têm $m$ dias anteriores) e $m + 1$
+colunas. No pregão real, $\vHRealObsUm$ linhas e $\the\numexpr\pHRealM+1\relax$ colunas.\\
+\textbf{Linhas 106--112:} a mesma tabela da seção~\ref{sec:ar}, com $m$ colunas de retornos. A coluna 0 é sempre a
+constante, mesmo que o modelo final não tenha constante.\\
+\textbf{Linha 115:} o MQO.\\
+\textbf{Linhas 118--126:} o que interessa. Para cada dia, o resíduo é o retorno menos o que o AR comprido previa
+(linha 125). É o $\hat\varepsilon_t$ da seção~\ref{sec:metodo}.\\
+\textbf{Linha 119:} os primeiros $m$ dias ficam com resíduo zero, porque não tiveram previsão. Isso vai importar no
+estágio 2.
+\end{leitura}
+
+\subsection{O que o estágio 1 produziu no pregão real}
+
+A Figura~\ref{fig:estagio1} mostra o AR($\vHRealM$) do pregão de \vHDiaReal. As barras laranja são os $\vHRealM$
+coeficientes estimados. Os pontos azuis são os pesos que o AR equivalente ao MA(1) teria, com o $\theta$ que o robô
+estimou no final (seção~\ref{sec:ideia}). O primeiro coeficiente bate com o peso teórico. Os outros 28 são, em boa
+parte, ruído: com 210 linhas, cada coeficiente a mais é estimado com erro. Não faz mal, porque o estágio 1 não usa os
+coeficientes, só os resíduos.
+
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}
+\begin{axis}[base, width=14cm, height=5.2cm, xmin=0, xmax=30, xlabel={Defasagem $j$ (dias para trás)},
+  ylabel={Coeficiente}, /pgf/number format/fixed, legend style={at={(0.5,-0.32)}, anchor=north, font=\footnotesize, legend columns=2}]
+\addplot[ybar, bar width=5pt, fill=cari!80, draw=none, area legend] table[x=j, y=coef]{\arq{real_pesos.csv}};
+\addlegendentry{AR($\vHRealM$) estimado no estágio 1}
+\addplot[only marks, mark=*, mark size=1.6pt, cmod] table[x=j, y=pi]{\arq{real_pesos_ma.csv}};
+\addlegendentry{peso teórico $-(-\theta)^j$, com $\theta = \vHExTheta$}
+\end{axis}
+\end{tikzpicture}
+\caption{Pregão de \vHDiaReal: os coeficientes do AR comprido e os pesos do AR infinito equivalente ao MA(1) estimado.}
+\label{fig:estagio1}
+\end{figure}
+
+Na série simulada, onde o erro verdadeiro é conhecido, dá para conferir a qualidade dos erros estimados
+(Figura~\ref{fig:erros}): a correlação entre o erro estimado e o verdadeiro foi de $\vHSintCorrUm$.
 
 \begin{figure}[htbp]\centering
 \begin{tikzpicture}
@@ -203,22 +469,29 @@ correlação entre o erro estimado e o verdadeiro foi de $\vHSintCorrUm$.
 \addplot[only marks, mark=*, mark size=1pt, cmod, opacity=0.6] table[x=eps, y=eps_est]{\arq{sint_serie.csv}};
 \end{axis}
 \end{tikzpicture}
-\caption{Série simulada: os erros estimados pelo AR longo seguem os verdadeiros de perto. Não são iguais, e
-é por isso que o resultado do Hannan-Rissanen é uma aproximação.}
+\caption{Série simulada: os erros estimados pelo AR comprido seguem os verdadeiros de perto. Não são iguais, e é por
+isso que o resultado do Hannan-Rissanen é uma aproximação.}
 \label{fig:erros}
 \end{figure}
 
-%=====================================================================
-\section{Estágio 2: a regressão que dá os coeficientes}
+%---------------------------------------------------------------------
+\section{Estágio 2 no código: a regressão que dá $c$ e $\theta$}\label{sec:estagio2}
 
-Agora a coluna que faltava existe. O estágio 2 regride $z_t$ contra a constante, os retornos passados e os
-\emph{erros estimados} passados:
-\[
-  z_t = c + \phi_1 z_{t-1} + \dots + \phi_p z_{t-p} + \theta_1 \hat\varepsilon_{t-1} + \dots + \theta_q \hat\varepsilon_{t-q} + \text{resto}.
-\]
-É de novo um MQO comum, com $1 + p + q$ colunas. Os primeiros $m + q$ retornos ficam de fora (no código,
-\texttt{primeiro = max(m + q, p)}), porque antes deles não há $\hat\varepsilon$ suficientes. No pregão real, com $q = 1$,
-ficam de fora os primeiros $\vHRealPrimeiro$ retornos e a regressão tem $\vHRealObsDois$ linhas:
+\trecho{\cod{Arima.mqh}}{184}{217}{tg/codigo/Arima.mqh}
+
+\begin{leitura}
+\textbf{Linha 184:} o primeiro dia usado é $\max(m + q,\ p)$. O motivo é a linha 119: os erros estimados só existem
+do dia $m$ em diante, e a linha precisa de $\hat\varepsilon_{t-q}$. No pregão real, $m = \vHRealM$ e $q = 1$, então a
+regressão começa no dia $\vHRealPrimeiro$ e tem $\vHRealObsDois$ linhas.\\
+\textbf{Linha 186:} as colunas são a constante (se houver), os $p$ retornos e os $q$ erros: $1 + p + q$.\\
+\textbf{Linhas 195--205:} a tabela. As linhas 201--202 são as colunas da parte AR, iguais às do atalho. As linhas
+203--204 são a novidade: colunas com os erros estimados no estágio 1, deslocados $j$ dias.\\
+\textbf{Linha 208:} o MQO.\\
+\textbf{Linhas 211--216:} lê os coeficientes na ordem das colunas: constante, $\phi_1 \dots \phi_p$,
+$\theta_1 \dots \theta_q$.
+\end{leitura}
+
+No pregão real, o modelo era um ARIMA(0,1,1) com constante, então a tabela tem só duas colunas:
 
 \begin{center}\small
 \begin{tabular}{l r | c r}
@@ -231,68 +504,133 @@ dia $t$ & $z_t$ & 1 & $\hat\varepsilon_{t-1}$\\
 \end{tabular}
 \end{center}
 
-Os coeficientes dessa regressão são o resultado: $c$, os $\phi$ e os $\theta$ do modelo. Na série simulada deram
-$\hat\phi = \vHSintPhiEst$ e $\hat\theta = \vHSintThetaEst$, contra $\vHSintPhi$ e $\vHSintTheta$ verdadeiros. É uma
-única amostra: a seção~\ref{sec:montecarlo} mostra o comportamento em mil.
+Com uma coluna só além da constante, a regressão é uma reta num gráfico de dispersão: cada ponto é um dia, com o erro
+estimado de ontem no eixo horizontal e o retorno de hoje no vertical (Figura~\ref{fig:real}b, na seção~\ref{sec:real}).
+A inclinação da reta é o $\theta$ e a altura no zero é o $c$. Deu $c = \vHRealC\%$ e $\theta = \vHRealTheta$.
 
-\begin{ideia}[{O fluxo completo, como está no \texttt{CArima::HannanRissanen}}]
-\begin{center}
-\begin{tikzpicture}[seta/.style={-{Stealth[length=5pt]}, line width=0.8pt, black!60}]
-\node[fluxo=cdad] (z) {log-retornos\\$z_1, \dots, z_N$};
-\node[fluxo=cmod, right=0.55cm of z] (e1) {\textbf{estágio 1}\\AR($m$) por MQO\\$\Rightarrow$ $\hat\varepsilon_t$};
-\node[fluxo=cmod, right=0.55cm of e1] (e2) {\textbf{estágio 2}\\$z_t$ contra $z_{t-i}$ e $\hat\varepsilon_{t-j}$\\$\Rightarrow$ $c, \phi, \theta$};
-\node[fluxo=cok, right=0.55cm of e2] (r) {\textbf{resíduos finais}\\recalculados com\\$c, \phi, \theta$};
-\draw[seta] (z) -- (e1); \draw[seta] (e1) -- (e2); \draw[seta] (e2) -- (r);
-\node[fluxo=cdad, below=0.6cm of e1] (atalho) {sem MA ($q = 0$):\\o estágio 1 é pulado};
-\draw[seta, dashed] (z.south) |- (atalho.west);
-\draw[seta, dashed] (atalho.east) -| (e2.south);
-\node[font=\footnotesize, align=left, anchor=west, text width=3.4cm] at ([xshift=0.4cm]atalho.east -| e2.east) {os resíduos finais vão\\para a previsão, o AIC\\e o GARCH};
-\end{tikzpicture}
+%---------------------------------------------------------------------
+\section{Depois dos dois estágios: os resíduos finais}\label{sec:residuos}
+
+Um detalhe que costuma passar despercebido: os $\hat\varepsilon_t$ do estágio 1 \textbf{não} são os resíduos que o robô
+usa depois. Eles vieram do AR comprido, que é outro modelo. Com os coeficientes finais em mãos, o código recalcula os
+erros do zero, um dia de cada vez, com o próprio ARIMA:
+
+\trecho{\cod{Arima.mqh}}{220}{238}{tg/codigo/Arima.mqh}
+
+\begin{leitura}
+\textbf{Linha 226:} começa no dia $\max(p, q)$. Antes dele, os erros ficam em zero (linha 224).\\
+\textbf{Linhas 231--235:} o que o modelo previa para o dia $t$: constante, mais a parte AR com os retornos anteriores,
+mais a parte MA com os \emph{resíduos já calculados} dos dias anteriores (linha 235).\\
+\textbf{Linha 236:} o resíduo do dia é o retorno menos essa previsão.
+\end{leitura}
+
+É uma conta recursiva: o resíduo de hoje usa o de ontem, que usou o de anteontem. Dá para seguir à mão. No pregão
+real ($c = \vHRealC\%$, $\theta = \vHRealTheta$), a conta é $e_t = z_t - (c + \theta\, e_{t-1})$:
+
+\begin{center}\small
+\begin{tabular}{l r r r r}
+\toprule
+dia & retorno $z_t$ & resíduo de ontem $e_{t-1}$ & previsto $c + \theta e_{t-1}$ & resíduo $e_t$\\
+\midrule
+\vHExRecA \vHExRecB \vHExRecC
+\multicolumn{5}{c}{$\vdots$}\\
+\vHExRecD \vHExRecE \vHExRecF
+\bottomrule
+\end{tabular}
+
+\footnotesize Valores em \% ao dia. Na primeira linha, o resíduo de ontem é o zero do início da recursão (linha 224).
 \end{center}
-\end{ideia}
 
-%=====================================================================
-\section{Depois dos dois estágios: os resíduos finais}
+Para conferir uma linha: multiplique o resíduo de ontem por $\theta$ e some $c$, o que dá o previsto; o retorno menos o
+previsto dá o resíduo, que vira o ``resíduo de ontem'' da linha seguinte. Diferenças na última casa vêm do
+arredondamento da tabela.
 
-Um detalhe que costuma passar despercebido. Os $\hat\varepsilon_t$ do estágio 1 \emph{não} são os resíduos que o robô usa
-depois. Com os coeficientes finais em mãos, o código (\texttt{CArima::CalcularResiduos}) recalcula todos os erros
-do início, um dia de cada vez:
+Esses $e_t$ vão para três lugares: a previsão de amanhã (seção~\ref{sec:previsao}), a verossimilhança que o AIC compara
+na escolha das ordens (seção~\ref{sec:selecao}) e o GARCH, que estima a volatilidade em cima deles. Na série simulada,
+os resíduos finais tiveram correlação de $\vHSintCorrFinal$ com o erro verdadeiro, mais que os do estágio 1
+($\vHSintCorrUm$): com o modelo certo e poucos coeficientes, a conta recursiva acerta mais que o AR comprido, que carrega
+o ruído de $\vHSintM$ coeficientes.
+
+%---------------------------------------------------------------------
+\section{A previsão de amanhã}\label{sec:previsao}
+
+\trecho{\cod{Arima.mqh}}{310}{332}{tg/codigo/Arima.mqh}
+
+\begin{leitura}
+\textbf{Linha 316:} começa pela constante.\\
+\textbf{Linhas 318--323:} soma $\phi_i$ vezes os últimos retornos. O índice \texttt{tamanho - 1} é o último dia da janela.\\
+\textbf{Linhas 324--329:} soma $\theta_j$ vezes os últimos resíduos finais.\\
+O erro de amanhã não aparece: ele é desconhecido, e o melhor palpite para uma surpresa é zero.
+\end{leitura}
+
+No pregão real, o último resíduo da janela foi $e_N = \vHRealEN\%$ (a última linha da tabela anterior), e
 \[
-  e_t = z_t - \bigl(c + \phi_1 z_{t-1} + \dots + \theta_1 e_{t-1} + \dots\bigr),
+  \hat z_{N+1} = c + \theta\, e_N = \vHRealC\% + (\vHRealTheta)\times(\vHRealEN\%) = \vHRealC\% + \vHRealParteMa\% = \vHRealPrev\%.
 \]
-começando com $e = 0$ nos primeiros dias. São esses $e_t$ que vão para três lugares: a previsão do dia seguinte,
-a verossimilhança que o AIC compara na escolha das ordens e o GARCH, que estima a volatilidade em cima deles.
+Positiva, então o ARIMA deu sinal de compra. O EA usa esse número direto quando $d = 1$:
 
-Na série simulada, os resíduos finais tiveram correlação de $\vHSintCorrFinal$ com o erro verdadeiro, mais do que os
-do estágio 1 ($\vHSintCorrUm$). Com o modelo certo e poucos coeficientes, a conta recursiva acerta mais que o AR
-longo, que carrega o ruído de $\vHSintM$ coeficientes.
+\trecho{\cod{ARIMA_GARCH_EA.mq5}}{143}{148}{tg/codigo/ARIMA\_GARCH\_EA.mq5}
 
-%=====================================================================
-\section{Um pregão real do seu robô: \vHDiaReal}\label{sec:real}
+E entrega os resíduos ao GARCH, sem os dias de aquecimento:
 
-Este é o pregão de \vHDiaReal{} da configuração ARIMA-GARCH Sharpe, no traço da refação de 05/10/2026. Nesse dia o
-modelo em uso era um \textbf{ARIMA(0,1,1) com constante}: nenhum retorno passado, um erro passado. É o caso mais
-simples em que os dois estágios rodam, e por isso o estágio 2 cabe num gráfico.
+\trecho{\cod{ARIMA_GARCH_EA.mq5}}{150}{155}{tg/codigo/ARIMA\_GARCH\_EA.mq5}
 
-\subsection{Passo a passo}
+\trecho{\cod{Arima.mqh}}{357}{371}{tg/codigo/Arima.mqh}
+
+A linha 362 descarta os primeiros $\max(p,q)$ resíduos, os zeros do início da recursão. É a correção do bug 5 da versão
+anterior do EA, em que esses zeros iam para o GARCH e contaminavam a variância.
+
+%---------------------------------------------------------------------
+\section{Na escolha das ordens: 25 modelos de uma vez}\label{sec:selecao}
+
+A cada 21 pregões, o EA reescolhe $p$ e $q$:
+
+\trecho{\cod{ARIMA_GARCH_EA.mq5}}{134}{141}{tg/codigo/ARIMA\_GARCH\_EA.mq5}
+
+A escolha testa todas as combinações de $p$ e $q$ de 0 a 4 e fica com o menor AIC:
+
+\trecho{\cod{SelecaoModelo.mqh}}{51}{78}{tg/codigo/SelecaoModelo.mqh (Apêndice B)}
+
+\begin{leitura}
+\textbf{Linhas 54--55:} os dois laços percorrem os 25 pares $(p,q)$.\\
+\textbf{Linhas 60--64:} para cada par, um ARIMA novo é criado e ajustado. O \texttt{Ajustar} da linha 64 é o mesmo
+da seção~\ref{sec:caminho}, então o Hannan-Rissanen roda inteiro em cada candidato. Os 20 pares com $q \ge 1$ passam
+pelos dois estágios; os 5 com $q = 0$, pelo atalho.\\
+\textbf{Linha 62 (e 51):} todos os candidatos medem a verossimilhança sobre os mesmos dias, descartando os 4
+primeiros. Sem isso, o modelo menor somaria mais dias e ganharia por construção.\\
+\textbf{Linhas 67--77:} guarda o par de menor AIC.
+\end{leitura}
+
+O AIC vem dos resíduos finais da seção~\ref{sec:residuos}:
+
+\trecho{\cod{Arima.mqh}}{252}{264}{tg/codigo/Arima.mqh}
+
+A soma dos resíduos ao quadrado (linhas 253--254) dá a variância $\sigma^2$ (linha 256), e a log-verossimilhança de uma
+normal com essa variância é a fórmula das linhas 263--264. O AIC é $-2\log L + 2k$, com $k$ parâmetros. Ou seja: o
+Hannan-Rissanen não escolhe as ordens, mas é ele que produz os resíduos que decidem a escolha. Se ele estimar mal um
+modelo com MA, os resíduos desse modelo pioram, e a escolha tende a ficar com um modelo sem MA.
+
+%---------------------------------------------------------------------
+\section{Um pregão real, inteiro: \vHDiaReal}\label{sec:real}
+
+Juntando as seções anteriores num dia só. Este é o pregão de \vHDiaReal{} da configuração ARIMA-GARCH Sharpe, no
+traço da refação de 05/10/2026. O modelo em uso era um \textbf{ARIMA(0,1,1) com constante}: nenhum retorno passado, um
+erro passado. É o caso mais simples em que os dois estágios rodam.
+
 \begin{enumerate}[leftmargin=*, itemsep=2pt]
-\item \textbf{Dados.} Os 240 fechamentos antes do pregão, de \vHJanIni{} a \vHJanFim{} (último: R\$ \vHRealFechUlt).
-  O log de cada um, e a diferença: $N = \vHRealN$ log-retornos.
-\item \textbf{Estágio 1.} AR($\vHRealM$) com constante, por MQO, em $\vHRealObsUm$ linhas. O desvio-padrão dos resíduos
-  foi de $\vHRealDpUm\%$ ao dia. A Figura~\ref{fig:real}(c) mostra os $\vHRealM$ coeficientes.
-\item \textbf{Estágio 2.} $z_t = c + \theta\,\hat\varepsilon_{t-1}$, em $\vHRealObsDois$ linhas. Com uma coluna só além da
-  constante, é uma reta num gráfico de dispersão (Figura~\ref{fig:real}b): $c = \vHRealC\%$ e $\theta = \vHRealTheta$.
-\item \textbf{Resíduos finais.} Recalculados com $c$ e $\theta$. O do último dia da janela foi $e_N = \vHRealEN\%$.
-\item \textbf{Previsão.}
-  \[
-    \hat z_{N+1} = c + \theta\, e_N = \vHRealC\% + (\vHRealTheta)\times(\vHRealEN\%) = \vHRealC\% + \vHRealParteMa\% = \vHRealPrev\%.
-  \]
-  Positiva, então o ARIMA deu sinal de compra.
+\item \textbf{Dados} (\texttt{CarregarSerie}, \texttt{Diferenciar}). Os 240 fechamentos antes do pregão, de \vHJanIni{} a
+  \vHJanFim{} (último: R\$ \vHRealFechUlt). O log de cada um e a diferença: $N = \vHRealN$ log-retornos.
+\item \textbf{Estágio 1} (linhas 173--182 e 93--129). AR($\vHRealM$) com constante, por MQO, em $\vHRealObsUm$ linhas. O
+  desvio-padrão dos resíduos foi de $\vHRealDpUm\%$ ao dia.
+\item \textbf{Estágio 2} (linhas 184--217). $z_t = c + \theta\,\hat\varepsilon_{t-1}$, em $\vHRealObsDois$ linhas:
+  $c = \vHRealC\%$ e $\theta = \vHRealTheta$.
+\item \textbf{Resíduos finais} (linhas 220--238). Recalculados com $c$ e $\theta$. O do último dia: $e_N = \vHRealEN\%$.
+\item \textbf{Previsão} (linhas 310--332). $\hat z_{N+1} = \vHRealPrev\%$, sinal de compra.
 \end{enumerate}
 
 \begin{figure}[htbp]\centering
 \begin{tikzpicture}
-\begin{groupplot}[base, group style={group size=2 by 2, horizontal sep=3.1cm, vertical sep=2.9cm}]
+\begin{groupplot}[base, group style={group size=2 by 1, horizontal sep=2.6cm}]
 \nextgroupplot[width=7.4cm, height=5.6cm, ylabel={\% ao dia}, xlabel={Dia da janela},
   title={(a) Os últimos 60 retornos e os erros}, xmin=179, xmax=238, ymin=-10, ymax=10, clip=true,
   legend style={at={(0.5,-0.3)}, anchor=north, font=\footnotesize, legend columns=3}]
@@ -309,30 +647,19 @@ simples em que os dois estágios rodam, e por isso o estágio 2 cabe num gráfic
 \addplot[cdes, line width=1.3pt, domain=-12:12, samples=2] {\pHRealC + \pHRealTheta*x};
 \node[cdes, font=\footnotesize, anchor=north east, fill=white, fill opacity=0.85, text opacity=1] at (rel axis cs:0.98,0.98)
   {inclinação $\theta = \vHRealTheta$};
-\nextgroupplot[width=7.4cm, height=5cm, ybar, bar width=3.5pt, xmin=0, xmax=30, xlabel={Defasagem $j$},
-  ylabel={Coeficiente}, title={(c) O AR($\vHRealM$) do estágio 1}, /pgf/number format/fixed]
-\addplot[fill=cari!80, draw=none] table[x=j, y=coef]{\arq{real_pesos.csv}};
-\nextgroupplot[width=6cm, height=5cm, xbar, bar width=9pt, xmin=-0.05, xmax=0.3,
-  ytick={1,2,3}, yticklabels={constante $c$, parte MA $\theta e_N$, previsão}, ymin=0.4, ymax=3.6,
-  xlabel={\% ao dia}, title={(d) De onde vem a previsão}, /pgf/number format/fixed, /pgf/number format/precision=3,
-  nodes near coords, nodes near coords style={font=\scriptsize}]
-\addplot[fill=cmod!70, draw=none] coordinates {(\pHRealC,1) (\pHRealParteMa,2) (\pHRealPrev,3)};
 \end{groupplot}
 \end{tikzpicture}
-\caption{O pregão de \vHDiaReal, refeito com as mesmas regras do robô. Em (b), cada ponto é um dia: o erro
-estimado do dia anterior contra o retorno do dia. A nuvem é quase redonda e a reta, quase deitada: o erro de
-ontem diz pouco sobre o retorno de hoje. Em (a), um dia de queda forte sai cortado na escala.}
+\caption{O pregão de \vHDiaReal, refeito com as mesmas regras do robô. Em (b), cada ponto é uma linha da tabela do
+estágio 2. A nuvem é quase redonda e a reta, quase deitada: o erro de ontem diz pouco sobre o retorno de hoje. Em (a),
+um dia de queda forte sai cortado na escala.}
 \label{fig:real}
 \end{figure}
 
-\subsection{O que esse dia ensina}
-O $\theta$ é pequeno e a nuvem da Figura~\ref{fig:real}(b) é quase redonda. Ainda assim, nesse pregão a parte MA
+\textbf{O que esse dia ensina.} O $\theta$ é pequeno e a nuvem é quase redonda. Ainda assim, nesse pregão a parte MA
 pesou \emph{mais} que a constante na previsão ($\vHRealParteMa\%$ contra $\vHRealC\%$), porque o erro de ontem foi grande
-($\vHRealEN\%$) e o $\theta$ negativo transforma um erro negativo em empurrão para cima. É a leitura de
-``reversão'': depois de um dia pior que o esperado, o modelo espera uma pequena compensação.
-
-A máxima verossimilhança, na mesma janela, daria $\theta = \vHRealMvTheta$ e previsão de $\vHRealMvPrev\%$: números
-diferentes, mesmo sinal, mesma decisão.
+($\vHRealEN\%$) e o $\theta$ negativo transforma um erro negativo em empurrão para cima. É a leitura de ``correção'':
+depois de um dia pior que o esperado, o modelo espera uma pequena compensação. A máxima verossimilhança, na mesma
+janela, daria $\theta = \vHRealMvTheta$ e previsão de $\vHRealMvPrev\%$: números diferentes, mesmo sinal, mesma decisão.
 
 \begin{ideia}[Conferência]
 Os valores de $c$, $\theta$ e da previsão refeitos aqui são \textbf{idênticos}, em todas as casas gravadas, aos que o
@@ -340,19 +667,15 @@ robô registrou no traço desse pregão (\texttt{refeito\_2026-10-05/traco\_demo
 para o pregão de 05/06/2020, com um ARIMA(0,1,4) e quatro $\theta$. O relatório descreve o que o robô de fato fez.
 \end{ideia}
 
-%=====================================================================
-\section{Onde o Hannan-Rissanen trabalha no robô}
+%---------------------------------------------------------------------
+\section{Quanto ele trabalha no robô}
 
-O método entra em dois momentos, com pesos bem diferentes.
+\textbf{Todo pregão}, na estimação do modelo em uso. Os dois estágios só rodam se o modelo tiver termo MA. No traço de
+jul/2019 a jun/2021, isso aconteceu em \vHTracoDois{} dos \vHTracoN{} pregões ($\vHTracoPct\%$), e o atalho rodou nos outros
+\vHTracoUm{} (Figura~\ref{fig:traco}).
 
-\textbf{Todo pregão}, na estimação do modelo em uso. Aqui os dois estágios só rodam se o modelo tiver termo MA
-($q > 0$). Com $q = 0$ o código pula o estágio 1 e faz um MQO direto, e com $p = q = 0$ a constante é só a média
-dos retornos da janela. No traço de jul/2019 a jun/2021, os dois estágios rodaram em \vHTracoDois{} pregões e o atalho
-em \vHTracoUm{} (Figura~\ref{fig:traco}).
-
-\textbf{A cada 21 pregões}, na escolha das ordens. A grade testa os 25 modelos com $p$ e $q$ de 0 a 4. Os 20 que têm
-$q \ge 1$ passam pelos dois estágios, e o AIC de cada um é calculado com os resíduos finais da seção anterior. É
-aqui que o método mais trabalha: ele decide, indiretamente, se o robô vai usar um modelo com MA ou não.
+\textbf{A cada 21 pregões}, na escolha das ordens, 20 dos 25 candidatos passam pelos dois estágios. É aqui que o método
+mais trabalha: ele decide, indiretamente, se o robô vai usar um modelo com MA ou não.
 
 \begin{figure}[htbp]\centering
 \begin{tikzpicture}
@@ -364,19 +687,22 @@ aqui que o método mais trabalha: ele decide, indiretamente, se o robô vai usar
 \addplot[only marks, mark=*, mark size=1.2pt, cmod] table[x=data, y expr={\thisrow{q}>0 ? \thisrow{theta1} : nan}]{\arqr{dia_a_dia.csv}};
 \end{axis}
 \end{tikzpicture}
-\caption{Traço da configuração ARIMA-GARCH Sharpe. Cada ponto é um pregão em que o modelo em uso tinha termo
-MA e os dois estágios rodaram. Os blocos correspondem aos períodos entre duas escolhas de ordem. Nos dias sem
-ponto o modelo não tinha MA.}
+\caption{Traço da configuração ARIMA-GARCH Sharpe. Cada ponto é um pregão em que o modelo em uso tinha termo MA e os
+dois estágios rodaram. Os blocos correspondem aos períodos entre duas escolhas de ordem. Nos dias sem ponto o modelo
+não tinha MA.}
 \label{fig:traco}
 \end{figure}
 
 %=====================================================================
-\section{Quão bem ele estima: mil simulações}\label{sec:montecarlo}
+\part{Quão bem ele estima}
+%=====================================================================
 
-Uma série só não diz se o método é bom. Para isso, gerou-se mil séries com coeficientes conhecidos, cada uma do
-tamanho da janela do robô ($\vHSintN$ retornos), e estimou-se cada uma de três jeitos: Hannan-Rissanen (o do robô),
-máxima verossimilhança (a opção experimental \texttt{MetodoARIMA=1}, que parte do Hannan-Rissanen e refina) e um
-AR(1) que ignora o MA.
+\section{Mil simulações}\label{sec:montecarlo}
+
+Uma série só não diz se o método é bom. Para isso, geraram-se mil séries com coeficientes conhecidos, cada uma do
+tamanho da janela do robô ($\vHSintN$ retornos), e cada uma foi estimada de três jeitos: Hannan-Rissanen (o do robô),
+máxima verossimilhança (a opção experimental \texttt{MetodoARIMA=1}, que parte do Hannan-Rissanen e refina) e um AR(1)
+que ignora o MA.
 
 \begin{figure}[htbp]\centering
 \begin{tikzpicture}
@@ -402,8 +728,8 @@ AR(1) que ignora o MA.
 \draw[black, dashed, line width=0.8pt] (axis cs:0,0) -- (axis cs:0,300);
 \end{groupplot}
 \end{tikzpicture}
-\caption{Distribuição das estimativas em \vHMcArmaReplicas{} séries simuladas. A linha vermelha é o valor verdadeiro;
-a tracejada preta, no gráfico da direita, é o zero.}
+\caption{Distribuição das estimativas em \vHMcArmaReplicas{} séries simuladas. A linha vermelha é o valor verdadeiro; a
+tracejada preta, no gráfico da direita, é o zero.}
 \label{fig:mc}
 \end{figure}
 
@@ -421,34 +747,33 @@ AR(1) ignorando o MA & $\vHMcArmaIngenuo$ ($\vHMcArmaIngenuoDp$) & -- & --\\
 \end{tabular}
 \end{center}
 
-\textbf{Ignorar o MA distorce.} O AR(1) sem MA erra o $\phi$ de forma sistemática (média $\vHMcArmaIngenuo$ para um
-verdadeiro de $\vHSintPhi$). É a justificativa para ter o termo MA e, portanto, um método que o estime.
+\textbf{Ignorar o MA distorce.} O AR(1) sem MA erra o $\phi$ de forma sistemática (média $\vHMcArmaIngenuo$ para um verdadeiro
+de $\vHSintPhi$). É a justificativa para ter o termo MA e, portanto, um método que o estime.
 
 \textbf{O HR chega perto, com um pouco mais de erro que a máxima verossimilhança.} No $\theta$, o desvio do HR foi
-$\vHMcArmaHrThetaDp$ e o da máxima verossimilhança, $\vHMcArmaMvThetaDp$, e a média do HR ficou um pouco abaixo do
-verdadeiro. É o comportamento descrito na literatura: Gómez e Maravall (1998, p.~29) dizem que os estimadores do
-segundo estágio são consistentes, mas têm viés e não são os mais eficientes.
+$\vHMcArmaHrThetaDp$ e o da máxima verossimilhança, $\vHMcArmaMvThetaDp$, e a média do HR ficou um pouco abaixo do verdadeiro.
+É o comportamento descrito na literatura: Gómez e Maravall (1998, p.~29) dizem que os estimadores do segundo estágio
+são consistentes, mas têm viés e não são os mais eficientes.
 
-\textbf{No tamanho dos coeficientes do robô, o erro de estimação é do tamanho do coeficiente.} Com $\theta = \vHRealTheta$
-(o valor que o robô estimou em \vHDiaReal), o desvio da estimativa foi $\vHMcMaHrThetaDp$, quase igual ao próprio
-$\theta$. Em $\vHMcMaSinalCerto\%$ das séries o HR acertou o sinal, e nas demais estimou um $\theta$ com o sinal trocado. Isso
-não é defeito do método: com 239 retornos, um efeito desse tamanho mal se distingue do zero, e a máxima
-verossimilhança tem o mesmo problema ($\vHMcMaMvThetaDp$).
+\textbf{No tamanho dos coeficientes do robô, o erro de estimação é do tamanho do coeficiente.} Com $\theta = \vHRealTheta$, o
+desvio da estimativa foi $\vHMcMaHrThetaDp$, quase igual ao próprio $\theta$. Em $\vHMcMaSinalCerto\%$ das séries o HR acertou o
+sinal, e nas demais estimou um $\theta$ com o sinal trocado. Isso não é defeito do método: com 239 retornos, um efeito
+desse tamanho mal se distingue do zero, e a máxima verossimilhança tem o mesmo problema ($\vHMcMaMvThetaDp$).
 
-%=====================================================================
-\section{O seu código comparado ao método da literatura}
+%---------------------------------------------------------------------
+\section{O seu código comparado ao método da literatura}\label{sec:literatura}
 
-O código segue a ideia de Hannan e Rissanen, mas com algumas escolhas próprias. Comparando com a descrição de
-Gómez e Maravall (1998, p.~28--29):
+O código segue a ideia de Hannan e Rissanen, com algumas escolhas próprias. Comparando com a descrição de Gómez e
+Maravall (1998, p.~28--29):
 
 \begin{center}\small
 \begin{tabular}{>{\raggedright}p{3.2cm} >{\raggedright}p{5.3cm} >{\raggedright\arraybackslash}p{5.6cm}}
 \toprule
 Ponto & Gómez e Maravall (1998) & O seu código (\texttt{Arima.mqh})\\
 \midrule
-Estágio 1 só com MA & sim & sim (com $q = 0$, MQO direto)\\
-Como estima o AR longo & autocorrelações e recursão de Durbin-Levinson & MQO com constante\\
-Ordem do AR longo & $\max(\lfloor\log^2(N)\rfloor,\ 2\max(p,q))$ & $\max(\lfloor\ln^2 N\rfloor,\ p+q+1)$, no máximo $N/5$\\
+Estágio 1 só com MA & sim & sim (linha 135: com $q = 0$, MQO direto)\\
+Como estima o AR longo & autocorrelações e recursão de Durbin-Levinson & MQO com constante (linhas 93--129)\\
+Ordem do AR longo & $\max(\lfloor\log^2(N)\rfloor,\ 2\max(p,q))$ & $\max(\lfloor\ln^2 N\rfloor,\ p+q+1)$, no máximo $N/5$ (linhas 173--175)\\
 Terceiro passo (correção do viés) & sim, quando há MA & \textbf{não}\\
 Critério para escolher $(p,q)$ & BIC & AIC sobre amostra comum\\
 Invertibilidade ($|\theta|<1$) & -- & não é verificada\\
@@ -456,27 +781,27 @@ Invertibilidade ($|\theta|<1$) & -- & não é verificada\\
 \end{tabular}
 \end{center}
 
-O que isso significa na prática:
 \begin{itemize}[leftmargin=*, itemsep=2pt]
-\item \textbf{Sem o terceiro passo}, o robô usa os coeficientes do estágio 2 como estão. É de onde vem o pequeno
-  viés do $\theta$ nas simulações. A máxima verossimilhança faria o papel desse refinamento, e foi testada como
-  opção em 15/10/2026 e não adotada.
-\item \textbf{MQO no lugar de Durbin-Levinson} dá coeficientes parecidos, mas não iguais, para o AR longo. Os dois são
+\item \textbf{Sem o terceiro passo}, o robô usa os coeficientes do estágio 2 como estão. É de onde vem o pequeno viés
+  do $\theta$ nas simulações. A máxima verossimilhança faria o papel desse refinamento; foi testada como opção em
+  15/10/2026 e não adotada.
+\item \textbf{MQO no lugar de Durbin-Levinson} dá coeficientes parecidos, mas não iguais, para o AR comprido. Os dois são
   formas aceitas de estimar um AR.
-\item \textbf{A invertibilidade não é imposta.} Nos dias do traço os $\theta$ ficaram pequenos (Figura~\ref{fig:traco}),
-  longe de 1, então isso não pesou ali.
+\item \textbf{A invertibilidade não é imposta.} A seção~\ref{sec:ideia} mostrou por que ela importa: com $|\theta| \ge 1$
+  os pesos não encolhem. Nos dias do traço os $\theta$ ficaram pequenos (Figura~\ref{fig:traco}), longe de 1, então
+  isso não pesou ali.
 \end{itemize}
 
-\subsection{Um ponto para pensar: a ordem do AR longo numa amostra pequena}
+\subsection{Um ponto para pensar: a ordem do AR comprido numa janela pequena}\label{sec:ordem}
 A regra $\ln^2 N$ vem de resultados para amostras grandes. Com $N = \vHSintN$ ela dá $\vHSintM$ defasagens, estimadas com
-$\vHSintObsUm$ linhas. Na série simulada, refazendo tudo com cada ordem de 1 a $\vHSintMMax$, a qualidade dos erros
-estimados caiu à medida que a ordem cresceu (Figura~\ref{fig:ordem}). Com poucas defasagens o AR longo já capta um
-ARMA(1,1). Cada defasagem a mais acrescenta um coeficiente estimado com ruído.
+$\vHSintObsUm$ linhas. Na série simulada, refazendo tudo com cada ordem de 1 a $\vHSintMMax$, a qualidade dos erros estimados
+caiu à medida que a ordem cresceu (Figura~\ref{fig:ordem}). Com poucas defasagens o AR comprido já capta um ARMA(1,1),
+e cada defasagem a mais acrescenta um coeficiente estimado com ruído. É o mesmo efeito visto na Figura~\ref{fig:estagio1}.
 
 \begin{figure}[htbp]\centering
 \begin{tikzpicture}
 \begin{groupplot}[base, group style={group size=2 by 1, horizontal sep=1.6cm}, width=7.4cm, height=5.4cm,
-  xmin=0, xmax=48, xlabel={Ordem $m$ do AR longo}, /pgf/number format/fixed]
+  xmin=0, xmax=48, xlabel={Ordem $m$ do AR comprido}, /pgf/number format/fixed]
 \nextgroupplot[ylabel={Correlação com o erro verdadeiro}, title={Qualidade dos erros estimados}, ymin=0.86, ymax=1]
 \addplot[cmod] table[x=m, y=corr]{\arq{sint_ordem.csv}};
 \draw[cdes, dashed] (axis cs:\pHSintM,0.86) -- (axis cs:\pHSintM,1) node[pos=0.1, right, font=\footnotesize] {regra: $m = \vHSintM$};
@@ -491,37 +816,42 @@ ARMA(1,1). Cada defasagem a mais acrescenta um coeficiente estimado com ruído.
 \draw[cdes, dashed] (axis cs:\pHSintM,0.3) -- (axis cs:\pHSintM,0.8);
 \end{groupplot}
 \end{tikzpicture}
-\caption{Uma única série simulada (ARMA(1,1), $\phi = \vHSintPhi$, $\theta = \vHSintTheta$), refeita com cada ordem do AR longo.
-As linhas pontilhadas são os valores verdadeiros. A correlação foi medida sobre os mesmos dias em todas as
-ordens.}
+\caption{Uma única série simulada (ARMA(1,1), $\phi = \vHSintPhi$, $\theta = \vHSintTheta$), refeita com cada ordem do AR comprido.
+As linhas pontilhadas são os valores verdadeiros. A correlação foi medida sobre os mesmos dias em todas as ordens.}
 \label{fig:ordem}
 \end{figure}
 
 \begin{cuidado}[Até onde isso vale]
-É uma série só, com coeficientes bem maiores que os da PETR4. Não se testou se uma ordem menor mudaria alguma
-decisão do robô. Fica registrado como ponto em aberto (\texttt{ia/INCERTEZAS.md}, item 84), não como defeito.
+É uma série só, com coeficientes bem maiores que os da PETR4. Não se testou se uma ordem menor mudaria alguma decisão
+do robô. Fica registrado como ponto em aberto (\texttt{ia/INCERTEZAS.md}, item 84), não como defeito.
 \end{cuidado}
 
 %=====================================================================
 \section{Perguntas que a banca pode fazer}
 
 \begin{banca}
-\textbf{Por que Hannan-Rissanen e não máxima verossimilhança?}\\
-Porque o modelo é reestimado todo pregão e, na escolha das ordens, 25 vezes de uma vez. O Hannan-Rissanen são
-duas regressões lineares: não precisa de ponto de partida, de taxa de aprendizado nem de número de iterações,
-não depende da escala dos preços e não tem problema de convergência. A literatura o usa justamente na
-identificação automática de modelos (Gómez e Maravall, 1998, p.~10). O custo é uma estimativa um pouco menos
-precisa: nas simulações, o desvio do $\theta$ foi $\vHMcArmaHrThetaDp$, contra $\vHMcArmaMvThetaDp$ da máxima verossimilhança.
-
-\medskip
-\textbf{O que é o estágio 1, em uma frase?}\\
-Um modelo autorregressivo longo, ajustado por mínimos quadrados, cujos resíduos servem de estimativa dos erros que
-o termo de médias móveis precisa e que não podem ser observados.
+\textbf{O que é o Hannan-Rissanen, em uma frase?}\\
+Um jeito de estimar um modelo ARMA com duas regressões de mínimos quadrados: a primeira, um modelo autorregressivo
+longo, estima os erros que não se observam; a segunda usa esses erros estimados como variável para obter os
+coeficientes.
 
 \medskip
 \textbf{Por que um AR longo consegue estimar os erros de um modelo com MA?}\\
-Porque todo ARMA invertível pode ser escrito como um AR de ordem infinita, com pesos que diminuem. Um AR longo,
-mas finito, aproxima bem esse AR infinito.
+Porque, se o MA é invertível, o erro de hoje pode ser escrito como uma soma ponderada dos retornos passados, com pesos
+que diminuem (seção~\ref{sec:ideia}). Um AR longo aproxima essa soma.
+
+\medskip
+\textbf{Por que Hannan-Rissanen e não máxima verossimilhança?}\\
+Porque o modelo é reestimado todo pregão e, na escolha das ordens, 25 vezes de uma vez. O Hannan-Rissanen são duas
+regressões lineares: não precisa de ponto de partida, de taxa de aprendizado nem de número de iterações, não depende
+da escala dos preços e não tem problema de convergência. A literatura o usa justamente na identificação automática de
+modelos (Gómez e Maravall, 1998, p.~10). O custo é uma estimativa um pouco menos precisa: nas simulações, o desvio do
+$\theta$ foi $\vHMcArmaHrThetaDp$, contra $\vHMcArmaMvThetaDp$ da máxima verossimilhança.
+
+\medskip
+\textbf{Onde isso está no código?}\\
+Na função \texttt{CArima::HannanRissanen}, no Apêndice B. As linhas 173--182 são o estágio 1, as linhas 184--217 o
+estágio 2. Antes disso, as linhas 135--171 tratam o caso sem termo MA, que é só uma regressão.
 
 \medskip
 \textbf{O ``MA'' do ARIMA é a média móvel da análise técnica?}\\
@@ -530,31 +860,36 @@ Não. O MA do ARIMA é uma combinação dos \emph{erros} passados, não dos pre�
 
 \medskip
 \textbf{Como vocês sabem que a implementação está certa?}\\
-Duas conferências. Em série simulada com coeficientes conhecidos, o método recupera os valores verdadeiros dentro
-do erro esperado. E a estimação de pregões reais, refeita fora do robô com os mesmos passos, dá os mesmos
-coeficientes e a mesma previsão que o robô registrou.
+Duas conferências. Em série simulada com coeficientes conhecidos, o método recupera os valores verdadeiros dentro do
+erro esperado. E a estimação de pregões reais, refeita fora do robô com os mesmos passos, dá os mesmos coeficientes e
+a mesma previsão que o robô registrou.
 \end{banca}
 
 %=====================================================================
 \section*{Glossário rápido}
 \begin{description}[leftmargin=2.6cm, style=nextline, itemsep=1pt, font=\normalfont\bfseries]
-\item[MQO] Mínimos quadrados ordinários: escolhe os coeficientes de uma regressão que tornam mínima a soma dos
-  erros ao quadrado. Conta fechada, sem iteração.
+\item[MQO] Mínimos quadrados ordinários: escolhe os coeficientes de uma regressão que tornam mínima a soma dos erros
+  ao quadrado. Conta fechada, sem iteração.
+\item[Regressão] Explicar uma coluna de números ($y$) por uma combinação de outras colunas ($x$).
 \item[AR($p$)] Modelo autorregressivo: o valor de hoje depende dos $p$ valores anteriores.
 \item[MA($q$)] Médias móveis (de erros): o valor de hoje depende dos $q$ erros anteriores.
-\item[Invertível] Um MA cujos erros podem ser reescritos como soma de valores passados ($|\theta| < 1$ num termo).
+\item[Erro, surpresa] A parte do valor de hoje que o modelo não consegue prever.
 \item[Resíduo] A diferença entre o valor observado e o que o modelo ajustado previa. É a estimativa do erro.
+\item[Invertível] Um MA cujos erros podem ser reescritos como soma de valores passados ($|\theta| < 1$ num termo).
+\item[Recursão] Conta em que o resultado de cada passo usa o resultado do passo anterior.
 \item[Viés] Tendência de uma estimativa a errar sempre para o mesmo lado.
-\item[Monte Carlo] Repetir um experimento muitas vezes com dados simulados, para ver como um método se comporta
-  em média.
+\item[Monte Carlo] Repetir um experimento muitas vezes com dados simulados, para ver como um método se comporta em
+  média.
 \end{description}
 
 \vfill
 \noindent\rule{\linewidth}{0.4pt}
-{\footnotesize\textbf{Procedência.} Dados gerados por \nolinkurl{ferramentas/HannanRissanenDetalhado.mq5} (rodado por
-\nolinkurl{ferramentas/scripts/hannan_rissanen.sh}) em \nolinkurl{dados/resultados/hannan_rissanen_2026-10-30/}, e o
-traço da refação de 05/10/2026 resumido em \nolinkurl{dados/resultados/robo_em_acao_2026-10-30/}. Semente das
-simulações: 20261030. Obras citadas: Gómez e Maravall (1998), em \nolinkurl{bibliografia/pdfs/Gomez-1998.pdf};
-Hannan e Rissanen (1982) é citado através deles (o artigo original não foi lido). Material de estudo, não faz parte
-do TG.}
+{\footnotesize\sloppy\textbf{Procedência.} Dados gerados por \nolinkurl{ferramentas/HannanRissanenDetalhado.mq5} (rodado por
+\nolinkurl{ferramentas/scripts/hannan_rissanen.sh}) em \nolinkurl{dados/resultados/hannan_rissanen_2026-10-30/}; as contas à
+mão (tabela da recursão, $\ln N$, pesos $\pi_j$) por \nolinkurl{ferramentas/scripts/hannan_rissanen_exemplo.sh}, que só lê
+aqueles arquivos; o traço da refação de 05/10/2026 resumido em \nolinkurl{dados/resultados/robo_em_acao_2026-10-30/}.
+Código lido de \nolinkurl{tg/codigo/} (a versão dos Apêndices A e B, mesma numeração de linhas) e de
+\nolinkurl{robos/Include/Numerico.mqh}. Semente das simulações: 20261030. Obras citadas: Gómez e Maravall (1998), em
+\nolinkurl{bibliografia/pdfs/Gomez-1998.pdf}; Hannan e Rissanen (1982) é citado através deles (o artigo original não foi
+lido). Material de estudo, não faz parte do TG.\par}
 \end{document}

@@ -42,5 +42,7 @@ no robô. O relatório está em `ia/relatorios/hannan-rissanen/relatorio.pdf`.
 | `real_serie.csv` | pregão real: datas, fechamentos, retornos, erros do estágio 1 e resíduos finais (em %) |
 | `real_pesos.csv` | os 29 coeficientes do AR longo no pregão real |
 | `real_estagio2.csv` | a regressão do estágio 2 no pregão real (erro estimado de ontem × retorno) |
+| `exemplo.tex` | contas à mão da versão 2 do relatório (02/11/2026): ln N, tabela da recursão dos resíduos finais, pesos do AR equivalente ao MA(1). Gerado por `ferramentas/scripts/hannan_rissanen_exemplo.sh`, que só lê `real_serie.csv`, `resumo.txt` e `valores.tex` |
+| `real_pesos_ma.csv` | pesos pi_j = -(-theta)^j do AR infinito equivalente ao MA(1) do pregão real (mesmo script) |
 
 Observações: `ia/INCERTEZAS.md`, item 84.

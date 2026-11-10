@@ -226,7 +226,7 @@ aplicou ao `tg/`:
   terminadas em ponto, rótulo sem negrito (4.1.1.8).
 - **Gráfico** como categoria própria (os dois de patrimônio e de retorno anual),
   em Times 10 pt e sem redimensionar no `.tex`, para a fonte sair em 10 de fato.
-- **Lista única de ilustrações** (figuras, quadros e gráficos), porque quadro e
+- **(Em 02/11/2026 foram separadas, INCERTEZAS item 86; desde 05/11/2026 voltou a ser lista única, porque os quadros caíram para 4, item 94.)** Lista única de ilustrações (figuras, quadros e gráficos), porque quadro e
   gráfico têm menos de 5 itens (4.1.1.10). Lista de tabelas separada.
 - **Considerações finais sem número de capítulo**, em texto corrido.
 - **Aberturas de CAPÍTULO I, II e III contadas e sem número impresso** (1.5,
@@ -259,7 +259,16 @@ Manual, itens 3.1 e 3.2, com os modelos das págs. 14 e 15:
   **`\fonte{...}`**, que fica só com a fonte. Manual, item 3: "Na parte inferior,
   se indica a fonte [...]. Colocar legenda, notas e outras informações".
 
-### Sumário em uma página (05/10/2026)
+### Sumário organizado (02/11/2026)
+
+Manual 4.1.1.14 e Figura 7: números à esquerda; uma linha em branco antes de
+cada bloco (CAPÍTULO, Considerações, Referências, Apêndices), como no modelo; nos
+apêndices **só o título principal** (observação do item dos apêndices: "deve ser
+listados apenas o título principal do Apêndice"), então B.1 a B.4 não entram.
+Títulos numa mesma margem. O sumário ocupa duas páginas, o que a norma permite.
+INCERTEZAS item 88.
+
+### Sumário em uma página (05/10/2026) (superado em 02/11/2026: duas páginas)
 
 O sumário passava 4 linhas da página. Em vez de apertar espaçamento, foram
 juntadas seções que se repetiam: a verificação em dados reais (ex-3.1) entrou na

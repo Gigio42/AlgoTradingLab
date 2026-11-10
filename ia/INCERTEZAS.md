@@ -1407,3 +1407,323 @@ sobre o experimento · **[resultado]** sobre como ler um número.
       se o limiar por percentil é sensível a esse erro de β.
     - **AIC**: ordem verdadeira escolhida em 70,8% (AR(1), φ = 0,5) e 74,6%
       (passeio); quando erra, em geral põe termos a mais.
+    - **Seção H (31/10/2026, pedido do autor: "isso é preocupante?").** Mesmo
+      programa, saída no `resumo.txt` da mesma pasta.
+      - Ljung-Box: **causa confirmada**. Nas mesmas séries, Hannan-Rissanen
+        7,95% (MA(1)) e 7,60% (ARMA(1,1)); máxima verossimilhança 4,75% e 4,90%;
+        AR(1) 4,55% nos dois. O desconto de p+q graus de liberdade supõe
+        estimador eficiente, e o HR não é no termo MA. O teste está certo.
+      - ADF: nas 5.641 janelas reais de 240 pregões da PETR4, só 39 (0,69%)
+        mudariam de decisão com o quantil empírico no lugar do valor crítico.
+      - GARCH: com 240 pontos a decisão do filtro coincide com a dos parâmetros
+        verdadeiros em 91,8% (percentil 50) e 95,2% (percentil 70); com 500, 96,4%
+        e 95,2%. O erro do β pesa pouco na decisão porque a previsão e o limiar
+        usam os mesmos parâmetros. Na PETR4 real, 240 × 500 decidem igual em
+        80,4% e 82,2% dos dias, e aí a diferença mistura erro de estimação com
+        dados mais antigos na janela de 500 (não separado). Persistência
+        > 0,999: 7,9% (240) e 0,3% (500), log-retornos menos a média no lugar
+        dos resíduos do ARIMA (simplificação).
+
+86. **[texto] Auditoria de 02/11/2026 aplicada (pedido do autor: "arrume tudo").**
+    Relatório em `ia/relatorios/auditoria-texto-2026-11-02.md`; backup em
+    `ia/rascunhos/antes_auditoria_2026-11-02/`. TG com 82 páginas, sem aviso.
+    - **Decisões do autor**: janela de 500 do GARCH **só como limitação**
+      (Considerações, com o teste à parte de 26/10 citado sem números); médias
+      móveis nas outras ações **fora do texto** ("A comparação com as médias
+      móveis foi feita apenas na PETR4"; hipótese 2 restrita à PETR4); afirmações
+      sem evidência retiradas ou deixadas genéricas.
+    - **Normas**: listas separadas de figuras, quadros e gráficos (`main.tex`,
+      `\newlistof`; Word com um estilo de legenda por tipo); letra do ano também na
+      referência (2026a etc., `citacoes_abnt.pl`); URL sem `< >`
+      (`\UrlLeft`/`\UrlRight` vazios); equações sem número; "acreditamos" →
+      "considera-se"; viabilidade na justificativa.
+    - **Código × texto**: Sharpe anualizado (√252); queda máxima calculada sobre o
+      patrimônio ao fim de cada pregão; taxa de acerto conta o custo (lucro acima
+      do custo, `Desempenho.mqh`); ajuste da posição entre ¼ e 2× do normal com
+      teto de 98% do patrimônio (na prática só reduz); ADF com constante e
+      defasagens pelo AIC; GARCH sem janela própria; natureza da pesquisa no Cap. II;
+      valores padrão do Apêndice A ≠ configurações escolhidas.
+    - **Conteúdo**: gêmea de 2007–2011 (+7,2%) dita no 3.3; retorno nas outras
+      ações (ARIMA > ARIMA-GARCH Sharpe em 7 de 9); argumento da moeda retirado
+      (comparações não independentes, sem teste formal, dito nas limitações);
+      exposição × proteção nas limitações e no 3.8 (não separado); Harvey et al.
+      (2018) como corroboração no 3.8; "trechos de código da comunidade" →
+      "consultados como referência"; "acerto próximo do acaso" → "perto da metade
+      das negociações"; PETR4 2020 na introdução = 64,2% (mesmo da Tabela 6).
+    - **Não feito (precisa do autor)**: Figura 1 (captura própria do MT5 em
+      português com a PETR4); folha de aprovação (versão final); obra original do
+      índice de Calmar (não inserir sem leitura). Mantidos de propósito: seção 3.2,
+      ordem dos gráficos por seção, data final 18/09 na Tabela 7.
+
+87. **[experimento] GARCH com 1000 resíduos (02/11/2026, pedido do autor; NÃO
+    está no TG).** Pasta `dados/resultados/janela_garch_1000_2026-11-02/`
+    (PROTOCOLO, LEIAME, `comparacao_tg.txt`). Parte principal do Cap. III na
+    PETR4, ARIMA 240 e `Janela_GARCH=1000`, mesma grade só compra (156) e mesmo
+    critério do estudo de 500. Para 2004–2006 e 2007–2011 o autor decidiu
+    estender a série da B3: COTAHIST de 1998 a 2002, símbolo `PETR4_DESDE1999`
+    (`dados/FONTES.md`, item 14; grupamento de 100 para 1 em 2000 confirmado
+    pela API da B3).
+    - Proteção contra a gêmea: queda menor em 11 de 12, volatilidade em 11,
+      retorno em 9 (TG: 11/11, 11/11, 7; estudo de 500: 9, 8 e 7 de 12). A
+      exceção é o GS de 2013–2016 (posição congelada sem zerar no veto, 81,0%
+      de queda).
+    - Parte da proteção é ficar fora do mercado: em 2017–2024 o GS (= GC)
+      ficou com exposição média de 4% e fez +12,7% contra +95,7% da gêmea (TG:
+      GS +199,5%). Em 2008 o GC não operou.
+    - Todas as escolhas da otimização mudaram; o efeito da janela não se separa
+      do efeito da seleção. Sem teste estatístico.
+    - **Não confirmado**: a série de 1999–2002 não tem segunda fonte; em 1999 o
+      arredondamento a 2 casas chega a 0,46% do preço (fora dos 1000 pregões
+      que os modelos usam, só no aquecimento do testador).
+
+88. **[texto] Sumário, apoio de IA e verificação bibliográfica (02/11/2026, pedido
+    do autor).** Backup em `ia/rascunhos/antes_sumario_bib_2026-11-02/`. TG com
+    83 páginas (a frase nova empurrou uma linha).
+    - **Sumário** (`main.tex`): linha em branco antes de cada bloco (CAPÍTULO I,
+      II, III, Considerações, Referências, Apêndices), como no modelo da Figura 7
+      do Manual; títulos numa só margem (3,4em, a do 3.3.2), números à esquerda;
+      "APÊNDICE A" com um espaço (o abnTeX2 gravava dois); **B.1 a B.4 fora do
+      sumário** (Manual, observação do item dos apêndices: só o título principal).
+      No Word, as seções do Apêndice B usam o estilo `SecaoApendice`, sem nível de
+      tópico, para o campo de sumário não pegá-las (`fatec.lua`, `estilos.xml`).
+      Não conferido no Microsoft Word.
+    - **Apoio de IA** (Cap. II, 2.4): uma frase, "Uma ferramenta de inteligência
+      artificial também foi usada, de forma pontual, como apoio para juntar os
+      trechos de código e para fazer verificações." Saiu do comentário a frase "O
+      código não foi tirado deles", que contradizia o pedido.
+    - **Bibliografia**: 17 entradas não citadas foram para
+      `ia/bibliografia/nao-usadas-2026-11-02.bib` (o PDF não mudou, o BibTeX só
+      imprime as citadas). Título de Engle (1982) corrigido pelo registro do DOI
+      ("heteroscedasticity", sem "the"). DOI impresso nas 6 obras que têm (Manual
+      5.2.7), via campo `note`. "ArXiv" → "arXiv". COTAHIST: o endereço do
+      diretório dava 403 no navegador; trocado pela página "Séries Históricas" da
+      B3 (acesso em 02/11/2026). FURG em https.
+    - **Links conferidos em 02/11/2026**: todos respondem, com navegador. DOIs
+      conferidos no Crossref (título, volume, páginas). Exceção: o **RIC do Centro
+      Paula Souza (Almeida, 2016) está fora do ar** (DNS oficial devolve
+      255.255.255.255); o endereço está certo. Conferir de novo antes da entrega.
+    - **Calmar**: o artigo original (Young, 1991, revista *Futures*) segue sem
+      cópia acessível. Alternativa gratuita: Magdon-Ismail e Atiya (2004),
+      descartada pelo autor em 05/10. **Decisão do autor (02/11/2026): deixar
+      como está** (fórmula e analogia com o fator de recuperação do MT5, sem
+      autor do índice). Não reabrir sem pedido.
+
+89. **[texto] Heterocedasticidade no Cap. I (02/11/2026, pedido do autor).**
+    Backup em `ia/rascunhos/antes_heterocedasticidade_2026-11-02/`. TG com 84
+    páginas. **Primeiro entrou como subseção 1.3.1, logo depois do MetaTrader; o
+    autor reclamou da fluidez e pediu dentro do GARCH. Depois, pediu o GARCH
+    apresentado como o ARIMA: nome e sigla primeiro, nada de abrir com "como
+    se viu na Seção 1.3".** E por fim (3ª versão, a vigente): **mais GARCH e
+    menos heterocedasticidade, sem números, porque o Cap. I é fundamentação.**
+    Ordem da Seção 1.6, sem subseção: nome e sigla → origem (ARCH de Engle, G de
+    Bollerslev) → fórmula do GARCH(1,1) e o que é o erro (a surpresa) → a
+    Figura 5 descrita passo a passo (erro ao quadrado com peso α, volatilidade
+    anterior com peso β, constante ω) → a seta tracejada: a retroalimentação
+    faz a volatilidade vir em ondas, o choque sobe por α e se dissipa por β →
+    restrições e variância de longo prazo, com "quanto mais próxima de um a
+    soma α + β, mais lento o retorno" (decorre da equação, sem citação;
+    comentário no `.tex`) → dois parágrafos curtos de heterocedasticidade
+    (definição e Gráfico 1, sem porcentagem) → assimetria. Versões anteriores em
+    `ia/rascunhos/antes_heterocedasticidade_2026-11-02/`. A Seção 1.3 voltou a
+    ser igual à de antes (conferido com `diff`).
+    **4ª versão (vigente), mesmo dia:** o parágrafo da origem ficou explicado
+    pelo Bollerslev, p. 308 (o ARCH pedia muitos erros passados; o GARCH põe a
+    variância anterior na equação, que já resume os erros de antes, por isso
+    poucos termos bastam; "o GARCH está para o ARCH assim como o ARMA está para
+    o AR"). Primeiro parágrafo com o contraste ARIMA (para onde vai) × GARCH (o
+    quanto oscila). Restrições explicadas (variância não é negativa; com
+    α + β ≥ 1 o choque não se dissipa). Assimetria passou para ANTES da
+    heterocedasticidade, para o Gráfico 1 fechar a seção sem cortar parágrafo.
+    - **Definição**: homocedástica = variância constante (Thomaz, 2019, p. 47,
+      que fala dos resíduos; aplicada aqui à série). Modelos tradicionais supõem
+      variância constante (Engle, 1982, p. 987). Nenhuma obra nova.
+    - **Gráfico**: dados em `dados/resultados/heterocedasticidade_2026-11-02/`
+      (`ferramentas/scripts/heterocedasticidade.sh`), gráfico em
+      `tg/graficos/heterocedasticidade.tex`, com regra no `tg/Makefile`. Retorno
+      logarítmico (o que o EA modela). A série simulada tem o mesmo desvio-padrão
+      da PETR4 no período, para a diferença ficar só na distribuição no tempo.
+    - O `docx/converter.sh` passou a converter também `tg/graficos/*.pdf` em PNG.
+    - Os gráficos do Cap. III foram renumerados (agora começam no 2); nenhuma
+      referência era fixa no texto.
+    - **O autor precisa reler** e ajustar a redação (regra nº 3). A queda de
+      fevereiro de 2021 aparece no gráfico e não é comentada (a causa não tem
+      fonte no projeto).
+    - Lição: conceito novo entra onde ele é usado, não onde aparece primeiro; e
+      modelo se apresenta pelo nome, não por remissão a seção anterior; e no
+      Cap. I o conceito auxiliar é curto, teórico e sem números.
+
+90. **[texto] Apêndice C: robô de médias móveis (02/11/2026, pedido do autor).**
+    Backup em `ia/rascunhos/antes_apendice_c_2026-11-02/`. TG com 87 páginas.
+    - `tg/conteudo/apendice-c.tex`: "Código do robô de médias móveis". Diz que
+      reproduz Almeida (2016) (Anexo 1, p. 69-77), que foi reescrito porque o
+      original depende de seis bibliotecas externas (p. 35) e para usar a
+      mesma rotina de ordens do EA, o que foi mantido (MMS 10 e 20 no
+      fechamento, nomes `RapidaMM_Periodo`/`DevagarMM_Periodo` do anexo,
+      inversão a cada sinal, uma decisão por barra) e as quatro diferenças:
+      entrada no cruzamento × por estado (muda só a 1ª operação de cada teste,
+      `replica_almeida_v2_2026-10-21/LEIAME.md` seção 1); sem StopLoss e
+      TakeProfit (ele testou com zero); sem a gestão por % de risco (a rotina
+      não está no anexo), com volume fixo no lugar; e as opções fração do
+      patrimônio e só compra, acrescentadas para as comparações.
+    - Listagem gerada de `robos/MediasMoveis2/MediasMoveis2.mq5` por
+      `codigo_apendice.sh` (regra `codigo/MediasMoveis2.mq5` no `tg/Makefile`),
+      122 linhas. Marcadores novos no EA: avaliação no testador, SL/TP, método,
+      preço e deslocamento das médias (fixos no `//@apendice:` em MODE_SMA,
+      PRICE_CLOSE, 0) e `TradeOnNewBarOnly` (sempre barra nova). O EA sem
+      comentários ficou idêntico ao de antes (`diff`); a listagem compila
+      sozinha no prefixo novo (0 erros, 0 avisos). O prefixo novo ainda não tem
+      os marcadores (só comentários; nada muda no que roda).
+    - Cap. II, 2.4: "O código desse robô está no Apêndice C, com as diferenças
+      em relação ao original."
+    - **Incoerência achada, NÃO corrigida (decisão do autor):** o Cap. II diz
+      que a segunda forma da reprodução só cortou a série em 2008 "sem nenhuma
+      outra alteração", mas a coluna "histórico desde 2008" da Tabela da
+      reprodução (Cap. III) saiu do `ferramentas/ReplicaAlmeidaEA.mq5` com
+      entrada por estado (`ra_T*d8_m2_e0_r0`), a porta do OnTick do anexo, e
+      não do `MediasMoveis2`. Pela seção 1 do LEIAME da v2 a diferença é de uma
+      operação por teste. Opções: dizer no Cap. II que essa forma usou a lógica
+      de entrada do anexo, ou refazer a coluna com o `MediasMoveis2`.
+      **Resolvida no mesmo dia (decisão do autor): números mantidos, texto
+      corrigido.** O Cap. II passou a dizer que a segunda forma seguiu a regra
+      de entrada do anexo (compra sempre que a rápida está acima da lenta) e que
+      isso altera só a primeira operação. Com o `MediasMoveis2` a coluna ficaria
+      mais longe de Almeida (2007–2011: 49 op. e −R$ 2.239, contra 50 e
+      −R$ 2.530 na tabela e 52 e −R$ 2.542 dele).
+
+91. **[texto] Artigos da comunidade MQL5 citados no Cap. II (02/11/2026, pedido do
+    autor: "deixe um por conceito ... de forma simples").**
+    - A frase "conteúdos compartilhados pela comunidade ... foram consultados como
+      referência", que não dizia quais, virou "artigos publicados pela comunidade de
+      desenvolvedores da plataforma, que serviram de aprendizado para a
+      implementação: a estimação de modelos ARIMA em MQL5 (Dube, 2023), o teste ADF
+      (Dube, 2024) e o GARCH estimado por máxima verossimilhança (Chernish, 2024)".
+    - Três `@misc` novas no `.bib` (`dube2023`, `dube2024`, `chernish2024`), no mesmo
+      molde do `xing2024`, acesso em 02 nov. 2026. Backup em
+      `ia/rascunhos/antes_artigos_mql5_2026-11-02/`.
+    - **Versão em português**, porque o comentário de 21/10 no Cap. II registrava os
+      links `/pt/` como os que o autor leu. O ano é o da página em português
+      (`datePublished`, conferido em 02/11): 23/08/2023, 19/06/2024 e 21/11/2024. O
+      original em inglês do Chernish é de 06/01/2025, por isso a chave é 2024 e não
+      2025 como no levantamento. **Não confirmado** que o autor leu o Chernish
+      (a nota de 21/10 só citava os dois do Dube); ele aprovou a lista em 02/11.
+    - Os três são anteriores à entrada do código no git (03/08/2026). Nenhum trecho
+      foi copiado deles: são citados como aprendizado, não como fonte do código.
+    - Na lista de referências sai "2023. MQL5." (o ano antes do site), o mesmo padrão
+      do `xing2024` ("2024. arXiv."). A NBR 6023 põe o site antes do ano; mexer nisso
+      é mexer no estilo de todas as `@misc`, decisão do autor.
+    - TG compilado: 87 páginas, sem citação indefinida; `main.docx` gerado de novo.
+
+92. **[proposta] Figuras para o Cap. II: períodos, janela e escolha (05/11/2026,
+    pedido do autor). FORA DO TG.**
+    - Pedido: transformar o Quadro 4 (Períodos de otimização e de teste) numa
+      figura mais intuitiva e criar outras. Na primeira tentativa as figuras foram
+      postas direto no TG. **O autor mandou desfazer**: queria analisar antes,
+      num relatório. O `tg/` voltou ao estado anterior (cap2, `main.tex`,
+      `Makefile` e `fatec.lua` restaurados da cópia em
+      `ia/rascunhos/antes_figuras_periodos_2026-11-05/`), compila com 87 páginas
+      e listas separadas.
+    - **Lição:** figura ou ilustração nova vai primeiro para um relatório em
+      `ia/relatorios/`, e só entra no `tg/` quando o autor pedir.
+    - Relatório: `ia/relatorios/figuras-cap2/relatorio.pdf` (4 páginas), com
+      `fig07-periodos` (linha do tempo), `fig08-janela` (janela deslizante e
+      reavaliação das ordens a cada 21 pregões) e `fig09-escolha` (os três passos).
+      Datas da linha do tempo: tabela do `refeito_2026-10-05/PROTOCOLO.md` e
+      primeira e última linha de `testes/curva_R6_GS.csv` e `curva_L1_GS.csv`.
+    - Se o Quadro 4 virar figura, os quadros caem para 4 e o Manual (4.1.1.10)
+      obriga a voltar à lista única "LISTA DE ILUSTRAÇÕES" (testado: funciona no
+      PDF e no Word, com o campo da lista lendo os três estilos de legenda). Pôr a
+      linha do tempo ao lado do quadro evita essa mudança.
+
+93. **[texto] Configurações fixas viraram só "testes adicionais" (05/11/2026,
+    pedido do autor).** As configurações escolhidas em 2010 a 2012 e rodadas sem
+    nova escolha em 2017–2024 e 2005–2026 (L1, L2) saíram do Cap. II e ficaram só
+    no Cap. III, numa tabela própria, sem chamar a atenção para elas.
+    - Cap. II: 2.2 sem "o período mais longo disponível, de 2005 a 2026"; Quadro 4
+      sem a última linha (e "o mais longo com escolha própria" → "o mais longo");
+      "Testes complementares" → "Teste complementar" (só as outras ações), e as duas
+      remissões no plano experimental no singular.
+    - Cap. III: Quadro da forma de uso sem a linha das fixas; Tabela "Cada versão
+      com e sem o GARCH" com 7 linhas (eram 11); logo abaixo, parágrafo e Tabela
+      "Testes adicionais, com e sem o GARCH" (`tab:efeito-adicional`) com as 4
+      linhas. O parágrafo mantém, por honestidade, que 2005–2026 inclui os anos da
+      otimização.
+    - **Mudança de conclusão no retorno**: as 4 fixas eram todas favoráveis ao
+      GARCH. Sem elas, o GARCH rendeu mais em **3 de 7** (eram 7 de 11). Texto
+      ajustado no Cap. III, nas Considerações ("em três das sete comparações e
+      menor nas outras quatro") e no resumo/abstract ("Em boa parte dos períodos"
+      → "Em alguns períodos"; "In many periods" → "In some periods"). Risco
+      inalterado: 7 de 7 com volatilidade e queda menores.
+    - Não independência reescrita: em 2013–2016 e 2025–2026 o GS e o GC têm a mesma
+      gêmea (conferido: `metricas_R3_T2_GSgemeo` = `GCgemeo` e
+      `metricas_R3_T3_GSgemeo` = `GCgemeo`).
+    - Acerto "no máximo quatro pontos" conferido sem as fixas: maior diferença nos
+      períodos principais = 3,7 p.p. (2013–2016, 42,1% × 45,9%); faixa 41%–59% igual.
+    - TG: 88 páginas, tabelas seguintes renumeradas (+1), sem referência indefinida.
+      Backup em `ia/rascunhos/antes_fixas_adicionais_2026-11-05/`. A linha do tempo
+      proposta (`ia/relatorios/figuras-cap2/`) também perdeu as duas linhas fixas.
+
+94. **[texto] Quadro dos períodos trocado pela linha do tempo (05/11/2026, pedido
+    explícito do autor depois de ver a proposta do item 92: "mude o quadro 4 pra
+    fig07").**
+    - `tg/figuras/fig07-periodos.tex` (cópia da versão do relatório, já sem as
+      configurações fixas, item 93), no `Makefile` do `tg/`. No Cap. II, o
+      `\begin{quadro}` virou figura (`fig:periodos`) e "O Quadro~X mostra" virou
+      "A Figura~X mostra". Saiu do TG: "o mais longo" do teste principal (aparece
+      só no desenho, pela barra mais comprida).
+    - Os quadros caíram para 4, e o Manual (4.1.1.10) obriga a lista única: as
+      listas de figuras, quadros e gráficos voltaram a ser a "LISTA DE
+      ILUSTRAÇÕES" (`main.tex` e campo LOF do `fatec.lua`). O antigo Quadro 5
+      (forma de uso do GARCH) virou Quadro 4. A nova figura é a Figura 6.
+    - As figuras da janela e da escolha (item 92) continuam só no relatório.
+    - TG: 86 páginas, sem referência indefinida, `main.docx` gerado de novo.
+      Backup em `ia/rascunhos/antes_fig_periodos_2026-11-05/`.
+
+95. **[texto/proposta] Posição da figura dos períodos e alternativas ao Quadro 3
+    (05/11/2026, pedido do autor).**
+    - A Figura 6 (períodos) flutuava para a página seguinte, depois do parágrafo dos
+      critérios. Agora fica logo depois do parágrafo que a cita ("Para cada período
+      de teste, os três passos foram refeitos..."): `\FloatBarrier` depois da figura
+      (mesma solução do Cap. I) e o desenho 18% mais baixo (`y=0.82cm` no
+      `fig07-periodos.tex`, também na cópia do relatório) para caber na mesma página.
+      TG continua com 86 páginas.
+    - Quadro 3 (Configurações testadas na otimização): **só proposta, fora do TG**,
+      em `ia/relatorios/quadro3-grade/relatorio.pdf`. A: a grade desenhada (cada
+      quadrado uma configuração, 8 linhas comuns × 39 colunas = 312), recomendada.
+      B: gráfico de barras com a conta ao lado (não mostra os valores testados).
+      Valores conferidos nos `grades/r3_*.txt` da refação. Se a A entrar, os quadros
+      caem para 3, sem nova mudança nas listas.
+
+96. **[texto] Recuperação de parâmetros de volta ao TG, enxuta (06/11/2026, pedido
+    do autor: "só a validação dos pesos pra provar os métodos de otimização, com a
+    série sintética").**
+    - Cap. II: subseção 2.5.4 "Validação dos estimadores", logo depois da reprodução
+      do estudo de referência (dois parágrafos: o que é o teste e os três casos,
+      AR(2), ARMA(1,1) e GARCH(1,1), 4.000/4.000/6.000 observações, semente fixa).
+    - Cap. III: seção 3.2 "Validação dos estimadores", logo depois da reprodução de
+      Almeida, com a Tabela 2 (as tabelas seguintes andaram um número) e um parágrafo.
+    - **Não voltaram** o ADF em séries artificiais nem o ADF/Ljung-Box na PETR4.
+    - Números: `dados/verificacao/validacao_numerica_2026-11-06.txt`, rodado de novo
+      com o código atual pelo `validar.sh` (que passou a compilar no `~/.wine-mt5`,
+      onde os `#include` de `robos/` resolvem, e a usar o perfil AlgoLab). Saída
+      **idêntica** à de 05/10 (`diff` vazio).
+    - Frase final do Cap. III ("o que indica que foram implementados corretamente")
+      vale para uma semente só. A conferência com muitas séries (Monte Carlo) está no
+      relatório dos testes do código (item 85) e não entrou, por pedido de texto enxuto.
+      Se a banca perguntar: com 240 pontos o β do GARCH oscila bastante (média 0,824,
+      desvio 0,142); com 1000, 0,884 (0,027).
+    - TG com 86 páginas, sem referência quebrada. Cópia anterior:
+      `ia/rascunhos/antes_validacao_pesos_2026-11-06/`.
+
+97. **[texto] Apêndice C enxugado (06/11/2026, pedido do autor: "o apêndice ficou
+    com muito texto explicativo desnecessário").**
+    - O porquê da reescrita (seis bibliotecas externas, Almeida p. 35; anexo p. 69-77),
+      o que foi mantido e as diferenças foram para o Cap. II, "Implementação dos
+      modelos", no parágrafo que já falava do robô de médias móveis (virou dois).
+    - As diferenças passaram de quatro para três no Cap. II: a dos limites de perda e
+      de lucro zerados já estava no Cap. I (seção das médias móveis) e ficou só como
+      motivo de terem saído da listagem, no apêndice. A da entrada por cruzamento só
+      remete à reprodução, que já a explica (não repete o "só a primeira operação").
+    - Saiu sem substituto a frase "com as duas desligadas, o robô opera com volume
+      fixo, comprando e vendendo": a reprodução no Cap. II já diz volume e compra e venda.
+    - Apêndice C ficou com um parágrafo, como A e B. TG com 86 páginas, sem referência
+      quebrada. Cópia anterior: `ia/rascunhos/antes_enxugar_apendice_c_2026-11-06/`.

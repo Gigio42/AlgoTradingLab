@@ -32,9 +32,12 @@
 % --- Tipos de ilustração (Manual FATEC-ID, item 3) --------------------
 % Quadro = dado qualitativo; Tabela = dado numérico; Gráfico = representação
 % geométrica de dados; Figura = o resto. O abnTeX2 só traz figura e tabela.
-% Quadro e gráfico escrevem no mesmo arquivo da lista de figuras (.lof):
-% como têm menos de 5 itens cada, o Manual (4.1.1.10) manda fazer uma lista
-% única, chamada LISTA DE ILUSTRAÇÕES. A lista de tabelas é separada.
+% Lista única "LISTA DE ILUSTRAÇÕES" (Manual 4.1.1.10: "Elaborar lista própria
+% para cada tipo, desde que a mesma apresente, no mínimo, 5 itens. Caso
+% contrário, elaborar lista única"). Quadro e gráfico escrevem no .lof das
+% figuras. Em 05/11/2026 o Quadro dos períodos virou figura e os quadros caíram
+% para 4 (6 figuras, 4 quadros, 16 gráficos). Se todos voltarem a ter 5 ou mais,
+% as listas separadas estão em ia/rascunhos/antes_fig_periodos_2026-11-05/.
 % Modelos do Manual (3.1 e 3.2): tabela com laterais abertas e linhas entre as
 % linhas; quadro fechado, em grade. Um pouco de altura nas linhas para as
 % réguas não encostarem no texto.
@@ -117,6 +120,7 @@
     \ifhasdiv
       \thispagestyle{empty}%  abertura de capítulo: contada, sem número
       \phantomsection
+      \blocosumario
       \addcontentsline{toc}{chapter}{\divlabel}%
       {\centering\chaptitlefont\divlabel\par}%
       \vskip\onelineskip
@@ -160,9 +164,12 @@
 \setsubsecheadstyle{\normalfont\bfseries\fontsize{12}{16}\selectfont\raggedright}
 \setsubsubsecheadstyle{\normalfont\bfseries\fontsize{12}{16}\selectfont\raggedright}
 
-% --- Sumário: 2 níveis (capítulo e seção); 1.1.1 omitido; todas as
-%     entradas à esquerda (sem identação progressiva) e em negrito;
-%     pontilhado denso em todos os níveis (Manual 1.5 + legibilidade).
+% --- Sumário (Manual 4.1.1.14 e Figura 7): capítulo, seção e subseção; os
+%     indicativos (números) alinhados à esquerda e os títulos numa mesma
+%     margem, a do indicativo mais extenso (3.3.2); uma linha em branco antes
+%     de cada bloco (CAPÍTULO I, II, III, CONSIDERAÇÕES FINAIS, REFERÊNCIAS,
+%     APÊNDICES), como no modelo da Figura 7; nos apêndices, só o título
+%     principal (observação do item dos apêndices). Pontilhado denso.
 \makeatletter
 \renewcommand{\l@part}[2]{}                     % omite "APÊNDICES" do sumário
 \makeatother
@@ -173,15 +180,18 @@
 \renewcommand*{\cftsectionfont}{\normalfont}                 % subseções sem negrito
 \renewcommand*{\cftchapterpagefont}{\normalfont\bfseries}
 \renewcommand*{\cftsectionpagefont}{\normalfont}
-\cftsetindents{chapter}{0em}{1.4em}
-\cftsetindents{section}{0em}{2.6em}
-\cftsetindents{subsection}{0em}{3.4em}         % Manual 4.1.1.14: indicativos à esquerda
+\cftsetindents{chapter}{0em}{3.4em}           % indicativos à esquerda,
+\cftsetindents{section}{0em}{3.4em}           % títulos numa só margem
+\cftsetindents{subsection}{0em}{3.4em}
+% Linha em branco antes de cada bloco do sumário (modelo da Figura 7).
+\newcommand{\blocosumario}{\addtocontents{toc}{\protect\addvspace{\baselineskip}}}
 \renewcommand*{\cftsubsectionfont}{\normalfont}
 \renewcommand*{\cftsubsectionpagefont}{\normalfont}
 \renewcommand{\cftsubsectiondotsep}{\cftdotsep}
 \setlength{\cftbeforesubsectionskip}{0pt}
 \setlength{\cftbeforepartskip}{0pt}            % apêndice omitido do sumário
-% Reduzir espaçamento no sumário conforme ABNT (espaçamento simples)
+% Sem espaço extra entre as entradas (os blocos têm \blocosumario). As linhas
+% do sumário saem com o mesmo entrelinhas do texto, 1,5 (medido em 02/11/2026).
 \setlength{\cftbeforechapterskip}{0pt}         % sem espaço antes de capítulos
 \setlength{\cftbeforesectionskip}{0pt}         % sem espaço antes de seções
 
@@ -270,7 +280,8 @@
 \setlength{\parskip}{0pt}
 \OnehalfSpacing
 
-% Listas: ilustrações (figuras, quadros e gráficos juntos) e tabelas (Manual 4.1.1.10 e 4.1.1.11)
+% Listas: figuras, quadros, gráficos e tabelas, cada uma em folha própria
+% (Manual 4.1.1.10 e 4.1.1.11), na ordem em que os tipos aparecem no texto.
 % Elementos pré-textuais: espaçamento simples e sem parskip conforme Manual FATEC 1.4
 \SingleSpacing
 \setlength{\parskip}{0pt}
@@ -285,7 +296,9 @@
 \input{conteudo/siglas}
 
 % Sumário (Manual 4.1.14: pré-textuais não constam)
-% Espaçamento simples e sem parskip conforme Manual FATEC 1.4
+% Sem parskip (Manual 1.4). O entrelinhas do sumário é o do texto, 1,5: o
+% Manual só pede espaço simples em citação longa, nota, resumo, abstract e
+% referências.
 \pdfbookmark[0]{Sumário}{toc}
 \tableofcontents*
 \cleardoublepage
@@ -308,6 +321,7 @@
 \input{conteudo/cap1-fundamentacao}
 \input{conteudo/cap2-metodologia}
 \input{conteudo/cap3-resultados}
+\blocosumario
 \input{conteudo/cap4-consideracoes}
 
 % ------------------------- Elementos pós-textuais --------------------
@@ -336,6 +350,10 @@
 \renewcommand{\abntrefinfo}[3]{\abntrefinfo@orig{#1}{#2}{#3}}
 \makeatother
 
+% NBR 6023 (desde 2018) e exemplos do Manual que citam a NBR 6023:2025: o
+% endereço eletrônico vai sem os sinais < >, que o abntex2cite põe por padrão.
+\def\UrlLeft{}\def\UrlRight{}
+\blocosumario
 \bibliography{referencias}
 
 \begin{apendicesenv}
@@ -350,8 +368,15 @@
   % Sumário: "APÊNDICE A – Título" (Manual FATEC-ID 4.1.3.3)
   \addtocontents{toc}{\protect\renewcommand*{\protect\cftchapteraftersnum}{~\textendash~}}%
   \addtocontents{toc}{\protect\cftsetindents{chapter}{0em}{1.6em}}%
+  % O abnTeX2 grava "APÊNDICE \space" (dois espaços antes da letra); um só.
+  \addtocontents{toc}{\protect\renewcommand*{\protect\cftappendixname}{APÊNDICE\protect\space}}%
+  % Só o título principal de cada apêndice no sumário (B.1 a B.4 saem).
+  % Apêndice C (02/11/2026): o robô de médias móveis que reproduz Almeida (2016).
+  \addtocontents{toc}{\protect\setcounter{tocdepth}{0}}%
+  \blocosumario
   \input{conteudo/apendice-a}
   \input{conteudo/apendice-b}
+  \input{conteudo/apendice-c}
 \end{apendicesenv}
 
 \end{document}

@@ -4,16 +4,14 @@
 % Notas:
 %  - almeida2016: o "de" do nome foi omitido no campo author porque o estilo
 %    abrevia os prenomes e ele sairia como "d.". ABNT admite omitir.
-%  - Entidades (Banco Central, MetaQuotes) em organization, e não em author:
-%    assim a lista sai em caixa alta e a citação em caixa mista (NBR 6023:2025).
-%  - ANDERSON (1993) é citado no corpo ("Gary Anderson") mas não consta
-%    na lista de referências do PDF; entrada reconstruída a partir da
-%    citação. Confirmar dados.
-%  - Citações a (BCB, ...) mapeadas às entradas BRASIL. Banco Central do
-%    Brasil abaixo; (COPOM, ...) mapeada para bcbSelic. Ano adicionado
-%    (2025) a essas 4 entradas institucionais, ausente até então, o que
-%    fazia a citação em texto imprimir a letra de desambiguação (a/b/c/d)
-%    no lugar do ano.
+%  - Entidades (Banco Central, MetaQuotes, B3) em organization, e não em
+%    author: assim a lista sai em caixa alta e a citação em caixa mista
+%    (NBR 6023:2025).
+%  - DOI no campo note: o estilo alf ignora o campo doi, e o Manual (5.2.7)
+%    pede o DOI antes do "Disponível em". O campo doi fica só como registro.
+%  - Só entram aqui obras citadas no texto. Verificação de 02/11/2026: as 17
+%    que não eram citadas foram para ia/bibliografia/nao-usadas-2026-11-02.bib;
+%    links e DOIs conferidos (ia/INCERTEZAS.md, item 88).
 % =====================================================================
 
 @monography{almeida2016,
@@ -30,55 +28,15 @@
                   de Valores de São Paulo com MetaTrader 5''},
 }
 
-@book{anderson1993,
-  author    = {Anderson, Gary},
-  title     = {The RSI: The Complete Guide},
-  edition   = {1},
-  address   = {New York},
-  publisher = {Traders Press},
-  year      = {1993},
-  pages     = {245},
-}
-
-@book{appel2005,
-  author    = {Appel, G.},
-  title     = {Technical Analysis: Power Tools for Active Investors},
-  address   = {Nova Iorque},
-  publisher = {Financial Times Press},
-  year      = {2005},
-}
-
 @article{araya2024,
   author    = {Araya, Hailabe T. and Aduda, Jane and Berhane, Tesfahun},
   title     = {A Hybrid {GARCH} and Deep Learning Method for Volatility Prediction},
   journal   = {Journal of Applied Mathematics},
   address   = {Londres, Reino Unido},
   volume    = {2024},
-  note      = {Article ID 6305525},
+  note      = {Artigo 6305525. DOI: \url{10.1155/2024/6305525}},
   year      = {2024},
   doi       = {10.1155/2024/6305525},
-}
-
-@misc{ayres2024,
-  author        = {Ayres, M.},
-  title         = {Brazil's government sees inflation within target band, unlike markets},
-  howpublished  = {Reuters},
-  address       = {Londres, Reino Unido},
-  year          = {2024},
-  note          = {18 nov. 2024},
-  url           = {https://www.reuters.com/world/americas/brazil-sees-33-gdp-growth-this-year-25-next-year-2024-11-18/},
-  urlaccessdate = {30 mar. 2025},
-}
-
-@misc{ayres2025,
-  author        = {Ayres, M.},
-  title         = {Economists ramp up projections for Brazil's interest rates to above 15\%},
-  howpublished  = {Reuters},
-  address       = {Londres, Reino Unido},
-  year          = {2025},
-  note          = {21 jan. 2025},
-  url           = {https://www.reuters.com/world/americas/economists-ramp-up-projections-brazils-interest-rates-above-15-2025-01-21/},
-  urlaccessdate = {30 mar. 2025},
 }
 
 @monography{batista2024,
@@ -110,15 +68,6 @@
   urlaccessdate = {22 abr. 2025},
 }
 
-@misc{bcbJuros,
-  organization  = {Banco Central do Brasil},
-  title         = {Histórico de Taxas de Juros},
-  address       = {Brasília, DF},
-  year          = {2025},
-  url           = {https://www.bcb.gov.br/controleinflacao/historicotaxasjuros},
-  urlaccessdate = {30 mar. 2025},
-}
-
 @misc{bcbSgs11,
   organization  = {Banco Central do Brasil},
   title         = {Sistema Gerenciador de Séries Temporais: série 11, taxa de juros Selic, \% ao dia},
@@ -137,17 +86,6 @@
   urlaccessdate = {22 abr. 2025},
 }
 
-@misc{cojocaru2024,
-  author        = {Cojocaru, R.},
-  title         = {The Future Of Retail Trading: Bots And Automated Tools},
-  howpublished  = {Forbes},
-  address       = {Nova Jersey, EUA},
-  year          = {2024},
-  note          = {Forbes Technology Council. 31 jul. 2024},
-  url           = {https://www.forbes.com/councils/forbestechcouncil/2024/07/31/the-future-of-retail-trading-bots-and-automated-tools/},
-  urlaccessdate = {02 abr. 2025},
-}
-
 @article{bollerslev1986,
   author    = {Bollerslev, Tim},
   title     = {Generalized autoregressive conditional heteroskedasticity},
@@ -158,6 +96,7 @@
   address   = {Amsterdam},
   publisher = {Elsevier},
   year      = {1986},
+  note      = {DOI: \url{10.1016/0304-4076(86)90063-1}},
   doi       = {10.1016/0304-4076(86)90063-1},
 }
 
@@ -180,27 +119,21 @@
   number    = {1},
   pages     = {81--94},
   year      = {1982},
+  note      = {DOI: \url{10.2307/2335856}},
   doi       = {10.2307/2335856},
-}
-
-@book{elder2002,
-  author    = {Elder, A.},
-  title     = {Come into my trading room: a complete guide to trading},
-  address   = {Nova Iorque, EUA},
-  publisher = {Wiley},
-  year      = {2002},
 }
 
 @article{engle1982,
   author    = {Engle, Robert F.},
-  title     = {Autoregressive conditional heteroskedasticity with estimates of the variance of the {U}nited {K}ingdom inflation},
+  title     = {Autoregressive conditional heteroscedasticity with estimates of the variance of {U}nited {K}ingdom inflation},
   journal   = {Econometrica},
   volume    = {50},
   number    = {4},
-  pages     = {987--1008},
+  pages     = {987--1007},
   address   = {New Jersey, EUA},
   publisher = {The Econometric Society},
   year      = {1982},
+  note      = {DOI: \url{10.2307/1912773}},
   doi       = {10.2307/1912773},
 }
 
@@ -211,33 +144,6 @@
   address   = {Rio de Janeiro},
   publisher = {Alexandre Fernandes},
   year      = {2014},
-}
-
-@misc{fmi2024,
-  author        = {{Fundo Monetário Internacional}},
-  title         = {World Economic Outlook: Navigating Global Divergences},
-  address       = {Washington, D.C.},
-  publisher     = {FMI},
-  year          = {2024},
-  note          = {out. 2024},
-  url           = {https://www.imf.org/en/Publications/WEO},
-  urlaccessdate = {22 abr. 2025},
-}
-
-% NÃO CITADA no texto (NBR 6023 exige que a lista traga só obras citadas).
-% Mantida comentada em vez de apagada — descomentar ao usá-la, ou remover
-% de vez se ficar confirmado que não entra no TG.
-@Comment{kaya2014,
-  author    = {Kaya, E.},
-  title     = {Spline Interpolation Techniques},
-  journal   = {Journal of Science and Technology (JTST)},
-  address   = {Tbilisi, Geórgia},
-  publisher = {International Black Sea University},
-  volume    = {2},
-  number    = {1},
-  pages     = {56--62},
-  year      = {2014},
-  doi       = {10.31578/jtst.v2i1.56},
 }
 
 @misc{metaquotes2024,
@@ -257,29 +163,8 @@
   school        = {Universidade Federal do Rio Grande},
   address       = {Rio Grande},
   year          = {2019},
-  url           = {http://repositorio.furg.br/handle/1/10204},
+  url           = {https://repositorio.furg.br/handle/1/10204},
   urlaccessdate = {12 out. 2026},
-}
-
-@mastersthesis{silva2022,
-  author        = {Silva, M. F.},
-  title         = {Previsão de preços no mercado de ações brasileiro por meio de técnicas de inteligência artificial},
-  type          = {Mestrado em Ciências Contábeis},
-  school        = {Universidade Federal de Uberlândia},
-  address       = {Uberlândia},
-  year          = {2022},
-  url           = {https://repositorio.ufu.br/handle/123456789/35138},
-  urlaccessdate = {30 mar. 2025},
-}
-
-@misc{warren2025,
-  author        = {{Warren Magazine}},
-  title         = {Conheça as fraquezas e vantagens dos investimentos ativos e passivos},
-  howpublished  = {Warren Magazine},
-  year          = {2025},
-  note          = {14 fev. 2025},
-  url           = {https://warren.com.br/magazine/investimento-ativo-ou-passivo/},
-  urlaccessdate = {22 abr. 2025},
 }
 
 @book{wazlawick2021,
@@ -291,35 +176,15 @@
   year      = {2021},
 }
 
-@monography{tormin2024,
-  author        = {Tormin, W. P.},
-  title         = {Previsão de Retornos do Bitcoin: Uma Abordagem Comparativa Entre Modelos ARIMA e LSTM Integrados com Dados de Tendências do Google},
-  type          = {Graduação em Economia},
-  school        = {Instituto Brasileiro de Ensino, Desenvolvimento e Pesquisa (IDP)},
-  address       = {Brasília},
-  year          = {2024},
-  urlaccessdate = {26 mar. 2025},
-}
-
 @misc{xing2024,
   author        = {Xing, Yiluan and Yang, Chengyu and Li, Qinyu and Li, Bingzheng and Zhao, Tianyi},
   title         = {Predicting {NVIDIA}'s next-day stock price: a comparative analysis of {LSTM}, {MLP}, {ARIMA}, and {ARIMA-GARCH} models},
-  howpublished  = {arXiv},
+  howpublished  = {{arXiv}},
   year          = {2024},
-  note          = {Preprint},
+  note          = {Preprint. DOI: \url{10.48550/arXiv.2405.08284}},
   doi           = {10.48550/arXiv.2405.08284},
   url           = {https://arxiv.org/abs/2405.08284},
   urlaccessdate = {09 abr. 2025},
-}
-
-@misc{b3Investidores2026,
-  organization  = {B3},
-  title         = {Avanço dos {ETFs} destaca evolução do investidor pessoa física na {B3}},
-  address       = {São Paulo},
-  year          = {2026},
-  note          = {Notícia de 6 jul. 2026},
-  url           = {https://www.b3.com.br/pt_br/noticias/avanco-dos-etfs-destacam-evolucao-do-investidor-pessoa-fisica-na-b3.htm},
-  urlaccessdate = {05 out. 2026},
 }
 
 @misc{b3Cotahist,
@@ -327,8 +192,8 @@
   title         = {Séries históricas de cotações ({COTAHIST}): arquivos anuais de 2003 a 2026},
   address       = {São Paulo},
   year          = {2026},
-  url           = {https://bvmf.bmfbovespa.com.br/InstDados/SerHist/},
-  urlaccessdate = {21 set. 2026},
+  url           = {https://www.b3.com.br/pt_br/market-data-e-indices/servicos-de-dados/market-data/historico/mercado-a-vista/series-historicas/},
+  urlaccessdate = {02 nov. 2026},
 }
 
 @article{maximo2020,
@@ -341,51 +206,6 @@
   url           = {https://agenciabrasil.ebc.com.br/economia/noticia/2020-03/bolsa-cai-30-e-dolar-sobe-16-em-marco-com-pandemia-de-coronavirus},
   urlaccessdate = {05 out. 2026},
 }
-
-@article{diniz2025,
-  author        = {Diniz, Augusto},
-  title         = {60\% das negociações na {B3} já utilizam algum modelo de algoritmo, diz superintendente},
-  journal       = {InfoMoney},
-  address       = {São Paulo},
-  year          = {2025},
-  month         = {28 jan.},
-  url           = {https://www.infomoney.com.br/mercados/60-das-negociacoes-na-b3-ja-utilizam-algum-modelo-de-algoritmo-diz-superintendente/},
-  urlaccessdate = {05 out. 2026},
-}
-
-@article{maximo2026,
-  author        = {M{\'a}ximo, Wellton},
-  title         = {Bolsa tem pior mês desde 2023, e dólar sobe 1,82\% em maio},
-  journal       = {Agência Brasil},
-  address       = {Brasília},
-  year          = {2026},
-  month         = {29 maio},
-  url           = {https://agenciabrasil.ebc.com.br/economia/noticia/2026-05/bolsa-tem-pior-mes-desde-2023-e-dolar-sobe-182-em-maio},
-  urlaccessdate = {05 out. 2026},
-}
-
-@article{boehm2019,
-  author        = {Boehm, Camila},
-  title         = {Bolsa de Valores atinge 1 milhão de investidores pessoa física},
-  journal       = {Agência Brasil},
-  address       = {São Paulo},
-  year          = {2019},
-  month         = {18 maio},
-  url           = {https://agenciabrasil.ebc.com.br/economia/noticia/2019-05/bolsa-de-valores-atinge-1-milhao-de-investidores-pessoa-fisica},
-  urlaccessdate = {05 out. 2026},
-}
-
-@misc{cvm2018,
-  organization  = {Comiss{\~a}o de Valores Mobili{\'a}rios},
-  title         = {Introdução aos investimentos},
-  address       = {Rio de Janeiro},
-  year          = {2018},
-  note          = {Programa Bem-Estar Financeiro, módulo 6},
-  url           = {https://www.gov.br/investidor/pt-br/educacional/programa-bem-estar-financeiro/programa-bem-estar-financeiro-arquivos/apostila-06.pdf},
-  urlaccessdate = {05 out. 2026},
-}
-
-
 
 @misc{metaquotesRelatorio,
   organization  = {MetaQuotes Ltd.},
@@ -441,6 +261,7 @@
   number    = {1},
   pages     = {14--33},
   year      = {2018},
+  note      = {DOI: \url{10.3905/jpm.2018.45.1.014}},
   doi       = {10.3905/jpm.2018.45.1.014},
 }
 
@@ -481,4 +302,34 @@
   note          = {Comunicado de 22 jul. 2005, enviado à Securities and Exchange Commission (Form 6-K)},
   url           = {https://www.sec.gov/Archives/edgar/data/0001119639/000129281405001096/pbra20050722_6k2.htm},
   urlaccessdate = {21 out. 2026},
+}
+
+% Artigos da comunidade MQL5 lidos pelo autor como aprendizado (02/11/2026),
+% um por conceito. Versão em português (a que o autor leu), com o ano da tradução
+% em português. Levantamento: ia/bibliografia/creditos-codigo-2026-11-02.md.
+@misc{dube2023,
+  author        = {Dube, Francis},
+  title         = {Implementando um algoritmo de treinamento {ARIMA} em {MQL5}},
+  howpublished  = {{MQL5}},
+  year          = {2023},
+  url           = {https://www.mql5.com/pt/articles/12583},
+  urlaccessdate = {02 nov. 2026},
+}
+
+@misc{dube2024,
+  author        = {Dube, Francis},
+  title         = {Implementação do teste aumentado de {Dickey-Fuller} no {MQL5}},
+  howpublished  = {{MQL5}},
+  year          = {2024},
+  url           = {https://www.mql5.com/pt/articles/13991},
+  urlaccessdate = {02 nov. 2026},
+}
+
+@misc{chernish2024,
+  author        = {Chernish, Evgeniy},
+  title         = {Ferramentas econométricas para previsão de volatilidade: modelo {GARCH}},
+  howpublished  = {{MQL5}},
+  year          = {2024},
+  url           = {https://www.mql5.com/pt/articles/15223},
+  urlaccessdate = {02 nov. 2026},
 }

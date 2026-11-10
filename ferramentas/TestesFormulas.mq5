@@ -26,6 +26,7 @@
 
 int g_resumo = INVALID_HANDLE, g_valores = INVALID_HANDLE, g_ident = INVALID_HANDLE;
 int g_num_ident = 0;
+double g_adf_quantil = 0;   // quantil 5% empirico do ADF (B3), usado em H2
 
 void Log(const string s)
   {
@@ -377,6 +378,7 @@ void TestesADF(const double &log_preco[])
      }
    FileClose(f);
    double q5 = Percentil(estats, 5.0);
+   g_adf_quantil = q5;
    Log(StringFormat("  [B3] H0 verdadeira, %d passeios de %d: rejeitou %.2f%% (defasagens pelo AIC) e %.2f%% (sem defasagens); "
                     "quantil 5%% empirico = %.3f", R, N_ROBO, TaxaPercentual(rej_auto, R), TaxaPercentual(rej_zero, R), q5));
    Valor("AdfR", R, 0); Valor("AdfTamanho", TaxaPercentual(rej_auto, R), 1); Valor("AdfTamanhoZero", TaxaPercentual(rej_zero, R), 1);
@@ -817,6 +819,211 @@ void TestesPrevisao(const double &log_preco[])
    Identidade("Gtres", "Percentil 70 de 1..10 por interpolacao linear (7,3)", MathAbs(Percentil(x, 70.0) - 7.3));
   }
 
+//+------------------------------------------------------------------+
+//| H. Quanto os achados pesam nas decisoes (31/10/2026)             |
+//+------------------------------------------------------------------+
+//--- H1: de onde vem o excesso do Ljung-Box nos residuos ajustados. Mesmas
+//--- series ajustadas por Hannan-Rissanen e por maxima verossimilhanca
+void LjungBoxPorEstimador(const string nome, const double phi, const double theta, const int p, const int q, const int R)
+  {
+   int h = 10, ok = 0, rej_hr = 0, rej_mv = 0;
+   for(int r = 0; r < R; r++)
+     {
+      double z[];
+      ARMA11(phi, theta, N_ROBO - 1, z);
+      CArima a, b;
+      a.Definir(p, 0, q, true);
+      b.Definir(p, 0, q, true);
+      b.DefinirEstimacao(ESTIMACAO_VEROSSIMILHANCA);
+      if(!a.Ajustar(z) || !b.Ajustar(z)) continue;
+      double ra[], rb[];
+      a.ObterResiduos(ra);
+      b.ObterResiduos(rb);
+      ResultadoLjungBox la, lb;
+      TesteLjungBox(ra, h, p + q, la);
+      TesteLjungBox(rb, h, p + q, lb);
+      ok++;
+      if(!la.ruido_branco) rej_hr++;
+      if(!lb.ruido_branco) rej_mv++;
+     }
+   Log(StringFormat("  [H1] %s, %d series, gl = %d: rejeitou %.2f%% (Hannan-Rissanen) e %.2f%% (max. verossimilhanca); ep %.2f p.p.",
+                    nome, ok, h - p - q, TaxaPercentual(rej_hr, ok), TaxaPercentual(rej_mv, ok), EpPercentual(0.05, ok)));
+   Valor("Hlb" + nome + "Hr", TaxaPercentual(rej_hr, ok), 1);
+   Valor("Hlb" + nome + "Mv", TaxaPercentual(rej_mv, ok), 1);
+   Valor("Hlb" + nome + "R", ok, 0);
+  }
+
+//--- Variancia condicional com parametros dados, na mesma recursao do CGarch
+//--- (sigma2 inicial = media de e^2); devolve a serie de sigma (t >= 1) e a previsao
+void SigmaComParametros(const double &e[], const double omega, const double alfa, const double beta,
+                        double &serie[], double &previsao)
+  {
+   int n = ArraySize(e);
+   double v0 = 0;
+   for(int i = 0; i < n; i++) v0 += e[i] * e[i];
+   double s2 = v0 / n;
+   ArrayResize(serie, n - 1);
+   for(int t = 1; t < n; t++)
+     {
+      s2 = omega + alfa * e[t - 1] * e[t - 1] + beta * s2;
+      serie[t - 1] = MathSqrt(s2);
+     }
+   previsao = MathSqrt(omega + alfa * e[n - 1] * e[n - 1] + beta * s2);
+  }
+
+//--- Decisao do filtro do EA: veta se a previsao passa do percentil da serie da janela
+bool Veta(const double &serie[], const double previsao, const double percentil)
+  {
+   double copia[];
+   ArrayCopy(copia, serie);
+   return(previsao > Percentil(copia, percentil));
+  }
+
+void TestesImpacto()
+  {
+   Log("--- H. Quanto os achados pesam nas decisoes");
+   //--- H1
+   LjungBoxPorEstimador("Ar", 0.6, 0.0, 1, 0, 2000);
+   LjungBoxPorEstimador("Ma", 0.0, 0.4, 0, 1, 2000);
+   LjungBoxPorEstimador("Arma", 0.6, 0.4, 1, 1, 2000);
+
+   //--- H2: ADF nas janelas reais de 240 pregoes da PETR4, uma por dia. Quantas
+   //--- estatisticas caem entre o quantil empirico (B3) e o valor critico usado,
+   //--- isto e, quantas decisoes mudariam se o teste tivesse tamanho exato de 5%
+   double fech[];
+   int total = CopyClose(SIMBOLO, PERIOD_D1, D'2003.01.01', FIM_JANELA, fech);
+   int janelas = 0, rej_nivel = 0, faixa_nivel = 0, rej_dif = 0, faixa_dif = 0;
+   double maior_dif = -DBL_MAX;
+   for(int fim = N_ROBO; fim <= total; fim++)
+     {
+      double y[];
+      ArrayResize(y, N_ROBO);
+      for(int i = 0; i < N_ROBO; i++) y[i] = MathLog(fech[fim - N_ROBO + i]);
+      double z[];
+      Diferenca(y, z);
+      ResultadoADF r1, r2;
+      if(!TesteADF(y, ADF_CONSTANTE, -1, r1) || !TesteADF(z, ADF_CONSTANTE, -1, r2)) continue;
+      janelas++;
+      if(r1.estacionaria) rej_nivel++;
+      if(r1.estatistica >= g_adf_quantil && r1.estatistica < r1.valor_critico_5) faixa_nivel++;
+      if(r2.estacionaria) rej_dif++;
+      if(r2.estatistica >= g_adf_quantil && r2.estatistica < r2.valor_critico_5) faixa_dif++;
+      maior_dif = MathMax(maior_dif, r2.estatistica);
+     }
+   Log(StringFormat("  [H2] PETR4, %d janelas de %d (%d barras): log-preco rejeitou em %d (%.2f%%), %d na faixa [quantil empirico, critico) (%.2f%%); "
+                    "log-retorno rejeitou em %d (%.2f%%), %d na faixa; maior estatistica do log-retorno %.3f",
+                    janelas, N_ROBO, total, rej_nivel, TaxaPercentual(rej_nivel, janelas), faixa_nivel, TaxaPercentual(faixa_nivel, janelas),
+                    rej_dif, TaxaPercentual(rej_dif, janelas), faixa_dif, maior_dif));
+   Valor("HadfJanelas", janelas, 0); Valor("HadfRejNivel", TaxaPercentual(rej_nivel, janelas), 1);
+   Valor("HadfFaixaNivel", faixa_nivel, 0); Valor("HadfFaixaNivelPct", TaxaPercentual(faixa_nivel, janelas), 2);
+   Valor("HadfRejDif", TaxaPercentual(rej_dif, janelas), 1); Valor("HadfFaixaDif", faixa_dif, 0);
+   Valor("HadfMaiorDif", maior_dif, 2);
+
+   //--- H3: GARCH simulado com parametros conhecidos. A decisao do filtro com os
+   //--- parametros estimados concorda com a decisao com os parametros verdadeiros?
+   double w0 = 1.0e-5, a0 = 0.09, b0 = 0.89;
+   int R = 500;
+   int tam[] = {240, 500, 1000};
+   string rot[] = {"Curto", "Medio", "Mil"};
+   double pcts[] = {50.0, 70.0};
+   int f = Abrir("garch_decisao.csv");
+   FileWriteString(f, "n,percentil,concordancia,veto_estimado,veto_verdadeiro,erro_previsao_mediano\n");
+   for(int c = 0; c < 3; c++)
+     {
+      int nn = tam[c], ok = 0;
+      int conc[2] = {0, 0}, veto_est[2] = {0, 0}, veto_ver[2] = {0, 0};
+      double erros[];
+      ArrayResize(erros, R);
+      for(int r = 0; r < R; r++)
+        {
+         double e[], s2 = w0 / (1 - a0 - b0), eprev = 0;
+         ArrayResize(e, nn);
+         for(int t = -500; t < nn; t++)
+           {
+            s2 = w0 + a0 * eprev * eprev + b0 * s2;
+            double x = MathSqrt(s2) * Randn();
+            if(t >= 0) e[t] = x;
+            eprev = x;
+           }
+         CGarch g;
+         g.Definir(1, 1);
+         g.DefinirOtimizador(300);
+         if(!g.Ajustar(e)) continue;
+         double serie_est[], serie_ver[], prev_ver;
+         g.ObterSerieVolatilidade(serie_est);
+         double prev_est = g.VolatilidadeProximoPeriodo();
+         SigmaComParametros(e, w0, a0, b0, serie_ver, prev_ver);
+         erros[ok] = MathAbs(prev_est / prev_ver - 1.0);
+         for(int k = 0; k < 2; k++)
+           {
+            bool ve = Veta(serie_est, prev_est, pcts[k]);
+            bool vv = Veta(serie_ver, prev_ver, pcts[k]);
+            if(ve == vv) conc[k]++;
+            if(ve) veto_est[k]++;
+            if(vv) veto_ver[k]++;
+           }
+         ok++;
+        }
+      ArrayResize(erros, ok);
+      double erro_med = 100.0 * Percentil(erros, 50.0);
+      for(int k = 0; k < 2; k++)
+        {
+         Log(StringFormat("  [H3] n=%d, percentil %.0f: %d series, decisao igual a dos parametros verdadeiros em %.1f%%; "
+                          "veto %.1f%% (estimado) e %.1f%% (verdadeiro); erro mediano da previsao de sigma %.1f%%",
+                          nn, pcts[k], ok, TaxaPercentual(conc[k], ok), TaxaPercentual(veto_est[k], ok), TaxaPercentual(veto_ver[k], ok), erro_med));
+         FileWriteString(f, StringFormat("%d,%.0f,%.2f,%.2f,%.2f,%.2f\n", nn, pcts[k], TaxaPercentual(conc[k], ok),
+                                         TaxaPercentual(veto_est[k], ok), TaxaPercentual(veto_ver[k], ok), erro_med));
+         string pr = (k == 0 ? "Cinquenta" : "Setenta");
+         Valor("Hdec" + rot[c] + pr, TaxaPercentual(conc[k], ok), 1);
+        }
+      Valor("Herro" + rot[c], erro_med, 1);
+      Valor("Hdec" + rot[c] + "R", ok, 0);
+     }
+   FileClose(f);
+
+   //--- H4: PETR4 real. Mesmo dia, GARCH com 240 e com 500 log-retornos (menos a
+   //--- media da janela, no lugar dos residuos do ARIMA): a decisao do filtro e a mesma?
+   //--- Um dia a cada 5 pregoes (um por dia passa de 5 minutos)
+   int iguais[2] = {0, 0}, dias = 0, limite240 = 0, limite500 = 0;
+   for(int fim = 501; fim <= total; fim += 5)
+     {
+      double ret[];
+      ArrayResize(ret, 500);
+      for(int i = 0; i < 500; i++)
+         ret[i] = MathLog(fech[fim - 500 + i]) - MathLog(fech[fim - 501 + i]);
+      double curto[];
+      ArrayCopy(curto, ret, 0, 260, 240);
+      double m5 = 0, m2 = 0;
+      for(int i = 0; i < 500; i++) m5 += ret[i];
+      for(int i = 0; i < 240; i++) m2 += curto[i];
+      m5 /= 500; m2 /= 240;
+      double longo[];
+      ArrayResize(longo, 500);
+      for(int i = 0; i < 500; i++) longo[i] = ret[i] - m5;
+      for(int i = 0; i < 240; i++) curto[i] -= m2;
+      CGarch g2, g5;
+      g2.Definir(1, 1); g2.DefinirOtimizador(300);
+      g5.Definir(1, 1); g5.DefinirOtimizador(300);
+      if(!g2.Ajustar(curto) || !g5.Ajustar(longo)) continue;
+      double s2[], s5[];
+      g2.ObterSerieVolatilidade(s2);
+      g5.ObterSerieVolatilidade(s5);
+      dias++;
+      if(g2.Persistencia() > 0.999) limite240++;
+      if(g5.Persistencia() > 0.999) limite500++;
+      for(int k = 0; k < 2; k++)
+         if(Veta(s2, g2.VolatilidadeProximoPeriodo(), pcts[k]) == Veta(s5, g5.VolatilidadeProximoPeriodo(), pcts[k]))
+            iguais[k]++;
+     }
+   Log(StringFormat("  [H4] PETR4, %d dias (um a cada 5 pregoes): decisao igual com 240 e 500 em %.1f%% (percentil 50) e %.1f%% (percentil 70); "
+                    "persistencia > 0,999 em %.1f%% (240) e %.1f%% (500)",
+                    dias, TaxaPercentual(iguais[0], dias), TaxaPercentual(iguais[1], dias),
+                    TaxaPercentual(limite240, dias), TaxaPercentual(limite500, dias)));
+   Valor("HrealDias", dias, 0);
+   Valor("HrealCinquenta", TaxaPercentual(iguais[0], dias), 1); Valor("HrealSetenta", TaxaPercentual(iguais[1], dias), 1);
+   Valor("HrealLimCurto", TaxaPercentual(limite240, dias), 1); Valor("HrealLimLongo", TaxaPercentual(limite500, dias), 1);
+  }
+
 void OnStart()
   {
    FolderCreate("AlgoLab_testes");
@@ -849,6 +1056,7 @@ void OnStart()
    TestesHR(z);
    TestesGarch(residuos);
    TestesPrevisao(log_preco);
+   TestesImpacto();
 
    Valor("NumIdent", g_num_ident, 0);
    Log(StringFormat("Tempo total: %.0f s", (GetTickCount() - t0) / 1000.0));

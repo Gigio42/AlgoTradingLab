@@ -25,7 +25,9 @@
 %  implementações" (testes do código em séries sintéticas, ADF em séries
 %  artificiais e diagnóstico ADF/Ljung-Box na PETR4): foge do escopo
 %  apresentado; pode voltar depois. Texto guardado em
-%  ia/rascunhos/antes_tirar_validacao_2026-10-18/.
+%  ia/rascunhos/antes_tirar_validacao_2026-10-18/. Em 2026-11-06, também a pedido
+%  do autor, voltou só a recuperação de parâmetros, enxuta, como subseção do plano
+%  experimental logo depois da reprodução do estudo de referência.
 %
 %  % REFERÊNCIA: marcações assim indicam onde uma citação deve entrar
 %  depois que o autor ler a obra. Nenhuma foi inserida sem leitura.
@@ -57,6 +59,11 @@ do estudo, a amostra, a coleta e a análise dos dados, a implementação dos
 modelos, o plano experimental e os obstáculos encontrados.
 
 \section{Caracterização da pesquisa}
+
+Quanto à natureza, a pesquisa é primária, por produzir conhecimento novo a partir
+da realização de experimentos, e aplicada, por voltar esse conhecimento a um
+problema concreto de decisão. Ela se apoia no método empírico, que fundamenta as
+conclusões em observações \cite{wazlawick2021}.
 
 \subsection{Quanto aos objetivos}
 
@@ -100,11 +107,9 @@ apresentados aqui foram executados em ambiente Linux, por meio da camada de
 compatibilidade Wine, pelos motivos expostos ao final deste capítulo.
 
 A amostra é composta por séries históricas diárias de ações negociadas na B3. O
-ativo principal é a PETR4, ação preferencial da Petrobras, escolhida por três
+ativo principal é a PETR4, ação preferencial da Petrobras, escolhida por dois
 motivos. É o ativo estudado por \citeonline{almeida2016}, o que permite a
-comparação direta. Apresenta volatilidade acentuada, característica que dá sentido
-à aplicação de um modelo de variância condicional. E possui série longa e contínua
-no arquivo histórico da bolsa, com 5.881 pregões, de 2 de janeiro de 2003 a 21 de
+comparação direta, e possui série longa e contínua no arquivo histórico da bolsa, com 5.881 pregões, de 2 de janeiro de 2003 a 21 de
 setembro de 2026.
 
 Para verificar se os resultados se repetem fora do ativo principal, foram
@@ -116,20 +121,21 @@ mudanças na forma de cotação que impedissem a reconstrução dos preços, e p
 sempre acima de R\$ 3, para que o arredondamento em centavos não distorcesse os
 retornos. As ações também deveriam pertencer a setores diferentes entre si.
 
-O recorte temporal foi dividido em períodos, e não tratado como um período único,
+O recorte temporal foi dividido em períodos, em vez de tratado como um período único,
 porque o comportamento de uma estratégia depende do momento do mercado. Foram
 examinados um período de crise, de 2007 a 2011, um de queda prolongada seguida de
 recuperação, de 2013 a 2016, o intervalo de 2017 a 2024, que inclui a crise da
-pandemia, o período mais recente, de 2025 a 2026, e o período mais longo
-disponível, de 2005 a 2026.
+pandemia, e o período mais recente, de 2025 a 2026.
+% 05/11/2026, pedido do autor: 2005 a 2026 (configurações fixas) saiu do Cap. II
+% e ficou só como teste adicional no Cap. III, Seção "O efeito vem do GARCH?".
 
 \section{Procedimentos para coleta e análise de dados}
 
 \subsection{Técnicas para coleta de dados}
 
-Os dados foram obtidos de fontes públicas oficiais, e não do servidor da
-corretora, que disponibiliza cotações apenas a partir de setembro de 2021 e pode
-alterar o histórico sem aviso. As cotações vieram do arquivo COTAHIST, série
+Os dados foram obtidos de fontes públicas oficiais. O servidor da corretora não
+foi usado, porque disponibiliza cotações apenas a partir de setembro de 2021. As
+cotações vieram do arquivo COTAHIST, série
 histórica publicada pela própria B3, que registra, para cada pregão e cada ação,
 os preços de abertura, máximo, mínimo e fechamento e o volume negociado
 \cite{b3Cotahist}. A taxa Selic diária foi obtida da série 11 do Sistema Gerenciador de Séries
@@ -168,17 +174,16 @@ personalizados, recurso que permite ao testador operar sobre dados próprios.
 \subsection{Natureza da análise de dados}
 
 A análise é quantitativa. Os robôs foram comparados pelas métricas apresentadas
-no Capítulo I. Como o GARCH decide se o robô opera e com quanto, e não a direção
-da operação, que continua a cargo do ARIMA, as métricas principais são as de
+no Capítulo I. Como o GARCH decide se o robô opera e com quanto, enquanto a direção
+da operação continua a cargo do ARIMA, as métricas principais são as de
 risco, a queda máxima e a volatilidade. O retorno acumulado acompanha essas
-métricas como resultado complementar. A taxa de acerto verifica se o GARCH
-melhorou o acerto direcional, como previa a primeira hipótese, e a quantidade de
+métricas como resultado complementar. O acerto direcional, que a primeira hipótese
+previa melhorar, foi medido pela taxa de acerto das negociações, e a quantidade de
 sinais vetados ajuda a explicar o funcionamento do filtro.
 
-Para verificar se as diferenças entre os robôs eram consistentes, e não obra do
-acaso, observou-se se elas se repetiam entre os períodos, entre as configurações e
-entre os ativos. Se o GARCH não fizesse diferença, a versão com ele seria melhor
-em cerca de metade das comparações, como no lançamento de uma moeda.
+A consistência das diferenças entre os robôs foi avaliada pela repetição delas
+entre os períodos, entre as configurações e entre os ativos. Não foi aplicado teste
+estatístico formal.
 
 \section{Implementação dos modelos}
 
@@ -186,25 +191,50 @@ O MetaTrader 5 oferece, na biblioteca padrão do MQL5, indicadores de análise
 técnica como médias móveis e osciladores. Os modelos ARIMA e GARCH foram
 implementados para este
 trabalho. A implementação se apoiou na documentação oficial da linguagem
-\cite{metaquotesMql5} e nos conteúdos compartilhados pela comunidade de
-desenvolvedores do MetaTrader 5, cujos exemplos e trechos de código serviram de
-ponto de partida e foram adaptados às necessidades do robô. Para os cálculos
+\cite{metaquotesMql5} e em artigos publicados pela comunidade de desenvolvedores
+da plataforma, que serviram de aprendizado para a implementação: a estimação de
+modelos ARIMA em MQL5 \cite{dube2023}, o teste ADF \cite{dube2024} e o GARCH
+estimado por máxima verossimilhança \cite{chernish2024}. Uma ferramenta
+de inteligência artificial também foi usada, de forma pontual, como apoio para
+juntar os trechos de código e para fazer verificações.
+% 02/11/2026, pedido do autor: mencionar o apoio de IA como parte mínima.
+Para os cálculos
 numéricos mais pesados, a resolução de sistemas lineares e a otimização com
 restrições, foram usadas rotinas da ALGLIB, biblioteca numérica que acompanha a
 instalação da plataforma.
 
-O robô de médias móveis de \citeonline{almeida2016} seguiu o mesmo caminho. Ele
-foi reescrito a partir do algoritmo publicado pelo autor, com o indicador de média
-móvel da própria plataforma, e compartilha com o ARIMA-GARCH a rotina de envio de
+O robô de médias móveis de \citeonline{almeida2016} seguiu o mesmo caminho. O
+algoritmo original, publicado no Anexo~1 daquele trabalho
+\cite[p.~69-77]{almeida2016}, depende de seis bibliotecas externas
+\cite[p.~35]{almeida2016}. Por isso, ele foi reescrito com o indicador de média
+móvel da própria plataforma e compartilha com o ARIMA-GARCH a rotina de envio de
 ordens e de medição dos resultados, para que os dois sejam avaliados nas mesmas
-condições.
+condições. Foram mantidas as médias simples de 10 e 20 períodos sobre o preço de
+fechamento, a compra quando a média rápida fica acima da lenta, a venda no caso
+inverso, com a inversão da posição a cada sinal, e a decisão tomada uma vez por
+pregão, com as médias do último pregão encerrado.
+
+Há três diferenças em relação ao original. A entrada é feita no pregão em que a
+média rápida cruza a lenta, e não sempre que ela está acima, diferença tratada na
+reprodução do estudo de referência. O volume calculado por porcentagem de risco
+não foi reproduzido, porque a rotina que o calcula não consta do anexo, e ficou o
+volume fixo, que o original também oferece. Por fim, foram acrescentadas duas
+opções usadas nas comparações com o ARIMA-GARCH, a aplicação de uma fração do
+patrimônio em cada operação e a operação somente na compra. O código desse robô
+está no Apêndice~C.
+% 06/11/2026, pedido do autor ("o apêndice ficou com muito texto explicativo"):
+% o porquê da reescrita e as diferenças saíram do Apêndice C e vieram para cá.
+% Procedência no cabeçalho de apendice-c.tex. Os limites de perda e de lucro
+% zerados já estão no Cap. I (seção das médias móveis). Cópia anterior:
+% ia/rascunhos/antes_enxugar_apendice_c_2026-11-06/.
 
 As subseções a seguir descrevem a implementação do ARIMA-GARCH parte por parte,
 da preparação dos preços aos parâmetros do robô.
-% Frase genérica, sem referência, a pedido do autor (21/10/2026). Exemplos do que
-% ele leu, se a banca perguntar: Dube (2023), ARIMA em MQL5 pelo método de Powell,
-% https://www.mql5.com/pt/articles/12583; Dube (2024), teste ADF em MQL5,
-% https://www.mql5.com/pt/articles/13991. O código não foi tirado deles.
+% 02/11/2026, pedido do autor: os artigos da comunidade MQL5 entram citados, um
+% por conceito (ARIMA, ADF, GARCH), como material de aprendizado. Nenhum trecho de
+% código foi copiado deles (o código entrou no git em 03/08/2026, commit 4b3ce4b).
+% Versões em português, as que o autor leu. Levantamento completo e demais
+% artigos: ia/bibliografia/creditos-codigo-2026-11-02.md.
 
 \subsection{Preparação dos preços}
 
@@ -232,9 +262,9 @@ dependem dos próprios coeficientes que se quer estimar. A primeira regressão
 ajusta um modelo autorregressivo longo, cujos resíduos servem de estimativa desses
 erros, e a segunda usa essas estimativas para obter os coeficientes.
 
-A escolha do método foi uma decisão de projeto. Ele não exige taxa de aprendizado
-nem número de iterações e não depende da escala dos preços, o que o torna estável
-para um modelo que é reestimado todos os dias. O método também é usado na
+A escolha do método foi uma decisão de projeto. Ele exige apenas regressões
+lineares, sem processo iterativo, o que convém a um modelo reestimado todos os
+dias e com muitas combinações de ordens a comparar. O método também é usado na
 identificação automática de modelos ARIMA, em que muitas combinações de ordens
 precisam ser estimadas, por exigir apenas regressões lineares e fornecer
 estimativas próximas às de máxima verossimilhança \cite{gomez1998}.
@@ -268,7 +298,8 @@ para que nenhuma levasse vantagem por somar mais ou menos dias.
 
 As ordens do modelo foram escolhidas pelo próprio robô. A ordem de integração $d$
 foi determinada pela aplicação sequencial do teste ADF \cite{thomaz2019}, ao nível
-de significância de 5\%. Testa-se a série e, enquanto a hipótese de raiz unitária
+de significância de 5\%. Na regressão do teste foi incluída uma constante, e o
+número de defasagens da variação foi escolhido pelo AIC. Testa-se a série e, enquanto a hipótese de raiz unitária
 não for rejeitada, testa-se a série diferenciada mais uma vez. Com $d = 1$, o ARIMA modela os retornos. Com $d = 0$,
 escolhido quando o próprio logaritmo do preço se mostra estacionário dentro da
 janela, ele modela o logaritmo do preço diretamente. As ordens $p$ e $q$ foram
@@ -324,7 +355,8 @@ sobre os últimos 120 ou 240 pregões já encerrados, conforme a configuração.
 dia, o pregão mais antigo sai da janela e o mais recente entra, o que permite ao
 modelo acompanhar as mudanças de comportamento do mercado. A janela nunca inclui o
 pregão em andamento, para que a decisão do dia não use uma informação que só
-estaria disponível no seu encerramento.
+estaria disponível no seu encerramento. O GARCH não tem janela própria e é
+estimado sobre os resíduos do ARIMA nessa mesma janela.
 
 \citeonline{xing2024} compararam esse tipo de janela com a janela expansiva, que
 acumula todo o histórico desde o início, e no seu estudo o ARIMA teve melhor
@@ -370,8 +402,14 @@ dos valores estimados na janela. O limiar por percentil se adapta ao ativo e ao
 período, porque o que é um dia agitado muda com o tempo.
 
 No ajuste da posição, o tamanho da posição é multiplicado pela razão entre o alvo
-e a volatilidade prevista, dentro de limites mínimo e máximo. Com um alvo de 1\% ao
-dia e uma volatilidade prevista de 2\%, o robô compra metade do tamanho normal.
+e a volatilidade prevista, dentro de limites de um quarto e do dobro do tamanho
+normal. Com um alvo de 1\% ao dia e uma volatilidade prevista de 2\%, o robô compra
+metade do tamanho normal. Como o robô não opera alavancado, a posição nunca passa
+de 98\% do patrimônio. Partindo de um tamanho normal de 95\%, o ajuste, na
+prática, reduz a posição, mas quase não a aumenta.
+% Código: Frac_Volume_Min = 0,25 e Frac_Volume_Max = 2,0 (iguais em todas as
+% grades, refeito_2026-10-05/grades/r3_*.txt); VolumePorCapital (Negociacao.mqh)
+% limita a fração a 0,98 do patrimônio.
 
 O ajuste da posição sozinho foi testado, mas não foi escolhido em nenhum período
 nem em nenhuma ação. Todos os robôs escolhidos usam o filtro, sozinho ou combinado
@@ -404,19 +442,20 @@ variados na otimização, com os valores apresentados no plano experimental.
 
 O plano experimental foi definido antes da observação dos resultados. Esta seção
 descreve, em partes, as condições das simulações, a forma de medir o resultado, a
-reprodução do estudo de referência, as configurações testadas, a forma de escolher
-entre elas, os robôs comparados e os testes complementares.
+reprodução do estudo de referência, a validação dos estimadores, as configurações testadas, a forma de escolher
+entre elas, os robôs comparados e o teste complementar.
 
 \subsection{Condições das simulações}
 
 Todas as simulações usaram os preços de abertura de cada pregão, já que o robô
 decide uma vez por dia e executa na abertura. No cenário principal, partiram de um
-capital de R\$ 100 mil, aplicaram a cada operação 95\% do patrimônio e operaram
-apenas na ponta compradora. A venda a descoberto, em que o robô vende uma ação que
+capital de R\$ 100 mil, aplicaram a cada operação 95\% do patrimônio, valor que
+o ajuste da posição, quando usado, pode reduzir, e operaram apenas na ponta
+compradora. A venda a descoberto, em que o robô vende uma ação que
 não tem para recomprá-la mais barato, ficou fora do cenário principal. Nela, o
 robô passa a apostar também na queda, e o resultado depende ainda mais da direção
 prevista pelo ARIMA, enquanto o foco deste trabalho é a proteção dada pelo GARCH.
-O efeito dela foi medido à parte, nos testes complementares. A reprodução do
+O efeito dela foi medido à parte, no teste complementar. A reprodução do
 estudo de referência usou as condições do autor, descritas mais adiante.
 
 \subsection{Medição dos resultados}
@@ -435,7 +474,10 @@ negocia em média até R\$ 3 milhões por dia \cite{b3Tarifas}. A corretagem foi
 considerada zero, e a tarifa, que é a vigente em 2026, foi aplicada a todos os
 períodos. O segundo acrescenta a remuneração pela taxa Selic diária do capital que
 fica fora do mercado, para que configurações que passam tempos diferentes fora
-dele sejam comparadas de forma justa.
+dele sejam comparadas de forma justa. O desconto dos custos também foi aplicado
+na taxa de acerto, em que uma negociação só conta como lucrativa se o lucro superar
+o custo.
+% Desempenho.mqh, linha do resultado_saida: DEAL_PROFIT - 2 x valor x custo_por_lado.
 % Custo de 0,03% por lado (input Custo_Por_Lado do EA): tabela de tarifas da B3,
 % à vista, sem day trade, ADTV mensal até R$ 3 milhões: negociação 0,00500% + CCP
 % 0,02240% + TTA 0,0026% = 0,0300% (dados/fontes/b3/tarifas_acoes_a_vista_b3_2026-10-21.html,
@@ -480,13 +522,48 @@ e, quando não os encontra, adia o início do teste por conta própria
 prática, em junho de 2008. Para testar essa hipótese, a série deste trabalho foi
 cortada para começar em 2 de janeiro de 2008, sem nenhuma outra alteração nos
 preços. Trata-se de uma hipótese, e não de um fato, porque o servidor usado pelo
-autor não existe mais e não há como conferir o histórico que ele baixou.
+autor não existe mais e não há como conferir o histórico que ele baixou. Nessa
+segunda forma, a entrada nas operações também seguiu exatamente a regra do anexo
+do autor, que compra sempre que a média rápida está acima da lenta, em vez de
+esperar o cruzamento. Essa diferença altera apenas a primeira operação de cada
+teste.
+% 02/11/2026, pedido do autor: a coluna "histórico desde 2008" saiu do
+% ferramentas/ReplicaAlmeidaEA.mq5 com entrada por estado (ra_T*d8_m2_e0_r0),
+% a porta do OnTick do anexo. Com a entrada por cruzamento do MediasMoveis2
+% (e1): 2007-2011 49 op. e -2.239; 2008-2010 34 op. e -1.191 (resumo.txt da v2).
+% "Altera apenas a primeira operação": replica_almeida_v2_2026-10-21/LEIAME.md, seção 1.
 % 2026-10-29, a pedido do autor: a segunda forma passou a ser só o histórico desde
 % 2008, sem proventos e sem arredondar as médias (a combinação que chega mais perto
 % dos números do autor). Série PETR4_DESDE2008 (series_replica_almeida.sh); adiamento
 % no log inicio_adiado_testador.log ("start time changed to 2008.05.31").
 % Versão anterior, com proventos e arredondamento:
 % ia/rascunhos/antes_objetivos_risco_2026-10-29/cap2-metodologia_antes_replica.tex.
+
+\subsection{Validação dos estimadores}
+
+Como o ARIMA e o GARCH foram programados neste trabalho, os dois métodos de
+estimação descritos na implementação dos modelos foram verificados antes do uso
+com dados reais, por um teste de recuperação de parâmetros. Gera-se uma série
+artificial a partir de coeficientes escolhidos, o estimador recebe apenas a série,
+e os valores que ele encontra são comparados com os usados na geração. Como a
+resposta certa é conhecida, o teste mostra se o método chega a ela.
+
+Foram usados três casos. O primeiro é um AR(2), que tem apenas a parte
+autorregressiva, caso em que o método de \citeonline{hannan1982} se reduz a uma
+única regressão. O segundo é um ARMA(1,1), que inclui a parte de médias móveis e
+passa pelas duas regressões do método. Como o ARIMA aplica um ARMA à série já
+diferenciada, esses dois casos cobrem o estimador do ARIMA. O terceiro é um
+GARCH(1,1), que verifica a máxima verossimilhança com o otimizador numérico. As
+séries do AR(2) e do ARMA(1,1) têm 4.000 observações, e a do GARCH, 6.000. Elas
+não correspondem a nenhum período do mercado e foram geradas com uma semente fixa
+de números aleatórios, para que o teste possa ser repetido com o mesmo resultado.
+% 06/11/2026, pedido do autor: volta só a recuperação de parâmetros da seção
+% "Validação das implementações" retirada em 18/10/2026 (sem o ADF em séries
+% artificiais e sem o diagnóstico da PETR4). Programa ferramentas/ValidacaoAlgoLab.mq5
+% (MathSrand(20260803); M = 4000 no ARMA(1,1) e no AR(2), G = 6000 no GARCH;
+% CArima::Definir(1,0,1,true) e (2,0,0,true); CGarch::Definir(1,1)), rodado por
+% ferramentas/scripts/validar.sh. Com q = 0 o CArima faz MQO direto (sem o 1º
+% estágio). Cópia anterior: ia/rascunhos/antes_validacao_pesos_2026-11-06/.
 
 \subsection{Configurações testadas}
 
@@ -554,39 +631,31 @@ fica fixo é a configuração.
 
 Para cada período de teste, os três passos foram refeitos do zero, com os três
 anos anteriores a ele. Por isso, a configuração escolhida, inclusive a forma de
-uso do GARCH, pode mudar de um período para outro. O Quadro~\ref{qua:periodos}
+uso do GARCH, pode mudar de um período para outro. A Figura~\ref{fig:periodos}
 mostra os períodos usados.
 
-\begin{quadro}[htbp]
+% 05/11/2026, pedido do autor: o antigo Quadro "Períodos de otimização e de
+% teste" virou esta linha do tempo (cópia do quadro em
+% ia/rascunhos/antes_fig_periodos_2026-11-05/). Datas: cabeçalho de
+% figuras/fig07-periodos.tex.
+\begin{figure}[htbp]
 \centering
 \caption{Períodos de otimização e de teste}
-\label{qua:periodos}
-\fontsize{10}{12}\selectfont
-\begin{tabular}{|>{\raggedright\arraybackslash}p{3.4cm}|>{\raggedright\arraybackslash}p{3.8cm}|>{\raggedright\arraybackslash}p{7.2cm}|}
-\hline
-Otimização & Teste & Característica do período de teste \\
-\hline
-2004 a 2006 & 2007 a 2011 & crise financeira de 2008 \\
-\hline
-2010 a 2012 & 2013 a 2016 & queda prolongada da PETR4 e recuperação em 2016 \\
-\hline
-2014 a 2016 & 2017 a 2024 & teste principal, por ser o mais longo, inclui a crise da pandemia em 2020 \\
-\hline
-2022 a 2024 & jan. 2025 a set. 2026 & período mais recente disponível \\
-\hline
-2010 a 2012 & 2005 a 2026 e 2017 a 2024 & configurações fixas, mantidas sem nova escolha \\
-\hline
-\end{tabular}
+\label{fig:periodos}
+\includegraphics{fig07-periodos.pdf}
 \fonte{Elaboração própria.}
-\end{quadro}
+\end{figure}
+% 05/11/2026, pedido do autor: a figura fica logo depois do parágrafo que a cita,
+% e o texto seguinte só começa depois dela (mesma solução do Cap. I).
+\FloatBarrier
 
 Foram usados dois critérios para ordenar a lista, porque não existe uma única
 forma de definir a melhor configuração. O ARIMA-GARCH Sharpe é a primeira
 configuração da lista ordenada pelo índice de Sharpe, ou seja, a de maior ganho
 por unidade de oscilação na otimização. O ARIMA-GARCH Calmar é a primeira da lista
 ordenada pelo índice de Calmar, a de maior ganho por unidade de queda máxima. O
-nome indica apenas o critério usado para ordenar a lista, e não o resultado obtido
-no teste. Na otimização, os dois índices foram calculados com os dois ajustes
+nome indica apenas o critério usado para ordenar a lista, sem relação com o
+resultado obtido no teste. Na otimização, os dois índices foram calculados com os dois ajustes
 descritos na medição dos resultados, e o de Sharpe, sobre o ganho acima da Selic.
 
 \subsection{Robôs comparados}
@@ -601,22 +670,14 @@ contrário do teste original, que também vendia a descoberto. A terceira é a
 compra e manutenção da própria PETR4.
 
 Essas comparações colocam lado a lado robôs com configurações diferentes. Para
-confirmar que as diferenças vinham do GARCH, e não dos demais parâmetros, cada
+separar o efeito do GARCH do efeito dos demais parâmetros, cada
 versão com o GARCH também foi executada com o modelo desligado e todo o resto
 igual. Como o robô tem um único parâmetro que liga e desliga o GARCH, essa
 comparação isola o efeito dele.
 
-\subsection{Testes complementares}
+\subsection{Teste complementar}
 
-Dois testes complementares ampliaram a verificação. No primeiro, o ARIMA-GARCH
-Sharpe e o ARIMA-GARCH Calmar escolhidos em 2010 a 2012 foram mantidos fixos, sem
-refazer a escolha, assim como \citeonline{almeida2016} manteve fixas as suas
-médias de 10 e 20 períodos. Eles foram testados em 2017 a 2024, período
-inteiramente posterior à escolha, e em 2005 a 2026, que inclui os anos da escolha
-e por isso não é um teste fora da amostra, mas mostra se o comportamento se mantém
-no prazo mais longo disponível.
-
-No segundo, o mesmo procedimento foi repetido na PETR4, na VALE3, na USIM5 e na
+Um teste complementar ampliou a verificação. O mesmo procedimento foi repetido na PETR4, na VALE3, na USIM5 e na
 POMO4, nos períodos de 2007 a 2011, 2013 a 2016 e 2025 a 2026, e cada configuração
 com GARCH foi comparada à mesma configuração sem ele. Nesse teste, a grade incluiu
 também a opção de vender a descoberto, o que elevou o número de configurações para
