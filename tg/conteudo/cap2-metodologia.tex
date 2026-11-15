@@ -3,7 +3,9 @@
 %
 %  Numeração 2.1 a 2.3.2 dada pela FATEC-ID (caderno de delineamentos e
 %  Manual, item 4.1.2.8). As seções seguintes (implementação, plano
-%  experimental, obstáculos) detalham os procedimentos.
+%  experimental, obstáculos) detalham os procedimentos. Desde 11/11/2026, a
+%  2.1 tem só o que a norma pede: 2.1.1 explicativa e 2.1.2 quase experimental,
+%  sem a natureza (INCERTEZAS item 98).
 %
 %  Varredura do autor em 2026-10-15 (lista de pedidos colada na conversa):
 %  Wazlawick citado em 2.1.1 e 2.1.2 (a definição vem do PTG, escrito pelos
@@ -46,7 +48,8 @@
 %     21/10/2026 a pedido do autor (INCERTEZAS item 71)
 %   - janelas de otimização e teste, critérios, configurações fixas e
 %     cenário de Almeida: dados/resultados/refeito_2026-10-05/PROTOCOLO.md
-%   - 14.976 simulações (624 configurações x 4 ativos x 6 janelas; eram 688 e
+%   - 19.968 simulações desde 10/11/2026 (624 x 4 ativos x 8 janelas, com 2014-2016
+%     e 2017-2024 em outras_acoes_2017_2024_2026-11-10); antes 14.976 (6 janelas; eram 688 e
 %     16.512 com o intervalo de confiança):
 %     dados/resultados/refeito_2026-10-05/analise_grades.txt
 %   - janela de 120/240 pregões, reseleção a cada 21: robos/ARIMA-GARCH/ARIMA_GARCH_EA.mq5
@@ -60,19 +63,22 @@ modelos, o plano experimental e os obstáculos encontrados.
 
 \section{Caracterização da pesquisa}
 
-Quanto à natureza, a pesquisa é primária, por produzir conhecimento novo a partir
-da realização de experimentos, e aplicada, por voltar esse conhecimento a um
-problema concreto de decisão. Ela se apoia no método empírico, que fundamenta as
-conclusões em observações \cite{wazlawick2021}.
+% 11/11/2026, depois da conversa com a orientadora: voltaram as subseções 2.1.1
+% e 2.1.2, que o Manual pede (item 4.1.2.8, "deve conter": quanto aos objetivos
+% e quanto ao delineamento). Saiu só o que a norma não pede: a natureza
+% (primária, aplicada, método empírico) e a parte descritiva dos objetivos.
+% Versões anteriores em ia/rascunhos/antes_orientadora_2026-11-10/ (com os
+% rótulos extras) e ia/rascunhos/antes_reverter_caracterizacao_2026-11-11/ (só
+% experimental, sem subseções). INCERTEZAS item 98.
 
 \subsection{Quanto aos objetivos}
 
-Quanto aos objetivos, a pesquisa é explicativa, com uma parte descritiva. Segundo
-\citeonline{wazlawick2021}, a pesquisa explicativa busca identificar as causas de
-determinados fenômenos. Neste trabalho, ela investiga por que a inclusão de um modelo de
-volatilidade altera o desempenho de uma estratégia cuja previsão de direção
-permanece a mesma. A parte descritiva está no registro de como cada robô se
-comportou em diferentes períodos do mercado.
+Quanto aos objetivos, a pesquisa é explicativa. Segundo \citeonline{wazlawick2021},
+a pesquisa explicativa busca identificar as causas de determinados fenômenos.
+Neste trabalho, ela investiga por que a inclusão de um modelo de volatilidade
+altera o desempenho de uma estratégia cuja previsão de direção permanece a mesma.
+% Wazlawick (2021), seção 4.2, p. 43 do PDF: a explicativa "busca suas causas e
+% explicações, ou seja, os fatores determinantes desses dados".
 
 \subsection{Quanto ao delineamento}
 
@@ -112,22 +118,31 @@ motivos. É o ativo estudado por \citeonline{almeida2016}, o que permite a
 comparação direta, e possui série longa e contínua no arquivo histórico da bolsa, com 5.881 pregões, de 2 de janeiro de 2003 a 21 de
 setembro de 2026.
 
-Para verificar se os resultados se repetem fora do ativo principal, foram
-incluídas outras três ações, VALE3, da mineração, USIM5, da siderurgia, e POMO4,
-de bens de capital. O critério de escolha, definido antes da observação de
-qualquer resultado, considerou a qualidade dos dados e a diversidade de setores.
-Cada ação precisava ter série completa de 2003 a 2026 no arquivo da bolsa, sem
-mudanças na forma de cotação que impedissem a reconstrução dos preços, e preço
-sempre acima de R\$ 3, para que o arredondamento em centavos não distorcesse os
-retornos. As ações também deveriam pertencer a setores diferentes entre si.
+Outras três ações, VALE3, USIM5 e POMO4, foram usadas apenas na medição da venda
+a descoberto e no teste complementar, descritos no plano experimental.
+% 12/11/2026, pedido do autor: o critério de escolha das outras ações saiu daqui
+% e foi, simplificado, para o teste complementar. Cópia anterior em
+% ia/rascunhos/antes_series_e_amostra_2026-11-12/.
 
 O recorte temporal foi dividido em períodos, em vez de tratado como um período único,
 porque o comportamento de uma estratégia depende do momento do mercado. Foram
 examinados um período de crise, de 2007 a 2011, um de queda prolongada seguida de
 recuperação, de 2013 a 2016, o intervalo de 2017 a 2024, que inclui a crise da
-pandemia, e o período mais recente, de 2025 a 2026.
+pandemia, e o período mais recente, de 2025 a 2026. A
+Figura~\ref{fig:periodos-teste} mostra esses períodos.
 % 05/11/2026, pedido do autor: 2005 a 2026 (configurações fixas) saiu do Cap. II
 % e ficou só como teste adicional no Cap. III, Seção "O efeito vem do GARCH?".
+% 12/11/2026, pedido do autor: figura só com os períodos de teste
+% (ia/relatorios/periodos-amostra/). A Figura fig:periodos, no plano
+% experimental, repete estas barras e acrescenta a otimização.
+
+\begin{figure}[htbp]
+\centering
+\caption{Períodos de teste}
+\label{fig:periodos-teste}
+\includegraphics{fig09-periodos-teste.pdf}
+\fonte{Elaboração própria.}
+\end{figure}
 
 \section{Procedimentos para coleta e análise de dados}
 
@@ -443,7 +458,7 @@ variados na otimização, com os valores apresentados no plano experimental.
 O plano experimental foi definido antes da observação dos resultados. Esta seção
 descreve, em partes, as condições das simulações, a forma de medir o resultado, a
 reprodução do estudo de referência, a validação dos estimadores, as configurações testadas, a forma de escolher
-entre elas, os robôs comparados e o teste complementar.
+entre elas, os robôs comparados, a medição da venda a descoberto e o teste complementar.
 
 \subsection{Condições das simulações}
 
@@ -455,7 +470,7 @@ compradora. A venda a descoberto, em que o robô vende uma ação que
 não tem para recomprá-la mais barato, ficou fora do cenário principal. Nela, o
 robô passa a apostar também na queda, e o resultado depende ainda mais da direção
 prevista pelo ARIMA, enquanto o foco deste trabalho é a proteção dada pelo GARCH.
-O efeito dela foi medido à parte, no teste complementar. A reprodução do
+O efeito dela foi medido à parte, como descrito na Seção~\ref{sec:venda-metodo}. A reprodução do
 estudo de referência usou as condições do autor, descritas mais adiante.
 
 \subsection{Medição dos resultados}
@@ -572,43 +587,61 @@ Seção~\ref{sec:parametros}, pelo otimizador do testador de estratégias do
 MetaTrader 5, no modo de busca completa, em que a própria plataforma executa
 uma simulação para cada combinação dos valores informados.
 
-Três parâmetros variaram em todas as formas de uso do GARCH. O primeiro foi a
-inclusão ou não de uma constante no ARIMA. O segundo, a janela de estimação, de 120
-ou de 240 pregões. O terceiro, uma previsão mínima, de zero ou de 0,1\%, abaixo da
-qual o robô não opera. Essas três escolhas formam oito combinações, e cada forma de
-uso do GARCH acrescentou a elas os seus próprios parâmetros e, quando havia veto, a
-opção de encerrar ou não a posição, como mostra o Quadro~\ref{qua:grade}. Ao todo,
-foram 304 configurações com o GARCH e oito sem ele, 312 no total.
-
 % Procedência: dados/resultados/refeito_2026-10-05/grades/r3_*.txt (valores
-% início||passo||fim de cada input; Optimization=1 em ferramentas/scripts/otimizar.sh)
+% início||passo||fim de cada input; Optimization=1 em ferramentas/scripts/otimizar.sh):
+% IncluirConstante false/true, Janela_Estimacao 120/240, Limiar_Sinal 0/0,001 (todas);
+% Limiar_Absoluto 0,02 a 0,04 passo 0,01; Limiar_Percentil 50 a 90 passo 20; Vol_Alvo
+% 0,01/0,02; ZerarNoVeto false/true. 13/11/2026, pedido do autor: quadro separado em
+% duas partes (o que é comum e o que é próprio de cada forma), com uma coluna por
+% parâmetro. Cópia anterior em ia/rascunhos/antes_modelos_quadros_2026-11-13/.
 \begin{quadro}[htbp]
 \centering
 \caption{Configurações testadas na otimização}
 \label{qua:grade}
 \fontsize{10}{12}\selectfont
-\begin{tabular}{|>{\raggedright\arraybackslash}p{4.2cm}|>{\raggedright\arraybackslash}p{7.0cm}|>{\centering\arraybackslash}p{3.2cm}|}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{3.7cm}|>{\raggedright\arraybackslash}p{3.0cm}|>{\raggedright\arraybackslash}p{2.1cm}|>{\raggedright\arraybackslash}p{2.8cm}|>{\centering\arraybackslash}p{2.8cm}|}
 \hline
-Forma de uso do GARCH & Parâmetros próprios e valores testados & Configurações \\
+\multicolumn{5}{|l|}{Parte comum a todas as formas: 2 $\times$ 2 $\times$ 2 = 8 combinações} \\
 \hline
-Sem GARCH (ARIMA) & nenhum & 8 \\
+\multicolumn{2}{|l|}{Constante no ARIMA} & \multicolumn{3}{l|}{com ou sem} \\
 \hline
-Filtro, limiar fixo & limiar de 2\%, 3\% ou 4\% ao dia, encerrar ou não a posição no veto & 8 $\times$ 3 $\times$ 2 = 48 \\
+\multicolumn{2}{|l|}{Janela de estimação} & \multicolumn{3}{l|}{120 ou 240 pregões} \\
 \hline
-Filtro, limiar por percentil & percentil 50, 70 ou 90, encerrar ou não a posição no veto & 8 $\times$ 3 $\times$ 2 = 48 \\
+\multicolumn{2}{|l|}{Previsão mínima para operar} & \multicolumn{3}{l|}{zero ou 0,1\%} \\
 \hline
-Filtro e ajuste da posição, limiar fixo & limiar de 2\%, 3\% ou 4\% ao dia, alvo de 1\% ou 2\% ao dia, encerrar ou não a posição no veto & 8 $\times$ 3 $\times$ 2 $\times$ 2 = 96 \\
+\multicolumn{5}{|l|}{Parte própria de cada forma de uso do GARCH} \\
 \hline
-Filtro e ajuste da posição, limiar por percentil & percentil 50, 70 ou 90, alvo de 1\% ou 2\% ao dia, encerrar ou não a posição no veto & 8 $\times$ 3 $\times$ 2 $\times$ 2 = 96 \\
+Forma de uso & Limiar do filtro & Alvo do ajuste, ao dia & Posição aberta no veto & Configurações \\
 \hline
-Ajuste da posição & alvo de 1\% ou 2\% ao dia & 8 $\times$ 2 = 16 \\
+Sem GARCH (ARIMA) & -- & -- & -- & 8 \\
 \hline
-Total & & 312 \\
+Filtro & 2\%, 3\% ou 4\% ao dia & -- & encerra ou mantém & 8 $\times$ 3 $\times$ 2 = 48 \\
+\hline
+Filtro & percentil 50, 70 ou 90 & -- & encerra ou mantém & 8 $\times$ 3 $\times$ 2 = 48 \\
+\hline
+Filtro e ajuste da posição & 2\%, 3\% ou 4\% ao dia & 1\% ou 2\% & encerra ou mantém & 8 $\times$ 3 $\times$ 2 $\times$ 2 = 96 \\
+\hline
+Filtro e ajuste da posição & percentil 50, 70 ou 90 & 1\% ou 2\% & encerra ou mantém & 8 $\times$ 3 $\times$ 2 $\times$ 2 = 96 \\
+\hline
+Ajuste da posição & -- & 1\% ou 2\% & -- & 8 $\times$ 2 = 16 \\
+\hline
+\multicolumn{4}{|l|}{Total} & 312 \\
 \hline
 \end{tabular}
 \fonte{Elaboração própria.}
-\nota{O número 8 corresponde às combinações comuns a todas as formas: constante no ARIMA (sim ou não), janela de estimação (120 ou 240 pregões) e previsão mínima para operar (zero ou 0,1\%).}
+\nota{Cada configuração combina uma das 8 combinações da parte comum com os valores próprios da sua forma de uso. Sem o filtro, não há limiar nem veto.}
 \end{quadro}
+
+
+Três parâmetros variaram em todas as formas de uso do GARCH. O primeiro foi a
+inclusão ou não de uma constante no ARIMA. O segundo, a janela de estimação, de 120
+ou de 240 pregões. O terceiro, uma previsão mínima, de zero ou de 0,1\%, abaixo da
+qual o robô não opera. Essas três escolhas formam oito combinações, e cada forma de
+uso do GARCH acrescentou a elas os seus próprios parâmetros e, quando havia veto, a
+opção de encerrar ou não a posição. O Quadro~\ref{qua:grade} separa essas duas
+partes, a comum a todas as formas e a própria de cada uma. Ao todo,
+foram 304 configurações com o GARCH e oito sem ele, 312 no total.
 
 Cada forma de uso foi otimizada separadamente, para que parâmetros que não se
 aplicam a ela não gerassem simulações repetidas. Em cada simulação, o próprio
@@ -632,7 +665,7 @@ fica fixo é a configuração.
 Para cada período de teste, os três passos foram refeitos do zero, com os três
 anos anteriores a ele. Por isso, a configuração escolhida, inclusive a forma de
 uso do GARCH, pode mudar de um período para outro. A Figura~\ref{fig:periodos}
-mostra os períodos usados.
+acrescenta à Figura~\ref{fig:periodos-teste} os períodos de otimização.
 
 % 05/11/2026, pedido do autor: o antigo Quadro "Períodos de otimização e de
 % teste" virou esta linha do tempo (cópia do quadro em
@@ -675,15 +708,47 @@ versão com o GARCH também foi executada com o modelo desligado e todo o resto
 igual. Como o robô tem um único parâmetro que liga e desliga o GARCH, essa
 comparação isola o efeito dele.
 
-\subsection{Teste complementar}
+\subsection{Venda a descoberto}
+\label{sec:venda-metodo}
 
-Um teste complementar ampliou a verificação. O mesmo procedimento foi repetido na PETR4, na VALE3, na USIM5 e na
-POMO4, nos períodos de 2007 a 2011, 2013 a 2016 e 2025 a 2026, e cada configuração
-com GARCH foi comparada à mesma configuração sem ele. Nesse teste, a grade incluiu
-também a opção de vender a descoberto, o que elevou o número de configurações para
-624 e o total para 14.976 simulações. Como no cenário principal, a escolha
-considerou apenas as configurações que operam na ponta compradora, e as demais
-serviram para medir o efeito da venda a descoberto.
+Para medir o efeito da venda a descoberto, as configurações foram simuladas também
+com a opção de vender a descoberto, na PETR4 e nas outras três ações da amostra,
+nos quatro períodos e com a otimização nos três anos anteriores a cada um. Cada
+configuração que também vende foi comparada à mesma configuração que só compra. A
+escolha dos robôs continuou a considerar apenas as configurações que operam na
+ponta compradora. Com essa opção, a grade passou de 312 para 624 configurações, e,
+somadas a otimização e o teste nas quatro ações e nos quatro períodos, foram
+19.968 simulações.
+% 12/11/2026, pedido do autor: subseção própria, antes no fim do teste complementar.
+% 13/11/2026: a contagem de 624 e 19.968 veio do teste complementar para cá, porque
+% é a opção de vender que dobra a grade.
+% 19.968 = passagens sem o intervalo de confiança em refeito_2026-10-05/calibracao/
+% (4 ativos x C1..C3, T1..T3) mais outras_acoes_2017_2024_2026-11-10/calibracao/
+% (4 ativos x C4, T4), contadas por awk em 10/11/2026 (624 x 32).
+
+\subsection{Teste complementar}
+\label{sec:complementar}
+
+Um teste complementar verificou se os resultados se repetem fora do ativo
+principal. Além da PETR4, foram incluídas outras três ações, VALE3, da mineração,
+USIM5, da siderurgia, e POMO4, de bens de capital, escolhidas antes da observação
+de qualquer resultado por terem série completa de 2003 a 2026 no arquivo da bolsa
+e por pertencerem a setores diferentes.
+% Critério completo em dados/FONTES.md, item 9 (23/09/2026): série completa de
+% 2003 a 2026 no COTAHIST, fator de cotação sempre 1 (exclui os bancos, cotados por
+% lote de mil até 2004), preço ajustado sempre acima de R$ 3 (erro máximo de
+% arredondamento 0,14% na USIM5 e 0,15% na POMO4) e setores diferentes. No texto
+% desde 12/11/2026 só o essencial, a pedido do autor.
+O mesmo procedimento foi repetido nas quatro ações, nos períodos de 2007 a 2011,
+2013 a 2016, 2017 a 2024 e 2025 a 2026, com os robôs operando apenas na ponta
+compradora, como no teste principal, e cada configuração com GARCH foi comparada
+à mesma configuração sem ele.
+% 10/11/2026, pergunta da orientadora: 2017 a 2024 acrescentado
+% (ferramentas/scripts/outras_acoes_2017_2024.sh, otimização em 2014 a 2016).
+% 19.968 = passagens sem o intervalo de confiança em refeito_2026-10-05/calibracao/
+% (4 ativos x C1..C3, T1..T3) mais outras_acoes_2017_2024_2026-11-10/calibracao/
+% (4 ativos x C4, T4), contadas por awk em 10/11/2026 (624 x 32). Desde 13/11/2026
+% a contagem está na subseção da venda a descoberto.
 
 \section{Obstáculos encontrados}
 

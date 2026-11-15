@@ -1,0 +1,694 @@
+% Relatório: GARCH 500 e 1000 só com filtro e ajuste, mantendo ou encerrando no
+% veto (13 e 15/11/2026, pedido do autor). Material de estudo, não é parte do TG.
+% Todo número vem de dados/resultados/filtro_ajuste_500_2026-11-13/cru/
+% (filtro_ajuste_500_dados.sh), que lê as duas baterias (filtro_ajuste_500.sh,
+% JG=500 e JG=1000) e os resultados do TG (refeito_2026-10-05,
+% outras_acoes_2017_2024_2026-11-10).
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{mathptmx}
+\usepackage[a4paper,margin=2.0cm]{geometry}
+\usepackage{booktabs,array,multirow}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage[most]{tcolorbox}
+\usepackage{pgfplots,pgfplotstable}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=1.18}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+
+\definecolor{cTG}{RGB}{150,150,150}
+\definecolor{cM5}{RGB}{120,200,190}
+\definecolor{cE5}{RGB}{0,140,130}
+\definecolor{cM1}{RGB}{150,180,230}
+\definecolor{cE1}{RGB}{0,70,160}
+\definecolor{cesc}{RGB}{220,50,32}
+\definecolor{cmod}{RGB}{0,90,181}
+
+\newcommand{\arq}[1]{../../../dados/resultados/filtro_ajuste_500_2026-11-13/cru/#1}
+\input{\arq{valores.tex}}
+% \V: valor obrigatório (falta = ?? em vermelho); \Vo: pode faltar de propósito (--)
+\newcommand{\V}[3]{\ifcsname v@#1@#2@#3\endcsname\csname v@#1@#2@#3\endcsname\else\textbf{\color{red}??}\fi}
+\newcommand{\Vo}[3]{\ifcsname v@#1@#2@#3\endcsname\csname v@#1@#2@#3\endcsname\else--\fi}
+
+\newtcolorbox{ideia}[1][]{colback=cmod!5, colframe=cmod!70, fonttitle=\bfseries, title={#1}, arc=2pt, boxrule=0.6pt}
+\newtcolorbox{cuidado}[1][]{colback=cesc!4, colframe=cesc!70, fonttitle=\bfseries, title={#1}, arc=2pt, boxrule=0.6pt}
+\newtcolorbox{banca}{colback=black!3, colframe=black!50, fonttitle=\bfseries, title=Se a banca perguntar, arc=2pt, boxrule=0.6pt}
+
+% ---- linhas de tabela ----
+% escolha: \esc{versão}{período}{robô}{rótulo}
+\newcommand{\esc}[4]{#4 & \V{escolhas}{#1-PETR4-#2-#3}{forma} & \V{escolhas}{#1-PETR4-#2-#3}{limiar} &
+  \V{escolhas}{#1-PETR4-#2-#3}{alvo} & \V{escolhas}{#1-PETR4-#2-#3}{veto} & \V{escolhas}{#1-PETR4-#2-#3}{janela} &
+  \V{escolhas}{#1-PETR4-#2-#3}{constante} & \V{escolhas}{#1-PETR4-#2-#3}{prev_min} & \V{escolhas}{#1-PETR4-#2-#3}{indice} \\}
+\newcommand{\blocoesc}[2]{\multicolumn{9}{l}{\textbf{#2}} \\
+\esc{TG}{#1}{AS}{TG: ARIMA} \esc{TG}{#1}{GS}{TG: Sharpe} \esc{TG}{#1}{GC}{TG: Calmar}
+\esc{M500}{#1}{AS}{ARIMA 240}
+\esc{M500}{#1}{GS}{500 M: Sharpe} \esc{M500}{#1}{GC}{500 M: Calmar}
+\esc{E500}{#1}{GS}{500 E: Sharpe} \esc{E500}{#1}{GC}{500 E: Calmar}
+\esc{M1000}{#1}{GS}{1000 M: Sharpe} \esc{M1000}{#1}{GC}{1000 M: Calmar}
+\esc{E1000}{#1}{GS}{1000 E: Sharpe} \esc{E1000}{#1}{GC}{1000 E: Calmar}}
+% as cinco versões de uma coluna da PETR4: \cinco{período}{robô}{coluna}
+\newcommand{\cinco}[3]{\V{petr4}{TG-#1-#2}{#3} & \V{petr4}{M500-#1-#2}{#3} & \V{petr4}{E500-#1-#2}{#3} & \V{petr4}{M1000-#1-#2}{#3} & \V{petr4}{E1000-#1-#2}{#3}}
+\newcommand{\arima}[2]{\V{petr4}{TG-#1-AS}{#2} & \multicolumn{4}{c}{\V{petr4}{M500-#1-AS}{#2}}}
+\newcommand{\blocores}[3]{\multicolumn{11}{l}{\textbf{#2}} \\
+ARIMA & \arima{#1}{#3} & \arima{#1}{dd} \\
+Sharpe & \cinco{#1}{GS}{#3} & \cinco{#1}{GS}{dd} \\
+Calmar & \cinco{#1}{GC}{#3} & \cinco{#1}{GC}{dd} \\}
+\newcommand{\blocovol}[2]{\multicolumn{11}{l}{\textbf{#2}} \\
+ARIMA & \arima{#1}{vol} & \arima{#1}{exposicao} \\
+Sharpe & \cinco{#1}{GS}{vol} & \cinco{#1}{GS}{exposicao} \\
+Calmar & \cinco{#1}{GC}{vol} & \cinco{#1}{GC}{exposicao} \\}
+% com/sem GARCH numa versão: \cs{versão}{período}{robô}{coluna}
+\newcommand{\cs}[4]{\V{petr4}{#1-#2-#3}{#4} / \V{petr4}{#1-#2-#3gemeo}{#4}}
+\newcommand{\cscinco}[3]{\cs{TG}{#1}{#2}{#3} & \cs{M500}{#1}{#2}{#3} & \cs{E500}{#1}{#2}{#3} & \cs{M1000}{#1}{#2}{#3} & \cs{E1000}{#1}{#2}{#3}}
+% grade M × E: \gl{ação}{período}
+\newcommand{\gm}[3]{\Vo{grade_ME}{#1-#2-#3}{dd_menor_E} & \Vo{grade_ME}{#1-#2-#3}{dd_igual} & \Vo{grade_ME}{#1-#2-#3}{ret_maior_E} & \Vo{grade_ME}{#1-#2-#3}{med_dd_M} & \Vo{grade_ME}{#1-#2-#3}{med_dd_E}}
+\newcommand{\gl}[2]{\gm{#1}{#2}{500} & \gm{#1}{#2}{1000}}
+% outras ações: resultado (rd) e escolha (curto) nas cinco versões
+\newcommand{\oa}[4]{\Vo{escolhas}{TG-#1-#2-#3}{#4} & \Vo{escolhas}{M500-#1-#2-#3}{#4} & \Vo{escolhas}{E500-#1-#2-#3}{#4} & \Vo{escolhas}{M1000-#1-#2-#3}{#4} & \Vo{escolhas}{E1000-#1-#2-#3}{#4}}
+
+\pgfplotsset{base/.style={table/col sep=comma, grid=major, grid style={gray!20},
+    tick label style={font=\scriptsize}, label style={font=\footnotesize},
+    title style={font=\footnotesize\bfseries}, /pgf/number format/use comma, unbounded coords=discard},
+  barras/.style={base, ybar=0pt, bar width=4.2pt, xtick={1,2,3,4},
+    xticklabels={2007--11,2013--16,2017--24,2025--26}, xmin=0.4, xmax=4.6, enlarge x limits=false}}
+\newcommand{\cincobarras}[2]{%
+\addplot[fill=cTG, draw=none] table[x=x, y=#2_TG] {\arq{barras_#1.csv}};
+\addplot[fill=cM5, draw=none] table[x=x, y=#2_M500] {\arq{barras_#1.csv}};
+\addplot[fill=cE5, draw=none] table[x=x, y=#2_E500] {\arq{barras_#1.csv}};
+\addplot[fill=cM1, draw=none] table[x=x, y=#2_M1000] {\arq{barras_#1.csv}};
+\addplot[fill=cE1, draw=none] table[x=x, y=#2_E1000] {\arq{barras_#1.csv}};}
+
+\title{\textbf{GARCH de 500 e de 1000 só com filtro e ajuste}\\[2pt]\large manter ou encerrar a posição no veto, comparado com o TG}
+\author{Material de estudo para os autores do TG (não faz parte do texto)}
+\date{15 de novembro de 2026}
+
+\begin{document}
+\maketitle
+
+\begin{ideia}[Em poucas linhas]
+O pedido foi refazer os testes do TG com o GARCH estimado em 500 resíduos, todos os robôs com filtro e ajuste
+juntos, em duas versões rodadas separadas: uma que \textbf{mantém} a posição quando o GARCH veta (M) e outra que
+\textbf{encerra} (E). Depois, a mesma coisa com 1000 resíduos. São quatro versões (500 M, 500 E, 1000 M,
+1000 E), comparadas com o que está hoje no Cap.~III.
+\begin{itemize}\setlength{\itemsep}{1pt}
+\item \textbf{Encerrar no veto protege, com as duas janelas.} Nos \V{efeito}{E500-principais}{n} robôs
+  principais da PETR4, a versão E teve queda menor que a mesma configuração sem GARCH em
+  \V{efeito}{E500-principais}{dd_menor} (500) e em \V{efeito}{E1000-principais}{dd_menor} (1000). A versão M,
+  em \V{efeito}{M500-principais}{dd_menor} e em \V{efeito}{M1000-principais}{dd_menor}. No TG, em
+  \V{efeito}{TG-principais}{dd_menor}.
+\item \textbf{Com todo o resto igual, encerrar ganha de manter.} Nas 48 configurações de cada teste, rodadas das
+  duas maneiras, encerrar deu queda menor na maioria dos pares em \V{grade_resumo}{500}{E_maioria} de
+  \V{grade_resumo}{500}{celulas} combinações de ação e período (500) e em \V{grade_resumo}{1000}{E_maioria} de
+  \V{grade_resumo}{1000}{celulas} (1000).
+\item \textbf{Nenhuma versão chegou perto do melhor resultado do TG}, os +\V{petr4}{TG-T4-GS}{ret}\% de
+  2017--2024. Aquele robô usava só o filtro, forma que este estudo não permite.
+\item \textbf{Com 1000 e encerrando, a proteção vem em boa parte de ficar fora.} Em 2017--2024 o GARCH vetou
+  \V{petr4}{E1000-T4-GS}{veto_pct}\% dos sinais e o robô ficou comprado em \V{petr4}{E1000-T4-GS}{exposicao}\%
+  dos dias.
+\item \textbf{O TG já escolhia encerrar} em \V{contagens}{TG-PETR4}{encerra} dos
+  \V{contagens}{TG-PETR4}{n} robôs da PETR4. O estudo explica e confirma essa escolha. Não pede mudança no
+  texto.
+\end{itemize}
+\end{ideia}
+
+\section{O que foi rodado}
+\label{sec:montagem}
+
+Os períodos são os do TG. Cada teste tem uma otimização nos três anos anteriores: 2004--2006 para 2007--2011,
+2010--2012 para 2013--2016, 2014--2016 para 2017--2024 e 2022--2024 para 2025--2026. As ações também são as
+do TG: PETR4, VALE3, USIM5 e POMO4.
+
+Cada otimização tem 52 passagens. Quatro são o ARIMA sem GARCH (com ou sem constante, previsão mínima zero ou
+0,1\%). As outras 48 têm GARCH, sempre com filtro e ajuste. Elas combinam o limiar do filtro (fixo em 2, 3 ou
+4\% ao dia, ou percentil 50, 70 ou 90), o alvo do ajuste (1 ou 2\% ao dia), a constante e a previsão mínima. A
+posição no veto não varia dentro de uma bateria: é o que separa M de E. A Tabela~\ref{tab:montagem} resume o que
+muda em relação ao TG.
+
+O ARIMA ficou fixo em 240 pregões, porque agora o GARCH tem uma janela própria e maior. Para o GARCH ter 500 ou
+1000 resíduos desde o primeiro dia, cada otimização e cada teste começam a ler a série quatro anos antes. Na
+PETR4, a otimização de 2004--2006 e o teste de 2007--2011 usam a série desde 1999.
+
+Com 1000 resíduos, VALE3, USIM5 e POMO4 ficam sem o par 2004--2006 e 2007--2011. A série oficial delas começa
+em 2003, e 1000 pregões só se juntam no começo de 2007. Estender a série para trás seria dado novo, e isso não
+foi pedido.
+
+A escolha é a do TG. Entre as passagens com GARCH de cada versão, a de maior Sharpe na otimização é o
+ARIMA-GARCH Sharpe, e a de maior Calmar é o ARIMA-GARCH Calmar (os dois com custos e caixa na Selic). Cada um é
+testado no período seguinte e comparado com a mesma configuração sem GARCH. O protocolo foi escrito antes de
+rodar.
+
+\begin{table}[htbp]
+\centering
+\caption{O que muda entre o TG e as versões deste estudo}
+\label{tab:montagem}
+\small
+\begin{tabular}{p{4.0cm}p{5.4cm}p{6.2cm}}
+\toprule
+ & TG (Cap.~III) & Este estudo (versões M e E, com 500 e com 1000) \\
+\midrule
+Janela do ARIMA & 120 ou 240 pregões (a otimização escolhe) & 240 pregões, fixa \\
+Janela do GARCH & a mesma do ARIMA & 500 ou 1000 resíduos \\
+Formas de usar o GARCH & filtro, ajuste da posição, ou filtro e ajuste & só filtro e ajuste \\
+Posição no veto & a otimização escolhe (mantém ou encerra) & fixa: M mantém, E encerra \\
+Limiar do filtro & fixo (2, 3 ou 4\% ao dia) ou percentil (50, 70 ou 90) & o mesmo \\
+Alvo do ajuste & 1 ou 2\% ao dia & o mesmo \\
+Constante e previsão mínima & sim ou não; zero ou 0,1\% & o mesmo \\
+Configurações com GARCH (só compra) & 152 & 48 em cada versão \\
+Critério de escolha & maior Sharpe (GS) e maior Calmar (GC) na otimização & o mesmo, dentro de cada versão \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{O que a otimização escolheu}
+\label{sec:escolhas}
+
+A Tabela~\ref{tab:escolhas} mostra o que cada versão escolheu na PETR4. Ela tem uma linha por robô e uma coluna
+por parâmetro. Três coisas se destacam.
+
+\textbf{O limiar.} O TG escolheu o percentil em \V{contagens}{TG-PETR4}{percentil} dos
+\V{contagens}{TG-PETR4}{n} robôs. Com 1000 e encerrando, a escolha foi quase toda para o limiar fixo
+(\V{contagens}{E1000-PETR4}{fixo} de \V{contagens}{E1000-PETR4}{n}), sempre o de 2\% ao dia. As versões de 500
+ficaram divididas entre os dois.
+
+\textbf{O alvo do ajuste.} O Calmar ficou sempre com 1\% ao dia, como no TG. O Sharpe oscilou entre 1 e 2\%.
+
+\textbf{Sharpe e Calmar às vezes coincidem.} Em 500 E e em 1000 M em 2007--2011, e em 1000 E em 2017--2024, os
+dois critérios escolheram a mesma configuração. Nesses casos as duas linhas são iguais, e o resultado também.
+
+A linha ``ARIMA 240'' é o ARIMA sem GARCH desta bateria, o mesmo nas quatro versões. Em 2013--2016 ele difere
+do ARIMA do TG, que lá escolheu a janela de 120.
+
+\begin{table}[p]
+\centering
+\caption{Configuração escolhida em cada período (PETR4)}
+\label{tab:escolhas}
+\scriptsize
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{lllllcccr}
+\toprule
+ & \multicolumn{4}{c}{Uso do GARCH} & \multicolumn{3}{c}{ARIMA} & \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-8}
+Robô & Forma & Limiar & Alvo & Veto & Janela & Constante & Prev.\ mín. & Índice \\
+\midrule
+\blocoesc{T1}{2007 a 2011 (otimização em 2004--2006)}
+\midrule
+\blocoesc{T2}{2013 a 2016 (otimização em 2010--2012)}
+\midrule
+\blocoesc{T4}{2017 a 2024 (otimização em 2014--2016)}
+\midrule
+\blocoesc{T3}{2025 a 2026 (otimização em 2022--2024)}
+\bottomrule
+\end{tabular}
+
+\vspace{4pt}
+\parbox{0.97\textwidth}{\scriptsize TG: a configuração do Cap.~III (Quadro de escolhas). 500 M, 500 E, 1000 M,
+1000 E: janela do GARCH e versão (M mantém a posição no veto, E encerra). ARIMA 240: o ARIMA sem GARCH desta
+bateria, que é o mesmo nas quatro versões (a sub-grade sem GARCH não depende da janela do GARCH nem do veto).
+Percentil $P$: veta quando a volatilidade prevista supera $P$\% das estimadas na janela do GARCH. Fixo: veta
+acima de um nível fixo de volatilidade diária. Alvo: volatilidade diária que o ajuste persegue. Prev.\ mín.:
+tamanho mínimo da previsão do ARIMA para operar. Índice: Sharpe (ARIMA e Sharpe) ou Calmar (Calmar) no período de
+otimização, com custos e Selic no caixa.}
+\end{table}
+
+\section{Resultado na PETR4}
+\label{sec:petr4}
+
+A Tabela~\ref{tab:petr4} e a Figura~\ref{fig:barras} trazem o resultado no teste, por período.
+
+\textbf{2007 a 2011, a crise.} Todas as versões ficaram com queda bem menor que o ARIMA sem GARCH
+(\V{petr4}{M500-T1-AS}{dd}\%). As que encerram ficaram com as menores: \V{petr4}{E500-T1-GS}{dd}\% (500) e
+\V{petr4}{E1000-T1-GS}{dd}\% (1000), contra \V{petr4}{TG-T1-GS}{dd}\% do TG. O maior retorno foi o do Sharpe de
+500 M, +\V{petr4}{M500-T1-GS}{ret}\%.
+
+\textbf{2013 a 2016.} Aqui as versões que mantêm se saíram mal. O Sharpe de 1000 M teve queda de
+\V{petr4}{M1000-T2-GS}{dd}\%, maior que a do ARIMA sem GARCH (\V{petr4}{M500-T2-AS}{dd}\%). O de 500 M, de
+\V{petr4}{M500-T2-GS}{dd}\%. As que encerram ficaram entre \V{petr4}{E500-T2-GC}{dd}\% e
+\V{petr4}{E500-T2-GS}{dd}\%, perto do TG (\V{petr4}{TG-T2-GC}{dd}\% e \V{petr4}{TG-T2-GS}{dd}\%).
+
+\textbf{2017 a 2024.} É o período em que o TG teve o melhor resultado: o Sharpe rendeu
++\V{petr4}{TG-T4-GS}{ret}\% com queda de \V{petr4}{TG-T4-GS}{dd}\%. Nenhuma versão chegou perto. O maior retorno
+entre as novas foi o do Calmar de 1000 M, +\V{petr4}{M1000-T4-GC}{ret}\%, e o Sharpe de 500 M perdeu
+\V{petr4}{M500-T4-GS}{ret}\%. O robô do TG usava só o filtro, sem o ajuste (Tabela~\ref{tab:escolhas}). Como aqui
+todo robô tem o ajuste, aquela configuração não estava entre as candidatas. O 1000 E teve a menor queda da tabela
+inteira, \V{petr4}{E1000-T4-GS}{dd}\%, mas quase não operou (Tabela~\ref{tab:vol}).
+
+\textbf{2025 a 2026.} Período curto e com poucos vetos. O TG perdeu nos dois robôs (\V{petr4}{TG-T3-GS}{ret}\% e
+\V{petr4}{TG-T3-GC}{ret}\%), e as versões novas ganharam em todos. Nesse período o TG vetou
+\V{petr4}{TG-T3-GS}{veto_pct}\% dos sinais e o 1000 M, \V{petr4}{M1000-T3-GS}{veto_pct}\%. Só o Sharpe de 1000 M
+passou do ARIMA sem GARCH (+\V{petr4}{M500-T3-AS}{ret}\%).
+
+\begin{table}[htbp]
+\centering
+\caption{Retorno e queda máxima no teste (PETR4, resultado bruto, \%)}
+\label{tab:petr4}
+\scriptsize
+\setlength{\tabcolsep}{3.2pt}
+\begin{tabular}{l rrrrr rrrrr}
+\toprule
+ & \multicolumn{5}{c}{Retorno} & \multicolumn{5}{c}{Queda máxima} \\
+\cmidrule(lr){2-6}\cmidrule(lr){7-11}
+ & & \multicolumn{2}{c}{500} & \multicolumn{2}{c}{1000} & & \multicolumn{2}{c}{500} & \multicolumn{2}{c}{1000} \\
+Robô & TG & M & E & M & E & TG & M & E & M & E \\
+\midrule
+\blocores{T1}{2007 a 2011}{ret}
+\midrule
+\blocores{T2}{2013 a 2016}{ret}
+\midrule
+\blocores{T4}{2017 a 2024}{ret}
+\midrule
+\blocores{T3}{2025 a 2026}{ret}
+\bottomrule
+\end{tabular}
+
+\vspace{4pt}
+\parbox{0.97\textwidth}{\scriptsize Resultado bruto (sem custos, sem Selic, sem proventos), como nas tabelas dos
+períodos do Cap.~III. A linha do ARIMA tem um valor só para as quatro versões (é o mesmo robô, ARIMA 240 sem
+GARCH). Médias móveis reproduzidas (retorno / queda): 2007--2011 \V{mm}{T1}{ret} / \V{mm}{T1}{dd}; 2013--2016
+\V{mm}{T2}{ret} / \V{mm}{T2}{dd}; 2017--2024 \V{mm}{T4}{ret} / \V{mm}{T4}{dd}; 2025--2026 \V{mm}{T3}{ret} /
+\V{mm}{T3}{dd}.}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 2, horizontal sep=1.4cm, vertical sep=1.5cm},
+  width=0.49\textwidth, height=5.4cm, barras]
+\nextgroupplot[title={ARIMA-GARCH Sharpe: queda máxima (\%)}, ymin=0, legend to name=leg, legend columns=5,
+  legend style={font=\footnotesize, draw=none, /tikz/every even column/.append style={column sep=6pt}}]
+\cincobarras{GS}{dd}
+\addlegendentry{TG} \addlegendentry{500 M} \addlegendentry{500 E} \addlegendentry{1000 M} \addlegendentry{1000 E}
+\nextgroupplot[title={ARIMA-GARCH Calmar: queda máxima (\%)}, ymin=0]
+\cincobarras{GC}{dd}
+\nextgroupplot[title={ARIMA-GARCH Sharpe: retorno (\%)}]
+\cincobarras{GS}{ret}
+\nextgroupplot[title={ARIMA-GARCH Calmar: retorno (\%)}]
+\cincobarras{GC}{ret}
+\end{groupplot}
+\end{tikzpicture}
+
+\pgfplotslegendfromname{leg}
+\caption{Os robôs escolhidos na PETR4, por período de teste e versão (dados da Tabela~\ref{tab:petr4}). M:
+mantém a posição no veto; E: encerra}
+\label{fig:barras}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Volatilidade e exposição no teste (PETR4, \%)}
+\label{tab:vol}
+\scriptsize
+\setlength{\tabcolsep}{3.2pt}
+\begin{tabular}{l rrrrr rrrrr}
+\toprule
+ & \multicolumn{5}{c}{Volatilidade anualizada} & \multicolumn{5}{c}{Exposição (dias comprado)} \\
+\cmidrule(lr){2-6}\cmidrule(lr){7-11}
+ & & \multicolumn{2}{c}{500} & \multicolumn{2}{c}{1000} & & \multicolumn{2}{c}{500} & \multicolumn{2}{c}{1000} \\
+Robô & TG & M & E & M & E & TG & M & E & M & E \\
+\midrule
+\blocovol{T1}{2007 a 2011}
+\midrule
+\blocovol{T2}{2013 a 2016}
+\midrule
+\blocovol{T4}{2017 a 2024}
+\midrule
+\blocovol{T3}{2025 a 2026}
+\bottomrule
+\end{tabular}
+\end{table}
+
+A Tabela~\ref{tab:vol} mostra a outra metade da história: quanto o robô oscilou e quanto tempo passou comprado.
+É ela que explica por que manter pode piorar.
+
+\begin{ideia}[Por que manter no veto pode piorar]
+O caso mais limpo é 2013--2016 com 1000 resíduos. O Sharpe de 1000 M e o de 1000 E escolheram a mesma
+configuração (limiar fixo de 2\%, alvo de 2\%). O GARCH vetou os mesmos \V{petr4}{M1000-T2-GS}{vetos} dos
+\V{petr4}{M1000-T2-GS}{sinais} sinais nas duas (\V{petr4}{M1000-T2-GS}{veto_pct}\%). A única diferença é o que o
+robô faz no veto:
+
+\smallskip
+\begin{tabular}{lccc}
+ & dias comprado & volatilidade & queda máxima \\
+1000 M (mantém) & \V{petr4}{M1000-T2-GS}{exposicao}\% & \V{petr4}{M1000-T2-GS}{vol}\% & \V{petr4}{M1000-T2-GS}{dd}\% \\
+1000 E (encerra) & \V{petr4}{E1000-T2-GS}{exposicao}\% & \V{petr4}{E1000-T2-GS}{vol}\% & \V{petr4}{E1000-T2-GS}{dd}\% \\
+sem GARCH & \V{petr4}{M1000-T2-GSgemeo}{exposicao}\% & \V{petr4}{M1000-T2-GSgemeo}{vol}\% & \V{petr4}{M1000-T2-GSgemeo}{dd}\% \\
+\end{tabular}
+\smallskip
+
+O motivo está no código. Quando o GARCH veta, o EA não envia ordem nenhuma. Como o robô é só compra, o sinal de
+venda serve para sair da posição, e o veto bloqueia também essa saída. Na versão M, a posição comprada fica
+aberta, com o tamanho calculado no dia da entrada, porque o ajuste só define o volume quando há ordem. Num
+período longo e agitado, o robô fica preso na compra justamente quando o GARCH diz que o risco subiu. Na versão
+E, o veto fecha a posição.
+\end{ideia}
+
+O lado de E também tem um custo. Com 1000 resíduos, o veto ficou muito frequente em 2013--2016 e em 2017--2024
+(\V{petr4}{E1000-T2-GS}{veto_pct}\% e \V{petr4}{E1000-T4-GS}{veto_pct}\% dos sinais). O robô E passou
+\V{petr4}{E1000-T2-GS}{exposicao}\% e \V{petr4}{E1000-T4-GS}{exposicao}\% dos dias comprado. A queda pequena,
+nesses casos, vem principalmente de estar fora do mercado.
+
+\section{Com e sem o GARCH}
+\label{sec:efeito}
+
+A Tabela~\ref{tab:efeito} põe cada robô ao lado da mesma configuração sem o GARCH, como no Cap.~III. A
+Tabela~\ref{tab:efeito-cont} conta quantas vezes o GARCH ajudou.
+
+\begin{table}[htbp]
+\centering
+\caption{Em quantos robôs da PETR4 o GARCH melhorou a medida, contra a mesma configuração sem ele}
+\label{tab:efeito-cont}
+\small
+\begin{tabular}{l ccc ccc}
+\toprule
+ & \multicolumn{3}{c}{Testes principais (\V{efeito}{TG-principais}{n} robôs)} & \multicolumn{3}{c}{Testes adicionais (\V{efeito}{TG-adicionais}{n} robôs)} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Versão & queda menor & vol.\ menor & retorno maior & queda menor & vol.\ menor & retorno maior \\
+\midrule
+TG & \V{efeito}{TG-principais}{dd_menor} & \V{efeito}{TG-principais}{vol_menor} & \V{efeito}{TG-principais}{ret_maior} & \V{efeito}{TG-adicionais}{dd_menor} & \V{efeito}{TG-adicionais}{vol_menor} & \V{efeito}{TG-adicionais}{ret_maior} \\
+500 M & \V{efeito}{M500-principais}{dd_menor} & \V{efeito}{M500-principais}{vol_menor} & \V{efeito}{M500-principais}{ret_maior} & \V{efeito}{M500-adicionais}{dd_menor} & \V{efeito}{M500-adicionais}{vol_menor} & \V{efeito}{M500-adicionais}{ret_maior} \\
+500 E & \V{efeito}{E500-principais}{dd_menor} & \V{efeito}{E500-principais}{vol_menor} & \V{efeito}{E500-principais}{ret_maior} & \V{efeito}{E500-adicionais}{dd_menor} & \V{efeito}{E500-adicionais}{vol_menor} & \V{efeito}{E500-adicionais}{ret_maior} \\
+1000 M & \V{efeito}{M1000-principais}{dd_menor} & \V{efeito}{M1000-principais}{vol_menor} & \V{efeito}{M1000-principais}{ret_maior} & \V{efeito}{M1000-adicionais}{dd_menor} & \V{efeito}{M1000-adicionais}{vol_menor} & \V{efeito}{M1000-adicionais}{ret_maior} \\
+1000 E & \V{efeito}{E1000-principais}{dd_menor} & \V{efeito}{E1000-principais}{vol_menor} & \V{efeito}{E1000-principais}{ret_maior} & \V{efeito}{E1000-adicionais}{dd_menor} & \V{efeito}{E1000-adicionais}{vol_menor} & \V{efeito}{E1000-adicionais}{ret_maior} \\
+\bottomrule
+\end{tabular}
+
+\vspace{4pt}
+\parbox{0.9\textwidth}{\scriptsize Principais: Sharpe e Calmar nos quatro períodos de teste. Adicionais: os dois
+robôs escolhidos em 2010--2012 testados em 2017--2024 e em 2005--2026. Contagens tiradas da
+Tabela~\ref{tab:efeito}.}
+\end{table}
+
+A leitura é a mesma do Cap.~III para o TG e para as versões E: o GARCH baixa a queda e a volatilidade quase
+sempre. Nas versões M, as falhas são todas do Sharpe, nas duas janelas: 2013--2016, 2017--2024 e, por pouco,
+2025--2026. O retorno melhora em \V{efeito}{M500-principais}{ret_maior} a \V{efeito}{E500-principais}{ret_maior}
+dos \V{efeito}{TG-principais}{n} robôs, conforme a versão. O GARCH continua sendo ferramenta de risco, não de
+retorno.
+
+Nos testes adicionais, o 2005--2026 tem números grandes, como os +\V{petr4}{M1000-L1-GS}{ret}\% do Sharpe de
+1000 M contra +\V{petr4}{M1000-L1-GSgemeo}{ret}\% sem GARCH. Esse período contém os anos da otimização
+(2010--2012), então não é um teste limpo.
+
+\begin{table}[htbp]
+\centering
+\caption{Cada robô com GARCH e a mesma configuração sem ele (PETR4, \%, com / sem)}
+\label{tab:efeito}
+\scriptsize
+\setlength{\tabcolsep}{2.6pt}
+\begin{tabular}{ll ccccc}
+\toprule
+ & & & \multicolumn{2}{c}{500} & \multicolumn{2}{c}{1000} \\
+\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+Período & Robô & TG & M & E & M & E \\
+\midrule
+\multicolumn{7}{l}{\textit{Queda máxima}} \\
+2007--11 & Sharpe & \cscinco{T1}{GS}{dd} \\
+         & Calmar & \cscinco{T1}{GC}{dd} \\
+2013--16 & Sharpe & \cscinco{T2}{GS}{dd} \\
+         & Calmar & \cscinco{T2}{GC}{dd} \\
+2017--24 & Sharpe & \cscinco{T4}{GS}{dd} \\
+         & Calmar & \cscinco{T4}{GC}{dd} \\
+2025--26 & Sharpe & \cscinco{T3}{GS}{dd} \\
+         & Calmar & \cscinco{T3}{GC}{dd} \\
+\midrule
+\multicolumn{7}{l}{\textit{Retorno}} \\
+2007--11 & Sharpe & \cscinco{T1}{GS}{ret} \\
+         & Calmar & \cscinco{T1}{GC}{ret} \\
+2013--16 & Sharpe & \cscinco{T2}{GS}{ret} \\
+         & Calmar & \cscinco{T2}{GC}{ret} \\
+2017--24 & Sharpe & \cscinco{T4}{GS}{ret} \\
+         & Calmar & \cscinco{T4}{GC}{ret} \\
+2025--26 & Sharpe & \cscinco{T3}{GS}{ret} \\
+         & Calmar & \cscinco{T3}{GC}{ret} \\
+\midrule
+\multicolumn{7}{l}{\textit{Testes adicionais, com as escolhas de 2010--2012: queda máxima}} \\
+2017--24 & Sharpe & \cscinco{L2}{GS}{dd} \\
+         & Calmar & \cscinco{L2}{GC}{dd} \\
+2005--26 & Sharpe & \cscinco{L1}{GS}{dd} \\
+         & Calmar & \cscinco{L1}{GC}{dd} \\
+\multicolumn{7}{l}{\textit{Testes adicionais: retorno}} \\
+2017--24 & Sharpe & \cscinco{L2}{GS}{ret} \\
+         & Calmar & \cscinco{L2}{GC}{ret} \\
+2005--26 & Sharpe & \cscinco{L1}{GS}{ret} \\
+         & Calmar & \cscinco{L1}{GC}{ret} \\
+\bottomrule
+\end{tabular}
+
+\vspace{4pt}
+\parbox{0.9\textwidth}{\scriptsize 500 e 1000: janela do GARCH, em resíduos. M: mantém a posição quando o GARCH
+veta. E: encerra a posição no veto. TG: o resultado atual do TG (janela 240). Em cada célula, o robô com
+GARCH / a mesma configuração sem GARCH.}
+\end{table}
+
+\section{Manter ou encerrar, com todo o resto igual}
+\label{sec:grade}
+
+Os robôs escolhidos são só dois por período, e a escolha mistura o efeito do veto com o resto da configuração.
+Para isolar o veto, a Tabela~\ref{tab:grade} usa as 48 configurações com GARCH de cada teste, cada uma rodada
+das duas maneiras. Fora a posição no veto, tudo é igual dentro do par.
+
+\textbf{Encerrar ganha na grande maioria.} E teve queda menor que M na maioria dos pares em
+\V{grade_resumo}{500}{E_maioria} das \V{grade_resumo}{500}{celulas} combinações de ação e período com 500, e em
+\V{grade_resumo}{1000}{E_maioria} das \V{grade_resumo}{1000}{celulas} com 1000. A mediana da queda de E ficou
+abaixo da de M em \V{grade_resumo}{500}{mediana_E_menor} e em \V{grade_resumo}{1000}{mediana_E_menor},
+respectivamente. Na PETR4 em 2007--2011 com 500, por exemplo, a queda mediana caiu de
+\V{grade_ME}{PETR4-T1-500}{med_dd_M}\% para \V{grade_ME}{PETR4-T1-500}{med_dd_E}\%.
+
+\textbf{A exceção é a VALE3.} M ganhou a maioria em \V{grade_resumo}{500}{M_maioria} combinação com 500 e em
+\V{grade_resumo}{1000}{M_maioria} com 1000, as duas da VALE3: 2007--2011 com 500 (E caiu menos em só \V{grade_ME}{VALE3-T1-500}{dd_menor_E}\%
+dos pares) e 2017--2024 com 1000 (\V{grade_ME}{VALE3-T4-1000}{dd_menor_E}\%).
+
+\textbf{Em 2025--2026 há muito empate.} O período foi calmo e o GARCH quase não vetou. Sem veto, manter e
+encerrar dão o mesmo resultado. Na PETR4 com 1000, \V{grade_ME}{PETR4-T3-1000}{dd_igual}\% dos pares empataram,
+e é por isso que ali E aparece ``melhor'' em só \V{grade_ME}{PETR4-T3-1000}{dd_menor_E}\%.
+
+\textbf{No retorno, não há regra.} A coluna ``retorno'' vai de \V{grade_ME}{VALE3-T1-500}{ret_maior_E}\% a
+\V{grade_ME}{USIM5-T4-500}{ret_maior_E}\% dos pares. Encerrar é uma decisão de risco.
+
+\begin{table}[htbp]
+\centering
+\caption{As 48 configurações com GARCH de cada período de teste, M contra E em pares}
+\label{tab:grade}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{ll ccccc ccccc}
+\toprule
+ & & \multicolumn{5}{c}{GARCH 500} & \multicolumn{5}{c}{GARCH 1000} \\
+\cmidrule(lr){3-7}\cmidrule(lr){8-12}
+ & & \multicolumn{2}{c}{queda} & retorno & \multicolumn{2}{c}{mediana da queda} & \multicolumn{2}{c}{queda} & retorno & \multicolumn{2}{c}{mediana da queda} \\
+Ação & Período & E menor & igual & E maior & M & E & E menor & igual & E maior & M & E \\
+\midrule
+PETR4 & 2007--11 & \gl{PETR4}{T1} \\
+ & 2013--16 & \gl{PETR4}{T2} \\
+ & 2017--24 & \gl{PETR4}{T4} \\
+ & 2025--26 & \gl{PETR4}{T3} \\
+\midrule
+VALE3 & 2007--11 & \gl{VALE3}{T1} \\
+ & 2013--16 & \gl{VALE3}{T2} \\
+ & 2017--24 & \gl{VALE3}{T4} \\
+ & 2025--26 & \gl{VALE3}{T3} \\
+\midrule
+USIM5 & 2007--11 & \gl{USIM5}{T1} \\
+ & 2013--16 & \gl{USIM5}{T2} \\
+ & 2017--24 & \gl{USIM5}{T4} \\
+ & 2025--26 & \gl{USIM5}{T3} \\
+\midrule
+POMO4 & 2007--11 & \gl{POMO4}{T1} \\
+ & 2013--16 & \gl{POMO4}{T2} \\
+ & 2017--24 & \gl{POMO4}{T4} \\
+ & 2025--26 & \gl{POMO4}{T3} \\
+\bottomrule
+\end{tabular}
+
+\vspace{4pt}
+\parbox{0.97\textwidth}{\scriptsize Cada par é a mesma configuração (limiar, alvo, constante, previsão mínima)
+rodada uma vez mantendo e uma vez encerrando a posição no veto. Colunas ``queda'' e ``retorno'': porcentagem dos 48
+pares em que a versão que encerra teve queda máxima menor que a que mantém (E menor), queda igual (igual) ou
+retorno maior (E maior). Nos pares que sobram na queda, M caiu menos. Mediana da queda: das 48 configurações de
+cada versão, em \%. Resultado bruto. --: sem o período (com 1000, as outras ações não têm dados
+para o GARCH em 2004--2007).}
+\end{table}
+
+\section{Outras ações}
+\label{sec:outras}
+
+Nas outras três ações (Tabelas~\ref{tab:outras} e~\ref{tab:outras-esc}) a imagem é mais misturada, como já era
+no TG. Três pontos valem a pena.
+
+\textbf{As maiores quedas são das versões M.} A VALE3 em 2007--2011 caiu \V{escolhas}{M500-VALE3-T1-GS}{dd}\%
+com o Sharpe de 500 M, contra \V{escolhas}{E500-VALE3-T1-GS}{dd}\% com o de 500 E. A USIM5 no mesmo período,
+\V{escolhas}{M500-USIM5-T1-GS}{dd}\% contra \V{escolhas}{E500-USIM5-T1-GS}{dd}\%. Em 2017--2024, o Sharpe de
+1000 M caiu \V{escolhas}{M1000-USIM5-T4-GS}{dd}\% na USIM5.
+
+\textbf{Mas E nem sempre ganha.} O Calmar da VALE3 em 2007--2011 fez \V{escolhas}{E500-VALE3-T1-GC}{rd} com 500 E
+e \V{escolhas}{M500-VALE3-T1-GC}{rd} com 500 M (retorno / queda, em \%). É a mesma VALE3 de 2007--2011 que foi
+exceção na Tabela~\ref{tab:grade}.
+
+\textbf{Alguns robôs não operaram.} A USIM5 em 2025--2026 ficou sem operações em quase todos os robôs, e
+também no TG. Contando as quatro ações, ficaram sem operar \V{contagens}{M500-todas}{sem_operacoes} robôs em 500
+M, \V{contagens}{E500-todas}{sem_operacoes} em 500 E, \V{contagens}{M1000-todas}{sem_operacoes} em 1000 M e
+\V{contagens}{E1000-todas}{sem_operacoes} em 1000 E (no TG, \V{contagens}{TG-todas}{sem_operacoes}). Esses
+robôs têm queda zero, e isso não é proteção.
+
+\begin{table}[htbp]
+\centering
+\caption{Outras ações: retorno / queda máxima dos robôs escolhidos (\%)}
+\label{tab:outras}
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{lll ccccc}
+\toprule
+ & & & & \multicolumn{2}{c}{500} & \multicolumn{2}{c}{1000} \\
+\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+Ação & Período & Robô & TG & M & E & M & E \\
+\midrule
+VALE3 & 2007--11 & Sharpe & \oa{VALE3}{T1}{GS}{rd} \\
+ & & Calmar & \oa{VALE3}{T1}{GC}{rd} \\
+ & 2013--16 & Sharpe & \oa{VALE3}{T2}{GS}{rd} \\
+ & & Calmar & \oa{VALE3}{T2}{GC}{rd} \\
+ & 2017--24 & Sharpe & \oa{VALE3}{T4}{GS}{rd} \\
+ & & Calmar & \oa{VALE3}{T4}{GC}{rd} \\
+ & 2025--26 & Sharpe & \oa{VALE3}{T3}{GS}{rd} \\
+ & & Calmar & \oa{VALE3}{T3}{GC}{rd} \\
+\midrule
+USIM5 & 2007--11 & Sharpe & \oa{USIM5}{T1}{GS}{rd} \\
+ & & Calmar & \oa{USIM5}{T1}{GC}{rd} \\
+ & 2013--16 & Sharpe & \oa{USIM5}{T2}{GS}{rd} \\
+ & & Calmar & \oa{USIM5}{T2}{GC}{rd} \\
+ & 2017--24 & Sharpe & \oa{USIM5}{T4}{GS}{rd} \\
+ & & Calmar & \oa{USIM5}{T4}{GC}{rd} \\
+ & 2025--26 & Sharpe & \oa{USIM5}{T3}{GS}{rd} \\
+ & & Calmar & \oa{USIM5}{T3}{GC}{rd} \\
+\midrule
+POMO4 & 2007--11 & Sharpe & \oa{POMO4}{T1}{GS}{rd} \\
+ & & Calmar & \oa{POMO4}{T1}{GC}{rd} \\
+ & 2013--16 & Sharpe & \oa{POMO4}{T2}{GS}{rd} \\
+ & & Calmar & \oa{POMO4}{T2}{GC}{rd} \\
+ & 2017--24 & Sharpe & \oa{POMO4}{T4}{GS}{rd} \\
+ & & Calmar & \oa{POMO4}{T4}{GC}{rd} \\
+ & 2025--26 & Sharpe & \oa{POMO4}{T3}{GS}{rd} \\
+ & & Calmar & \oa{POMO4}{T3}{GC}{rd} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Outras ações: forma, limiar, alvo e veto escolhidos}
+\label{tab:outras-esc}
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{lll ccccc}
+\toprule
+ & & & & \multicolumn{2}{c}{500} & \multicolumn{2}{c}{1000} \\
+\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+Ação & Período & Robô & TG & M & E & M & E \\
+\midrule
+VALE3 & 2007--11 & Sharpe & \oa{VALE3}{T1}{GS}{curto} \\
+ & & Calmar & \oa{VALE3}{T1}{GC}{curto} \\
+ & 2013--16 & Sharpe & \oa{VALE3}{T2}{GS}{curto} \\
+ & & Calmar & \oa{VALE3}{T2}{GC}{curto} \\
+ & 2017--24 & Sharpe & \oa{VALE3}{T4}{GS}{curto} \\
+ & & Calmar & \oa{VALE3}{T4}{GC}{curto} \\
+ & 2025--26 & Sharpe & \oa{VALE3}{T3}{GS}{curto} \\
+ & & Calmar & \oa{VALE3}{T3}{GC}{curto} \\
+\midrule
+USIM5 & 2007--11 & Sharpe & \oa{USIM5}{T1}{GS}{curto} \\
+ & & Calmar & \oa{USIM5}{T1}{GC}{curto} \\
+ & 2013--16 & Sharpe & \oa{USIM5}{T2}{GS}{curto} \\
+ & & Calmar & \oa{USIM5}{T2}{GC}{curto} \\
+ & 2017--24 & Sharpe & \oa{USIM5}{T4}{GS}{curto} \\
+ & & Calmar & \oa{USIM5}{T4}{GC}{curto} \\
+ & 2025--26 & Sharpe & \oa{USIM5}{T3}{GS}{curto} \\
+ & & Calmar & \oa{USIM5}{T3}{GC}{curto} \\
+\midrule
+POMO4 & 2007--11 & Sharpe & \oa{POMO4}{T1}{GS}{curto} \\
+ & & Calmar & \oa{POMO4}{T1}{GC}{curto} \\
+ & 2013--16 & Sharpe & \oa{POMO4}{T2}{GS}{curto} \\
+ & & Calmar & \oa{POMO4}{T2}{GC}{curto} \\
+ & 2017--24 & Sharpe & \oa{POMO4}{T4}{GS}{curto} \\
+ & & Calmar & \oa{POMO4}{T4}{GC}{curto} \\
+ & 2025--26 & Sharpe & \oa{POMO4}{T3}{GS}{curto} \\
+ & & Calmar & \oa{POMO4}{T3}{GC}{curto} \\
+\bottomrule
+\end{tabular}
+
+\vspace{4pt}
+\parbox{0.97\textwidth}{\scriptsize F: filtro; FA: filtro e ajuste; p50: limiar no percentil 50; f2\%: limiar fixo
+de 2\% ao dia; depois do ponto, o alvo do ajuste; E/M: encerra ou mantém a posição no veto. --: sem o período.}
+\end{table}
+
+\section{O que isso muda no TG}
+\label{sec:fecho}
+
+Para o texto, nada precisa mudar. O estudo serve de apoio à escolha que o TG já fez.
+
+\textbf{A otimização do TG já escolhia encerrar.} Foram \V{contagens}{TG-PETR4}{encerra} de
+\V{contagens}{TG-PETR4}{n} robôs na PETR4 e \V{contagens}{TG-todas}{encerra} de \V{contagens}{TG-todas}{n} nas
+quatro ações. Este estudo mostra por quê: manter no veto prende a posição comprada no período agitado (quadro
+da Seção~\ref{sec:petr4}).
+
+\textbf{Fixar filtro e ajuste tirou das candidatas o melhor robô do TG.} O Sharpe de 2017--2024 usava só o
+filtro. Com a forma presa, nenhuma versão passou de +\V{petr4}{M1000-T4-GC}{ret}\% nesse período.
+
+\textbf{A proteção não depende da janela de 240.} Com 500 e com 1000, ela aparece quando o veto encerra a
+posição, e falha com frequência quando o veto só congela a posição. Isso reforça o que o Cap.~III já diz: o GARCH
+é ferramenta de risco.
+
+\textbf{Janela maior, mais veto.} Com 1000 e limiar fixo, o veto chegou a \V{petr4}{E1000-T4-GS}{veto_pct}\% dos
+sinais em 2017--2024. A queda fica pequena porque o robô quase não fica comprado.
+
+\begin{cuidado}[Cuidado ao usar estes números]
+\begin{itemize}\setlength{\itemsep}{1pt}
+\item São \V{efeito}{TG-principais}{n} robôs principais por versão, numa ação. Contagens sobre tão poucos robôs
+  são frágeis, e nada aqui tem teste de significância.
+\item Cada robô foi escolhido entre 48 candidatas pelo melhor índice da otimização. O resultado no teste carrega
+  sorte de seleção.
+\item O resultado é bruto (sem custos, Selic e proventos), como nas tabelas por período do Cap.~III.
+\item O teste de 2005--2026 contém os anos da otimização (2010--2012).
+\item Com 1000, as outras ações não têm o período 2007--2011.
+\item É um estudo à parte. Nada daqui está no TG.
+\end{itemize}
+\end{cuidado}
+
+\begin{banca}
+\textbf{``Por que o GARCH usa a mesma janela do ARIMA, e não uma maior?''} Foi testado com 500 e com 1000
+resíduos. A proteção contra quedas aparece nas duas janelas quando o veto encerra a posição, e falha com
+frequência quando só a congela. O que decide é o que o robô faz no veto, mais que o tamanho da janela. Com 1000,
+o veto fica tão frequente que o robô passa a maior parte do tempo fora do mercado.
+
+\textbf{``Por que encerrar no veto, e não manter?''} Porque, no robô só compra, o veto também bloqueia o sinal de
+venda, que é a saída. Mantendo, a posição aberta antes da turbulência atravessa a turbulência inteira, com o
+tamanho do dia da entrada. Em 2013--2016, a mesma configuração com 1000 resíduos ficou comprada em
+\V{petr4}{M1000-T2-GS}{exposicao}\% dos dias mantendo e em \V{petr4}{E1000-T2-GS}{exposicao}\% encerrando.
+\end{banca}
+
+\section*{De onde vêm os números}
+
+Nenhum número deste relatório foi digitado. Todos saem de
+\nolinkurl{dados/resultados/filtro_ajuste_500_2026-11-13/cru/valores.tex}, gerado por
+\nolinkurl{ferramentas/scripts/filtro_ajuste_500_dados.sh} a partir de:
+\begin{itemize}\setlength{\itemsep}{1pt}
+\item \nolinkurl{dados/resultados/filtro_ajuste_500_2026-11-13/} (500, M e E) e
+  \nolinkurl{dados/resultados/filtro_ajuste_1000_2026-11-15/} (1000, M e E), as duas rodadas por
+  \nolinkurl{ferramentas/scripts/filtro_ajuste_500.sh} (a segunda com \texttt{JG=1000}). Cada pasta tem o
+  \texttt{PROTOCOLO.md}, escrito antes de rodar.
+\item TG: \nolinkurl{dados/resultados/refeito_2026-10-05/} (2007--2011, 2013--2016, 2025--2026 e os testes
+  adicionais) e \nolinkurl{dados/resultados/outras_acoes_2017_2024_2026-11-10/} (2017--2024).
+\end{itemize}
+O script confere seis coisas, e todas bateram (\nolinkurl{cru/conferencias.txt}):
+\begin{itemize}\setlength{\itemsep}{1pt}
+\item toda otimização tem 52 passagens;
+\item as quatro passagens sem GARCH de cada otimização e teste são iguais nas quatro versões;
+\item na PETR4, as passagens são iguais às do estudo das janelas de 13/11;
+\item o teste individual de cada robô é igual à passagem dele na grade;
+\item o teste individual do ARIMA sem GARCH dá o mesmo resultado nas quatro versões;
+\item a escolha do TG, refeita pelo script, dá os mesmos números do Cap.~III.
+\end{itemize}
+Para refazer: \texttt{make dados \&\& make} nesta pasta.
+
+\end{document}

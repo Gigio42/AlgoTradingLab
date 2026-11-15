@@ -1727,3 +1727,234 @@ sobre o experimento · **[resultado]** sobre como ler um número.
       fixo, comprando e vendendo": a reprodução no Cap. II já diz volume e compra e venda.
     - Apêndice C ficou com um parágrafo, como A e B. TG com 86 páginas, sem referência
       quebrada. Cópia anterior: `ia/rascunhos/antes_enxugar_apendice_c_2026-11-06/`.
+
+98. **[texto] Um tipo de pesquisa só na caracterização (10/11/2026, pedido da
+    orientadora, conversa colada pelo autor).** "É abordado para cada tópico um tipo
+    de pesquisa, acho melhor deixar apenas um tipo de pesquisa genérico para o
+    trabalho, como por exemplo a pesquisa experimental."
+    - Cap. II, 2.1: saíram a natureza (primária, aplicada, método empírico) e as
+      subseções 2.1.1 "Quanto aos objetivos" (explicativa com parte descritiva) e
+      2.1.2 "Quanto ao delineamento". Ficou a pesquisa experimental, com a definição
+      de Wazlawick (2021, PDF p. 44: manipulação de um aspecto da realidade,
+      variáveis controladas e observadas; p. 79: variável manipulada e medida),
+      aplicada ao trabalho (manipulada = GARCH ligado ou não; medidas = risco,
+      retorno e acerto), e o quase experimento como forma dela (p. 45).
+    - Introdução: o parágrafo com seis classificações virou "A pesquisa é
+      experimental", com a mesma citação.
+    - **Conflito com a estrutura da FATEC-ID** (`ia/NORMAS-FATEC.md`, seção 5): o
+      site lista 2.1.1 e 2.1.2 como numeração do Cap. II. Prevaleceu o pedido da
+      orientadora. Se a coordenação cobrar a numeração, dá para recolocar os dois
+      títulos com uma frase cada apontando para a mesma classificação. A 2.3.2
+      ("Natureza da análise de dados", quantitativa) ficou, porque é da análise e
+      não um tipo de pesquisa.
+    - Cópia anterior: `ia/rascunhos/antes_orientadora_2026-11-10/`.
+    - **Revertido em 11/11/2026, a pedido do autor.** Conferido que a exigência não é
+      só do site: o próprio Manual 2026-2028, item 4.1.2.8 (p. 28 do PDF), diz que o
+      percurso metodológico "deve conter" a Caracterização da Pesquisa "Quanto aos
+      objetivos" e "Quanto ao delineamento" (o 4.1.2.12 repete). A leitura adotada:
+      a orientadora criticou o excesso de rótulos (seis), não os títulos da norma.
+      Voltaram 2.1.1 (explicativa, sem a parte descritiva, Wazlawick p. 43) e 2.1.2
+      (quase experimental, texto antigo, p. 45). A natureza (primária, aplicada,
+      empírica) continua fora, porque nenhuma norma pede. Introdução: explicativa,
+      quase experimental, análise quantitativa. 2.3.2 sem mudança. O autor mandou
+      mensagem à orientadora; **resposta dela não confirmada ainda**. Cópia da versão
+      "só experimental": `ia/rascunhos/antes_reverter_caracterizacao_2026-11-11/`.
+
+99. **[experimento/texto] Teste complementar com 2017 a 2024 (10/11/2026, pergunta da
+    orientadora).** O teste nas quatro ações não tinha o período do teste principal.
+    - Rodado com o mesmo procedimento (`outras_acoes_2017_2024.sh`, calibração 2014-2016,
+      grade de 624 com venda a descoberto). Pasta
+      `dados/resultados/outras_acoes_2017_2024_2026-11-10/` (LEIAME). A PETR4 saiu
+      idêntica ao teste principal, o que confirma que o EA atual reproduz a refação.
+    - Texto: Cap. II, 2.5.8 (quatro períodos, 19.968 simulações); Cap. III, "Outras
+      ações" (uma linha por ação na tabela; 10 de 12, 3 casos e 9 de 12 no lugar de 7 de
+      9, 3 e 7 de 9; venda a descoberto 16 casos, 11 com retorno menor, e a frase nova
+      da ruína, 28 de 4.992, só com venda a descoberto) e o parágrafo das duas
+      famílias de configuração em "O efeito vem do GARCH?" (81% a 92% em 2017-2024; o
+      teto do 2º grupo foi de 68% para 70%).
+    - O que o período novo mostra: o Calmar teve a menor queda nas três ações; o ARIMA
+      sem GARCH rendeu mais que o Sharpe na VALE3 e na POMO4; a venda a descoberto
+      piorou retorno e queda nas quatro ações (a piora mais forte de todos os períodos,
+      medianas de −27 a −60 p.p.) e é o período com mais ruínas (14).
+    - Considerações finais não mudaram: "o efeito se repetiu nas outras três ações"
+      continua valendo.
+
+100. **[texto] Duas figuras novas e ilustrações fora do meio dos parágrafos (12/11/2026,
+    pedido do autor).**
+    - Figura 6 (Cap. I, "Integração entre ARIMA e GARCH"): proposta C de
+      `ia/relatorios/integracao-arima-garch/`, em `tg/figuras/fig08-integracao-arima-garch.tex`.
+      Fica no fim do parágrafo de abertura da 1.7, e não no fim da 1.7.1 como o
+      relatório sugeria: lá ela não cabia e deixava um terço da página em branco
+      antes da 1.8. A frase que a chama diz que as duas maneiras são "descritas a seguir".
+    - Figura 7 (2.2, "Períodos de teste"): `tg/figuras/fig09-periodos-teste.tex`,
+      versão mais baixa que a do relatório (linhas a 0,62 cm, rótulos das crises numa
+      linha, "jan. 2025 a set. 2026" à esquerda da barra), para o Cap. II não
+      terminar com duas linhas numa página. A frase da Figura 8 (antes 7) passou a
+      "acrescenta à Figura 7 os períodos de otimização".
+    - Ilustrações que cortavam parágrafo (no alto da página, com o parágrafo da página
+      anterior em andamento), achadas com o novo `ferramentas/scripts/checar_ilustracoes.sh`
+      e movidas para depois do parágrafo cortado: Tabelas 5, 6, 7, 9, 14 e 15 e
+      Gráfico 11 (Cap. III, todos já cortavam antes de hoje) e Quadro 3 (Cap. II,
+      deslocado pela Figura 7; foi para antes do parágrafo que o cita, logo depois do
+      1º parágrafo da 2.5.5, porque depois dele vinha a 2.5.6). Conferido: o Cap. III
+      tem o mesmo número de linhas por página que antes, só a posição das tabelas mudou.
+    - Espaço em branco que ficou, e por quê: ~30% no pé da p. 46 (fim de 2013 a 2016),
+      já existia, porque os Gráficos 8 e 9 não cabem ali e o `placeins` os obriga a vir
+      antes da 3.6; e a p. 26, com o Quadro 2 sozinho no fim do Cap. I (o capítulo
+      ganhou uma página com a Figura 6). Fim de capítulo, sem texto a puxar.
+    - 87 páginas, sem referência quebrada, sumário e lista de ilustrações conferidos
+      (8 figuras, 4 quadros: a lista continua única). `main.docx` gerado de novo.
+    - Cópias anteriores: `ia/rascunhos/antes_figuras_2026-11-12/`.
+
+101. **[texto] Séries de preço sem tópico próprio e critério das outras ações enxuto
+    (12/11/2026, pedido do autor).**
+    - Cap. I: a seção "Séries temporais financeiras" saiu como tópico. Os três
+      parágrafos foram para dentro de 1.1 Mercado de ações, logo depois do parágrafo
+      que termina em "É dessa variação que as estratégias de negociação procuram tirar
+      proveito" (opção B discutida com o autor: conceito no meio do texto, como a
+      heterocedasticidade). A frase "Antes deles, apresenta-se a regra mais simples...
+      a média móvel" saiu (só fazia sentido antes da análise técnica) e virou "Os dois
+      são apresentados mais adiante neste capítulo". O `\label{sec:series}` ficou no
+      início do parágrafo (no fim ele caía sozinho numa linha e deixava uma linha em
+      branco); a remissão do Cap. III passou a "Seção 1.1". Abertura do Cap. I e
+      organização da introdução ajustadas à nova ordem.
+    - Selic: no mesmo dia, a pedido do autor, o parágrafo saiu do fim da 1.1 e foi
+      para as Métricas, logo depois de "neste trabalho a referência foi a taxa Selic"
+      (mesma citação bcbSelic, fecho reescrito: "representa o que o capital renderia se
+      ficasse fora do mercado de ações"). A 1.1 agora termina na corretora, que puxa a
+      1.2. Cópia em `ia/rascunhos/antes_selic_metricas_2026-11-12/`.
+    - Cap. II: o parágrafo do critério das outras três ações saiu da 2.2, que ficou com
+      uma frase remetendo à 2.5.8 (a norma pede a amostra na 2.2). Na 2.5.8 o critério
+      ficou "série completa de 2003 a 2026 no arquivo da bolsa e setores diferentes".
+      O fator de cotação e o preço acima de R$ 3 continuam em `dados/FONTES.md`, item 9,
+      e num comentário da 2.5.8, para a banca.
+    - Corrigido junto um erro de 10/11 (item 99): "Como no cenário principal, a
+      escolha" tinha ficado na mesma linha de um comentário e sumia do PDF ("19.968
+      simulações. considerou apenas..."). Varredura do PDF por frase começando em
+      minúscula depois de ponto: só esse caso.
+    - 87 páginas, sem referência quebrada, `checar_ilustracoes.sh` sem saída,
+      `main.docx` gerado de novo. Cópias: `ia/rascunhos/antes_series_e_amostra_2026-11-12/`.
+
+102. **[texto] Venda a descoberto separada das outras ações (12/11/2026, pedido do
+    autor: "n tem como separar isso? [...] deixar as outras ações só com modelo mais
+    puro").**
+    - Cap. III: o parágrafo da venda a descoberto saiu do fim de "Outras ações" e virou a
+      seção 3.11 "Venda a descoberto", com a Tabela 15 (mediana, por ação e período, da
+      diferença entre a configuração que também vende e a mesma que só compra, na queda
+      máxima e no retorno). Ordem pedida pelo autor: proventos (3.10) → venda a
+      descoberto (3.11) → outras ações (3.12). "Outras ações" diz agora que os robôs só
+      compram, como no teste principal.
+    - Números da Tabela 15 gerados por awk do bloco 3 de
+      `refeito_2026-10-05/cru/analise_grades_cru_sem_ic.txt` (2007-2011, 2013-2016,
+      2025-2026) e de `outras_acoes_2017_2024_2026-11-10/cru/analise_grades_cru_sem_ic.txt`
+      (2017-2024), ×100 com uma casa. Queda maior em 16 de 16; retorno menor em 11; o
+      retorno melhorou em VALE3, USIM5 e POMO4 de 2013-2016, USIM5 de 2007-2011 e POMO4
+      de 2025-2026 (o texto diz "cinco casos, três deles em 2013 a 2016"). Ruína: 28 de
+      4.992, só com venda a descoberto (bloco 4).
+    - Cap. II: subseção 2.5.8 "Venda a descoberto" antes do teste complementar (2.5.9);
+      2.2, introdução do plano e 2.5.1 apontam para ela.
+    - Cópia: `ia/rascunhos/antes_venda_descoberto_secao_2026-11-12/`.
+
+103. **[texto] Modelos estatísticos, Figura 6 e Quadros 3 e 4 (13/11/2026, pedido do
+    autor).**
+    - Cap. I: seção nova 1.4 "Modelos estatísticos de séries temporais", antes do ARIMA,
+      que passou a 1.4.1, e do GARCH, 1.4.2 (`\label{sec:series}` agora nela; a remissão
+      do Cap. III continua valendo). Recebe a série de preços, o retorno e o
+      comportamento das séries (que estavam na 1.1 desde 12/11) e diz o que é modelar
+      uma série e a divisão média condicional × volatilidade. Referência só Thomaz
+      (2019), que o texto já cita: p. 16 (série temporal; a modelagem identifica padrões
+      e permite prever; os ARMA supõem variância condicional constante), p. 24 (modelo
+      escrito como equação da média condicional mais a do desvio-padrão condicional;
+      GARCH não linear na variância), p. 28-30 (retorno e propriedades). Nenhuma obra
+      nova. A frase de que a média móvel usa pesos fixados por convenção e o modelo
+      estima os pesos é argumento do trabalho (a mesma ponte do ARIMA), não citação.
+      **Texto novo para o autor dominar (regra 3).**
+    - Selic de volta ao fim da 1.1, antes da corretora, com uma frase de ligação ("As
+      ações, porém, não são a única aplicação possível para o capital"). Nas Métricas
+      ficou só "a referência foi a taxa Selic, que representa o que o capital renderia
+      se ficasse fora do mercado de ações". Abertura do Cap. I e organização da
+      introdução ajustadas.
+    - Figura 6 refeita (`tg/figuras/fig08-integracao-arima-garch.tex`): o ciclo de um
+      pregão, de cima para baixo, sem fórmula. Novo pregão → série → ARIMA ("para que
+      lado?") → resíduos → GARCH ("com que risco?") → losango do limiar; "sim" vai para
+      "operação vetada: o pregão termina sem ordem", "não" para "envia a ordem no lado
+      indicado pelo ARIMA, com o tamanho ajustado ao risco"; os dois chegam a "fim do
+      pregão", e a seta da esquerda volta ao início no próximo pregão. A direção não
+      entra mais no losango. A frase que chama a figura foi reescrita. A figura voltou
+      para o fim da 1.5.1 (no começo da 1.5 ela passou a cortar o parágrafo do ajuste).
+    - Quadro 3 (Cap. II) em duas partes, a comum (constante, janela, previsão mínima: 8
+      combinações) e a própria de cada forma, com uma coluna por parâmetro (limiar, alvo,
+      posição no veto) e a conta das configurações. Mesmos valores das grades r3_*.
+    - Quadro 4 (Cap. III) completo: uma linha por robô, inclusive o ARIMA sem GARCH, e
+      uma coluna por parâmetro (forma, limiar, alvo, posição no veto, janela, constante,
+      previsão mínima, índice). Linhas geradas por awk de `escolhas/r3_C1..C3.txt` e
+      `r6_C4.txt`. Achado registrado no texto: todos os robôs escolhidos usam limiar por
+      percentil, nenhum o fixo. O quadro foi para antes do parágrafo que o cita (no
+      lugar antigo ele não cabia e deixava 40% da página em branco).
+    - Versões simples para slide (Quadros 3 e 4, e cópia da Figura 6) em
+      `ia/relatorios/quadros-slides/`, com PNG em 220 dpi.
+    - Tabela 15 com as ações em colunas (4 linhas em vez de 16, mesmos números), para a
+      Tabela 16 caber na mesma página.
+    - Arrumação de página: Gráfico 1 (heterocedasticidade) declarado antes do parágrafo
+      "Por fim, o nome do modelo"; Gráfico 2 antes do parágrafo que o cita; Tabela 8 e
+      Gráfico 15 depois do último parágrafo da 3.7; Tabelas 11 a 13 depois do parágrafo
+      "A Selic e os proventos puxam". Tentou-se tirar o `\FloatBarrier` antes de "O ano
+      de 2008", mas o Gráfico 4 caía dentro da subseção de 2008, e ele voltou.
+    - Ficou: ~25% em branco na p. 45 (antes de 3.4.2, pela barreira) e ~30% na p. 54
+      (fim da 3.7, o Gráfico 16 não cabe e o `placeins` o segura antes da 3.8). Os
+      demais pés de página curtos são fim de capítulo, referências e código.
+    - 89 páginas, sem referência quebrada, sem estouro de margem,
+      `checar_ilustracoes.sh` sem saída, `main.docx` gerado de novo. Cópias:
+      `ia/rascunhos/antes_modelos_quadros_2026-11-13/`.
+
+104. **[estudo] A janela do GARCH: 120, 240, 500 e 1000 (13/11/2026, pedido do autor).
+    Fora do TG.** Relatório `ia/relatorios/janela-garch/relatorio.pdf`, dados em
+    `dados/resultados/janelas_garch_2026-11-13/` (LEIAME, PROTOCOLO escrito antes).
+    Pergunta da dupla: janela maior é *overfitting*? janela menor "não se acostuma"?
+    - Laboratório (`JanelaGarchSimulada.mq5`, 400 séries sem mudança): janela maior
+      estima melhor; persistência > 0,999 em 10,2% das séries com 120 e 0,0% com 1000.
+      Crise artificial (20 séries): a janela CURTA é a que se acostuma primeiro (veta
+      68% dos dias na crise, contra 93% com 1000); a longa carrega a crise na régua por
+      centenas de dias depois (500 vetou 4% bem depois da crise).
+    - PETR4, grade de 156 em 4 pares otimização→teste: nenhuma janela ganha sempre
+      (120 melhor em 2017–24 e 2025–26, pior em 2007–11). Spearman do Sharpe
+      otimização × teste negativo em 13 de 16 combinações, Calmar positivo em todas
+      (0,17 a 0,75): não depende da janela. A largura da grade dentro de uma janela é
+      maior que a distância entre as medianas das janelas.
+    - Configuração do GS do TG fixa em 2017–2024: +199,45% (TG, igual ao arquivo do
+      TG), +201,1% (120), +180,1% (240 própria), +64,6% (500), +80,7% (1000). Com 500
+      vetou 21,6% dos dias contra 33,1%, exposição 50,7% contra 43,9%. Queda abaixo
+      da mediana do ARIMA sem GARCH (51,6%) em todas.
+    - **Sem conflito com o item 78**: os 29,0% de persistência > 0,999 de lá são de
+      07/2019 a 06/2021; aqui, 2017–2024 inteiro, 18,2% (TG) e 1,3% (500).
+    - Armadilhas: o prefixo antigo também faz LiveUpdate (build 6230 em 13/11) e, ao
+      reiniciar, não achou o script; `StringFormat` sem argumento não compila.
+
+105. **[texto] Objetivos específicos retirados (15/11/2026, pedido do autor).**
+    - Introdução: fica só o objetivo geral (saíram os quatro específicos).
+      Considerações finais: "assim como os objetivos específicos" e a frase dos
+      conceitos de tendência e volatilidade no Capítulo I saíram; o parágrafo diz
+      que o objetivo geral foi alcançado e o que se fez para isso.
+    - Decisão firme do autor: **não reintroduzir**. O Manual pede objetivos (com
+      verbo de ação) e que as considerações digam se foram alcançados; não exige
+      específicos.
+    - Cópia anterior em `ia/rascunhos/antes_tirar_objetivos_especificos_2026-11-15/`.
+      TG com 88 páginas, sem estouro de margem; `main.docx` gerado de novo.
+
+106. **[texto] Figura 1 (interface do MT5) trocada (15/11/2026, pedido do autor).**
+    - Imagem nova, de 900×675 (a antiga tinha 475×365), na mesma fonte segundo o
+      autor (`metaquotes2024`). O fundo transparente foi achatado em branco. No PDF
+      fica com 199 ppi. A antiga está em `ia/rascunhos/antes_trocar_fig01_2026-11-15/`.
+    - **Não confirmado**: a imagem nova mostra datas de abril de 2026, e a
+      referência é de 2024 com acesso em 01 mar. 2025. Se ela foi baixada agora,
+      o ano e a data de acesso no `.bib` precisam acompanhar. Falta o autor
+      confirmar.
+
+107. **[texto] Figura 4 do Cap. I (etapas do ARIMA) só com o conceito (15/11/2026,
+    pedido do autor).** Entrou a proposta B de `ia/relatorios/arima-conceito/`:
+    estacionariedade, comparação de combinações de p e q, equilíbrio entre ajuste e
+    simplicidade, pesos φ e θ e previsão, com "em geral, teste ADF" e "em geral,
+    critério AIC" em cinza. Saíram da figura a grade de 0 a 4, Hannan-Rissanen e a
+    reseleção a cada 21 pregões, que continuam no Cap. II. Legenda e texto em volta
+    sem mudança. Anterior em `ia/rascunhos/antes_fig05_conceito_2026-11-15/`. TG com
+    88 páginas, sem estouro; `main.docx` gerado de novo.

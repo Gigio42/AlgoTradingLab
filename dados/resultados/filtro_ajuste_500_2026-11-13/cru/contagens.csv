@@ -1,0 +1,11 @@
+versao,escopo,n,encerra,so_filtro,janela120,fixo,percentil,alvo1,sem_operacoes
+TG,PETR4,8,7,2,3,0,8,5,0
+TG,todas,32,27,10,11,16,16,20,2
+M500,PETR4,8,0,0,0,4,4,5,0
+M500,todas,32,0,0,0,16,16,21,2
+E500,PETR4,8,8,0,0,3,5,5,0
+E500,todas,32,32,0,0,18,14,24,3
+M1000,PETR4,8,0,0,0,5,3,5,0
+M1000,todas,26,0,0,0,16,10,18,5
+E1000,PETR4,8,8,0,0,7,1,7,0
+E1000,todas,26,26,0,0,20,6,22,3

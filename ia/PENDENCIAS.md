@@ -15,6 +15,98 @@ cada decisão ficam em `ia/INCERTEZAS.md` (o de hoje é o item 64).
 
 Fonte: `dados/fontes/normas-fatec/TG-Cronograma-2o-2026.pdf` (conferido em 18/10).
 
+## FEITO: GARCH 500 e 1000 só com filtro e ajuste, mantendo × encerrando no veto (13–15/11/2026) — estudo, fora do TG
+
+Pedido do autor (13/11): refazer os testes do TG com o GARCH em 500 (ARIMA fixo
+em 240), todo robô com filtro e ajuste (`Estrategia=3`), em duas versões
+rodadas separadas: **M** mantém a posição no veto, **E** encerra. Relatório
+comparando com o TG, com tabela do que a otimização escolheu. Em 15/11: terminar
+e fazer o mesmo com 1000. Interrompido em 13/11 a pedido do autor, retomado em
+15/11 à 1h50; tudo terminou às 4h24.
+
+- **Relatório:** `ia/relatorios/filtro-ajuste-500-1000/relatorio.pdf` (9 páginas;
+  `make dados && make`). Cinco versões lado a lado: TG, 500 M/E, 1000 M/E.
+- **Dados:** `dados/resultados/filtro_ajuste_500_2026-11-13/` e
+  `dados/resultados/filtro_ajuste_1000_2026-11-15/`. Os números de tudo saem
+  em `filtro_ajuste_500_2026-11-13/cru/`.
+- **Conferências:** 6 de 6 bateram (`cru/conferencias.txt`).
+  - 500 tem 64 otimizações e 1000 tem 52, todas com 52 passagens.
+  - A sub-grade sem GARCH é igual nas 4 versões.
+  - A PETR4 é igual ao `janelas_garch_2026-11-13/` (32/32).
+  - O teste individual é igual à grade (32/32).
+  - O ARIMA sem GARCH dá o mesmo resultado nas 4 versões.
+  - A escolha do TG, refeita, é igual ao Cap. III (12/12).
+- **Resultado:** encerrar no veto protege com as duas janelas; manter falha
+  sobretudo em 2013–2016 e 2017–2024.
+  - No robô só compra, o veto também bloqueia a saída, e a posição fica
+    presa com o tamanho do dia da entrada.
+  - Nenhuma versão chega perto do +199,5% do TG em 2017–2024: aquele robô
+    era só filtro, e a forma ficou presa aqui.
+  - Com 1000 encerrando, o veto chega a 89% dos sinais em 2017–2024, e o
+    robô quase não opera.
+  - O TG já escolhia encerrar em 7 de 8 robôs da PETR4.
+  - Para o texto do TG, nada muda (não foi pedido levar ao `tg/`).
+- **Limitação:** com 1000, VALE3, USIM5 e POMO4 ficam sem o par 2004–06 → 2007–11.
+  A série começa em 2003, e estender seria dado novo.
+
+## Relatório da janela do GARCH (13/11/2026)
+
+Pedido do autor (discussão da dupla sobre 500 × 240). `ia/relatorios/janela-garch/relatorio.pdf`
+(10 páginas): laboratório com séries artificiais, a grade em quatro períodos com janelas 120 a
+1000 e a configuração do TG com cada janela. Fora do TG; não há mudança de texto pedida. Resumo
+em INCERTEZAS item 104.
+
+## Pedidos da orientadora de 10/11/2026
+
+Conversa colada pelo autor. Entrega até o dia 27 e semana de apresentação "de 7 a 12"
+(prorrogada; o mês não foi dito, provavelmente dezembro, não confirmado). Cópia do texto anterior em
+`ia/rascunhos/antes_orientadora_2026-11-10/`.
+
+- **Caracterização da pesquisa** (INCERTEZAS item 98): em 10/11 virou só "experimental",
+  sem subseções. Em 11/11, a pedido do autor, voltaram 2.1.1 (explicativa) e 2.1.2
+  (quase experimental), que o Manual pede (4.1.2.8), e saiu só o que a norma não pede
+  (natureza; parte descritiva). Introdução ajustada. O autor mandou mensagem à
+  orientadora perguntando se fica explicativa + experimental + análise quantitativa.
+  **Falta:** a resposta dela. Se ela preferir "experimental" em vez de "quase
+  experimental", trocar o nome na 2.1.2 e na introdução.
+- **Duas figuras (12/11/2026): ENTRARAM no TG no mesmo dia (INCERTEZAS item 100).** Propostas em:
+  `ia/relatorios/periodos-amostra/` (linha do tempo só com os períodos de teste, para
+  a 2.2, antes da Figura 7) e `ia/relatorios/integracao-arima-garch/` (ARIMA e GARCH
+  juntos, para a seção de integração do Cap. I; o autor preferiu a linha da B, e a C, recomendada,
+  põe o sinal do ARIMA passando pelo filtro). No TG: fig08 (Figura 6) e fig09 (Figura 7,
+  mais baixa que a do relatório). Depois de mexer no texto, rodar
+  `ferramentas/scripts/checar_ilustracoes.sh`.
+- **Teste complementar sem 2017 a 2024** (INCERTEZAS item 99): rodado
+  (`dados/resultados/outras_acoes_2017_2024_2026-11-10/`) e acrescentado no 2.5.8 e na
+  seção "Outras ações" do Cap. III (a venda a descoberto saiu dela em 12/11). **Falta do autor:** reler a
+  tabela e os dois parágrafos depois dela.
+- **Séries e amostra (12/11/2026, INCERTEZAS item 101):** critério das outras ações foi,
+  enxuto, para a 2.5.8; frase sumida da 2.5.8 corrigida. (As séries e a Selic mudaram de
+  novo em 13/11, item 103.)
+- **Venda a descoberto separada das outras ações (12 e 13/11/2026, INCERTEZAS itens 102 e
+  103):** seção própria no Cap. III (3.11, antes de 3.12 Outras ações, depois dos
+  proventos), com a Tabela 15, e subseção própria no Cap. II (2.5.8, antes do teste
+  complementar). "Outras ações" ficou só com os robôs que só compram. **Falta do autor:**
+  reler as duas.
+- **Modelos estatísticos, Figura 6 e Quadros 3 e 4 (13/11/2026, INCERTEZAS item 103):**
+  seção nova 1.4 "Modelos estatísticos de séries temporais" (série, retorno, média e
+  variância condicional, com Thomaz, 2019), ARIMA e GARCH como 1.4.1 e 1.4.2, Selic de
+  volta à 1.1; Figura 6 refeita como o ciclo de um pregão; Quadro 3 em duas partes;
+  Quadro 4 completo. Versões de slide em `ia/relatorios/quadros-slides/` (PNG para o
+  PowerPoint). **Falta do autor:** ler a 1.4 (texto novo, regra 3) e as páginas de Thomaz
+  citadas (16, 24 e 29-30).
+- **Série de preços de exemplo (13/11/2026): só proposta, fora do TG.** Relatório em
+  `ia/relatorios/serie-precos/relatorio.pdf`: A, os últimos 20 pregões da PETR4
+  (fechamento em pontos e retorno em barras, recomendada), e B, o fechamento de 2019 a
+  2021 (mesmo período do Gráfico 1). Dados em `dados/resultados/serie_exemplo_2026-11-13/`
+  (`ferramentas/scripts/serie_exemplo.sh`). **Falta do autor:** escolher se entra, e qual.
+- **Auditoria completa do TG (13/11/2026): só relatório, texto NÃO alterado.**
+  `ia/relatorios/auditoria-2026-11-13.md`: 5 problemas de prioridade alta (resultado
+  novo nas Considerações, "mercado estável" no resumo, venda a descoberto sem fechamento,
+  "teste principal" com dois sentidos, Figura 6 e o veto que encerra a posição), coerência,
+  normas e aparência. **Falta do autor:** decidir quais itens aplicar.
+- **Slides:** com o Bruno.
+
 ## O modelo inteiro e o GARCH funcionando (06/11/2026)
 
 **Só proposta, fora do TG.** Dois relatórios novos:

@@ -1,0 +1,36 @@
+% Proposta A (13/11/2026, pedido do autor): série de preços de exemplo, curta.
+% Os últimos 20 pregões da PETR4_OFICIAL: um ponto por fechamento e, embaixo, o
+% retorno de cada pregão. Dados: dados/resultados/serie_exemplo_2026-11-13/curta.csv
+% (ferramentas/scripts/serie_exemplo.sh). Fora do TG até o autor decidir.
+\documentclass[border=4pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=1.18}
+\definecolor{cpetr}{RGB}{0,90,181}
+\newcommand{\arq}{../../../dados/resultados/serie_exemplo_2026-11-13/curta.csv}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=1 by 2, vertical sep=0.5cm, xticklabels at=edge bottom},
+  width=14.6cm, table/col sep=comma, xmin=0.4, xmax=20.6,
+  xtick=data, xticklabels from table={\arq}{rotulo},
+  xticklabel style={font=\footnotesize, rotate=45, anchor=north east},
+  yticklabel style={font=\normalsize}, ylabel style={font=\normalsize},
+  grid=major, grid style={gray!20},
+  /pgf/number format/use comma,
+]
+\nextgroupplot[height=5.2cm, ylabel={Fechamento (R\$)}, ymin=40, ymax=52]
+\addplot[cpetr, semithick, mark=*, mark size=1.6pt] table[x=indice, y=fechamento]{\arq};
+\node[font=\small, align=left, anchor=north west] at (rel axis cs:0.02,0.97)
+  {cada ponto é o fechamento de um pregão};
+\nextgroupplot[height=4.2cm, ylabel={Retorno (\%)}, ymin=-6, ymax=7.5, ytick={-4,0,4},
+  ybar, bar width=4.5pt]
+\addplot[fill=cpetr!60, draw=cpetr] table[x=indice, y=retorno]{\arq};
+\node[font=\small, align=left, anchor=north west] at (rel axis cs:0.02,0.97)
+  {cada barra é o retorno: a variação em relação ao pregão anterior};
+\end{groupplot}
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,36 @@
+% Proposta B: como a A, com a ferramenta usual de cada etapa em cinza (15/11/2026). Fora do TG.
+\documentclass[11pt,border=2pt]{standalone}
+\input{estilo}
+\begin{document}
+\begin{tikzpicture}[node distance=6mm]
+  \node[dado] (ent) {Série histórica\\de preços};
+  \node[decisao, below=7mm of ent] (est) {A série é\\estacionária?};
+  \node[caixap, right=16mm of est] (dif) {Diferenciar a série\\($d$ passa a $d+1$)};
+  \node[caixa, below=7mm of est] (comp) {Comparar modelos com diferentes\\combinações de $p$ e $q$};
+  \node[caixa, below=of comp] (esc) {Escolher a combinação que melhor\\equilibra ajuste e simplicidade};
+  \node[caixa, below=9mm of esc] (pesos) {Estimar os pesos $\phi$ e $\theta$\\que melhor se ajustam aos dados};
+  \node[caixa, below=of pesos] (prev) {Prever o próximo valor\\da série};
+  \node[dado, below=10mm of prev, xshift=-31mm] (sai) {Previsão do\\próximo período};
+  \node[dado, below=10mm of prev, xshift=31mm] (res) {Resíduos:\\real menos previsto};
+
+  \coordinate (volta) at ($(ent.south)!0.45!(est.north)$);
+  \draw[seta] (ent) -- (est);
+  \draw[seta] (est) -- node[above, font=\footnotesize]{não} (dif);
+  \draw[seta] (dif.north) |- (volta);
+  \draw[seta] (est) -- node[right, font=\footnotesize]{sim ($d$ definido)} (comp);
+  \draw[seta] (comp) -- (esc);
+  \draw[seta] (esc) -- (pesos);
+  \draw[seta] (pesos) -- (prev);
+  \draw[seta] (prev.south) -- ++(0,-4mm) -| (sai.north);
+  \draw[seta] (prev.south) -- ++(0,-4mm) -| (res.north);
+
+  \node[exemplo, left=1mm of est.west, anchor=east] {em geral,\\teste ADF};
+  \node[exemplo, right=3mm of esc] {em geral,\\critério AIC};
+  \draw[decorate, decoration={brace, amplitude=5pt, mirror}, thick]
+    ([xshift=-38mm]est.north) -- ([xshift=-38mm]esc.south)
+    node[midway, left=7pt, rotulo]{escolha\\das ordens\\$p$, $d$ e $q$};
+  \draw[decorate, decoration={brace, amplitude=5pt, mirror}, thick]
+    ([xshift=-38mm]pesos.north) -- ([xshift=-38mm]prev.south)
+    node[midway, left=7pt, rotulo]{ajuste e\\previsão};
+\end{tikzpicture}
+\end{document}

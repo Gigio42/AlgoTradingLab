@@ -21,6 +21,7 @@ ficam em `scripts/comum.sh`.
 | `ValidarMVArima_EA.mq5`, `VerificarMV_EA.mq5` | Validação do ARIMA por máxima verossimilhança. |
 | `MetodosIlustrados.mq5` | Gera os dados dos gráficos que explicam os métodos (`apresentacao/graficos_metodos/`). |
 | `HannanRissanenDetalhado.mq5` | Gera os dados do relatório sobre o Hannan-Rissanen (`ia/relatorios/hannan-rissanen/`). |
+| `JanelaGarchSimulada.mq5` | O `CGarch` do EA em séries GARCH artificiais com janelas de 120 a 1000: precisão da estimativa e uma crise artificial (relatório `ia/relatorios/janela-garch/`). Roda por `janela_garch_simulada.sh` no prefixo antigo. |
 | `TestesFormulas.mq5` | Testes das funções do robô contra as fórmulas (identidades e simulações), para o relatório `ia/relatorios/testes-do-codigo/`. |
 
 ## Scripts (`scripts/`)
@@ -49,12 +50,14 @@ ficam em `scripts/comum.sh`.
 |---|---|
 | `codigo_apendice.sh`, `sem_comentarios.sh` | Geram as listagens dos Apêndices A, B e C a partir do código que roda (chamados pelo `tg/Makefile`). |
 | `citacoes_abnt.pl` | Ajusta as citações do `.bbl` para a caixa mista da NBR 6023:2025 (chamado pelo `Makefile` e pelo `.latexmkrc`). |
+| `checar_ilustracoes.sh` | Depois de mexer no texto: lista as ilustrações que caíram no alto de uma página cortando um parágrafo ao meio (12/11/2026). Sem saída = nenhum corte. |
 | `dados_cru.sh` | Gera os dados do Cap. III a partir da refação de 05/10/2026. |
 | `graficos_cru.sh` | Compila os gráficos de `tg/graficos/cru/`. |
 | `docx/converter.sh` (e os demais de `docx/`) | Gera a versão em Word, `tg/main.docx`, a partir do LaTeX, pelo pandoc 3.8+ (`make docx` em `tg/`). Numeração, citações e referências saem do `main.aux` e do `main.bbl`, iguais às do PDF. |
 | `metodos_ilustrados.sh` | Roda o `MetodosIlustrados.mq5` e guarda a saída em `dados/resultados/metodos_ilustrados_2026-10-30/`. |
 | `robo_em_acao.sh` | Resume o traço da refação de 05/10/2026 para as figuras 08 a 14 de `apresentacao/graficos_metodos/` (só lê arquivos). |
 | `modelo_completo.sh` | Roda o `ModeloCompleto.mq5` (refaz os pregões de 19 e 22/02/2021 com as funções do robô), guarda a saída em `dados/resultados/modelo_completo_2026-11-06/` e confere contra o traço. Dados dos relatórios `ia/relatorios/modelo-completo/` e `garch-funcionando/`. |
+| `outras_acoes_2017_2024.sh` | Grade de 624 (com venda a descoberto, sem intervalo de confiança) nas quatro ações em 2014–2016 e 2017–2024. Saída em `dados/resultados/outras_acoes_2017_2024_2026-11-10/`. |
 | `hannan_rissanen.sh` | Roda o `HannanRissanenDetalhado.mq5`, guarda a saída em `dados/resultados/hannan_rissanen_2026-10-30/` e confere os pregões reais contra o traço. |
 | `hannan_rissanen_exemplo.sh` | Tira dos arquivos do `hannan_rissanen.sh` os números das contas à mão da versão 2 do relatório (só lê arquivos). |
 | `otimizacao_teste.sh` | Junta, para as 312 configurações da PETR4, o resultado na otimização e no teste (pareados da refação de 05/10/2026) e grava em `dados/resultados/otimizacao_teste_2026-11-02/` os dados do relatório `ia/relatorios/otimizacao/` (só lê arquivos). |
@@ -71,8 +74,12 @@ ficam em `scripts/comum.sh`.
 | `janelas_240_500_2026-10-26/` | `janelas_240_500.sh` |
 | `fatores_500_2026-10-27/` | `fatores_500.sh` |
 | `janela_garch_1000_2026-11-02/` | `serie_petr4_desde1999.sh` (monta a PETR4 oficial desde 1999), `janela_garch_1000.sh` |
+| `janelas_garch_2026-11-13/` | `janelas_garch.sh` (grade e traço por janela do GARCH), `janela_garch_simulada.sh` (laboratório, sem testador), `janelas_garch_dados.sh` (números e gráficos do relatório `ia/relatorios/janela-garch/`; só lê arquivos) |
+| `filtro_ajuste_500_2026-11-13/` | `filtro_ajuste_500.sh` (grades M/E e testes da PETR4; pula as janelas prontas, então retomar = mesmo comando), `filtro_ajuste_500_dados.sh` (números do relatório `ia/relatorios/filtro-ajuste-500-1000/`; só lê arquivos) |
 | `heterocedasticidade_2026-11-02/` | `heterocedasticidade.sh` (Gráfico 1 do Cap. I; só lê a série) |
 | `modelo_completo_2026-11-06/` | `modelo_completo.sh` (roda o `ModeloCompleto.mq5`; relatórios `modelo-completo` e `garch-funcionando`) |
+| `serie_exemplo_2026-11-13/` | `serie_exemplo.sh` (série de preços de exemplo, proposta em `ia/relatorios/serie-precos/`; só lê a série) |
+| `outras_acoes_2017_2024_2026-11-10/` | `outras_acoes_2017_2024.sh`, `parear.sh`, `analisar_grades.sh` (`SEM_IC=1 CAMADA=puro`), `outras_acoes.sh` (`RES=... K=4`) |
 | históricos (rodadas 4 a 6, cenário de Almeida, traço) | `bateria_ativos.sh`, `calib_2014_2016.sh`, `teste_2017_2024.sh`, `periodos_longos.sh`, `cenario_almeida.sh`, `gerar_traco.sh` |
 
 **Análise (só leem os CSVs, não rodam o testador)**

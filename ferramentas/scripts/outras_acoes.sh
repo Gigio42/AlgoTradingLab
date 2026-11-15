@@ -23,9 +23,10 @@ set -e
 raiz=$(cd "$(dirname "$0")/../.." && pwd)
 RES="${RES:-$raiz/dados/resultados/refeito_2026-10-05}"   # outra pasta: estudo de 26/10
 C="$RES/calibracao"
-O="$RES/cru/outras_acoes.txt"
+O="$RES/cru/outras_acoes.txt"; mkdir -p "$RES/cru"
 S="$raiz/ferramentas/scripts"
 SEM_IC="${SEM_IC:-1}"
+K="${K:-1 2 3}"   # janelas; K=4 = 2017-2024 (outras_acoes_2017_2024_2026-11-10, RES=essa pasta)
 T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
 
 {
@@ -33,7 +34,7 @@ T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
   [ "$SEM_IC" = 1 ] && echo "Sem as passagens com intervalo de confiança (Estrategia=2), fora do escopo desde 21/10/2026."
   echo "Colunas: ret_puro, dd_puro, vol_puro, saidas; PETR4 = bh_preco, dd_bh_preco, vol_bh_preco."
   for a in PETR4 VALE3 USIM5 POMO4; do
-    for k in 1 2 3; do
+    for k in $K; do
       echo; echo "== $a T$k"
       cal="$C/${a}_C$k.csv"
       if [ "$SEM_IC" = 1 ]; then

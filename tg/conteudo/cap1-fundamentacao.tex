@@ -39,9 +39,11 @@
 Este capítulo apresenta os conceitos sobre os quais o trabalho se apoia, na ordem
 em que um depende do outro. Começa pelo mercado de ações, onde as operações
 acontecem, e pela plataforma MetaTrader 5, onde os robôs são programados e
-testados. Em seguida, trata do dado que os robôs leem, a série de preços, e das
-regras que eles usam para decidir, primeiro as médias móveis de
-\citeonline{almeida2016} e depois os modelos ARIMA e GARCH. Termina com as
+testados. Em seguida, trata das regras que eles usam para decidir, primeiro as
+médias móveis de \citeonline{almeida2016} e depois os modelos estatísticos de
+séries temporais, que partem do dado que os robôs leem, a série de preços, e dos
+quais fazem parte o ARIMA e o GARCH. Mostra, então, como esses dois modelos são
+reunidos em um único robô. Termina com as
 métricas usadas para comparar os robôs e com os trabalhos relacionados.
 
 \section{Mercado de ações}
@@ -62,17 +64,20 @@ investidores na bolsa, e o preço de cada uma muda a cada pregão, isto é, a ca
 dia de negociação, conforme a oferta e a procura. É dessa variação que as
 estratégias de negociação procuram tirar proveito.
 
+As ações, porém, não são a única aplicação possível para o capital. A taxa Selic é a taxa básica de juros da economia brasileira. Ela serve de base
+para as demais taxas praticadas no mercado e influencia tanto o custo do crédito quanto o retorno das
+aplicações financeiras \cite{bcbSelic}. Por esse motivo, o capital que uma
+estratégia mantém fora do mercado de ações costuma ser comparado ao que renderia se
+estivesse aplicado a essa taxa.
+% 13/11/2026, pedido do autor: a Selic voltou para o mercado de ações (estava nas
+% métricas desde 12/11), e a série de preços saiu daqui para a seção dos modelos
+% estatísticos. Cópia anterior em ia/rascunhos/antes_modelos_quadros_2026-11-13/.
+
 O investidor não negocia diretamente na bolsa. O acesso se dá por meio de
 corretoras, instituições que intermediam as operações e oferecem serviços como
 plataformas de negociação pela internet, custódia dos títulos e financiamento para
 a compra de ações, cobrando por isso comissões e taxas \cite{bcbCorretoras}. É
 pela corretora que uma plataforma como o MetaTrader 5 se conecta ao mercado.
-
-A taxa Selic é a taxa básica de juros da economia brasileira. Ela serve de base
-para as demais taxas praticadas no mercado e influencia tanto o custo do crédito quanto o retorno das
-aplicações financeiras \cite{bcbSelic}. Por esse motivo, o capital que uma
-estratégia mantém fora do mercado costuma ser comparado ao que renderia se
-estivesse aplicado a essa taxa.
 
 \section{MetaTrader 5}
 
@@ -147,33 +152,6 @@ como se descreve no Capítulo II.
 % teste avançado") e MetaQuotes-tipos-de-otimizacao-MT5.html ("Lenta (busca
 % completa...)" e "Rápida (algoritmo genético)"), baixadas em 27/10/2026 20:59.
 
-\section{Séries temporais financeiras}
-\label{sec:series}
-
-Uma série temporal é uma sequência de observações ordenadas no tempo. Neste
-trabalho, é a sequência dos preços de fechamento de uma ação, um por pregão, e é
-esse o dado que os robôs leem para decidir. Como o que interessa a quem investe
-são os ganhos e as perdas, mais do que o preço em si, as séries financeiras costumam
-ser estudadas pela variação do preço de um dia para o outro, chamada de retorno.
-O retorno tem ainda a vantagem de não depender do nível do preço, o que permite
-comparar ativos e períodos diferentes \cite{thomaz2019}.
-
-As séries de preços e de retornos de ações têm comportamentos bem conhecidos
-\cite{thomaz2019}. O preço anda sem rumo definido, como um passeio aleatório, e
-não tende a voltar a uma média. O retorno, ao contrário, oscila em torno de zero.
-Além disso, o retorno de um dia diz pouco sobre o do dia seguinte, mas o tamanho
-das oscilações se repete. Dias agitados costumam vir seguidos de dias agitados, e
-dias calmos de dias calmos, fenômeno conhecido como agrupamento de volatilidade.
-% Thomaz (2019): retorno logarítmico, p. 28-29; propriedades das séries de
-% retornos, p. 29-30 (itens 1, 2 e 4).
-
-Essas duas características explicam a divisão de tarefas entre os modelos deste
-trabalho. Como a direção do preço é difícil de prever, ela fica a cargo de um
-modelo que procura aproveitar a pouca dependência que existe entre os retornos, o
-ARIMA. Como o tamanho das oscilações é mais previsível, ele fica a cargo de um
-modelo feito para isso, o GARCH. Antes deles, apresenta-se a regra mais simples
-aplicada à série de preços, a média móvel usada por \citeonline{almeida2016}.
-
 \section{Análise técnica}
 
 A análise técnica busca antecipar o comportamento dos preços a partir do estudo do
@@ -231,7 +209,56 @@ relatados tenham sido conduzidos com ambos nulos. O próprio autor alertou para 
 limitações de se usar apenas essa técnica em mercados de alta volatilidade
 \cite{almeida2016}.
 
-\section{ARIMA}
+\section{Modelos estatísticos de séries temporais}
+\label{sec:series}
+
+Os preços de fechamento de uma ação, registrados um por pregão, formam uma série
+temporal, isto é, uma sequência de observações ordenadas no tempo, e é esse o dado
+que os robôs deste trabalho leem para decidir. Modelar uma série temporal é
+descrevê-la por meio de equações cujos parâmetros são estimados a partir das
+próprias observações, de modo a identificar padrões no seu comportamento e, com
+eles, fazer previsões para os períodos seguintes \cite{thomaz2019}. É nisso que um
+modelo estatístico difere da média móvel apresentada na seção anterior. A média
+móvel aplica a mesma regra a qualquer ativo, com pesos fixados por convenção,
+enquanto o modelo estatístico ajusta os seus parâmetros ao histórico do ativo e do
+período analisados.
+% Thomaz (2019), p. 16: série temporal como sequência de observações ao longo do
+% tempo; a modelagem "permite identificar padrões de comportamento [...],
+% possibilitando a realização de previsões". A comparação com a média móvel é
+% argumento deste trabalho (a mesma ponte da seção do ARIMA), não citação.
+% 13/11/2026, pedido do autor: seção nova, que apresenta os modelos estatísticos e
+% recebe a explicação das séries (antes no mercado de ações). ARIMA e GARCH viraram
+% subseções dela. Cópia anterior em ia/rascunhos/antes_modelos_quadros_2026-11-13/.
+
+Como o que interessa a quem investe são os ganhos e as perdas, mais do que o preço
+em si, as séries financeiras costumam ser estudadas pela variação do preço de um
+dia para o outro, chamada de retorno. O retorno tem ainda a vantagem de não
+depender do nível do preço, o que permite comparar ativos e períodos diferentes
+\cite{thomaz2019}.
+
+As séries de preços e de retornos de ações têm comportamentos bem conhecidos
+\cite{thomaz2019}. O preço anda sem rumo definido, como um passeio aleatório, e
+não tende a voltar a uma média. O retorno, ao contrário, oscila em torno de zero.
+Além disso, o retorno de um dia diz pouco sobre o do dia seguinte, mas o tamanho
+das oscilações se repete. Dias agitados costumam vir seguidos de dias agitados, e
+dias calmos de dias calmos, fenômeno conhecido como agrupamento de volatilidade.
+% Thomaz (2019): retorno logarítmico, p. 28-29; propriedades das séries de
+% retornos, p. 29-30 (itens 1, 2 e 4).
+
+Por isso, um modelo de série financeira costuma ser descrito em duas partes. Uma
+representa o valor esperado para o período seguinte, chamado de média condicional,
+e a outra, o tamanho esperado da oscilação em torno desse valor, que é o desvio-padrão
+condicional, ou a volatilidade \cite{thomaz2019}. Os modelos estudados neste
+trabalho dividem essas tarefas. O ARIMA trata da primeira parte. Como a direção do
+preço é difícil de prever, ele procura aproveitar a pouca dependência que existe
+entre os retornos. O GARCH trata da segunda, que é mais previsível, justamente por
+causa do agrupamento de volatilidade. Os dois são apresentados a seguir.
+% Thomaz (2019), p. 24: modelo escrito como equação da média condicional mais
+% equação do desvio-padrão condicional; os da família GARCH são não lineares na
+% variância. P. 16: os modelos ARMA consideram a variância condicional constante e
+% se limitam ao primeiro momento (a média).
+
+\subsection{ARIMA}
 
 O modelo autorregressivo integrado de médias móveis, conhecido pela sigla ARIMA,
 do inglês \textit{Autoregressive Integrated Moving Average}, é um dos modelos mais
@@ -336,7 +363,7 @@ ARIMA é tratar apenas relações lineares e supor que a variância dos erros é
 constante. Em séries financeiras essa segunda suposição raramente se verifica, e é
 dela que trata o modelo GARCH.
 
-\section{GARCH}
+\subsection{GARCH}
 \label{sec:garch}
 
 O modelo autorregressivo generalizado de heterocedasticidade condicional,
@@ -420,6 +447,16 @@ choques positivos e negativos \cite{araya2024}. Este trabalho emprega a
 especificação simétrica, e as variações assimétricas ficam como possibilidade
 para trabalhos futuros.
 
+\begin{grafico}[htbp]
+\centering
+\caption{Série homocedástica simulada e retorno diário da PETR4, 2019 a 2021}
+\label{gra:heterocedasticidade}
+\includegraphics{../graficos/heterocedasticidade.pdf}
+\fonte{Elaboração própria com dados de \citeonline{b3Cotahist}.}
+\nota{Retorno logarítmico do preço de fechamento, em porcentagem. A série simulada
+tem distribuição normal, média zero e o mesmo desvio-padrão da PETR4 no período.}
+\end{grafico}
+
 Por fim, o nome do modelo vem do comportamento que ele representa. Uma série é
 homocedástica quando a sua variância, que mede o quanto os valores se espalham em
 torno da média, é constante ao longo do tempo \cite[p.~47]{thomaz2019}. Em outras
@@ -439,17 +476,9 @@ de variância constante, as oscilações ficam sempre dentro da mesma faixa. No
 retorno diário da PETR4, longos trechos de oscilações pequenas se alternam com
 períodos de oscilações grandes, como no início de 2020.
 
-\begin{grafico}[htbp]
-\centering
-\caption{Série homocedástica simulada e retorno diário da PETR4, 2019 a 2021}
-\label{gra:heterocedasticidade}
-\includegraphics{../graficos/heterocedasticidade.pdf}
-\fonte{Elaboração própria com dados de \citeonline{b3Cotahist}.}
-\nota{Retorno logarítmico do preço de fechamento, em porcentagem. A série simulada
-tem distribuição normal, média zero e o mesmo desvio-padrão da PETR4 no período.}
-\end{grafico}
 
 \section{Integração entre ARIMA e GARCH}
+\label{sec:integracao}
 
 Os dois modelos se complementam. O ARIMA estima a média condicional da série, ou
 seja, o valor esperado para o período seguinte. O GARCH estima a variância
@@ -463,7 +492,17 @@ ela é dado pela volatilidade prevista pelo GARCH. Como o GARCH não fornece nen
 informação sobre a direção dos preços, ele não pode, sozinho, gerar uma ordem de
 compra ou de venda. O que ele pode fazer é condicionar a operação indicada pelo
 ARIMA ao nível de risco esperado, impedindo a operação ou reduzindo o seu tamanho
-quando a volatilidade prevista é alta.
+quando a volatilidade prevista é alta. A Figura~\ref{fig:integracao} mostra esse
+caminho em um pregão. O ARIMA indica o lado da operação, e o GARCH, ajustado sobre
+os resíduos do ARIMA, prevê a volatilidade. Se a volatilidade prevista passa do
+limiar, a operação é vetada e o pregão termina sem ordem. Caso contrário, a ordem
+é enviada no lado indicado pelo ARIMA, com o tamanho ajustado ao risco. No pregão
+seguinte, o ciclo recomeça com a série atualizada.
+% 13/11/2026, pedido do autor: figura refeita como o ciclo de um pregão, sem
+% fórmula (antes, proposta C de ia/relatorios/integracao-arima-garch/).
+% 13/11/2026: a figura voltou para o fim da subseção seguinte, porque com a seção
+% nova dos modelos ela passou a cortar o parágrafo do ajuste da posição.
+
 
 \subsection{Uso da volatilidade prevista na operação}
 
@@ -497,6 +536,14 @@ relação entre retorno e risco.
 As duas maneiras podem ser combinadas. Nesse caso, o filtro veta a operação nos
 dias de volatilidade prevista mais alta e, nos dias liberados, a posição é menor
 quanto maior for a volatilidade prevista.
+
+\begin{figure}[htbp]
+\centering
+\caption{Integração entre ARIMA e GARCH na operação}
+\label{fig:integracao}
+\includegraphics{fig08-integracao-arima-garch.pdf}
+\fonte{Elaboração própria.}
+\end{figure}
 
 \section{Métricas de avaliação}
 \label{sec:medidas}
@@ -580,7 +627,9 @@ multiplicando-se o valor diário pela raiz de 252. O índice indica quanto se ga
 oscilação, e quanto maior, melhor a relação. Um índice negativo indica que a
 estratégia rendeu menos que a referência. O testador do MetaTrader 5 usa como
 referência um rendimento livre de risco igual a zero \cite{metaquotesRelatorio}, e
-neste trabalho a referência foi a taxa Selic.
+neste trabalho a referência foi a taxa Selic, que representa o que o capital
+renderia se ficasse fora do mercado de ações. Assim, um índice positivo indica que a estratégia rendeu mais que
+essa aplicação por unidade de oscilação.
 
 O índice de Calmar relaciona o retorno à queda máxima. Ele divide o retorno
 anualizado pela queda máxima do período,

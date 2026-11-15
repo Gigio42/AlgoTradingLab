@@ -1,7 +1,10 @@
-% Figura 5 do Cap. I: etapas de aplicação do ARIMA. Substitui o PNG antigo em
-% 27/10/2026, a pedido do autor (alternativa A1 de
-% ia/rascunhos/diagramas_2026-10-27/alternativas_v1.pdf, com "real menos
-% previsto" no lugar de "entrada do GARCH"). Compilada pelo Makefile do tg/.
+% Figura 4 do Cap. I: etapas de aplicação do ARIMA, só com o conceito.
+% 15/11/2026, a pedido do autor: proposta B de ia/relatorios/arima-conceito/
+% (estacionariedade, combinação de p e q, pesos e previsão, com "em geral, teste
+% ADF" e "em geral, critério AIC" em cinza). Os detalhes do robô (grade de 0 a 4,
+% Hannan-Rissanen, reseleção a cada 21 pregões) ficam no Cap. II. Versão anterior
+% (de 27/10/2026) em ia/rascunhos/antes_fig05_conceito_2026-11-15/.
+% Compilada pelo Makefile do tg/.
 \documentclass[11pt,border=2pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -11,7 +14,7 @@
 \tikzset{
   seta/.style={-{Stealth[length=2.2mm]}, semithick},
   caixa/.style={rectangle, draw, semithick, fill=gray!10, rounded corners=2pt,
-                align=center, minimum width=54mm, minimum height=9mm, font=\small},
+                align=center, minimum width=58mm, minimum height=9mm, font=\small},
   caixap/.style={caixa, minimum width=32mm},
   decisao/.style={diamond, draw, semithick, fill=white, aspect=2.6, align=center,
                   inner sep=1pt, font=\small},
@@ -19,35 +22,38 @@
                semithick, fill=white, align=center, minimum height=9mm, font=\small,
                trapezium stretches body},
   rotulo/.style={font=\footnotesize\itshape, align=center},
+  exemplo/.style={font=\footnotesize, text=gray!70!black, align=left},
 }
 \begin{document}
 \begin{tikzpicture}[node distance=6mm]
-  \node[dado] (ent) {Janela com o logaritmo\\dos preços de fechamento};
-  \node[decisao, below=7mm of ent] (adf) {Teste ADF:\\há raiz unitária?};
-  \node[caixap, right=16mm of adf] (dif) {Diferenciar a série\\($d$ passa a $d+1$)};
-  \node[caixa, below=7mm of adf] (grade) {Para cada $p$ e $q$ de 0 a 4,\\estimar o modelo e calcular o AIC};
-  \node[caixa, below=of grade] (esc) {Ficar com o ARIMA($p$,$d$,$q$)\\de menor AIC};
-  \node[caixa, below=9mm of esc] (est) {Estimar os coeficientes\\por Hannan-Rissanen};
-  \node[caixa, below=of est] (prev) {Prever o retorno\\do pregão seguinte};
-  \node[dado, below=10mm of prev, xshift=-31mm] (dir) {Sinal da previsão:\\direção da operação};
+  \node[dado] (ent) {Série histórica\\de preços};
+  \node[decisao, below=7mm of ent] (est) {A série é\\estacionária?};
+  \node[caixap, right=16mm of est] (dif) {Diferenciar a série\\($d$ passa a $d+1$)};
+  \node[caixa, below=7mm of est] (comp) {Comparar modelos com diferentes\\combinações de $p$ e $q$};
+  \node[caixa, below=of comp] (esc) {Escolher a combinação que melhor\\equilibra ajuste e simplicidade};
+  \node[caixa, below=9mm of esc] (pesos) {Estimar os pesos $\phi$ e $\theta$\\que melhor se ajustam aos dados};
+  \node[caixa, below=of pesos] (prev) {Prever o próximo valor\\da série};
+  \node[dado, below=10mm of prev, xshift=-31mm] (sai) {Previsão do\\próximo período};
   \node[dado, below=10mm of prev, xshift=31mm] (res) {Resíduos:\\real menos previsto};
 
-  \coordinate (volta) at ($(ent.south)!0.45!(adf.north)$);
-  \draw[seta] (ent) -- (adf);
-  \draw[seta] (adf) -- node[above, font=\footnotesize]{sim} (dif);
+  \coordinate (volta) at ($(ent.south)!0.45!(est.north)$);
+  \draw[seta] (ent) -- (est);
+  \draw[seta] (est) -- node[above, font=\footnotesize]{não} (dif);
   \draw[seta] (dif.north) |- (volta);
-  \draw[seta] (adf) -- node[right, font=\footnotesize]{não ($d$ definido)} (grade);
-  \draw[seta] (grade) -- (esc);
-  \draw[seta] (esc) -- (est);
-  \draw[seta] (est) -- (prev);
-  \draw[seta] (prev.south) -- ++(0,-4mm) -| (dir.north);
+  \draw[seta] (est) -- node[right, font=\footnotesize]{sim ($d$ definido)} (comp);
+  \draw[seta] (comp) -- (esc);
+  \draw[seta] (esc) -- (pesos);
+  \draw[seta] (pesos) -- (prev);
+  \draw[seta] (prev.south) -- ++(0,-4mm) -| (sai.north);
   \draw[seta] (prev.south) -- ++(0,-4mm) -| (res.north);
 
+  \node[exemplo, left=1mm of est.west, anchor=east] {em geral,\\teste ADF};
+  \node[exemplo, right=3mm of esc] {em geral,\\critério AIC};
   \draw[decorate, decoration={brace, amplitude=5pt, mirror}, thick]
-    ([xshift=-36mm]adf.north) -- ([xshift=-36mm]esc.south)
-    node[midway, left=7pt, rotulo]{escolha do\\modelo, refeita\\a cada 21\\pregões};
+    ([xshift=-38mm]est.north) -- ([xshift=-38mm]esc.south)
+    node[midway, left=7pt, rotulo]{escolha\\das ordens\\$p$, $d$ e $q$};
   \draw[decorate, decoration={brace, amplitude=5pt, mirror}, thick]
-    ([xshift=-36mm]est.north) -- ([xshift=-36mm]prev.south)
-    node[midway, left=7pt, rotulo]{a cada\\pregão};
+    ([xshift=-38mm]pesos.north) -- ([xshift=-38mm]prev.south)
+    node[midway, left=7pt, rotulo]{ajuste e\\previsão};
 \end{tikzpicture}
 \end{document}

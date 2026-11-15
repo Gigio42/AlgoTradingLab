@@ -1,0 +1,74 @@
+Passagens por otimização (esperado 156):
+  JG=120 PETR4_C1: 156
+  JG=120 PETR4_C2: 156
+  JG=120 PETR4_C3: 156
+  JG=120 PETR4_C4: 156
+  JG=120 PETR4_R6: 156
+  JG=120 PETR4_T1: 156
+  JG=120 PETR4_T2: 156
+  JG=120 PETR4_T3: 156
+  JG=240 PETR4_C1: 156
+  JG=240 PETR4_C2: 156
+  JG=240 PETR4_C3: 156
+  JG=240 PETR4_C4: 156
+  JG=240 PETR4_R6: 156
+  JG=240 PETR4_T1: 156
+  JG=240 PETR4_T2: 156
+  JG=240 PETR4_T3: 156
+  JG=500 PETR4_C1: 156
+  JG=500 PETR4_C2: 156
+  JG=500 PETR4_C3: 156
+  JG=500 PETR4_C4: 156
+  JG=500 PETR4_R6: 156
+  JG=500 PETR4_T1: 156
+  JG=500 PETR4_T2: 156
+  JG=500 PETR4_T3: 156
+  JG=1000 PETR4_C1: 156
+  JG=1000 PETR4_C2: 156
+  JG=1000 PETR4_C3: 156
+  JG=1000 PETR4_C4: 156
+  JG=1000 PETR4_R6: 156
+  JG=1000 PETR4_T1: 156
+  JG=1000 PETR4_T2: 156
+  JG=1000 PETR4_T3: 156
+
+Sub-grade sem GARCH igual nas quatro janelas (ret_puro e dd_puro das 4 passagens):
+  PETR4_C1 JG=120: igual a 240
+  PETR4_C1 JG=500: igual a 240
+  PETR4_C1 JG=1000: igual a 240
+  PETR4_C2 JG=120: igual a 240
+  PETR4_C2 JG=500: igual a 240
+  PETR4_C2 JG=1000: igual a 240
+  PETR4_C3 JG=120: igual a 240
+  PETR4_C3 JG=500: igual a 240
+  PETR4_C3 JG=1000: igual a 240
+  PETR4_C4 JG=120: igual a 240
+  PETR4_C4 JG=500: igual a 240
+  PETR4_C4 JG=1000: igual a 240
+  PETR4_R6 JG=120: igual a 240
+  PETR4_R6 JG=500: igual a 240
+  PETR4_R6 JG=1000: igual a 240
+  PETR4_T1 JG=120: igual a 240
+  PETR4_T1 JG=500: igual a 240
+  PETR4_T1 JG=1000: igual a 240
+  PETR4_T2 JG=120: igual a 240
+  PETR4_T2 JG=500: igual a 240
+  PETR4_T2 JG=1000: igual a 240
+  PETR4_T3 JG=120: igual a 240
+  PETR4_T3 JG=500: igual a 240
+  PETR4_T3 JG=1000: igual a 240
+
+Contra os estudos anteriores (mesma configuração, ret_puro e dd_puro):
+  JG=1000 C1 x janela_garch_1000_2026-11-02: 156 de 156 passagens iguais
+  JG=1000 C2 x janela_garch_1000_2026-11-02: 156 de 156 passagens iguais
+  JG=1000 C3 x janela_garch_1000_2026-11-02: 156 de 156 passagens iguais
+  JG=1000 C4 x janela_garch_1000_2026-11-02: 156 de 156 passagens iguais
+  JG=500 C2 x janelas_240_500_2026-10-26: 156 de 156 passagens iguais
+  JG=500 C3 x janelas_240_500_2026-10-26: 156 de 156 passagens iguais
+  JG=500 C4 x janelas_240_500_2026-10-26: 156 de 156 passagens iguais
+  JG=500 T1 x janelas_240_500_2026-10-26: 156 de 156 passagens iguais
+  JG=500 T2 x janelas_240_500_2026-10-26: 156 de 156 passagens iguais
+  JG=500 T3 x janelas_240_500_2026-10-26: 156 de 156 passagens iguais
+
+Traço com Janela_GARCH=0 contra o GS de 2017-2024 do TG (ret_puro):
+  aqui: 199.45%  TG: 199.45%

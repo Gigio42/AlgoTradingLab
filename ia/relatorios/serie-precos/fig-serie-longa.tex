@@ -1,0 +1,27 @@
+% Proposta B (13/11/2026, pedido do autor): série de preços de exemplo, longa.
+% Fechamento da PETR4_OFICIAL de 2019 a 2021, o mesmo período do Gráfico 1 (que
+% mostra os retornos dessa série). Dados: dados/resultados/serie_exemplo_2026-11-13/
+% longa.csv (ferramentas/scripts/serie_exemplo.sh). Fora do TG até o autor decidir.
+\documentclass[border=4pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage{pgfplots}
+\usepgfplotslibrary{dateplot}
+\pgfplotsset{compat=1.18}
+\definecolor{cpetr}{RGB}{0,90,181}
+\newcommand{\arq}{../../../dados/resultados/serie_exemplo_2026-11-13/longa.csv}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[
+  width=14.6cm, height=5.4cm, date coordinates in=x, table/col sep=comma,
+  xticklabel={\month/\year}, max space between ticks=80,
+  xticklabel style={font=\normalsize}, yticklabel style={font=\normalsize},
+  xmin=2019-01-02, xmax=2021-12-30, ymin=8, ymax=34,
+  ylabel={Fechamento (R\$)}, grid=major, grid style={gray!20},
+  /pgf/number format/use comma,
+]
+\addplot[cpetr, line width=0.6pt] table[x=data, y=fechamento]{\arq};
+\end{axis}
+\end{tikzpicture}
+\end{document}

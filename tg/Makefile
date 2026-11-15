@@ -21,9 +21,10 @@ $(MAIN).docx: $(MAIN).pdf $(wildcard $(DOCX)/*)
 	bash $(DOCX)/converter.sh . $@
 
 # Diagramas em TikZ (fonte .tex em figuras/): Cap. I desde 27/10/2026, linha do
-# tempo dos períodos (Cap. II) desde 05/11/2026
+# tempo dos períodos (Cap. II) desde 05/11/2026, integração ARIMA-GARCH (Cap. I) e
+# períodos de teste (2.2) desde 12/11/2026
 FIGURAS = figuras/fig02-fluxograma-ea.pdf figuras/fig05-fluxo-arima.pdf figuras/fig06-fluxo-garch.pdf \
-          figuras/fig07-periodos.pdf
+          figuras/fig07-periodos.pdf figuras/fig08-integracao-arima-garch.pdf figuras/fig09-periodos-teste.pdf
 # Gráfico de heterocedasticidade do Cap. I (02/11/2026), com os dados de
 # ferramentas/scripts/heterocedasticidade.sh
 GRAFICOS = graficos/heterocedasticidade.pdf

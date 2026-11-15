@@ -1,0 +1,30 @@
+% Versão de slide do Quadro 3 do TG (13/11/2026, pedido do autor). Fora do TG.
+% Valores: dados/resultados/refeito_2026-10-05/grades/r3_*.txt (os mesmos do Quadro 3).
+\input{preambulo-slide}
+\begin{document}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{6.2cm}|>{\raggedright\arraybackslash}p{5.2cm}|>{\raggedright\arraybackslash}p{4.0cm}|>{\centering\arraybackslash}p{2.6cm}|}
+\hline
+\rowcolor{cab}\multicolumn{4}{|l|}{\color{white}\bfseries Em todas as formas: 8 combinações} \\
+\hline
+\multicolumn{4}{|l|}{Constante no ARIMA: com ou sem \quad·\quad Janela: 120 ou 240 pregões \quad·\quad Previsão mínima: 0 ou 0,1\%} \\
+\hline
+\rowcolor{cab}{\color{white}\bfseries Forma de uso do GARCH} & {\color{white}\bfseries Limiar do filtro} & {\color{white}\bfseries Alvo do ajuste} & {\color{white}\bfseries Configs.} \\
+\hline
+Sem GARCH (só ARIMA) & -- & -- & 8 \\
+\hline
+\rowcolor{faixa}Filtro & 2\%, 3\% ou 4\% ao dia & -- & 48 \\
+\hline
+\rowcolor{faixa}Filtro & percentil 50, 70 ou 90 & -- & 48 \\
+\hline
+Filtro + ajuste da posição & 2\%, 3\% ou 4\% ao dia & 1\% ou 2\% ao dia & 96 \\
+\hline
+Filtro + ajuste da posição & percentil 50, 70 ou 90 & 1\% ou 2\% ao dia & 96 \\
+\hline
+\rowcolor{faixa}Ajuste da posição & -- & 1\% ou 2\% ao dia & 16 \\
+\hline
+\multicolumn{3}{|r|}{\bfseries Total} & \bfseries 312 \\
+\hline
+\end{tabular}
+\par\smallskip
+{\small Com filtro, cada configuração também testa sair ou não do mercado no veto (×2).}
+\end{document}
