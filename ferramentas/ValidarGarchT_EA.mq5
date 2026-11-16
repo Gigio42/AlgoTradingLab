@@ -9,7 +9,7 @@
 //|                                                                  |
 //|  Roda como EA no TESTADOR (o calculo e todo no OnInit), porque   |
 //|  script pelo [StartUp] nao abre com o perfil de graficos cheio   |
-//|  (notas/INCERTEZAS.md, item 54). Saida em                        |
+//|  (ia/INCERTEZAS.md, item 54). Saida em                           |
 //|  Common/Files/AlgoLab/validacao_garch_t.txt.                     |
 //|                                                                  |
 //|  Gerador proprio de 30 bits: o MathRand() tem 15 bits, e uma     |
@@ -27,7 +27,7 @@
 #property copyright "TG - FATEC Indaiatuba (ADS)"
 #property version   "1.00"
 
-#include "AlgoTradingLab\Include\Garch.mqh"   // copiado para MQL5\Experts pelo validar_garch_t.sh
+#include "AlgoTradingLab\robos\Include\Garch.mqh"   // copiado para MQL5\Experts pelo validar_garch_t.sh
 
 const double W_VERD = 1.0e-5, A_VERD = 0.09, B_VERD = 0.89;
 const int    NU_VERD = 5;

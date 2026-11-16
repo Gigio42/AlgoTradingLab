@@ -1,0 +1,9 @@
+T1: 312 configurações (304 com GARCH)
+  Sharpe: escolhida E3 P90 V0.01 Z1 J120 K0 S0 (otim. 1.5370, teste -0.4673), 258ª de 312 no teste; mediana do teste -0.2394; Spearman 0.04
+  Calmar: escolhida E3 P90 V0.01 Z1 J120 K0 S0 (otim. 8.0103, teste 0.3978), 76ª de 312 no teste; mediana do teste 0.1498; Spearman 0.43
+T2: 312 configurações (304 com GARCH)
+  Sharpe: escolhida E3 P50 V0.02 Z1 J240 K0 S0 (otim. -0.1188, teste -0.4441), 230ª de 312 no teste; mediana do teste -0.2520; Spearman -0.03
+  Calmar: escolhida E3 P50 V0.01 Z1 J240 K0 S0 (otim. 1.0405, teste 1.1416), 29ª de 312 no teste; mediana do teste 0.2442; Spearman 0.29
+T3: 312 configurações (304 com GARCH)
+  Sharpe: escolhida E0 P70 V0.01 Z1 J240 K0 S0.001 (otim. 1.1547, teste -0.9392), 311ª de 312 no teste; mediana do teste 0.1598; Spearman -0.00
+  Calmar: escolhida E3 P70 V0.01 Z1 J240 K0 S0.001 (otim. 4.2332, teste 0.6764), 226ª de 312 no teste; mediana do teste 1.2550; Spearman 0.38

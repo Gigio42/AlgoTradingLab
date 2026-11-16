@@ -1,0 +1,90 @@
+% O GARCH funcionando na janela do pregão de 22/02/2021: a sigma de cada dia, a
+% montagem da variância (omega + choque de ontem + memória) e o veto. Dados:
+% dados/resultados/modelo_completo_2026-11-06/ (ferramentas/ModeloCompleto.mq5;
+% a recursão refeita fora do CGarch coincide com a dele, resumo.txt).
+\documentclass[border=6pt]{standalone}
+\input{../modelo-completo/comum}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\pgfmathsetmacro{\limSeg}{\pSegLim*\pSegLim}
+\pgfmathsetmacro{\limSex}{\pSexLim*\pSexLim}
+\node[anchor=south west, font=\large\bfseries] at (-1.2,0.75) {Como o GARCH chegou ao veto de \vSegDia};
+
+% ------------------------------------------------------------- 1: a janela inteira
+\begin{axis}[mini, datas, at={(0,0)}, anchor=north west, width=15.6cm, height=4.4cm,
+  xmin=2020-03-02, xmax=2021-02-26,
+  xtick={2020-03-02,2020-05-01,2020-07-01,2020-09-01,2020-11-02,2021-01-04,2021-02-22},
+  xticklabels={mar/2020,mai,jul,set,nov,jan/2021,22/02},
+  ymin=0, ymax=14, ylabel={\% ao dia},
+  title={\passo{1} A janela de 240 pregões: cada erro grande do ARIMA empurra a $\sigma$ para cima, e ela desce devagar},
+  title style={font=\small\bfseries, anchor=south west, at={(0,1.02)}},
+  legend style={font=\scriptsize, at={(0.995,0.97)}, anchor=north east, legend columns=1, fill=white, fill opacity=0.9, text opacity=1}]
+\addplot[ycomb, cdad!60, line width=0.6pt, forget plot] table[x=data, y expr={abs(\thisrow{residuo})}]{\arqm{janela_Seg.csv}};
+\addplot[cdes, dashed, line width=1pt, forget plot] table[x=data, y=limiar]{\arqm{janela_Seg.csv}};
+\addplot[cgar!90!black, line width=1.1pt, forget plot] table[x=data, y=sigma]{\arqm{janela_Seg.csv}};
+\addlegendimage{cdad!60, line width=2pt}
+\addlegendentry{tamanho do erro do ARIMA, $|\varepsilon_t|$}
+\addlegendimage{cgar!90!black, line width=1.1pt}
+\addlegendentry{$\sigma_t$ estimada pelo GARCH}
+\addlegendimage{cdes, dashed, line width=1pt}
+\addlegendentry{limiar: percentil 70 da $\sigma$ da janela (\vSegLim\%)}
+\addplot[only marks, mark=*, mark size=2.8pt, cdes, forget plot] coordinates {(2021-02-22,\pSegVol)};
+\node[font=\scriptsize, anchor=west, align=left] at (axis cs:2020-03-16,13.0)
+  {$\leftarrow$ 09/03/2020: barra cortada, o maior erro da janela};
+\node[font=\scriptsize, anchor=south east, text=cdes, align=right] at (axis cs:2021-02-20,\pSegVol)
+  {previsão para 22/02: \vSegVol\%};
+\end{axis}
+
+% ------------------------------------------------------------- 2: a montagem da variância
+\begin{axis}[mini, datas, at={(0cm,-5.6cm)}, anchor=north west, width=10.6cm, height=4.6cm,
+  xmin=2021-01-13, xmax=2021-02-24,
+  xtick={2021-01-15,2021-02-01,2021-02-22}, xticklabels={15/01,01/02,22/02},
+  ymin=0, ymax=13, ylabel={variância (\%$^2$ ao dia)},
+  ybar stacked, bar width=5pt,
+  title={\passo{2} Como a variância de cada dia é montada: $\sigma^2_t=\omega+\beta\,\sigma^2_{t-1}+\alpha\,\varepsilon^2_{t-1}$},
+  title style={font=\small\bfseries, anchor=south west, at={(0,1.02)}},
+  legend style={font=\scriptsize, at={(0.01,0.98)}, anchor=north west, legend columns=3, fill=white, fill opacity=0.9, text opacity=1},
+  reverse legend]
+\addplot[fill=black!25, draw=none] table[x=data, y=v_omega]{\arqm{janela_Seg.csv}};
+\addlegendentry{$\omega$: piso fixo}
+\addplot[fill=cgar!55, draw=none] table[x=data, y=v_beta]{\arqm{janela_Seg.csv}};
+\addlegendentry{$\beta\,\sigma^2_{t-1}$: memória da agitação}
+\addplot[fill=cdes!75, draw=none] table[x=data, y=v_alfa]{\arqm{janela_Seg.csv}};
+\addlegendentry{$\alpha\,\varepsilon^2_{t-1}$: choque da véspera}
+\end{axis}
+% a linha do limiar ao quadrado e o destaque do último dia, num segundo eixo igual
+\begin{axis}[mini, datas, at={(0cm,-5.6cm)}, anchor=north west, width=10.6cm, height=4.6cm,
+  xmin=2021-01-13, xmax=2021-02-24, ymin=0, ymax=13, axis lines=none, grid=none]
+\addplot[cdes, dashed, line width=0.9pt] table[x=data, y expr={\thisrow{limiar}^2}]{\arqm{janela_Seg.csv}};
+\node[font=\scriptsize, text=cdes, anchor=south east] at (axis cs:2021-02-17,\limSeg) {limiar$^2$};
+\draw[black, line width=1.1pt] (axis cs:2021-02-21 14:24,0) rectangle (axis cs:2021-02-22 09:36,\pSegVarPrev);
+\node[font=\scriptsize, anchor=south, align=center] at (axis cs:2021-02-22 00:00,\pSegVarPrev) {previsão};
+\end{axis}
+
+% ------------------------------------------------------------- 3: os dois pregões
+\begin{axis}[mini, at={(12.15cm,-5.6cm)}, anchor=north west, width=3.4cm, height=4.6cm,
+  xmin=-0.6, xmax=1.6, xtick={0,1}, xticklabels={19/02,22/02}, ymin=0, ymax=13,
+  ybar stacked, bar width=0.55, ylabel={\%$^2$ ao dia},
+  title={\passo{3} Os dois pregões}, title style={font=\small\bfseries, anchor=south west, at={(0,1.02)}}]
+\addplot[fill=black!25, draw=none] coordinates {(0,\pSexPOmega) (1,\pSegPOmega)};
+\addplot[fill=cgar!55, draw=none] coordinates {(0,\pSexPBeta) (1,\pSegPBeta)};
+\addplot[fill=cdes!75, draw=none] coordinates {(0,\pSexPAlfa) (1,\pSegPAlfa)};
+\end{axis}
+\begin{axis}[mini, at={(12.15cm,-5.6cm)}, anchor=north west, width=3.4cm, height=4.6cm,
+  xmin=-0.6, xmax=1.6, ymin=0, ymax=13, axis lines=none, grid=none]
+\addplot[cdes, dashed, line width=0.9pt] coordinates {(-0.35,\limSex) (0.35,\limSex)};
+\addplot[cdes, dashed, line width=0.9pt] coordinates {(0.65,\limSeg) (1.35,\limSeg)};
+\node[font=\scriptsize\bfseries, text=cok!80!black, anchor=north] at (axis cs:0,\limSex) {libera};
+\node[font=\scriptsize\bfseries, text=cdes, anchor=south] at (axis cs:1,{\pSegVarPrev+0.05}) {veta};
+\end{axis}
+
+\node[anchor=north west, font=\footnotesize, align=left, text width=16.4cm] at (-1.2,-11.35) {Como ler. Em cima, a
+  janela inteira que o robô usou em \vSegDia: a $\sigma$ do GARCH (laranja) dispara com a queda de março de 2020 e leva
+  meses para voltar, porque cada dia herda a agitação do anterior. Embaixo, à esquerda, a variância de cada dia de 2021
+  separada nas três parcelas da equação. A parcela vermelha é o choque da véspera, e o retângulo preto é a previsão para
+  \vSegDia: o erro de \vSegUltRes\% em 19/02 virou uma parcela de \vSegPAlfa{} e levou a soma acima do limiar ao
+  quadrado. A $\sigma$ prevista é a raiz dessa soma, \vSegVol\%, contra o limiar de \vSegLim\%. À direita, os dois pregões
+  com os parâmetros que o robô estimou em cada um ($\alpha=\vSexAlfa$ e $\beta=\vSexBeta$ em 19/02, $\alpha=\vSegAlfa$
+  e $\beta=\vSegBeta$ em 22/02). Na sexta a parcela do choque era pequena e a soma ficou abaixo da linha.};
+\end{tikzpicture}
+\end{document}

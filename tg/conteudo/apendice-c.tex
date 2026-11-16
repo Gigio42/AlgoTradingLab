@@ -1,0 +1,39 @@
+% =====================================================================
+%  APÊNDICE C — código do robô de médias móveis (02/11/2026, pedido do autor:
+%  "apêndice C do modelo replicado do almeida ... a forma mais crua que
+%  fizemos, e especificar o que for necessário pra indicar que é uma réplica").
+%  O arquivo listado é gerado pelo Makefile a partir de
+%  robos/MediasMoveis2/MediasMoveis2.mq5 por ferramentas/scripts/codigo_apendice.sh,
+%  com os mesmos marcadores dos Apêndices A e B: saem comentários, a avaliação
+%  no testador (Selic, proventos, métricas), StopLoss/TakeProfit, a escolha do
+%  método, do preço e do deslocamento das médias (fixos em média simples sobre
+%  o fechamento, sem deslocamento) e a opção de operar a cada tick.
+%  Os marcadores são só comentários: o EA sem comentários ficou idêntico ao de
+%  antes (diff, 02/11/2026). A listagem compila sozinha no prefixo novo
+%  (0 erros, 0 avisos, 02/11/2026).
+%  Procedência do texto: Almeida (2016), bibliografia/pdfs/Almeida-2016.pdf:
+%  seis bibliotecas externas, p. 35; Anexo 1 (EA_TG_2016.mq5), p. 69-77, com
+%  RapidaMM_Periodo = 10, DevagarMM_Periodo = 20, método 0 (simples),
+%  PRICE_CLOSE, StopLoss = 0 e TakeProfit = 0, compra quando
+%  "RapidaMM.Main(Barra_Movimento) > DevagarMM.Main(Barra_Movimento) &&
+%  PositionType() != POSITION_TYPE_BUY" (p. 75), gestão de dinheiro por
+%  MoneyManagement(), de GerenciaDinheiro.mqh, que não está no anexo
+%  (dados/FONTES.md, item 7). Entrada por estado × por cruzamento muda só a
+%  primeira operação de cada teste: dados/resultados/replica_almeida_v2_2026-10-21/
+%  LEIAME.md, seção 1.
+% =====================================================================
+\chapter{Código do robô de médias móveis}
+
+Este apêndice apresenta o código do robô de médias móveis descrito no
+Capítulo~II, que reproduz a estratégia de \citeonline{almeida2016}. Os
+parâmetros das médias mantêm os nomes do anexo original,
+\texttt{RapidaMM\_\allowbreak Periodo} e \texttt{DevagarMM\_\allowbreak Periodo}.
+Como nos Apêndices~A e~B, foram retirados os comentários, as rotinas de medição
+dos resultados e as opções que não foram usadas nos experimentos, como os
+limites de perda e de realização de lucro, que o autor deixou com valor zero nos
+testes.
+% 06/11/2026, pedido do autor: o porquê da reescrita e as diferenças em relação ao
+% original foram para o Cap. II (Implementação dos modelos). Texto anterior em
+% ia/rascunhos/antes_enxugar_apendice_c_2026-11-06/.
+
+\lstinputlisting[style=mql5]{codigo/MediasMoveis2.mq5}

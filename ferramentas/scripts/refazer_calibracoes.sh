@@ -1,6 +1,6 @@
 #!/bin/bash
 # Refaz TODAS as otimizacoes (calibracao e teste de cada configuracao da grade)
-# com o EA corrigido em 05/10/2026 (ver notas/INCERTEZAS.md, itens 43 e 44).
+# com o EA corrigido em 05/10/2026 (ver ia/INCERTEZAS.md, itens 43 e 44).
 #
 #  1. Rodada 4 completa: 4 ativos x 6 janelas (C1 T1 C2 T2 C3 T3) x 7 sub-grades,
 #     688 configuracoes por janela (a grade da rodada 3 + venda a descoberto).

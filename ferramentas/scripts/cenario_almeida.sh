@@ -10,7 +10,7 @@ COM="ModoVolume=0 Fracao_Capital=0 SomenteCompra=false Custo_Por_Lado=0 StopLoss
 
 roda(){ # roda <rotulo> <de> <ate> <volume> <extras...>
   local rot=$1 de=$2 ate=$3 vol=$4; shift 4
-  bash rodar.sh "$rot" 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL "$de" "$ate" 50000 1:100 "$B" \
+  bash rodar.sh "$rot" 'robos\ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL "$de" "$ate" 50000 1:100 "$B" \
     $COM Volume_Base=$vol "$@" >/dev/null 2>&1
 }
 

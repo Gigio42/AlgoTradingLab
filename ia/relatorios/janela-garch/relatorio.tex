@@ -1,0 +1,592 @@
+% Relatório de estudo sobre a janela do GARCH (13/11/2026, pedido do autor).
+% Material de estudo, não é parte do TG. Todo número vem de
+% dados/resultados/janelas_garch_2026-11-13/cru/ (janelas_garch_dados.sh), que lê
+% a bateria (janelas_garch.sh) e a simulação (JanelaGarchSimulada.mq5).
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{mathptmx}
+\usepackage[a4paper,margin=2.3cm]{geometry}
+\usepackage{booktabs,array}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage[most]{tcolorbox}
+\usepackage{pgfplots,pgfplotstable}
+\usepgfplotslibrary{groupplots,statistics,dateplot,fillbetween}
+\pgfplotsset{compat=1.18}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+
+% uma cor por janela, da mais curta (clara) à mais longa (escura)
+\definecolor{jA}{RGB}{230,140,0}
+\definecolor{jB}{RGB}{0,150,140}
+\definecolor{jC}{RGB}{0,90,181}
+\definecolor{jD}{RGB}{90,40,140}
+\definecolor{cesc}{RGB}{220,50,32}
+\definecolor{cmod}{RGB}{0,90,181}
+\definecolor{cver}{RGB}{60,60,60}
+
+\newcommand{\arq}[1]{../../../dados/resultados/janelas_garch_2026-11-13/cru/#1}
+\input{\arq{valores.tex}}
+
+\pgfplotsset{base/.style={table/col sep=comma, grid=major, grid style={gray!20},
+    tick label style={font=\scriptsize}, label style={font=\footnotesize},
+    title style={font=\footnotesize\bfseries, align=center},
+    /pgf/number format/use comma, unbounded coords=discard},
+  caixas/.style={base, boxplot/draw direction=y, xtick={1,2,3,4}, xticklabels={120,240,500,1000},
+    xlabel={janela do GARCH (pregões)}, cycle list={{jA,fill=jA!25},{jB,fill=jB!25},{jC,fill=jC!25},{jD,fill=jD!25}},
+    boxplot/box extend=0.5, xmin=0.4, xmax=4.6}}
+\pgfplotstableset{col sep=comma, /pgf/number format/use comma, /pgf/number format/fixed}
+
+\newtcolorbox{ideia}[1][]{colback=cmod!5, colframe=cmod!70, fonttitle=\bfseries, title={#1}, arc=2pt, boxrule=0.6pt}
+\newtcolorbox{cuidado}[1][]{colback=cesc!4, colframe=cesc!70, fonttitle=\bfseries, title={#1}, arc=2pt, boxrule=0.6pt}
+\newtcolorbox{banca}{colback=black!3, colframe=black!50, fonttitle=\bfseries, title=Se a banca perguntar, arc=2pt, boxrule=0.6pt}
+
+\title{\textbf{A janela do GARCH: 120, 240, 500 ou 1000?}\\[2pt]\large mais dado é overfitting? e quanto do resultado é a otimização?}
+\author{Material de estudo para os autores do TG (não faz parte do texto)}
+\date{13 de novembro de 2026}
+
+\begin{document}
+\maketitle
+
+\begin{ideia}[Em uma página]
+\textbf{As perguntas.} (1) Um GARCH com janela de 500 é ``dois de 240''? (2) Janela maior deixa o modelo
+``generalizado'' demais? (3) Com 500 os pesos ficaram mais perto do certo e o resultado piorou: isso é
+\emph{overfitting}? (4) Janela menor pode ser melhor para o modelo ``não se acostumar''? (5) Quanto do resultado é
+a janela e quanto é a otimização?
+
+\textbf{Como se responde.} Em duas partes. Primeiro num laboratório: séries artificiais em que a verdade é
+conhecida, com o mesmo \texttt{CGarch} do EA (Seções~\ref{sec:lab} e~\ref{sec:crise}). Depois na PETR4: a grade
+de 156 configurações (só compra) rodada com o GARCH em quatro janelas (120, 240, 500 e 1000 pregões), em quatro
+pares otimização$\to$teste (Seções~\ref{sec:petr4} e~\ref{sec:otim}).
+
+\textbf{As respostas curtas.}
+(1) Não. É o mesmo modelo de 3 números, estimado com o dobro de dados: erra menos, desde que o mercado não tenha
+mudado nesses dois anos.
+(2) Esse é o risco real da janela longa, mas o nome dele não é \emph{overfitting}: é misturar regimes.
+(3) Não. \emph{Overfitting} é o modelo decorar ruído dos dados em que foi ajustado, e quem mais faz isso aqui é a
+janela \emph{curta}. O resultado pior vem de outro lugar: a janela também muda a régua do filtro (com 500, a
+configuração do TG vetou menos e ficou mais tempo exposta), e a escolha da configuração pesa mais que a janela.
+(4) É ao contrário: a janela curta é a que se acostuma mais depressa. No meio de uma crise ela passa a achar a
+crise normal e libera as operações antes. A longa demora a se acostumar, mas depois carrega a crise na régua por
+anos. Nenhuma das duas é melhor sempre.
+(5) A otimização pesa mais. Dentro de uma mesma janela, as 152 configurações vão de um extremo ao outro no
+teste, e a escolhida cai em qualquer posição; entre as janelas, as medianas ficam bem mais próximas.
+\end{ideia}
+
+\section{O que a janela faz no EA}
+
+O EA reestima o ARIMA e o GARCH todo dia, sempre com os últimos $N$ pregões. No TG, $N=240$ (ou 120, que está na
+grade) e o GARCH é ajustado sobre os resíduos do ARIMA nessa mesma janela. Neste estudo o ARIMA ficou em 240 e só
+a janela do GARCH mudou (input \texttt{Janela\_GARCH}), para isolar o efeito no GARCH.
+
+A janela do GARCH faz duas coisas, e as duas importam:
+
+\begin{itemize}\setlength\itemsep{2pt}
+\item \textbf{Estimar os 3 parâmetros} ($\omega$, $\alpha$, $\beta$). Mais dias, estimativa mais firme, \emph{se}
+o processo foi o mesmo em todos esses dias.
+\item \textbf{Definir a régua do filtro.} Com o limiar por percentil, o EA compara a volatilidade prevista para
+amanhã com o percentil (50, 70 ou 90) da volatilidade ajustada \emph{dentro da janela}. ``Alta'' quer dizer
+``alta em relação aos últimos $N$ dias''. Mudar $N$ muda o que o robô considera um dia agitado, mesmo que os
+parâmetros saíssem idênticos.
+\end{itemize}
+
+É por causa do segundo ponto que ``parâmetros mais perto do certo'' não garante ``resultado melhor'': a janela
+mexe na regra de decisão, não só na precisão.
+
+\section{Laboratório 1: com a verdade conhecida, qual janela estima melhor?}\label{sec:lab}
+
+O script \texttt{JanelaGarchSimulada.mq5} sorteia \val{sim_resumo}{240}{reps} séries de um GARCH(1,1) com
+$\alpha=0{,}09$ e $\beta=0{,}89$ (persistência verdadeira $0{,}98$) e volatilidade de longo prazo de 2,5\% ao dia,
+um processo que \emph{não muda}. Em cada série, o \texttt{CGarch} do EA é ajustado com os últimos 120, 240, 500 e
+1000 dias e prevê a volatilidade do dia seguinte. Como a verdade é conhecida, o erro é medido exatamente.
+
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.6cm}, width=0.47\textwidth, height=5.4cm]
+\nextgroupplot[caixas, title={persistência estimada ($\alpha+\beta$)}, ymin=0.55, ymax=1.01,
+  ylabel={$\alpha+\beta$}, yticklabel style={/pgf/number format/.cd, fixed, precision=2, use comma}]
+\input{\arq{caixa_sim_pers.tex}}
+\draw[cver, dashed, thick] (axis cs:0.4,0.98) -- (axis cs:4.6,0.98) node[pos=0.03, above right, font=\scriptsize] {verdade: 0,98};
+\nextgroupplot[base, title={erro da volatilidade prevista\\(mediana e percentil 90)}, ybar, bar width=7pt,
+  xtick=data, symbolic x coords={120,240,500,1000}, xlabel={janela do GARCH (pregões)}, ylabel={erro relativo (\%)},
+  ymin=0, enlarge x limits=0.18, legend style={font=\scriptsize, at={(0.97,0.97)}, anchor=north east}]
+\addplot[fill=cmod!60, draw=cmod] table[x=jg, y=erro_vol_med]{\arq{sim_resumo.csv}};
+\addplot[fill=cmod!20, draw=cmod] table[x=jg, y=erro_vol_p90]{\arq{sim_resumo.csv}};
+\legend{mediana, percentil 90}
+\end{groupplot}
+\end{tikzpicture}
+\caption{Séries artificiais sem mudança de regime (\val{sim_resumo}{240}{reps} por janela). À esquerda, a caixa vai do
+percentil 25 ao 75 e as hastes do 10 ao 90. À direita, $|\hat\sigma/\sigma - 1|$ da previsão para o dia seguinte.}
+\label{fig:lab}
+\end{figure}
+
+\begin{table}[htbp]\centering\small
+\caption{O que cada janela estima quando o processo não muda (verdade: $\alpha=0{,}09$, $\beta=0{,}89$, persistência 0,98).}
+\label{tab:lab}
+\begin{tabular}{lcccc}\toprule
+janela do GARCH & 120 & 240 & 500 & 1000\\\midrule
+persistência, mediana & \val{sim_resumo}{120}{pers_med} & \val{sim_resumo}{240}{pers_med} & \val{sim_resumo}{500}{pers_med} & \val{sim_resumo}{1000}{pers_med}\\
+persistência, percentil 10 & \val{sim_resumo}{120}{pers_p10} & \val{sim_resumo}{240}{pers_p10} & \val{sim_resumo}{500}{pers_p10} & \val{sim_resumo}{1000}{pers_p10}\\
+séries com persistência $>0{,}999$ (\%) & \val{sim_resumo}{120}{frac_pers999} & \val{sim_resumo}{240}{frac_pers999} & \val{sim_resumo}{500}{frac_pers999} & \val{sim_resumo}{1000}{frac_pers999}\\
+$\alpha$, percentil 10 a 90 & \val{sim_resumo}{120}{alfa_p10}--\val{sim_resumo}{120}{alfa_p90} & \val{sim_resumo}{240}{alfa_p10}--\val{sim_resumo}{240}{alfa_p90} & \val{sim_resumo}{500}{alfa_p10}--\val{sim_resumo}{500}{alfa_p90} & \val{sim_resumo}{1000}{alfa_p10}--\val{sim_resumo}{1000}{alfa_p90}\\
+erro da volatilidade prevista, mediana (\%) & \val{sim_resumo}{120}{erro_vol_med} & \val{sim_resumo}{240}{erro_vol_med} & \val{sim_resumo}{500}{erro_vol_med} & \val{sim_resumo}{1000}{erro_vol_med}\\
+\bottomrule\end{tabular}
+\end{table}
+
+\textbf{Leitura.} Quando o mundo não muda, mais dado é sempre melhor: a caixa da persistência encolhe em volta da
+verdade e o erro da previsão cai cerca de um terço a cada vez que a janela dobra. Com 120 dias, em
+\val{sim_resumo}{120}{frac_pers999}\% das séries o otimizador encostou a persistência em 1 (o GARCH ``acha'' que
+todo choque dura para sempre); com 1000, em \val{sim_resumo}{1000}{frac_pers999}\%. Na PETR4, com a configuração do TG, isso aconteceu em
+\val{traco_resumo}{0}{frac_pers999}\% dos pregões de 2017--2024 (Tabela~\ref{tab:traco}).
+
+Isso responde à pergunta (1). Um GARCH de 500 dias não é ``dois modelos de 240'': é o mesmo modelo, com os mesmos
+3 números, estimados com o dobro de observações. E responde à metade da (3): com 3 parâmetros, quem ajusta ruído é
+a janela curta, não a longa. O \emph{overfitting} de estimação diminui quando a janela cresce.
+
+\section{Laboratório 2: e quando o mercado muda?}\label{sec:crise}
+
+O laboratório 1 tem uma premissa que o mercado não cumpre: o processo nunca muda. Para ver o outro lado, o mesmo
+script sorteia \val{sim_fases}{crise}{series} séries que são calmas (volatilidade de longo prazo 1,5\%) até o dia
+1999, passam 150 dias numa crise (4\%) e voltam à calma. Do dia 1800 ao 2600 o GARCH é reestimado todo dia, como no
+EA, e cada janela decide se vetaria (prevista acima do percentil 70 da janela).
+
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=1 by 3, vertical sep=1.1cm, xticklabels at=edge bottom},
+  width=0.95\textwidth, height=4.3cm, xmin=1800, xmax=2600, base, xtick={1800,1900,...,2600},
+  xticklabel style={/pgf/number format/.cd, fixed, set thousands separator={}},
+  legend style={font=\scriptsize, legend columns=-1, at={(0.99,0.97)}, anchor=north east, draw=none, fill=white, fill opacity=0.8, text opacity=1}]
+\nextgroupplot[title={uma das séries: volatilidade verdadeira e prevista (\% ao dia)}, ymin=0, ymax=7]
+\fill[cesc!10] (axis cs:2000,0) rectangle (axis cs:2150,7);
+\addplot[cver, thick] table[x=dia, y=verd]{\arq{sim_regime.csv}};
+\addplot[jA, semithick] table[x=dia, y=p120]{\arq{sim_regime.csv}};
+\addplot[jD, semithick] table[x=dia, y=p1000]{\arq{sim_regime.csv}};
+\legend{verdadeira, prevista (120), prevista (1000)}
+\nextgroupplot[title={a mesma série: o limiar (percentil 70 da volatilidade ajustada na janela)}, ymin=0, ymax=4]
+\fill[cesc!10] (axis cs:2000,0) rectangle (axis cs:2150,4);
+\addplot[jA, thick] table[x=dia, y=l120]{\arq{sim_regime.csv}};
+\addplot[jB, thick] table[x=dia, y=l240]{\arq{sim_regime.csv}};
+\addplot[jC, thick] table[x=dia, y=l500]{\arq{sim_regime.csv}};
+\addplot[jD, thick] table[x=dia, y=l1000]{\arq{sim_regime.csv}};
+\legend{120, 240, 500, 1000}
+\nextgroupplot[title={todas as \val{sim_fases}{crise}{series} séries: em quantas cada janela vetou (\%, média de 10 dias)}, ymin=0, ymax=100, xlabel={dia da série}]
+\fill[cesc!10] (axis cs:2000,0) rectangle (axis cs:2150,100);
+\addplot[jA, thick] table[x=dia, y=mm_120]{\arq{sim_media.csv}};
+\addplot[jB, thick] table[x=dia, y=mm_240]{\arq{sim_media.csv}};
+\addplot[jC, thick] table[x=dia, y=mm_500]{\arq{sim_media.csv}};
+\addplot[jD, thick] table[x=dia, y=mm_1000]{\arq{sim_media.csv}};
+\legend{120, 240, 500, 1000}
+\end{groupplot}
+\end{tikzpicture}
+\caption{A crise artificial (faixa vermelha, dias 2000 a 2149). Nos dois painéis de cima, uma série só, para ver o
+mecanismo; no de baixo, a média das \val{sim_fases}{crise}{series} séries.}
+\label{fig:crise}
+\end{figure}
+
+\begin{table}[htbp]\centering\small
+\caption{Média das \val{sim_fases}{crise}{series} séries, por fase: dias vetados (\%) e erro relativo da volatilidade prevista (\%).}
+\label{tab:crise}
+\begin{tabular}{lc*{4}{c}@{\qquad}*{4}{c}}\toprule
+& & \multicolumn{4}{c}{vetou (\%)} & \multicolumn{4}{c}{erro da prevista (\%)}\\
+\cmidrule(lr){3-6}\cmidrule(lr){7-10}
+fase & dias & 120 & 240 & 500 & 1000 & 120 & 240 & 500 & 1000\\\midrule
+antes (1800--1999) & \val{sim_fases}{antes}{dias} & \val{sim_fases}{antes}{veto_120} & \val{sim_fases}{antes}{veto_240} & \val{sim_fases}{antes}{veto_500} & \val{sim_fases}{antes}{veto_1000} & \val{sim_fases}{antes}{erro_120} & \val{sim_fases}{antes}{erro_240} & \val{sim_fases}{antes}{erro_500} & \val{sim_fases}{antes}{erro_1000}\\
+crise (2000--2149) & \val{sim_fases}{crise}{dias} & \val{sim_fases}{crise}{veto_120} & \val{sim_fases}{crise}{veto_240} & \val{sim_fases}{crise}{veto_500} & \val{sim_fases}{crise}{veto_1000} & \val{sim_fases}{crise}{erro_120} & \val{sim_fases}{crise}{erro_240} & \val{sim_fases}{crise}{erro_500} & \val{sim_fases}{crise}{erro_1000}\\
+logo depois (2150--2299) & \val{sim_fases}{logo_depois}{dias} & \val{sim_fases}{logo_depois}{veto_120} & \val{sim_fases}{logo_depois}{veto_240} & \val{sim_fases}{logo_depois}{veto_500} & \val{sim_fases}{logo_depois}{veto_1000} & \val{sim_fases}{logo_depois}{erro_120} & \val{sim_fases}{logo_depois}{erro_240} & \val{sim_fases}{logo_depois}{erro_500} & \val{sim_fases}{logo_depois}{erro_1000}\\
+depois (2300--2600) & \val{sim_fases}{depois}{dias} & \val{sim_fases}{depois}{veto_120} & \val{sim_fases}{depois}{veto_240} & \val{sim_fases}{depois}{veto_500} & \val{sim_fases}{depois}{veto_1000} & \val{sim_fases}{depois}{erro_120} & \val{sim_fases}{depois}{erro_240} & \val{sim_fases}{depois}{erro_500} & \val{sim_fases}{depois}{erro_1000}\\
+\bottomrule\end{tabular}
+\end{table}
+
+\textbf{Leitura.} Antes da crise as quatro janelas vetam mais ou menos o mesmo (entre \val{sim_fases}{antes}{veto_1000}\%
+e \val{sim_fases}{antes}{veto_120}\% dos dias). A diferença aparece em três momentos.
+
+\begin{itemize}\setlength\itemsep{2pt}
+\item \textbf{Durante a crise, a janela curta é a que menos veta}: \val{sim_fases}{crise}{veto_120}\% dos dias com
+120, contra \val{sim_fases}{crise}{veto_1000}\% com 1000. Depois de algumas semanas, boa parte da janela de 120 já
+é crise, o percentil 70 sobe junto (painel do meio, linha laranja) e a volatilidade alta passa a parecer normal.
+Isso é o ``se acostumar'', e ele acontece primeiro na janela \emph{curta}.
+\item \textbf{Logo depois da crise}, a de 120 volta a liberar quase tudo (vetou em \val{sim_fases}{logo_depois}{veto_120}\%
+dos dias) e a de 1000 continua cautelosa (\val{sim_fases}{logo_depois}{veto_1000}\%): para ela, uma volatilidade
+ainda acima da calma de antes é alta.
+\item \textbf{Muito depois}, a de 500 quase não veta (\val{sim_fases}{depois}{veto_500}\%): a crise continua dentro
+da janela, segura o limiar lá em cima e a calma de agora parece calma demais. A janela longa também se acostuma,
+só que devagar e por muito mais tempo: a crise fica na régua dela por 500 ou 1000 dias.
+\end{itemize}
+
+E a previsão em si? Na crise o erro é parecido nas quatro (de \val{sim_fases}{crise}{erro_500}\% a
+\val{sim_fases}{crise}{erro_120}\%), porque a previsão de um passo segue o último choque em qualquer janela. O que
+muda de uma janela para outra é sobretudo o limiar, ou seja, a régua.
+
+Isso responde à pergunta (4). ``Janela menor para não se acostumar'' está invertido: a menor é a que se acostuma
+mais depressa. O que ela tem de bom é o outro lado da mesma moeda: \emph{esquece} depressa, e não carrega a crise na
+régua por anos. Não existe janela que proteja durante uma crise longa \emph{e} volte ao normal logo depois; é uma
+troca, e qual lado é melhor depende de quanto dura a crise e do que se quer do filtro.
+
+\section{Na PETR4: o que a janela muda no resultado}\label{sec:petr4}
+
+Aqui não há verdade conhecida; o que se mede é o resultado do robô. Para cada janela do GARCH, a grade inteira (152
+configurações com GARCH e 4 sem) foi rodada em quatro períodos de teste, com quatro anos de aquecimento antes de
+cada um. As 4 configurações sem GARCH deram resultado idêntico nas quatro janelas, como deveriam (é a conferência
+de que só o GARCH mudou).
+
+\begin{figure}[p]\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=3 by 4, horizontal sep=1.25cm, vertical sep=1.35cm, xlabels at=edge bottom},
+  width=0.36\textwidth, height=4.6cm, caixas]
+\nextgroupplot[title={2017--2024: queda máxima (\%)}]
+\input{\arq{caixa_R6_dd_puro.tex}}
+\nextgroupplot[title={2017--2024: retorno (\%)}]
+\input{\arq{caixa_R6_ret_puro.tex}}
+\nextgroupplot[title={2017--2024: sinais vetados (\%)}]
+\input{\arq{caixa_R6_veto.tex}}
+\nextgroupplot[title={2013--2016: queda máxima (\%)}]
+\input{\arq{caixa_T2_dd_puro.tex}}
+\nextgroupplot[title={2013--2016: retorno (\%)}]
+\input{\arq{caixa_T2_ret_puro.tex}}
+\nextgroupplot[title={2013--2016: sinais vetados (\%)}]
+\input{\arq{caixa_T2_veto.tex}}
+\nextgroupplot[title={2025--set/2026: queda máxima (\%)}]
+\input{\arq{caixa_T3_dd_puro.tex}}
+\nextgroupplot[title={2025--set/2026: retorno (\%)}]
+\input{\arq{caixa_T3_ret_puro.tex}}
+\nextgroupplot[title={2025--set/2026: sinais vetados (\%)}]
+\input{\arq{caixa_T3_veto.tex}}
+\nextgroupplot[title={2007--2011: queda máxima (\%)}]
+\input{\arq{caixa_T1_dd_puro.tex}}
+\nextgroupplot[title={2007--2011: retorno (\%)}]
+\input{\arq{caixa_T1_ret_puro.tex}}
+\nextgroupplot[title={2007--2011: sinais vetados (\%)}]
+\input{\arq{caixa_T1_veto.tex}}
+\end{groupplot}
+\end{tikzpicture}
+\caption{As 152 configurações com GARCH em cada período de teste, por janela do GARCH. Caixa do percentil 25 ao 75,
+hastes do 10 ao 90, traço na mediana. Retorno e queda pela variação do preço, sem custo.}
+\label{fig:caixas}
+\end{figure}
+
+\begin{table}[htbp]\centering\small
+\caption{Medianas das 152 configurações com GARCH, por período e janela, e as referências do mesmo período.}
+\label{tab:medianas}
+\begin{tabular}{llccccc}\toprule
+teste & janela & retorno (\%) & queda máx. (\%) & volatilidade (\%) & exposição (\%) & vetados (\%)\\\midrule
+2017--2024 & 120 & \val{resumo_testes}{R6:120}{ret} & \val{resumo_testes}{R6:120}{dd} & \val{resumo_testes}{R6:120}{vol} & \val{resumo_testes}{R6:120}{exp} & \val{resumo_testes}{R6:120}{veto}\\
+ & 240 & \val{resumo_testes}{R6:240}{ret} & \val{resumo_testes}{R6:240}{dd} & \val{resumo_testes}{R6:240}{vol} & \val{resumo_testes}{R6:240}{exp} & \val{resumo_testes}{R6:240}{veto}\\
+ & 500 & \val{resumo_testes}{R6:500}{ret} & \val{resumo_testes}{R6:500}{dd} & \val{resumo_testes}{R6:500}{vol} & \val{resumo_testes}{R6:500}{exp} & \val{resumo_testes}{R6:500}{veto}\\
+ & 1000 & \val{resumo_testes}{R6:1000}{ret} & \val{resumo_testes}{R6:1000}{dd} & \val{resumo_testes}{R6:1000}{vol} & \val{resumo_testes}{R6:1000}{exp} & \val{resumo_testes}{R6:1000}{veto}\\
+\midrule
+2013--2016 & 120 & \val{resumo_testes}{T2:120}{ret} & \val{resumo_testes}{T2:120}{dd} & \val{resumo_testes}{T2:120}{vol} & \val{resumo_testes}{T2:120}{exp} & \val{resumo_testes}{T2:120}{veto}\\
+ & 240 & \val{resumo_testes}{T2:240}{ret} & \val{resumo_testes}{T2:240}{dd} & \val{resumo_testes}{T2:240}{vol} & \val{resumo_testes}{T2:240}{exp} & \val{resumo_testes}{T2:240}{veto}\\
+ & 500 & \val{resumo_testes}{T2:500}{ret} & \val{resumo_testes}{T2:500}{dd} & \val{resumo_testes}{T2:500}{vol} & \val{resumo_testes}{T2:500}{exp} & \val{resumo_testes}{T2:500}{veto}\\
+ & 1000 & \val{resumo_testes}{T2:1000}{ret} & \val{resumo_testes}{T2:1000}{dd} & \val{resumo_testes}{T2:1000}{vol} & \val{resumo_testes}{T2:1000}{exp} & \val{resumo_testes}{T2:1000}{veto}\\
+\midrule
+2025--2026 & 120 & \val{resumo_testes}{T3:120}{ret} & \val{resumo_testes}{T3:120}{dd} & \val{resumo_testes}{T3:120}{vol} & \val{resumo_testes}{T3:120}{exp} & \val{resumo_testes}{T3:120}{veto}\\
+ & 240 & \val{resumo_testes}{T3:240}{ret} & \val{resumo_testes}{T3:240}{dd} & \val{resumo_testes}{T3:240}{vol} & \val{resumo_testes}{T3:240}{exp} & \val{resumo_testes}{T3:240}{veto}\\
+ & 500 & \val{resumo_testes}{T3:500}{ret} & \val{resumo_testes}{T3:500}{dd} & \val{resumo_testes}{T3:500}{vol} & \val{resumo_testes}{T3:500}{exp} & \val{resumo_testes}{T3:500}{veto}\\
+ & 1000 & \val{resumo_testes}{T3:1000}{ret} & \val{resumo_testes}{T3:1000}{dd} & \val{resumo_testes}{T3:1000}{vol} & \val{resumo_testes}{T3:1000}{exp} & \val{resumo_testes}{T3:1000}{veto}\\
+\midrule
+2007--2011 & 120 & \val{resumo_testes}{T1:120}{ret} & \val{resumo_testes}{T1:120}{dd} & \val{resumo_testes}{T1:120}{vol} & \val{resumo_testes}{T1:120}{exp} & \val{resumo_testes}{T1:120}{veto}\\
+ & 240 & \val{resumo_testes}{T1:240}{ret} & \val{resumo_testes}{T1:240}{dd} & \val{resumo_testes}{T1:240}{vol} & \val{resumo_testes}{T1:240}{exp} & \val{resumo_testes}{T1:240}{veto}\\
+ & 500 & \val{resumo_testes}{T1:500}{ret} & \val{resumo_testes}{T1:500}{dd} & \val{resumo_testes}{T1:500}{vol} & \val{resumo_testes}{T1:500}{exp} & \val{resumo_testes}{T1:500}{veto}\\
+ & 1000 & \val{resumo_testes}{T1:1000}{ret} & \val{resumo_testes}{T1:1000}{dd} & \val{resumo_testes}{T1:1000}{vol} & \val{resumo_testes}{T1:1000}{exp} & \val{resumo_testes}{T1:1000}{veto}\\
+
+\bottomrule\end{tabular}
+
+\smallskip
+\begin{tabular}{lcccc}\toprule
+teste & ARIMA sem GARCH: retorno & queda & PETR4: retorno & queda\\\midrule
+2017--2024 & \val{resumo_testes}{R6:240}{ret_arima} & \val{resumo_testes}{R6:240}{dd_arima} & \val{resumo_testes}{R6:240}{petr4} & \val{resumo_testes}{R6:240}{dd_petr4}\\
+2013--2016 & \val{resumo_testes}{T2:240}{ret_arima} & \val{resumo_testes}{T2:240}{dd_arima} & \val{resumo_testes}{T2:240}{petr4} & \val{resumo_testes}{T2:240}{dd_petr4}\\
+2025--2026 & \val{resumo_testes}{T3:240}{ret_arima} & \val{resumo_testes}{T3:240}{dd_arima} & \val{resumo_testes}{T3:240}{petr4} & \val{resumo_testes}{T3:240}{dd_petr4}\\
+2007--2011 & \val{resumo_testes}{T1:240}{ret_arima} & \val{resumo_testes}{T1:240}{dd_arima} & \val{resumo_testes}{T1:240}{petr4} & \val{resumo_testes}{T1:240}{dd_petr4}\\
+
+\bottomrule\end{tabular}
+\end{table}
+
+\begin{table}[htbp]\centering\small
+\caption{Cada configuração contra ela mesma com janela 240 (152 pares por período).}
+\label{tab:pares}
+\begin{tabular}{llcccc}\toprule
+teste & janela & queda menor que & diferença mediana & retorno maior que & diferença mediana\\
+& & com 240 (\% dos pares) & da queda (p.p.) & com 240 (\% dos pares) & do retorno (p.p.)\\\midrule
+2017--2024 & 120 & \val{pares}{R6:120}{frac_dd_menor} & \val{pares}{R6:120}{med_dif_dd} & \val{pares}{R6:120}{frac_ret_maior} & \val{pares}{R6:120}{med_dif_ret}\\
+ & 500 & \val{pares}{R6:500}{frac_dd_menor} & \val{pares}{R6:500}{med_dif_dd} & \val{pares}{R6:500}{frac_ret_maior} & \val{pares}{R6:500}{med_dif_ret}\\
+ & 1000 & \val{pares}{R6:1000}{frac_dd_menor} & \val{pares}{R6:1000}{med_dif_dd} & \val{pares}{R6:1000}{frac_ret_maior} & \val{pares}{R6:1000}{med_dif_ret}\\
+\midrule
+2013--2016 & 120 & \val{pares}{T2:120}{frac_dd_menor} & \val{pares}{T2:120}{med_dif_dd} & \val{pares}{T2:120}{frac_ret_maior} & \val{pares}{T2:120}{med_dif_ret}\\
+ & 500 & \val{pares}{T2:500}{frac_dd_menor} & \val{pares}{T2:500}{med_dif_dd} & \val{pares}{T2:500}{frac_ret_maior} & \val{pares}{T2:500}{med_dif_ret}\\
+ & 1000 & \val{pares}{T2:1000}{frac_dd_menor} & \val{pares}{T2:1000}{med_dif_dd} & \val{pares}{T2:1000}{frac_ret_maior} & \val{pares}{T2:1000}{med_dif_ret}\\
+\midrule
+2025--2026 & 120 & \val{pares}{T3:120}{frac_dd_menor} & \val{pares}{T3:120}{med_dif_dd} & \val{pares}{T3:120}{frac_ret_maior} & \val{pares}{T3:120}{med_dif_ret}\\
+ & 500 & \val{pares}{T3:500}{frac_dd_menor} & \val{pares}{T3:500}{med_dif_dd} & \val{pares}{T3:500}{frac_ret_maior} & \val{pares}{T3:500}{med_dif_ret}\\
+ & 1000 & \val{pares}{T3:1000}{frac_dd_menor} & \val{pares}{T3:1000}{med_dif_dd} & \val{pares}{T3:1000}{frac_ret_maior} & \val{pares}{T3:1000}{med_dif_ret}\\
+\midrule
+2007--2011 & 120 & \val{pares}{T1:120}{frac_dd_menor} & \val{pares}{T1:120}{med_dif_dd} & \val{pares}{T1:120}{frac_ret_maior} & \val{pares}{T1:120}{med_dif_ret}\\
+ & 500 & \val{pares}{T1:500}{frac_dd_menor} & \val{pares}{T1:500}{med_dif_dd} & \val{pares}{T1:500}{frac_ret_maior} & \val{pares}{T1:500}{med_dif_ret}\\
+ & 1000 & \val{pares}{T1:1000}{frac_dd_menor} & \val{pares}{T1:1000}{med_dif_dd} & \val{pares}{T1:1000}{frac_ret_maior} & \val{pares}{T1:1000}{med_dif_ret}\\
+
+\bottomrule\end{tabular}
+\end{table}
+
+\textbf{Leitura.} Três coisas aparecem.
+
+\begin{itemize}\setlength\itemsep{2pt}
+\item \textbf{Nenhuma janela ganha sempre.} A de 120 teve a maior mediana de retorno em 2017--2024
+(\val{resumo_testes}{R6:120}{ret}\% contra \val{resumo_testes}{R6:240}{ret}\% com 240) e em 2025--2026, mas a menor
+em 2007--2011 (\val{resumo_testes}{T1:120}{ret}\% contra \val{resumo_testes}{T1:240}{ret}\%). Em 2013--2016 as
+quatro empatam. Na Tabela~\ref{tab:pares}, a mesma configuração com 120 rendeu mais do que com 240 em
+\val{pares}{R6:120}{frac_ret_maior}\% dos pares num período e em \val{pares}{T1:120}{frac_ret_maior}\% em outro.
+\item \textbf{O ``resultado pior com 500'' é, sobretudo, de 2017--2024.} Ali a mediana caiu de
+\val{resumo_testes}{R6:240}{ret}\% para \val{resumo_testes}{R6:500}{ret}\%, e a mesma configuração rendeu mais com
+500 em só \val{pares}{R6:500}{frac_ret_maior}\% dos pares. Nos outros três períodos a diferença de 500 para 240 é de
+até dois pontos.
+\item \textbf{O que muda com padrão é o veto, e ele segue a régua.} Em 2025--2026, com 1000, a configuração
+mediana vetou \val{resumo_testes}{T3:1000}{veto}\% dos sinais: a janela de quatro anos ainda inclui 2022, e a
+volatilidade daquele ano segura o limiar lá em cima. É o ``muito depois'' do laboratório, agora numa série real.
+Em 2013--2016, ao contrário, a de 1000 foi a que mais vetou (\val{resumo_testes}{T2:1000}{veto}\% contra
+\val{resumo_testes}{T2:240}{veto}\% com 240).
+\end{itemize}
+
+As caixas da Figura~\ref{fig:caixas} mostram também que, dentro de uma mesma janela, as 152 configurações vão de
+um extremo ao outro: a caixa de uma janela é muito mais alta do que a distância entre as medianas das quatro
+janelas. Esse é o assunto da próxima seção.
+
+\section{O nível de otimização: a janela pesa menos que a escolha}\label{sec:otim}
+
+Em cada janela, a configuração foi escolhida como no TG: maior Sharpe na otimização (GS) e maior Calmar (GC),
+desempate por menos negócios. A Figura~\ref{fig:disp} põe, para 2017--2024, cada uma das 152 configurações com o
+resultado na otimização (2014--2016) no eixo horizontal e no teste no vertical. Se a otimização previsse o teste,
+os pontos formariam uma diagonal subindo.
+
+\newcommand{\disp}[4]{% #1 teste, #2 janela, #3 coluna (sharpe/calmar), #4 coluna rho
+  \addplot[only marks, mark=*, mark size=1.1pt, black!35] table[x=#3_otim, y=#3_teste]{\arq{pontos_#1_#2.csv}};
+  \addplot[only marks, mark=star, mark size=4pt, cesc, very thick] table[x=#3_otim, y=#3_teste,
+    restrict expr to domain={\coordindex}{0:0}]{\arq{escolha_#1_#2.csv}};
+  \addplot[only marks, mark=diamond*, mark size=3pt, cmod] table[x=#3_otim, y=#3_teste,
+    restrict expr to domain={\coordindex}{1:1}]{\arq{escolha_#1_#2.csv}};}
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=4 by 2, horizontal sep=0.9cm, vertical sep=1.5cm},
+  width=0.29\textwidth, height=4.6cm, base]
+\nextgroupplot[title={120\\$\rho$ = \val{otim}{R6:120}{rho_sharpe}}, ylabel={Sharpe no teste}]\disp{R6}{120}{sharpe}{}
+\nextgroupplot[title={240\\$\rho$ = \val{otim}{R6:240}{rho_sharpe}}]\disp{R6}{240}{sharpe}{}
+\nextgroupplot[title={500\\$\rho$ = \val{otim}{R6:500}{rho_sharpe}}]\disp{R6}{500}{sharpe}{}
+\nextgroupplot[title={1000\\$\rho$ = \val{otim}{R6:1000}{rho_sharpe}}]\disp{R6}{1000}{sharpe}{}
+\nextgroupplot[title={$\rho$ = \val{otim}{R6:120}{rho_calmar}}, ylabel={Calmar no teste}, xlabel={na otimização}]\disp{R6}{120}{calmar}{}
+\nextgroupplot[title={$\rho$ = \val{otim}{R6:240}{rho_calmar}}, xlabel={na otimização}]\disp{R6}{240}{calmar}{}
+\nextgroupplot[title={$\rho$ = \val{otim}{R6:500}{rho_calmar}}, xlabel={na otimização}]\disp{R6}{500}{calmar}{}
+\nextgroupplot[title={$\rho$ = \val{otim}{R6:1000}{rho_calmar}}, xlabel={na otimização}]\disp{R6}{1000}{calmar}{}
+\end{groupplot}
+\end{tikzpicture}
+\caption{Otimização (2014--2016) contra teste (2017--2024), uma coluna por janela do GARCH. Em cima Sharpe, embaixo
+Calmar. Estrela vermelha: a escolhida pelo Sharpe (GS). Losango azul: a escolhida pelo Calmar (GC). $\rho$ é a
+correlação de Spearman entre a ordem na otimização e a ordem no teste (1 = mesma ordem, 0 = nenhuma relação).}
+\label{fig:disp}
+\end{figure}
+
+\begin{table}[htbp]\centering\small
+\caption{A escolha em cada janela e período. Posição: lugar da escolhida no teste entre as 152 (1 = a melhor).}
+\label{tab:otim}
+\begin{tabular}{llcccccccc}\toprule
+& & \multicolumn{2}{c}{Spearman} & \multicolumn{3}{c}{GS no teste} & \multicolumn{2}{c}{GC no teste} & mediana\\
+\cmidrule(lr){3-4}\cmidrule(lr){5-7}\cmidrule(lr){8-9}
+teste & janela & Sharpe & Calmar & posição & retorno & queda & posição & queda & retorno\\\midrule
+2017--2024 & 120 & \val{otim}{R6:120}{rho_sharpe} & \val{otim}{R6:120}{rho_calmar} & \val{otim}{R6:120}{pos_GS} & \val{otim}{R6:120}{GS_ret} & \val{otim}{R6:120}{GS_dd} & \val{otim}{R6:120}{pos_GC} & \val{otim}{R6:120}{GC_dd} & \val{otim}{R6:120}{med_ret}\\
+ & 240 & \val{otim}{R6:240}{rho_sharpe} & \val{otim}{R6:240}{rho_calmar} & \val{otim}{R6:240}{pos_GS} & \val{otim}{R6:240}{GS_ret} & \val{otim}{R6:240}{GS_dd} & \val{otim}{R6:240}{pos_GC} & \val{otim}{R6:240}{GC_dd} & \val{otim}{R6:240}{med_ret}\\
+ & 500 & \val{otim}{R6:500}{rho_sharpe} & \val{otim}{R6:500}{rho_calmar} & \val{otim}{R6:500}{pos_GS} & \val{otim}{R6:500}{GS_ret} & \val{otim}{R6:500}{GS_dd} & \val{otim}{R6:500}{pos_GC} & \val{otim}{R6:500}{GC_dd} & \val{otim}{R6:500}{med_ret}\\
+ & 1000 & \val{otim}{R6:1000}{rho_sharpe} & \val{otim}{R6:1000}{rho_calmar} & \val{otim}{R6:1000}{pos_GS} & \val{otim}{R6:1000}{GS_ret} & \val{otim}{R6:1000}{GS_dd} & \val{otim}{R6:1000}{pos_GC} & \val{otim}{R6:1000}{GC_dd} & \val{otim}{R6:1000}{med_ret}\\
+\midrule
+2013--2016 & 120 & \val{otim}{T2:120}{rho_sharpe} & \val{otim}{T2:120}{rho_calmar} & \val{otim}{T2:120}{pos_GS} & \val{otim}{T2:120}{GS_ret} & \val{otim}{T2:120}{GS_dd} & \val{otim}{T2:120}{pos_GC} & \val{otim}{T2:120}{GC_dd} & \val{otim}{T2:120}{med_ret}\\
+ & 240 & \val{otim}{T2:240}{rho_sharpe} & \val{otim}{T2:240}{rho_calmar} & \val{otim}{T2:240}{pos_GS} & \val{otim}{T2:240}{GS_ret} & \val{otim}{T2:240}{GS_dd} & \val{otim}{T2:240}{pos_GC} & \val{otim}{T2:240}{GC_dd} & \val{otim}{T2:240}{med_ret}\\
+ & 500 & \val{otim}{T2:500}{rho_sharpe} & \val{otim}{T2:500}{rho_calmar} & \val{otim}{T2:500}{pos_GS} & \val{otim}{T2:500}{GS_ret} & \val{otim}{T2:500}{GS_dd} & \val{otim}{T2:500}{pos_GC} & \val{otim}{T2:500}{GC_dd} & \val{otim}{T2:500}{med_ret}\\
+ & 1000 & \val{otim}{T2:1000}{rho_sharpe} & \val{otim}{T2:1000}{rho_calmar} & \val{otim}{T2:1000}{pos_GS} & \val{otim}{T2:1000}{GS_ret} & \val{otim}{T2:1000}{GS_dd} & \val{otim}{T2:1000}{pos_GC} & \val{otim}{T2:1000}{GC_dd} & \val{otim}{T2:1000}{med_ret}\\
+\midrule
+2025--2026 & 120 & \val{otim}{T3:120}{rho_sharpe} & \val{otim}{T3:120}{rho_calmar} & \val{otim}{T3:120}{pos_GS} & \val{otim}{T3:120}{GS_ret} & \val{otim}{T3:120}{GS_dd} & \val{otim}{T3:120}{pos_GC} & \val{otim}{T3:120}{GC_dd} & \val{otim}{T3:120}{med_ret}\\
+ & 240 & \val{otim}{T3:240}{rho_sharpe} & \val{otim}{T3:240}{rho_calmar} & \val{otim}{T3:240}{pos_GS} & \val{otim}{T3:240}{GS_ret} & \val{otim}{T3:240}{GS_dd} & \val{otim}{T3:240}{pos_GC} & \val{otim}{T3:240}{GC_dd} & \val{otim}{T3:240}{med_ret}\\
+ & 500 & \val{otim}{T3:500}{rho_sharpe} & \val{otim}{T3:500}{rho_calmar} & \val{otim}{T3:500}{pos_GS} & \val{otim}{T3:500}{GS_ret} & \val{otim}{T3:500}{GS_dd} & \val{otim}{T3:500}{pos_GC} & \val{otim}{T3:500}{GC_dd} & \val{otim}{T3:500}{med_ret}\\
+ & 1000 & \val{otim}{T3:1000}{rho_sharpe} & \val{otim}{T3:1000}{rho_calmar} & \val{otim}{T3:1000}{pos_GS} & \val{otim}{T3:1000}{GS_ret} & \val{otim}{T3:1000}{GS_dd} & \val{otim}{T3:1000}{pos_GC} & \val{otim}{T3:1000}{GC_dd} & \val{otim}{T3:1000}{med_ret}\\
+\midrule
+2007--2011 & 120 & \val{otim}{T1:120}{rho_sharpe} & \val{otim}{T1:120}{rho_calmar} & \val{otim}{T1:120}{pos_GS} & \val{otim}{T1:120}{GS_ret} & \val{otim}{T1:120}{GS_dd} & \val{otim}{T1:120}{pos_GC} & \val{otim}{T1:120}{GC_dd} & \val{otim}{T1:120}{med_ret}\\
+ & 240 & \val{otim}{T1:240}{rho_sharpe} & \val{otim}{T1:240}{rho_calmar} & \val{otim}{T1:240}{pos_GS} & \val{otim}{T1:240}{GS_ret} & \val{otim}{T1:240}{GS_dd} & \val{otim}{T1:240}{pos_GC} & \val{otim}{T1:240}{GC_dd} & \val{otim}{T1:240}{med_ret}\\
+ & 500 & \val{otim}{T1:500}{rho_sharpe} & \val{otim}{T1:500}{rho_calmar} & \val{otim}{T1:500}{pos_GS} & \val{otim}{T1:500}{GS_ret} & \val{otim}{T1:500}{GS_dd} & \val{otim}{T1:500}{pos_GC} & \val{otim}{T1:500}{GC_dd} & \val{otim}{T1:500}{med_ret}\\
+ & 1000 & \val{otim}{T1:1000}{rho_sharpe} & \val{otim}{T1:1000}{rho_calmar} & \val{otim}{T1:1000}{pos_GS} & \val{otim}{T1:1000}{GS_ret} & \val{otim}{T1:1000}{GS_dd} & \val{otim}{T1:1000}{pos_GC} & \val{otim}{T1:1000}{GC_dd} & \val{otim}{T1:1000}{med_ret}\\
+
+\bottomrule\end{tabular}
+\end{table}
+
+\begin{table}[htbp]\centering\small
+\caption{O tamanho de cada efeito no retorno do teste, em pontos percentuais.}
+\label{tab:tamanhos}
+\begin{tabular}{lccc}\toprule
+& distância entre as medianas & largura da grade dentro & distância entre os GS\\
+teste & das quatro janelas & de uma janela (p10 a p90, média) & das quatro janelas\\\midrule
+2017--2024 & \val{otim_resumo}{R6}{amp_medianas} & \val{otim_resumo}{R6}{largura_grade} & \val{otim_resumo}{R6}{amp_gs}\\
+2013--2016 & \val{otim_resumo}{T2}{amp_medianas} & \val{otim_resumo}{T2}{largura_grade} & \val{otim_resumo}{T2}{amp_gs}\\
+2025--2026 & \val{otim_resumo}{T3}{amp_medianas} & \val{otim_resumo}{T3}{largura_grade} & \val{otim_resumo}{T3}{amp_gs}\\
+2007--2011 & \val{otim_resumo}{T1}{amp_medianas} & \val{otim_resumo}{T1}{largura_grade} & \val{otim_resumo}{T1}{amp_gs}\\
+\bottomrule\end{tabular}
+\end{table}
+
+\textbf{Leitura.} Pelo Sharpe, a ordem na otimização não prevê a ordem no teste em nenhuma janela: o Spearman ficou
+entre \val{otim_resumo}{todos}{rho_s_min} e \val{otim_resumo}{todos}{rho_s_max}, negativo em
+\val{otim_resumo}{todos}{rho_s_neg} das \val{otim_resumo}{todos}{n} combinações de janela e período. Pelo Calmar
+prevê um pouco em todas: de \val{otim_resumo}{todos}{rho_c_min} a \val{otim_resumo}{todos}{rho_c_max}. É o mesmo
+resultado do relatório da otimização (\path{ia/relatorios/otimizacao/}), e ele não depende da janela.
+
+Por isso a configuração escolhida cai em qualquer lugar no teste: o GS ficou entre a posição
+\val{otim_resumo}{todos}{pos_gs_min} e a \val{otim_resumo}{todos}{pos_gs_max}, entre 152. A
+Tabela~\ref{tab:tamanhos} põe os tamanhos lado a lado: em todo período, a largura da grade dentro de uma janela é
+maior que a distância entre as medianas das janelas, e o GS de uma janela para outra varia tanto ou mais que as
+medianas. Em 2017--2024, as medianas das quatro janelas ficaram a \val{otim_resumo}{R6}{amp_medianas} pontos uma da
+outra, e os quatro GS a \val{otim_resumo}{R6}{amp_gs}.
+
+Isso responde à pergunta (5) e completa a (3). Comparar ``o robô com 240'' com ``o robô com 500'' compara duas
+escolhas diferentes, cada uma com a sua dose de sorte, e não só duas janelas. Para separar o efeito da janela,
+é preciso fixar a configuração, que é o que a próxima seção faz.
+
+\section{A configuração do TG com cada janela}\label{sec:traco}
+
+As seções anteriores olham a grade inteira. Aqui fica uma configuração só, a do ARIMA-GARCH Sharpe do TG em
+2017--2024 (filtro, percentil 70, zera no veto, com constante), rodada com o GARCH sobre os resíduos do ARIMA (como
+no TG) e com as quatro janelas próprias. O traço por barra mostra o que o GARCH estimou em cada pregão.
+
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=1 by 2, vertical sep=1.2cm, xticklabels at=edge bottom},
+  width=0.95\textwidth, base, date coordinates in=x, xticklabel={\year}, xtick={2017-01-01,2018-01-01,2019-01-01,2020-01-01,2021-01-01,2022-01-01,2023-01-01,2024-01-01,2025-01-01},
+  xmin=2017-01-01, xmax=2025-01-01,
+  legend style={font=\scriptsize, legend columns=-1, at={(0.01,0.97)}, anchor=north west, draw=none, fill=white, fill opacity=0.8, text opacity=1}]
+\nextgroupplot[height=5.6cm, title={patrimônio (base 1)}]
+\addplot[cver!50, thick] table[x=data, y=petr4]{\arq{curvas.csv}};
+\addplot[black, thick] table[x=data, y=jg_0]{\arq{curvas.csv}};
+\addplot[jA, semithick] table[x=data, y=jg_120]{\arq{curvas.csv}};
+\addplot[jB, semithick] table[x=data, y=jg_240]{\arq{curvas.csv}};
+\addplot[jC, semithick] table[x=data, y=jg_500]{\arq{curvas.csv}};
+\addplot[jD, semithick] table[x=data, y=jg_1000]{\arq{curvas.csv}};
+\legend{PETR4, TG, 120, 240, 500, 1000}
+\nextgroupplot[height=4.6cm, title={limiar do filtro (percentil 70 da volatilidade ajustada na janela, \% ao dia)}, ymin=0]
+\addplot[jA, semithick] table[x=data, y=lim_120]{\arq{traco_serie.csv}};
+\addplot[jB, semithick] table[x=data, y=lim_240]{\arq{traco_serie.csv}};
+\addplot[jC, semithick] table[x=data, y=lim_500]{\arq{traco_serie.csv}};
+\addplot[jD, semithick] table[x=data, y=lim_1000]{\arq{traco_serie.csv}};
+\legend{120, 240, 500, 1000}
+\end{groupplot}
+\end{tikzpicture}
+\caption{A configuração do ARIMA-GARCH Sharpe do TG em 2017--2024, com o GARCH em cada janela. Embaixo, um pregão a
+cada cinco. Pela variação do preço, sem custo.}
+\label{fig:traco}
+\end{figure}
+
+\begin{table}[htbp]\centering\small
+\caption{O que o GARCH estimou em cada pregão de 2017--2024 e o resultado da configuração, por janela.}
+\label{tab:traco}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lccccccc}\toprule
+& persistência & persistência & limiar & dias & exposição & retorno & queda\\
+janela do GARCH & mediana & $>0{,}999$ (\%) & mediano (\%) & vetados (\%) & (\%) & (\%) & máx. (\%)\\\midrule
+TG (resíduos, 240) & \val{traco_resumo}{0}{pers_med} & \val{traco_resumo}{0}{frac_pers999} & \val{traco_resumo}{0}{lim_med} & \val{traco_resumo}{0}{frac_veto} & \val{traco_resumo}{0}{exposicao} & \val{traco_resumo}{0}{ret} & \val{traco_resumo}{0}{dd}\\
+120 & \val{traco_resumo}{120}{pers_med} & \val{traco_resumo}{120}{frac_pers999} & \val{traco_resumo}{120}{lim_med} & \val{traco_resumo}{120}{frac_veto} & \val{traco_resumo}{120}{exposicao} & \val{traco_resumo}{120}{ret} & \val{traco_resumo}{120}{dd}\\
+240 & \val{traco_resumo}{240}{pers_med} & \val{traco_resumo}{240}{frac_pers999} & \val{traco_resumo}{240}{lim_med} & \val{traco_resumo}{240}{frac_veto} & \val{traco_resumo}{240}{exposicao} & \val{traco_resumo}{240}{ret} & \val{traco_resumo}{240}{dd}\\
+500 & \val{traco_resumo}{500}{pers_med} & \val{traco_resumo}{500}{frac_pers999} & \val{traco_resumo}{500}{lim_med} & \val{traco_resumo}{500}{frac_veto} & \val{traco_resumo}{500}{exposicao} & \val{traco_resumo}{500}{ret} & \val{traco_resumo}{500}{dd}\\
+1000 & \val{traco_resumo}{1000}{pers_med} & \val{traco_resumo}{1000}{frac_pers999} & \val{traco_resumo}{1000}{lim_med} & \val{traco_resumo}{1000}{frac_veto} & \val{traco_resumo}{1000}{exposicao} & \val{traco_resumo}{1000}{ret} & \val{traco_resumo}{1000}{dd}\\
+\bottomrule\end{tabular}
+\end{table}
+
+\textbf{Leitura.} Com a configuração fixa, o efeito da janela aparece isolado, e ele é grande:
+\val{traco_resumo}{0}{ret}\% no TG, \val{traco_resumo}{120}{ret}\% com 120, \val{traco_resumo}{500}{ret}\% com 500
+e \val{traco_resumo}{1000}{ret}\% com 1000. É exatamente o que a dupla viu (o estudo de 500 de 26/10 deu o mesmo
+\val{traco_resumo}{500}{ret}\%). A tabela mostra os dois lados da pergunta (3):
+
+\begin{itemize}\setlength\itemsep{2pt}
+\item \textbf{Os pesos melhoraram com a janela longa.} A persistência encostou em 1 em
+\val{traco_resumo}{0}{frac_pers999}\% dos pregões no TG e em \val{traco_resumo}{500}{frac_pers999}\% com 500, o mesmo
+que o laboratório mostrou (Tabela~\ref{tab:lab}).
+\item \textbf{E o filtro mudou de régua.} Com 500, o limiar mediano subiu (\val{traco_resumo}{0}{lim_med}\% para
+\val{traco_resumo}{500}{lim_med}\% ao dia), os dias vetados caíram de \val{traco_resumo}{0}{frac_veto}\% para
+\val{traco_resumo}{500}{frac_veto}\% e a exposição subiu de \val{traco_resumo}{0}{exposicao}\% para
+\val{traco_resumo}{500}{exposicao}\%. A janela longa guarda as crises antigas na régua, considera ``normal'' uma
+volatilidade que a de 240 já chamava de alta, e deixa o robô mais tempo comprado. A queda máxima foi de
+\val{traco_resumo}{0}{dd}\% para \val{traco_resumo}{500}{dd}\%.
+\end{itemize}
+
+Então o resultado pior com 500 não é \emph{overfitting}: o modelo estimou melhor, mas a regra de decisão que ele
+alimenta passou a ser outra, menos seletiva. A de 1000 mostra que nem isso é uma regra fixa: vetou ainda menos
+(\val{traco_resumo}{1000}{frac_veto}\%) e teve a menor queda (\val{traco_resumo}{1000}{dd}\%), porque o que importa
+é \emph{quais} dias foram vetados, e isso depende do caminho da série. O pico do limiar de 1000 entre agosto e outubro
+de 2019 (Figura~\ref{fig:traco}) coincide com a persistência estimada encostada em 1 (perto de 0,997 no traço):
+com persistência assim, a volatilidade ajustada demora a cair e o percentil da janela sobe junto.
+
+Duas observações. A janela própria de 240 não reproduz o TG exatamente (\val{traco_resumo}{240}{ret}\% contra
+\val{traco_resumo}{0}{ret}\%): no TG o GARCH recebe os resíduos do próprio ajuste do ARIMA
+(\texttt{ObterResiduos}), e com janela própria o EA os recalcula com os coeficientes do dia sobre uma série um
+pouco mais longa (\texttt{ResiduosSobre}). A persistência e o veto ficam praticamente iguais. E, em todas as janelas, a queda dessa configuração ficou abaixo da mediana do
+ARIMA sem GARCH no mesmo período (\val{resumo_testes}{R6:240}{dd_arima}\%): a proteção que o TG mostra não depende
+da janela. O retorno de uma configuração, esse sim, depende, e é por isso que o TG não se apoia nele.
+
+\begin{banca}
+\textbf{``Por que 240 e não uma janela maior?''} Por três motivos, nesta ordem. O testador do MetaTrader só entrega
+histórico a partir de 1º de janeiro do ano anterior ao início do teste, e 240 pregões cabem nisso (é o que o TG
+diz). Uma janela maior supõe que o mercado ficou igual por mais tempo: 1000 pregões são quatro anos, e quatro anos atrás a PETR4 podia
+estar em outro regime. E, testadas depois, 500 e 1000 não deram resultado
+sistematicamente melhor (Tabelas~\ref{tab:medianas} e~\ref{tab:pares}).
+
+\textbf{``Mas uma janela maior não estima melhor?''} Estima, se o processo não muda (Tabela~\ref{tab:lab}). Só que a
+janela também define a régua do filtro: o limiar é o percentil da volatilidade \emph{dentro da janela}. Com 1000
+dias, ``alta'' significa alta em relação aos últimos quatro anos.
+
+\textbf{``O resultado pior com 500 não é \emph{overfitting}?''} Não. \emph{Overfitting} é ajustar ruído dos dados
+usados na estimação, e ele \emph{diminui} com mais dados: com 3 parâmetros, quem mais erra é a janela de 120
+(Figura~\ref{fig:lab}). Onde existe risco de \emph{overfitting} no trabalho é na escolha de uma entre 152
+configurações, e é por isso que a escolha é feita num período e avaliada em outro.
+
+\textbf{``Então por que não usar a janela que deu o melhor resultado?''} Porque ela seria escolhida olhando o
+período de teste, e aí o teste deixa de ser teste. No TG, 120 e 240 entram na grade e são escolhidas na otimização,
+nunca no teste; 240 é o teto pelo motivo prático acima. Janelas maiores só servem como verificação.
+\end{banca}
+
+\begin{cuidado}[O que este estudo não diz]
+\begin{itemize}\setlength\itemsep{2pt}
+\item \textbf{Não diz qual janela é a certa.} Escolher a janela pela tabela de teste seria otimizar no teste. O
+estudo serve para entender o mecanismo e para mostrar que a conclusão do TG não depende da janela, não para trocar
+a janela.
+\item \textbf{O laboratório é um mundo ideal.} As séries artificiais seguem um GARCH(1,1) normal de verdade, com uma
+mudança de regime desenhada à mão. A PETR4 tem caudas mais pesadas e mudanças que ninguém desenhou. O laboratório
+mostra o mecanismo, não o tamanho do efeito na ação.
+\item \textbf{As medianas da grade não são o robô do TG.} São 152 configurações por janela; o TG roda uma
+(a escolhida). As diferenças entre janelas nas medianas são de poucos pontos e não foram testadas
+estatisticamente.
+\item \textbf{Um ativo, quatro períodos.} O mesmo exercício em outra ação pode dar outra ordem entre as janelas.
+\item \textbf{Aquecimento de quatro anos em tudo.} Para a janela de 1000 ter dados desde o primeiro dia. No TG o
+GARCH não tem janela própria e usa os resíduos do ARIMA na janela de 240; o traço da Seção~\ref{sec:traco} compara
+as duas formas.
+\end{itemize}
+\end{cuidado}
+
+\section*{De onde vêm os números}
+\small\sloppy
+Protocolo escrito antes de rodar: \path{dados/resultados/janelas_garch_2026-11-13/PROTOCOLO.md}.
+
+\textbf{PETR4.} \path{ferramentas/scripts/janelas_garch.sh} rodou a grade de 156 configurações (as sub-grades
+só compra da rodada 3) no testador, série \texttt{PETR4\_OFICIAL} (\texttt{PETR4\_DESDE1999} em 2004--2011), ARIMA
+com janela 240 e \texttt{Janela\_GARCH} = 120, 240, 500 e 1000, quatro anos de aquecimento antes de cada período
+(\texttt{Inicio\_Operacao}). Uma linha por passagem em \path{calibracao/<janela>/PETR4_<período>.csv}. Pares
+otimização$\to$teste: 2014--2016$\to$2017--2024, 2010--2012$\to$2013--2016, 2022--2024$\to$2025--set/2026,
+2004--2006$\to$2007--2011. O traço da configuração do TG está em \path{traco/} e \path{testes/}.
+
+\textbf{Laboratório.} \path{ferramentas/JanelaGarchSimulada.mq5}, rodado por
+\path{ferramentas/scripts/janela_garch_simulada.sh}, semente fixa (rodar de novo dá os mesmos números). Saída em
+\path{simulacao/}.
+
+\textbf{Números e gráficos.} \path{ferramentas/scripts/janelas_garch_dados.sh} lê as pastas acima e grava em
+\path{cru/} os CSVs dos gráficos e o \texttt{valores.tex}: todo número deste texto é uma macro lida desse arquivo,
+nenhum foi digitado. Escolha da configuração pela regra do \texttt{escolher.sh} (maior Sharpe ou Calmar na
+otimização, desempate por menos negócios).
+
+\textbf{Conferências} (\path{cru/conferencias.txt}): 156 passagens em cada uma das 32 otimizações; as 4
+configurações sem GARCH idênticas nas quatro janelas; janela 1000 igual, passagem a passagem, ao estudo de
+02/11/2026 (\texttt{janela\_garch\_1000\_2026-11-02}) e janela 500 igual ao de 26/10/2026
+(\texttt{janelas\_240\_500\_2026-10-26}) em todos os períodos que os dois têm em comum.
+
+\end{document}

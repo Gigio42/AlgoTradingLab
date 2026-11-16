@@ -1,0 +1,31 @@
+================ HANNAN-RISSANEN DETALHADO ================
+--- 1. ARMA(1,1) sintetico: phi=0.60 theta=0.40 N=239
+  passo a passo: m=29 obs1=210 obs2=209 c=0.156957 phi=0.628826 theta=0.473580
+  CArima       : c=0.156957 phi=0.628826 theta=0.473580 | iguais=SIM
+  correlacao com o erro verdadeiro: estagio 1 = 0.9216, residuo final = 0.9947
+--- 3. Pregao real 13/05/2021, ARIMA(0,1,1) com constante, janela 25/05/2020 a 12/05/2021
+  passo a passo: m=29 obs1=210 obs2=209 primeiro=30 c=0.0005237479517 theta1=-0.09285270968 prev=0.001784768638
+  CArima       : c=0.0005237479517 theta1=-0.09285270968 prev=0.001784768638
+CONFERIR;MA1;2021.05.13;0.0005237479517;-0.09285270968;0.001784768638
+  MV na mesma janela: c=0.0009720288484 theta1=-0.1248425398 prev=0.002645569426
+  estagio 1: SQR=0.17737426 dp=2.906268% | correlacao eps estagio 1 x residuo final = 0.9410
+  previsao: c=0.052375% + theta*e(N)=0.126102% = 0.178477% (e(N)=-1.358087%)
+--- 3. Pregao real 05/06/2020, ARIMA(0,1,4) com constante, janela 18/06/2019 a 04/06/2020
+  passo a passo: m=29 obs1=210 obs2=206 primeiro=33 c=-0.0008987912196 theta1=-0.1423227356 theta2=0.1507415275 theta3=0.1792852903 theta4=-0.07983959579 prev=0.01024021375
+  CArima       : c=-0.0008987912196 theta1=-0.1423227356 prev=0.01024021375
+CONFERIR;MA4;2020.06.05;-0.0008987912196;-0.1423227356;0.1507415275;0.1792852903;-0.07983959579;0.01024021375
+--- 2. Monte Carlo arma (phi=0.6000 theta=0.4000, 1000 de 1000 replicas, 1.8 s)
+  HR : phi 0.6118 (dp 0.0650)  theta 0.3803 (dp 0.0889)
+  MV : phi 0.5841 (dp 0.0656)  theta 0.4098 (dp 0.0744)
+  AR(1) ingenuo: phi 0.7463 (dp 0.0355)
+  theta do HR com o sinal certo em 100.0% das replicas
+--- 2. Monte Carlo ma (phi=0.0000 theta=-0.0929, 1000 de 1000 replicas, 1.3 s)
+  HR : phi 0.0000 (dp 0.0000)  theta -0.1004 (dp 0.0771)
+  MV : phi 0.0000 (dp 0.0000)  theta -0.0994 (dp 0.0694)
+  AR(1) ingenuo: phi -0.0957 (dp 0.0660)
+  theta do HR com o sinal certo em 90.3% das replicas
+================ FIM ================
+
+--- Conferência contra o traço (/home/dark/.wine-mt5/drive_c/Program Files/MetaTrader 5/MQL5/Experts/AlgoTradingLab/dados/resultados/refeito_2026-10-05/traco_demo/traco_demo_GARCH.csv)
+  MA1 2021.05.13: maior diferença absoluta (constante, thetas, previsão) = 0 -> IGUAL
+  MA4 2020.06.05: maior diferença absoluta (constante, thetas, previsão) = 0 -> IGUAL

@@ -8,7 +8,7 @@
 %  palavra INTRODUÇÃO, e a numeração começa na Fundamentação Teórica.
 %
 %  Versão 3, de 2026-09-29. As versões anteriores estão em
-%  notas/rascunhos/. A v2 ficou com cara de remendo porque foi editada em
+%  ia/rascunhos/. A v2 ficou com cara de remendo porque foi editada em
 %  cima da v1; esta foi escrita inteira, para o texto correr como uma
 %  peça só. O encadeamento é: o ativo oscila -> por isso se automatiza ->
 %  como o robô costuma decidir -> o que falta nessa decisão -> o que os
@@ -45,8 +45,11 @@ A dificuldade apontada por ele continua atual, porque as crises voltam a
 acontecer, e é nelas que as maiores perdas se concentram. Em março de 2020, no
 início da pandemia de covid-19, o Ibovespa, principal índice de ações da bolsa
 brasileira, caiu 29,9\% em um único mês \cite{maximo2020}. A própria PETR4
-perdeu 48,6\% do seu valor entre o fim de 2019 e o início de abril de 2020,
-segundo as cotações oficiais da bolsa \cite{b3Cotahist}. Uma estratégia baseada
+chegou a perder 64,2\% do seu valor ao longo de 2020, do ponto mais alto ao mais
+baixo do ano, segundo as cotações oficiais da bolsa \cite{b3Cotahist}.
+% 64,2%: dados/resultados/refeito_2026-10-05/cru/recorte_2020.txt (PETR4,
+% queda_max 64,15%), o mesmo valor da tabela tab:pandemia (Cap. III). Antes: 48,6% até 03/04/2020.
+ Uma estratégia baseada
 apenas no cruzamento de médias responde a uma única pergunta, a de para que lado
 o preço parece estar indo, e nada diz sobre o quanto ele pode oscilar no caminho.
 Por isso, ela entra no mercado com a mesma convicção em um dia calmo e em um dia
@@ -64,8 +67,8 @@ depois, sobre o mesmo ativo e na mesma plataforma.
 
 Resta saber, porém, o que efetivamente se ganha ao acrescentar essa camada de
 modelagem. Acrescentar um modelo de volatilidade torna o algoritmo mais complexo,
-exige a estimação de parâmetros adicionais a cada operação e reduz o número de
-negócios realizados, e nada garante, de antemão, que o resultado compense esse
+exige a estimação de parâmetros adicionais a cada operação e pode reduzir o
+número de negócios realizados, e nada garante, de antemão, que o resultado compense esse
 custo. Coloca-se, assim, a questão norteadora deste trabalho: em que medida a
 integração dos modelos ARIMA e GARCH em um único algoritmo de negociação altera o
 desempenho e o risco das operações, em comparação com o uso do ARIMA isolado e com
@@ -75,30 +78,25 @@ Duas hipóteses foram formuladas antes dos experimentos. A primeira é a de que 
 integração entre a previsão de séries temporais pelo ARIMA e a modelagem de
 volatilidade condicional pelo GARCH gera sinais de negociação mais eficazes, tanto
 em acerto direcional quanto em adequação ao risco, do que o emprego isolado do
-ARIMA. A ideia de combinar técnicas com funções distintas para obter resultados
-superiores encontra respaldo em trabalhos como o de \citeonline{batista2024}, que
-integrou indicadores técnicos em um mesmo robô de negociação. A segunda é a de que
+ARIMA. A ideia de reunir, em um mesmo robô, técnicas com funções distintas aparece
+também em trabalhos como o de \citeonline{batista2024}, que combinou indicadores
+técnicos. A segunda é a de que
 essa combinação representa um avanço em relação às análises baseadas em médias
 móveis. Ambas são confrontadas com os resultados nas considerações finais.
 
 O objetivo geral foi desenvolver, em MQL5, um \textit{Expert Advisor} que
 integra os modelos ARIMA e GARCH e avaliar o efeito do GARCH sobre o desempenho e
 o risco das operações, em comparação com o ARIMA isolado e com a estratégia de
-\citeonline{almeida2016}. Para isso, foram definidos quatro objetivos
-específicos. O primeiro foi aprofundar os conceitos de tendência e de
-volatilidade no mercado de ações. O segundo, implementar os modelos ARIMA e GARCH
-em MQL5 e integrá-los em um robô de negociação no MetaTrader 5. O terceiro,
-reproduzir a estratégia de médias móveis de \citeonline{almeida2016}. O quarto,
-avaliar e comparar os três algoritmos por simulação com dados históricos, em
-diferentes períodos do mercado, incluindo períodos de crise.
-% 2026-10-29: objetivos específicos devolvidos à forma genérica do PTG, a pedido
-% do autor (o como fica no Capítulo II). Cópia anterior em
-% notas/rascunhos/antes_objetivos_risco_2026-10-29/.
+\citeonline{almeida2016}.
+% 2026-11-15: objetivos específicos retirados, a pedido do autor. Fica só o
+% objetivo geral. Não reintroduzir sem pedido. Cópia anterior em
+% ia/rascunhos/antes_tirar_objetivos_especificos_2026-11-15/.
 
 A pesquisa se justifica, em primeiro lugar, por retomar uma recomendação deixada
-em aberto em um estudo da própria instituição. Justifica-se, também, por levar à
-bolsa brasileira uma combinação de modelos que os estudos relacionados aplicaram
-a ações negociadas nos Estados Unidos \cite{xing2024,araya2024}. Os testes usaram
+em aberto em um estudo da própria instituição. Justifica-se, também, por usar
+em um robô de negociação na bolsa brasileira uma combinação de modelos que os
+estudos relacionados aplicaram à previsão, em ações negociadas nos Estados Unidos
+\cite{xing2024,araya2024} e no Brasil \cite{thomaz2019}. Os testes usaram
 o histórico oficial da B3 e atravessaram crises que atingiram a bolsa do país,
 como a de 2008 e a de 2020, de modo que os resultados podem servir de referência
 para outras pesquisas sobre esse mercado. Há, ainda, uma contribuição técnica.
@@ -107,23 +105,27 @@ reproduzido nos apêndices e pode ser reaproveitado em outros robôs e pesquisas
 feitos na mesma plataforma. Além
 disso, o controle de risco feito pelo GARCH é separado da previsão de direção, o
 que permite, em princípio, acoplá-lo a outras estratégias, possibilidade que
-este trabalho testou apenas com o ARIMA.
+este trabalho testou apenas com o ARIMA. A pesquisa é também viável com
+recursos gratuitos. O histórico de cotações da B3 e a taxa Selic do Banco Central
+são públicos, e a plataforma MetaTrader 5, o seu testador de estratégias e a
+biblioteca numérica que a acompanha podem ser usados sem custo.
 
-Quanto à natureza, a pesquisa é primária, por produzir conhecimento novo a partir
-da realização de experimentos, e se apoia no método empírico, que fundamenta as
-conclusões em observações \cite{wazlawick2021}. É também aplicada, por voltar
-esse conhecimento a um problema concreto de decisão. Quanto aos objetivos,
-é explicativa, quanto ao delineamento, é quase experimental, e a análise dos
-dados é quantitativa. Os algoritmos foram testados por simulação no MetaTrader 5,
-sobre o histórico oficial de preços da B3, conforme detalhado no Capítulo II.
+Quanto aos objetivos, a pesquisa é explicativa, e quanto ao delineamento, é
+quase experimental \cite{wazlawick2021}. A análise dos dados é quantitativa. Os
+algoritmos foram testados por simulação no MetaTrader 5, sobre o histórico
+oficial de preços da B3, conforme detalhado no Capítulo II.
+% 11/11/2026: só o que a norma pede para a caracterização (objetivos, delineamento
+% e natureza da análise). Saiu a natureza da pesquisa (primária, empírica,
+% aplicada), que a norma não pede. INCERTEZAS item 98.
 
 O trabalho está organizado em três capítulos, seguidos das considerações finais.
-O Capítulo I apresenta a fundamentação teórica, que parte do mercado de ações e da
-plataforma MetaTrader 5, passa pelas séries de preços, pelas médias móveis e pelos
-modelos ARIMA e GARCH, e encerra-se com as métricas de avaliação e os trabalhos
+O Capítulo I apresenta a fundamentação teórica, que parte do mercado de ações, passa pela
+plataforma MetaTrader 5, pelas médias móveis e pelos modelos estatísticos de séries
+temporais, o ARIMA e o GARCH, e encerra-se com as métricas de avaliação e os trabalhos
 relacionados. O
 Capítulo II descreve o percurso metodológico, isto é, a caracterização da
 pesquisa, a amostra, a coleta dos dados, a implementação dos
 modelos, o plano experimental e os obstáculos encontrados. O Capítulo III apresenta a análise e a
 discussão dos dados. As considerações finais respondem à questão norteadora,
-retomam as hipóteses e avaliam o cumprimento dos objetivos.
+retomam as hipóteses, avaliam o cumprimento dos objetivos e terminam com
+sugestões para trabalhos futuros.

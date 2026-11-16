@@ -2,7 +2,7 @@
 # Verificacao da maxima verossimilhanca do ARIMA (ferramentas/VerificarMV_EA.mq5):
 # (ferramentas/VerificarMV_EA.mq5). Roda no TESTADOR, como o
 # validar_garch_t.sh: o calculo e todo no OnInit, e script pelo [StartUp] nao
-# abre com o perfil de graficos cheio (notas/INCERTEZAS.md, item 54).
+# abre com o perfil de graficos cheio (ia/INCERTEZAS.md, item 54).
 # Uso: bash validar_mv.sh <arquivo_de_saida>
 source "$(dirname "$0")/comum.sh"
 A="$(cd "$(dirname "$0")/../.." && pwd)"

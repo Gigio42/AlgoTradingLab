@@ -1,7 +1,7 @@
 # Estudo das janelas fixas: ARIMA 240, GARCH 500 (26/10/2026)
 
 Pedido do autor em 26/10/2026, depois da crítica da orientadora sobre a janela do
-GARCH (`notas/INCERTEZAS.md`, item 78): refazer os testes com o ARIMA sempre em 240
+GARCH (`ia/INCERTEZAS.md`, item 78): refazer os testes com o ARIMA sempre em 240
 pregões e o GARCH sobre os 500 resíduos mais recentes, e montar **um PDF à parte**
 só com o Cap. III nessas condições. **O TG não foi alterado** (`tg/` intacto).
 

@@ -1,0 +1,33 @@
+================ VALIDACAO NUMERICA ================
+
+--- 1) TESTE ADF ---
+  Passeio aleatorio : stat= -1.4143  vc5= -2.8630  lags=1  -> estacionaria=nao  [ESPERADO: nao]
+  AR(1) phi=0.5     : stat=-26.8718  vc5= -2.8630  lags=0  -> estacionaria=SIM  [ESPERADO: SIM]
+  d(passeio), d=1   : stat=-46.1856  vc5= -2.8630  lags=0  -> estacionaria=SIM  [ESPERADO: SIM]
+
+--- 2) RECUPERACAO DE PARAMETROS ARMA(1,1) ---
+  Verdadeiro: phi1=0.600  theta1=0.400  c=0.000
+  Estimado  : phi1=0.5799  theta1=0.4105  c=0.0047  sigma2=0.9631 (verdadeiro 1.0)
+
+--- 2b) RECUPERACAO AR(2) (caminho q=0) ---
+  Verdadeiro: phi1=0.500  phi2=-0.300
+  Estimado  : phi1=0.4815  phi2=-0.2891  c=0.0065
+
+--- 3) RECUPERACAO DE PARAMETROS GARCH(1,1) ---
+  Verdadeiro: omega=0.00001000  alpha=0.0900  beta=0.8900  persist=0.9800
+  Estimado  : omega=0.00001174  alpha=0.0825  beta=0.8941  persist=0.9765
+  Vol prevista(h=1)=0.01778140 | Vol atual=0.01777908 | Vol longo prazo=0.02236851
+
+--- 4) PETR4_OFICIAL D1 (dados reais, B3 COTAHIST) ---
+  Ultima barra usada: 2026.09.18
+  Barras copiadas: 500
+  ADF log-preco  (d=0): stat= -0.9468 vc5= -2.8675 -> estacionaria=nao
+  ADF log-retorno(d=1): stat= -6.1396 vc5= -2.8675 -> estacionaria=SIM
+  ARIMA(1,1,1) c=0.00054430 phi1=0.139876 theta1=-0.076773 | sigma2=0.0002565149 logL=1352.181 AIC=-2696.363 BIC=-2679.520 n=498
+  Residuos validos: 498 | desvio-padrao=0.016032
+  Ljung-Box(10): Q=20.296 gl=8 p=0.0093 -> ruido branco=nao
+  GARCH(1,1) omega=0.0000736305 alpha1=0.126435 beta1=0.587799 | persist=0.714234 volLP=0.016052 logL=1359.525 AIC=-2713.050
+  >>> Vol diaria prevista = 0.016432  (= 1.643% ao dia)
+  Ljung-Box nos residuos padronizados^2: Q=5.078 p=0.7492 -> heterocedasticidade capturada=SIM
+
+================ FIM ================

@@ -1,7 +1,7 @@
 #!/bin/bash
 # janelas_240_500.sh <pasta_de_saida> [calibrar] [testar]
 #
-# Estudo de 26/10/2026 (notas/INCERTEZAS.md, item 78): o mesmo protocolo da
+# Estudo de 26/10/2026 (ia/INCERTEZAS.md, item 78): o mesmo protocolo da
 # refação de 05/10/2026, com duas mudanças de método:
 #   - ARIMA com janela fixa de 240 pregões (Janela_Estimacao sai da grade);
 #   - GARCH estimado sobre os 500 resíduos mais recentes (Janela_GARCH=500),
@@ -90,7 +90,7 @@ if [[ " $ETAPAS " == *" testar "* ]]; then
   echo "testar: inicio $(date '+%F %T')"
   B="$TRAB/in_240_500_base.txt"
   tr -d '\r' < "$A/dados/resultados/rodada3_b3_oficial/testes/in_r3_base.txt" | sed 's/^Janela_Estimacao=.*/Janela_Estimacao=240/' > "$B"
-  EA='ARIMA-GARCH\ARIMA_GARCH_EA'
+  EA='robos\ARIMA-GARCH\ARIMA_GARCH_EA'
   LOG="$OUT/testes/execucao.log"; : > "$LOG"
 
   for j in 1 2 3; do bash "$S/escolher.sh" "$OUT/calibracao/PETR4_C$j.csv" so_compra > "$OUT/escolhas/r3_C$j.txt"; done

@@ -1,0 +1,99 @@
+# Ferramentas: índice
+
+Programas de apoio. Nenhum deles faz parte do robô: servem para importar dados,
+rodar as baterias de testes, conferir o código e gerar o material do TG. O uso de
+cada script está no comentário do início do arquivo.
+
+Os scripts `.sh` rodam em **bash** (no zsh a separação de palavras não funciona e
+os testes rodam com parâmetros errados, sem erro). Os caminhos do MetaTrader
+ficam em `scripts/comum.sh`.
+
+## Programas MQL5 (`*.mq5`)
+
+| Arquivo | Para que serve |
+|---|---|
+| `Import_B3_Custom.mq5` | Importa os CSVs de `dados/series/` como símbolos personalizados (`PETR4_OFICIAL` etc.). |
+| `ExportarHistoricoCorretora.mq5` | Exporta o histórico diário da corretora, só para conferir contra a B3. |
+| `CompararModelos.mqh` / `.mq5` / `CompararModelosEA.mq5` | Teste pareado entre duas estratégias a partir das curvas diárias. A versão EA roda no testador, sem abrir gráfico. |
+| `ReplicaAlmeidaEA.mq5` | Porta do robô do anexo de Almeida (2016), para a segunda réplica. |
+| `ValidacaoAlgoLab.mq5` | Recuperação de parâmetros em séries artificiais e o pipeline completo na PETR4. |
+| `ValidarGarchT_EA.mq5` | Validação do GARCH com erros t de Student. |
+| `ValidarMVArima_EA.mq5`, `VerificarMV_EA.mq5` | Validação do ARIMA por máxima verossimilhança. |
+| `MetodosIlustrados.mq5` | Gera os dados dos gráficos que explicam os métodos (`apresentacao/graficos_metodos/`). |
+| `HannanRissanenDetalhado.mq5` | Gera os dados do relatório sobre o Hannan-Rissanen (`ia/relatorios/hannan-rissanen/`). |
+| `JanelaGarchSimulada.mq5` | O `CGarch` do EA em séries GARCH artificiais com janelas de 120 a 1000: precisão da estimativa e uma crise artificial (relatório `ia/relatorios/janela-garch/`). Roda por `janela_garch_simulada.sh` no prefixo antigo. |
+| `TestesFormulas.mq5` | Testes das funções do robô contra as fórmulas (identidades e simulações), para o relatório `ia/relatorios/testes-do-codigo/`. |
+
+## Scripts (`scripts/`)
+
+**Base, usada pelos outros**
+
+| Script | Para que serve |
+|---|---|
+| `comum.sh` | Caminhos do MetaTrader e da pasta de trabalho. |
+| `rodar.sh` | Um backtest. |
+| `otimizar.sh` | Uma otimização (grade). |
+| `importar.sh` | Importa séries como símbolos personalizados. |
+
+**Conferência do código**
+
+| Script | Para que serve |
+|---|---|
+| `regressao_codigo.sh` | Roda 13 casos e compara byte a byte com a execução anterior. Rodar depois de toda mudança que não deveria alterar resultado. |
+| `validar.sh` | Compila o `ValidacaoAlgoLab.mq5` no `~/.wine-mt5`, roda no prefixo em uso (perfil AlgoLab) e guarda a saída em `dados/verificacao/` (Tabela 2 do TG desde 06/11/2026). |
+| `validar_garch_t.sh`, `validar_mv.sh`, `verificar_mv.sh` | Rodam os validadores das opções experimentais. |
+| `medir_d0.sh` | Mede o efeito da correção do d = 0 (05/10/2026). |
+
+**Geração do material do TG**
+
+| Script | Para que serve |
+|---|---|
+| `codigo_apendice.sh`, `sem_comentarios.sh` | Geram as listagens dos Apêndices A, B e C a partir do código que roda (chamados pelo `tg/Makefile`). |
+| `citacoes_abnt.pl` | Ajusta as citações do `.bbl` para a caixa mista da NBR 6023:2025 (chamado pelo `Makefile` e pelo `.latexmkrc`). |
+| `checar_ilustracoes.sh` | Depois de mexer no texto: lista as ilustrações que caíram no alto de uma página cortando um parágrafo ao meio (12/11/2026). Sem saída = nenhum corte. |
+| `dados_cru.sh` | Gera os dados do Cap. III a partir da refação de 05/10/2026. |
+| `graficos_cru.sh` | Compila os gráficos de `tg/graficos/cru/`. |
+| `docx/converter.sh` (e os demais de `docx/`) | Gera a versão em Word, `tg/main.docx`, a partir do LaTeX, pelo pandoc 3.8+ (`make docx` em `tg/`). Numeração, citações e referências saem do `main.aux` e do `main.bbl`, iguais às do PDF. |
+| `metodos_ilustrados.sh` | Roda o `MetodosIlustrados.mq5` e guarda a saída em `dados/resultados/metodos_ilustrados_2026-10-30/`. |
+| `robo_em_acao.sh` | Resume o traço da refação de 05/10/2026 para as figuras 08 a 14 de `apresentacao/graficos_metodos/` (só lê arquivos). |
+| `modelo_completo.sh` | Roda o `ModeloCompleto.mq5` (refaz os pregões de 19 e 22/02/2021 com as funções do robô), guarda a saída em `dados/resultados/modelo_completo_2026-11-06/` e confere contra o traço. Dados dos relatórios `ia/relatorios/modelo-completo/` e `garch-funcionando/`. |
+| `outras_acoes_2017_2024.sh` | Grade de 624 (com venda a descoberto, sem intervalo de confiança) nas quatro ações em 2014–2016 e 2017–2024. Saída em `dados/resultados/outras_acoes_2017_2024_2026-11-10/`. |
+| `hannan_rissanen.sh` | Roda o `HannanRissanenDetalhado.mq5`, guarda a saída em `dados/resultados/hannan_rissanen_2026-10-30/` e confere os pregões reais contra o traço. |
+| `hannan_rissanen_exemplo.sh` | Tira dos arquivos do `hannan_rissanen.sh` os números das contas à mão da versão 2 do relatório (só lê arquivos). |
+| `otimizacao_teste.sh` | Junta, para as 312 configurações da PETR4, o resultado na otimização e no teste (pareados da refação de 05/10/2026) e grava em `dados/resultados/otimizacao_teste_2026-11-02/` os dados do relatório `ia/relatorios/otimizacao/` (só lê arquivos). |
+| `testes_formulas.sh` | Roda o `TestesFormulas.mq5` e guarda a saída em `dados/verificacao/testes_formulas_2026-10-30/`. |
+
+**Experimentos (rodam o testador)**, agrupados pela pasta de `dados/resultados/` onde gravam
+
+| Pasta de resultado | Scripts |
+|---|---|
+| `refeito_2026-10-05/` (vigente) | `refazer_calibracoes.sh`, `refazer_testes.sh`, `sensibilidade_longos.sh`, `camadas_proventos_b3.sh`, `outras_acoes_mm.sh` |
+| `replica_almeida_v2_2026-10-21/` | `series_replica_almeida.sh` (monta as séries), `replica_almeida_v2.sh`, `replica_almeida_v2b.sh`, `replica_almeida_v2c.sh`, `replica_almeida_v2d.sh` |
+| `garch_t_2026-10-13/` | `garch_t.sh` |
+| `bateria_2026-10-15/` | `bateria_2026_10_15.sh`, `exploratorio_estimacao.sh` |
+| `janelas_240_500_2026-10-26/` | `janelas_240_500.sh` |
+| `fatores_500_2026-10-27/` | `fatores_500.sh` |
+| `janela_garch_1000_2026-11-02/` | `serie_petr4_desde1999.sh` (monta a PETR4 oficial desde 1999), `janela_garch_1000.sh` |
+| `janelas_garch_2026-11-13/` | `janelas_garch.sh` (grade e traço por janela do GARCH), `janela_garch_simulada.sh` (laboratório, sem testador), `janelas_garch_dados.sh` (números e gráficos do relatório `ia/relatorios/janela-garch/`; só lê arquivos) |
+| `filtro_ajuste_500_2026-11-13/` | `filtro_ajuste_500.sh` (grades M/E e testes da PETR4; pula as janelas prontas, então retomar = mesmo comando), `filtro_ajuste_500_dados.sh` (números do relatório `ia/relatorios/filtro-ajuste-500-1000/`; só lê arquivos) |
+| `heterocedasticidade_2026-11-02/` | `heterocedasticidade.sh` (Gráfico 1 do Cap. I; só lê a série) |
+| `modelo_completo_2026-11-06/` | `modelo_completo.sh` (roda o `ModeloCompleto.mq5`; relatórios `modelo-completo` e `garch-funcionando`) |
+| `serie_exemplo_2026-11-13/` | `serie_exemplo.sh` (série de preços de exemplo, proposta em `ia/relatorios/serie-precos/`; só lê a série) |
+| `outras_acoes_2017_2024_2026-11-10/` | `outras_acoes_2017_2024.sh`, `parear.sh`, `analisar_grades.sh` (`SEM_IC=1 CAMADA=puro`), `outras_acoes.sh` (`RES=... K=4`) |
+| históricos (rodadas 4 a 6, cenário de Almeida, traço) | `bateria_ativos.sh`, `calib_2014_2016.sh`, `teste_2017_2024.sh`, `periodos_longos.sh`, `cenario_almeida.sh`, `gerar_traco.sh` |
+
+**Análise (só leem os CSVs, não rodam o testador)**
+
+| Script | Para que serve |
+|---|---|
+| `escolher.sh`, `escolher_rf.sh` | Aplicam o critério de escolha do protocolo a uma calibração. |
+| `parear.sh`, `analisar_grades.sh` | Juntam calibração × teste configuração a configuração e analisam a grade. |
+| `comparar.sh` | Teste pareado entre curvas (roda o `CompararModelosEA` no testador). |
+| `resumo_testes.sh`, `anual.sh`, `recorte_ano.sh` | Uma linha por teste; retorno por ano; retorno e queda dentro de um ano. |
+| `protecao.sh`, `seletividade.sh`, `resumo_volatilidade.sh` | Queda máxima, volatilidade e seletividade do GARCH contra a gêmea. |
+| `outras_acoes.sh` | Resultado das configurações escolhidas em VALE3, USIM5 e POMO4. |
+| `proventos_b3.sh` | Monta a série de proventos da PETR4 a partir da lista oficial da B3. |
+| `resumo_garch_t.sh`, `resumo_bateria.sh`, `resumo_exploratorio.sh` | Tabelas dos estudos à parte. |
+| `comparar_janelas.sh`, `efeito_janela_garch.sh`, `efeito_fatores.sh`, `estudo_janelas_dados.sh` | Análises dos estudos de 26 e 27/10/2026. |
+| `resumo_replica_almeida.sh`, `meses_replica_almeida.sh`, `saldo_mt5.sh` | Leem os relatórios `.htm` do testador (réplicas de Almeida). |
+| `traco_resumo.sh` | Resume o traço por barra num intervalo de datas. |

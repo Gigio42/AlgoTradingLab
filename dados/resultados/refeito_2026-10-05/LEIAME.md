@@ -4,7 +4,7 @@
 de demonstração (`../rodada3_b3_oficial`, `../rodada4_multiativos`,
 `../rodada5_periodos_longos`, `../rodada6_fora_amostra_2017_2024`,
 `../traco_demo_2019_2021`), que foram produzidos com o EA antes das correções de
-05/10 (`notas/INCERTEZAS.md`, itens 43 a 47). A réplica de Almeida
+05/10 (`ia/INCERTEZAS.md`, itens 43 a 47). A réplica de Almeida
 (`../replica_almeida_2026-09-28`) só usa médias móveis e continua valendo.
 
 Protocolo, escrito antes dos resultados: `PROTOCOLO.md`.
@@ -107,7 +107,7 @@ Arquivos novos, todos sobre os mesmos testes desta pasta (nada foi rodado de nov
 - `testes/comparacoes_risco.csv`: os pares de `testes/pares.txt` mais o cenário de
   Almeida contra as médias móveis reproduzidas (`testes/pares_risco.txt`), com cinco
   colunas novas, `vol_a`, `vol_b` e o teste de Pitman-Morgan (`r_pm`, `t_pm`,
-  `p_pm`), calculado em MQL5 (`CompararCurvas`, `Include/Desempenho.mqh`). As 12
+  `p_pm`), calculado em MQL5 (`CompararCurvas`, `robos/Include/Desempenho.mqh`). As 12
   colunas antigas saíram idênticas às de `comparacoes.csv` (conferido com `diff`).
   O t do Pitman-Morgan reproduziu o `protecao_pitman_morgan.txt` (awk exploratório).
 - `analise_grades.txt`, bloco 6: volatilidade pareada GARCH × gêmea nos 4 ativos.

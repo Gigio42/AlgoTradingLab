@@ -2,7 +2,7 @@
 # estudo_janelas_dados.sh
 #
 # Gera os dados do documento do estudo das janelas fixas 240/500 (26/10/2026,
-# notas/INCERTEZAS.md item 78), com os mesmos scripts do Cap. III do TG, depois
+# ia/INCERTEZAS.md item 78), com os mesmos scripts do Cap. III do TG, depois
 # de janelas_240_500.sh (calibrar e testar). Nada é simulado aqui.
 # Saída em dados/resultados/janelas_240_500_2026-10-26/:
 #   cru/                  dados_cru.sh, outras_acoes.sh, saldo_mt5.txt,

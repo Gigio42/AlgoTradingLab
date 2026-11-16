@@ -1,7 +1,7 @@
 # Rodada 6 (30/09/2026) — teste fora da amostra em 2017–2024
 
 > **SUPERADO em 06/10/2026** pela refação com o EA corrigido
-> (`../refeito_2026-10-05/LEIAME.md`; erros em `notas/INCERTEZAS.md`, itens 43 a
+> (`../refeito_2026-10-05/LEIAME.md`; erros em `ia/INCERTEZAS.md`, itens 43 a
 > 47). Os números desta pasta foram produzidos com o EA antigo e não vão para o TG.
 
 

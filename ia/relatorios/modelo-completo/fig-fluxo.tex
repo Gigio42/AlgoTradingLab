@@ -1,0 +1,55 @@
+% Os 496 pregões do traço (jul/2019 a jun/2021) passando pelo modelo: quantos o
+% ARIMA mandou para cada lado, quantos o GARCH vetou e o que o robô fez.
+% Contagens: dados/resultados/robo_em_acao_2026-10-30/valores.tex (\pR...),
+% recontadas a partir do dia_a_dia.csv em 06/11/2026 (240 + 56 + 64 + 136).
+\documentclass[border=6pt]{standalone}
+\input{comum}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\pgfmathsetmacro{\k}{16/\pRN}
+\pgfmathsetmacro{\xa}{\k*\pRCompras}                 % fim de "alta liberada"
+\pgfmathsetmacro{\xb}{\xa+\k*\pRVetoCompra}          % fim de "alta vetada" = fim da alta
+\pgfmathsetmacro{\xc}{\xb+\k*\pRVetoVenda}           % fim de "queda vetada"
+% faixa: \faixa{x0}{x1}{y}{cor}{texto}
+\newcommand{\seg}[5]{\fill[#4] (#1,#3) rectangle (#2,#3-0.8); \draw[white, line width=1pt] (#1,#3) rectangle (#2,#3-0.8);
+  \node[font=\footnotesize, align=center] at ({(#1+#2)/2},#3-0.4) {#5};}
+\newcommand{\fita}[4]{\fill[#4, opacity=0.35] (#1,#3) rectangle (#2,#3-0.55);}
+\newcommand{\rotulo}[3]{\node[anchor=east, font=\footnotesize\bfseries, align=right, text=#3] at (-0.25,#1-0.4) {#2};}
+
+\node[anchor=south west, font=\large\bfseries] at (-3.6,0.55) {O caminho de \pRN{} pregões pelo modelo (\vRInicio{} a \vRFim)};
+
+% linha 0
+\rotulo{0}{pregões}{black}
+\seg{0}{16}{0}{black!12}{\pRN{} pregões, um sinal novo a cada abertura}
+\fita{0}{\xb}{-0.8}{cmod!50}\fita{\xb}{16}{-0.8}{black!30}
+
+% linha 1: ARIMA
+\rotulo{-1.35}{ARIMA\\(direção)}{cmod}
+\seg{0}{\xb}{-1.35}{cmod!35}{previsão de alta: \pRComprasA}
+\seg{\xb}{16}{-1.35}{black!18}{previsão de queda: \pRVendasA}
+\fita{0}{\xa}{-2.15}{cok!60}\fita{\xa}{\xc}{-2.15}{cdes!60}\fita{\xc}{16}{-2.15}{black!30}
+
+% linha 2: GARCH
+\rotulo{-2.7}{GARCH\\(risco)}{cgar!85!black}
+\seg{0}{\xa}{-2.7}{cok!30}{liberada: \pRCompras}
+\seg{\xa}{\xb}{-2.7}{cdes!35}{vetada:\\\pRVetoCompra}
+\seg{\xb}{\xc}{-2.7}{cdes!35}{vetada:\\\pRVetoVenda}
+\seg{\xc}{16}{-2.7}{black!18}{sem veto: \pRVendas}
+\fita{0}{\xa}{-3.5}{cok!60}\fita{\xa}{16}{-3.5}{black!30}
+
+% linha 3: ação
+\rotulo{-4.05}{o robô}{black}
+\pgfmathtruncatemacro{\fora}{\pRN-\pRCompras}
+\seg{0}{\xa}{-4.05}{cok!45}{comprado: \pRCompras}
+\seg{\xa}{16}{-4.05}{black!25}{fora do mercado (zera a posição): \fora}
+
+% chaves de leitura
+\draw[decorate, decoration={brace, amplitude=5pt, mirror}, black!60] (\xa,-4.95) -- node[below=6pt, font=\footnotesize, align=center, text width=6.6cm]
+  {os \pRVetos{} vetos (\pRVetosPct\% dos pregões) tiram o robô do mercado nos dois sentidos} (\xc,-4.95);
+\node[anchor=north west, font=\footnotesize, align=left, text width=19.2cm] at (-3.6,-6.25) {Como ler: cada pregão
+  desce pelas linhas. O ARIMA decide o lado, o GARCH decide se o robô pode ficar exposto. O GARCH só retira: nenhum pregão
+  com previsão de queda vira compra, e a versão sem GARCH, com os mesmos sinais, ficaria comprada nos \pRComprasA{} de alta.
+  Como o robô só compra, previsão de queda e veto levam ao mesmo lugar, fora do mercado. As larguras são proporcionais
+  ao número de pregões. Configuração ARIMA-GARCH Sharpe (filtro, percentil 70, zera no veto), PETR4.};
+\end{tikzpicture}
+\end{document}

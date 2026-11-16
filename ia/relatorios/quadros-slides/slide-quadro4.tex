@@ -1,0 +1,22 @@
+% Versão de slide do Quadro 4 do TG (13/11/2026, pedido do autor). Fora do TG.
+% Linhas geradas por awk de dados/resultados/refeito_2026-10-05/escolhas/r3_C1..C3.txt
+% e r6_C4.txt (os mesmos do Quadro 4 completo do Cap. III). Só a forma de uso do GARCH:
+% janela, constante, previsão mínima e o índice ficam no TG.
+\input{preambulo-slide}
+\begin{document}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{3.4cm}|>{\raggedright\arraybackslash}p{7.4cm}|>{\raggedright\arraybackslash}p{7.4cm}|}
+\hline
+\rowcolor{cab}{\color{white}\bfseries Teste} & {\color{white}\bfseries ARIMA-GARCH Sharpe} & {\color{white}\bfseries ARIMA-GARCH Calmar} \\
+\hline
+2007 a 2011 & filtro + ajuste (alvo 1\%), percentil 90\newline sai do mercado no veto & a mesma do Sharpe \\
+\hline
+2013 a 2016 & filtro + ajuste (alvo 2\%), percentil 50\newline sai do mercado no veto & filtro + ajuste (alvo 1\%), percentil 50\newline sai do mercado no veto \\
+\hline
+2017 a 2024 & filtro, percentil 70\newline sai do mercado no veto & filtro + ajuste (alvo 1\%), percentil 50\newline mantém a posição no veto \\
+\hline
+2025 a 2026 & filtro, percentil 70\newline sai do mercado no veto & filtro + ajuste (alvo 1\%), percentil 70\newline sai do mercado no veto \\
+\hline
+\end{tabular}
+\par\smallskip
+{\small Percentil $P$: não opera quando a volatilidade prevista passa de $P$\% das estimadas na janela.}
+\end{document}

@@ -1,0 +1,46 @@
+=== 1. REFERENCIAS NO TESTE (camada 3) ===
+ativo periodo   selic%    b&h%  dd_bh%  sharpe_bh
+PETR4 T4         86.1   143.6   64.2    0.31
+VALE3 T4         86.1   116.5   55.4    0.24
+USIM5 T4         86.1    29.0   77.7    0.16
+POMO4 T4         86.1   223.2   61.7    0.38
+
+=== 2. EFEITO PAREADO DO GARCH (com GARCH - gemea) ===
+ativo periodo  reduz    n    dDD  reduziu_DD     dSR  melhorou_SR    dRet
+PETR4 T4        sim  512  -0.256      0.918    0.142       0.689    0.379
+PETR4 T4        nao   96  -0.043      0.625    0.198       0.740    0.340
+VALE3 T4        sim  512  -0.075      0.809   -0.052       0.342   -0.050
+VALE3 T4        nao   96  -0.029      0.698    0.006       0.562   -0.002
+USIM5 T4        sim  512  -0.205      0.922   -0.052       0.400    0.196
+USIM5 T4        nao   96   0.014      0.417    0.039       0.573   -0.001
+POMO4 T4        sim  512  -0.190      0.865   -0.057       0.406    0.146
+POMO4 T4        nao   96   0.007      0.469    0.056       0.604    0.065
+
+=== 3. VENDA A DESCOBERTO (long-short - so compra, mesma configuracao) ===
+ativo periodo    n    dRet  melhorou_ret     dSR  melhorou_SR     dDD
+PETR4 T4       312  -0.559         0.019  -0.375        0.000   0.181
+VALE3 T4       312  -0.274         0.090  -0.220        0.112   0.106
+USIM5 T4       312  -0.334         0.016  -0.348        0.045   0.188
+POMO4 T4       312  -0.595         0.010  -0.556        0.016   0.263
+
+=== 4. RUINA NO TESTE (ret_selic <= -99%) ===
+T4 so_compra=0  14 de 1248 (1.1%)
+T4 so_compra=1  0 de 1248 (0.0%)
+
+=== 5. PERSISTENCIA CALIBRACAO -> TESTE (Spearman) ===
+ativo periodo   n_so  Sharpe  Calmar |  n_todas  Sharpe  Calmar
+PETR4 T4         312   -0.06    0.37 |      624    0.10    0.42
+VALE3 T4         312    0.24   -0.04 |      624    0.10    0.25
+USIM5 T4         312   -0.02    0.54 |      624   -0.33    0.32
+POMO4 T4         312    0.22    0.55 |      624    0.03    0.45
+
+=== 6. VOLATILIDADE PAREADA (com GARCH - gemea; acrescentado em 13/10/2026) ===
+ativo periodo  reduz    n    dVol  reduziu_vol
+PETR4 T4        sim  512  -0.156        0.971
+PETR4 T4        nao   96   0.004        0.427
+VALE3 T4        sim  512  -0.047        0.945
+VALE3 T4        nao   96  -0.008        0.667
+USIM5 T4        sim  512  -0.187        0.969
+USIM5 T4        nao   96   0.012        0.292
+POMO4 T4        sim  512  -0.146        0.953
+POMO4 T4        nao   96   0.006        0.396

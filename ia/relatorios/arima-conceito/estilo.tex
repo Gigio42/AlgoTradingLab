@@ -1,0 +1,19 @@
+% Estilo comum às propostas (o mesmo da Figura 4 atual, tg/figuras/fig05-fluxo-arima.tex)
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathptmx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,shapes.geometric,decorations.pathreplacing}
+\tikzset{
+  seta/.style={-{Stealth[length=2.2mm]}, semithick},
+  caixa/.style={rectangle, draw, semithick, fill=gray!10, rounded corners=2pt,
+                align=center, minimum width=58mm, minimum height=9mm, font=\small},
+  caixap/.style={caixa, minimum width=32mm},
+  decisao/.style={diamond, draw, semithick, fill=white, aspect=2.6, align=center,
+                  inner sep=1pt, font=\small},
+  dado/.style={trapezium, trapezium left angle=75, trapezium right angle=105, draw,
+               semithick, fill=white, align=center, minimum height=9mm, font=\small,
+               trapezium stretches body},
+  rotulo/.style={font=\footnotesize\itshape, align=center},
+  exemplo/.style={font=\footnotesize, text=gray!70!black, align=left},
+}

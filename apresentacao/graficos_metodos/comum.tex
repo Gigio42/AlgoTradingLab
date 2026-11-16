@@ -1,0 +1,42 @@
+% Preâmbulo comum dos gráficos que explicam os métodos (30/10/2026).
+% Dados e números: dados/resultados/metodos_ilustrados_2026-10-30/, gerados por
+% ferramentas/MetodosIlustrados.mq5 com as funções do próprio robô. Nenhum
+% número é digitado aqui: os do texto vêm de valores.tex (\vX para o texto,
+% \pX para coordenada).
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{mathptmx}  % Times, como as figuras do TG
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots,dateplot,colormaps,fillbetween}
+\usetikzlibrary{arrows.meta,positioning}
+\pgfplotsset{compat=1.18}
+\definecolor{cmod}{RGB}{0,90,181}     % modelo / ajuste
+\definecolor{cdes}{RGB}{220,50,32}    % destaque, limite, valor crítico
+\definecolor{cdad}{RGB}{120,120,120}  % dado observado
+\newcommand{\arq}[1]{../../dados/resultados/metodos_ilustrados_2026-10-30/#1}
+\input{\arq{valores.tex}}
+% Figuras 08 a 14 (o robô operando): traço por barra da refação de 05/10/2026,
+% resumido por ferramentas/scripts/robo_em_acao.sh. Macros \vR e \pR.
+\newcommand{\arqr}[1]{../../dados/resultados/robo_em_acao_2026-10-30/#1}
+\input{\arqr{valores.tex}}
+\definecolor{cari}{RGB}{230,140,0}   % ARIMA puro
+\definecolor{cok}{RGB}{0,140,70}     % compra liberada
+\usetikzlibrary{shapes.misc}
+\newcommand{\passo}[1]{\tikz[baseline=(n.base)]\node[circle,fill=black!75,text=white,inner sep=1pt,font=\footnotesize\bfseries](n){#1};}
+% eixo de datas comum às figuras do traço (jul/2019 a jun/2021)
+\pgfplotsset{traco/.style={date coordinates in=x, xmin=2019-07-01, xmax=2021-06-30,
+    xtick={2019-07-01,2020-01-01,2020-07-01,2021-01-01,2021-06-30},
+    xticklabels={jul/2019,jan/2020,jul/2020,jan/2021,jun/2021}}}
+\pgfplotsset{
+  base/.style={table/col sep=comma, grid=major, grid style={gray!20},
+    tick label style={font=\small}, label style={font=\small},
+    title style={font=\small\bfseries, align=center},
+    every axis plot/.append style={line width=0.9pt},
+    /pgf/number format/use comma, /pgf/number format/1000 sep={.}},
+}
+% faixa vertical nos pregões do traço em que a condição #1 vale, na cor #2,
+% do piso #3 ao teto #4 do eixo
+\newcommand{\faixa}[4]{%
+  \addplot[name path=topo, draw=none, const plot, forget plot] table[x=data, y expr={(#1) ? #4 : #3}]{\arqr{dia_a_dia.csv}};
+  \addplot[name path=piso, draw=none, forget plot] coordinates {(2019-07-01,#3) (2021-06-30,#3)};
+  \addplot[#2, forget plot] fill between[of=topo and piso];}

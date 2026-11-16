@@ -1,0 +1,33 @@
+% MQO: a reta de mínimos quadrados de um AR(1) no log-retorno da PETR4
+% (o caminho q = 0 do CArima, que é uma regressão só) e a soma dos quadrados
+% dos resíduos para cada coeficiente, com o mínimo no estimado.
+\documentclass[border=4pt]{standalone}
+\input{comum}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[base, group style={group size=2 by 1, horizontal sep=1.9cm},
+  width=7.6cm, height=6.4cm]
+\nextgroupplot[title={Cada ponto é um pregão:\\retorno de ontem $\times$ retorno de hoje},
+  xlabel={Retorno de ontem, $r_{t-1}$ (\%)}, ylabel={Retorno de hoje, $r_t$ (\%)},
+  xmin=-8, xmax=8, ymin=-8, ymax=8]
+\addplot[cdad!45, line width=0.3pt, quiver={u=0, v=\thisrow{ajuste}-\thisrow{y}, every arrow/.append style={-}}]
+  table[x=x, y=y]{\arq{mqo_dispersao.csv}};
+\addplot[only marks, mark=*, mark size=0.9pt, cdad, fill opacity=0.6, draw opacity=0.6]
+  table[x=x, y=y]{\arq{mqo_dispersao.csv}};
+\addplot[cmod, line width=1.6pt, domain=-8:8, samples=2] {\pMqoC + \pMqoPhi*x};
+\node[anchor=north west, font=\small, fill=white, fill opacity=0.85, text opacity=1, align=left]
+  at (rel axis cs:0.02,0.98)
+  {$\hat r_t = \vMqoC + \vMqoPhi\, r_{t-1}$\\[1pt]
+   {\color{cdad}traços: os resíduos $r_t - \hat r_t$}};
+\nextgroupplot[title={O MQO escolhe o coeficiente que\\minimiza a soma dos quadrados},
+  xlabel={Coeficiente $\phi$ testado}, ylabel={Soma dos quadrados dos resíduos (\%$^2$)},
+  xmin=-0.5, xmax=0.5, xtick={-0.4,-0.2,0,0.2,0.4},
+  /pgf/number format/fixed]
+\addplot[cmod, line width=1.4pt] table[x=phi, y=sqr]{\arq{mqo_perfil.csv}};
+\draw[cdes, dashed, line width=0.9pt] (axis cs:\pMqoPhi,\pgfkeysvalueof{/pgfplots/ymin}) -- (axis cs:\pMqoPhi,\pMqoSQR);
+\addplot[only marks, mark=*, mark size=2.6pt, cdes] coordinates {(\pMqoPhi,\pMqoSQR)};
+\node[anchor=south, font=\small, align=center, text=cdes] at (axis cs:\pMqoPhi,\pMqoSQR)
+  {mínimo\\$\hat\phi = \vMqoPhi$};
+\end{groupplot}
+\end{tikzpicture}
+\end{document}

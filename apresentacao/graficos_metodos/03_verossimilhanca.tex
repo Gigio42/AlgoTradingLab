@@ -1,0 +1,32 @@
+% Verossimilhança do GARCH(1,1): num dia (o de maior resíduo da janela) e em
+% todos os dias. O GARCH escolhe omega, alfa e beta que tornam a soma dos
+% log f(resíduo | sigma_t) a maior possível. Números em valores.tex.
+\documentclass[border=4pt]{standalone}
+\input{comum}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[base, group style={group size=2 by 1, horizontal sep=1.7cm}, height=6.2cm]
+\nextgroupplot[width=7.2cm, title={Um dia (\vDiaMax): com que $\sigma$\\o resíduo fica mais provável?},
+  xlabel={Resíduo (\%)}, ylabel={$\log f$ (log da densidade normal)}, xmin=-10, xmax=10, ymin=-16, ymax=1,
+  legend style={font=\footnotesize, at={(0.5,0.03)}, anchor=south, cells={anchor=west}}]
+\addplot[cdad, dashed, line width=1.2pt] table[x=x, y expr=ln(\thisrow{amostral})]{\arq{gv_densidade.csv}};
+\addplot[cmod, line width=1.4pt] table[x=x, y expr=ln(\thisrow{garch})]{\arq{gv_densidade.csv}};
+\legend{$\sigma$ fixo $= \vGSigAm\%$, $\sigma_t$ do GARCH naquele dia $= \vSigT\%$}
+\draw[cdes, line width=0.8pt, densely dotted] (axis cs:\pEpsMax,-16) -- (axis cs:\pEpsMax,1);
+\addplot[only marks, mark=*, mark size=2.4pt, cdad] coordinates {(\pEpsMax,\pLogDensAm)};
+\addplot[only marks, mark=*, mark size=2.4pt, cmod] coordinates {(\pEpsMax,\pLogDensT)};
+\node[font=\footnotesize, anchor=west, text=cdad] at (axis cs:\pEpsMax,\pLogDensAm) {\ $\vLogDensAm$};
+\node[font=\footnotesize, anchor=west, text=cmod] at (axis cs:\pEpsMax,\pLogDensT) {\ $\vLogDensT$};
+\node[font=\footnotesize, anchor=north west, text=cdes, align=left] at (axis cs:\pEpsMax,0.6) {resíduo do dia: $\vEpsMax\%$};
+\nextgroupplot[width=9.4cm, title={Todos os dias: $\sigma_t$ acompanha os períodos agitados\\$\log L = \sum_t \log f(\hat\varepsilon_t \mid \sigma_t) = \vGLogL$},
+  date coordinates in=x, xticklabel={\month/\year}, ylabel={\%}, ymin=-8, ymax=8,
+  xtick={2024-10-01,2025-04-01,2025-10-01,2026-04-01},
+  legend style={font=\footnotesize, at={(0.5,-0.2)}, anchor=north, legend columns=2, draw=none, column sep=6pt}]
+\addplot[name path=sup, cmod!60, line width=0.6pt, forget plot] table[x=data, y expr=2*\thisrow{sigma}]{\arq{gv_volatilidade.csv}};
+\addplot[name path=inf, cmod!60, line width=0.6pt, forget plot] table[x=data, y expr=-2*\thisrow{sigma}]{\arq{gv_volatilidade.csv}};
+\addplot[cmod!20, area legend] fill between[of=sup and inf];
+\addplot[cdad, line width=0.5pt] table[x=data, y=residuo]{\arq{gv_volatilidade.csv}};
+\legend{faixa $\pm 2\sigma_t$ do GARCH, resíduo do ARIMA $\hat\varepsilon_t$}
+\end{groupplot}
+\end{tikzpicture}
+\end{document}

@@ -73,7 +73,7 @@ série são eventos reais (09/03/2020, −29,7%, COVID-19; 22/02/2021, −21,5%)
 guardada em `fontes/b3/proventos_PETR_api_b3.json`) só traz os proventos dos
 últimos ~2 anos. Nos 4 eventos da PN em comum, 3 valores são idênticos e 1
 difere em 0,9% (data-com 22/12/2025: B3 R$ 0,9432; Yahoo R$ 0,9521). Limitações
-em `notas/INCERTEZAS.md`.
+em `ia/INCERTEZAS.md`.
 
 Uso: só na camada 4 da avaliação (`Desempenho.mqh`). **Os modelos não veem
 proventos**, e a escolha de parâmetros não os usa.
@@ -267,8 +267,8 @@ conferência.
 ## 10. Referências bibliográficas (28/09/2026)
 
 A busca de literatura, suas fontes (OpenAlex, BDTD/IBICT, Crossref, Unpaywall),
-as consultas usadas e o critério de seleção estão em `../bibliografia/BUSCA.md`.
-O arquivo `../bibliografia/candidatos.bib` traz as 43 referências conferidas.
+as consultas usadas e o critério de seleção estão em `../ia/bibliografia/BUSCA.md`.
+O arquivo `../ia/bibliografia/candidatos.bib` traz as 43 referências conferidas.
 
 ## 10. Normas e documentos oficiais da FATEC-ID
 
@@ -356,7 +356,7 @@ Observações:
 
 Pedido do autor: explicar os índices com a documentação do MetaTrader 5 e com
 os próprios autores. Texto no Cap. II (2.3.2). As fórmulas seguem o código
-(`Include/Desempenho.mqh`: Sharpe = média do excesso diário sobre a Selic /
+(`robos/Include/Desempenho.mqh`: Sharpe = média do excesso diário sobre a Selic /
 desvio-padrão × √252; Calmar = retorno anualizado da camada 3 / queda máxima).
 
 | Chave `.bib` | Fonte | Usado para | Cópia (sha256, início) |
@@ -397,7 +397,7 @@ Pedido do autor: testar outras séries para tentar chegar aos números de Almeid
   2,0 (01/04/2014), 1,2 (13/04/2015) e 1,15 (11/04/2016). São as razões
   redondas mais próximas do salto entre o fechamento anterior e a abertura da
   data-ex. **Não há fonte oficial**: a API da B3 só traz os eventos de 2024 e o
-  Yahoo não tem mais a CIEL3 (deslistada em 2024). Ver `notas/INCERTEZAS.md`.
+  Yahoo não tem mais a CIEL3 (deslistada em 2024). Ver `ia/INCERTEZAS.md`.
 - `series/PETR4_DESDE2008.csv`: `PETR4_OFICIAL` a partir de 02/01/2008. Não é
   dado novo. Serve para testar a hipótese de o histórico do servidor de Almeida
   começar em 2008.
@@ -446,7 +446,7 @@ cópia do Internet Archive de 08/05/2016
 o site original recusou conexão). sha256 `8fae3e76c881152e8e3956e06156a8311c44b1e68d1f6f6761d14d82f2027614`,
 arquivos com data de 05/01/2013. Licença Creative Commons BY-NC 3.0 (no
 cabeçalho de cada arquivo). **Não versionado** (obra de terceiro; só lido, fora
-do repositório). O que se conferiu está em `notas/INCERTEZAS.md`, item 74.
+do repositório). O que se conferiu está em `ia/INCERTEZAS.md`, item 74.
 
 **Percentual de ajuste publicado pela B3** (conferido em 21/10/2026): cada
 provento da API traz `closingPricePriorExDate` (fechamento na data-com) e
@@ -457,3 +457,53 @@ máxima 0,000000 p.p.), e o fechamento informado pela B3 é igual ao do COTAHIST
 nos 41 (dividido por 2 antes do desdobramento de 28/04/2008). Ou seja, o fator
 `1 − provento ÷ fechamento da data-com` das séries `*_PROVB3` é o percentual
 publicado pela própria B3. A API traz a PETR4 PN desde 21/03/1996.
+
+## 14. PETR4 de 1999 a 2002 — B3 (COTAHIST), série estendida (02/11/2026)
+
+Pedido do autor em 02/11/2026: o estudo do GARCH com 1000 resíduos
+(`resultados/janela_garch_1000_2026-11-02/`) precisa de 1000 pregões antes de
+02/01/2004 para refazer a otimização de 2004–2006, e o `PETR4_OFICIAL` começa em
+02/01/2003. O autor escolheu estender a série oficial (não trocar de fonte).
+
+| | |
+|---|---|
+| Fonte | B3, Série Histórica de Cotações (a mesma do item 1) |
+| URL | `https://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_A<ano>.ZIP`, anos 1998 a 2002 |
+| Obtido em | 02/11/2026, 03:24:47 a 03:24:49 |
+| Integridade | SHA-256 dos cinco ZIPs acrescentado a `fontes/b3/COTAHIST_sha256.txt` |
+| Arquivo guardado | `fontes/b3/PETR4_linhas_COTAHIST_1998_2002.txt`: as 1.185 linhas originais da PETR4, ordenadas por data e sem nenhuma outra alteração (o ano de 1998 começa em março; os ZIPs não foram versionados) |
+
+**Filtro**: o mesmo do item 1 (registro `01`, BDI `02`, `PETR4`, mercado `010`).
+
+**Diferenças em relação a 2003–2026:**
+- **Fator de cotação** (campo 211–217) = 1000 até 21/06/2000 e 1 a partir de
+  23/06/2000: até ali o preço era por lote de mil ações.
+- **Grupamento de 2000**: a API da B3 (`fontes/b3/proventos_PETR_api_b3.json`)
+  traz "GRUPAMENTO" da PN (`BRPETRACNPR6`), fator 0,01, último dia "com"
+  21/06/2000. Antes de 23/06/2000: preço × 100 e quantidade ÷ 100. Somado ao
+  fator de cotação, o preço por ação fica contínuo na junção (fechamento de
+  21/06/2000 6,44 e de 23/06/2000 6,44 na série corrigida).
+- Desdobramentos de 2005 e 2008 iguais aos do item 2.
+
+**Transformação**: `ferramentas/scripts/serie_petr4_desde1999.sh` (as regras
+estão no cabeçalho do script). **Conferência do script**: rodado sobre
+`fontes/b3/PETR4_linhas_COTAHIST_2003_2026.txt`, reproduz
+`series/PETR4_OFICIAL.csv` byte a byte (5.881 linhas).
+
+**Série**: `series/PETR4_DESDE1999.csv` → símbolo `PETR4_DESDE1999` (pasta
+`MQL5/Files/B3_Desde1999/`, importado com `importar_desde1999.set`). São os 988
+pregões de 04/01/1999 a 30/12/2002 seguidos do `PETR4_OFICIAL.csv` sem
+alteração (6.869 linhas; a partir de 02/01/2003 os dois arquivos são idênticos,
+conferido com `cmp`). Sem data duplicada e sem barra inconsistente. A junção de
+2002 para 2003 é contínua (30/12/2002 5,80; 02/01/2003 5,82). As únicas
+variações diárias acima de 15% antes de 2003 são 14/01/1999 (−18,7%) e
+15/01/1999 (+20,2%), a semana da desvalorização do real.
+
+**Arredondamento**: em 1999 o fechamento corrigido fica abaixo de R$ 3 em 73
+pregões (mínimo 1,09 em 14/01/1999), e o arredondamento a 2 casas chega a 0,46%
+do preço. A partir de 2000 o fechamento mínimo é 4,39. Os 1000 pregões que
+antecedem 02/01/2004 começam em 21/12/1999, então os modelos não usam os dias
+de 1999 abaixo de R$ 3; eles só entram no aquecimento do testador.
+
+**O que não foi conferido**: não há segunda fonte para 1999–2002 (o Yahoo e a
+corretora não foram consultados); a série vale como o COTAHIST a publica.

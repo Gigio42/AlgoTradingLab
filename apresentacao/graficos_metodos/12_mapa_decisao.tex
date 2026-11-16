@@ -1,0 +1,38 @@
+% O mapa da decisão: cada pregão do traço posicionado pela previsão do ARIMA
+% (direção, eixo horizontal) e pela volatilidade prevista do GARCH dividida pelo
+% limiar (risco, eixo vertical). A cor é a decisão que o robô de fato registrou.
+\documentclass[border=6pt]{standalone}
+\input{comum}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[base, name=mapa, width=12cm, height=9cm, xmin=-5, xmax=5, ymin=0.4, ymax=15, ymode=log,
+  log ticks with fixed point, ytick={0.5,1,2,4,8}, yticklabels={0{,}5,1,2,4,8},
+  xlabel={\passo{A} ARIMA: retorno previsto para o dia (\%) $\;\Rightarrow\;$ direção},
+  ylabel={\passo{G} GARCH: $\sigma$ prevista $\div$ limiar $\;\Rightarrow\;$ risco},
+  title={Cada ponto é um pregão (\vRInicio{} a \vRFim)}, clip=true]
+\fill[cdes!10] (axis cs:-5,1) rectangle (axis cs:5,15);
+\fill[cok!12] (axis cs:0,0.4) rectangle (axis cs:5,1);
+\fill[black!7] (axis cs:-5,0.4) rectangle (axis cs:0,1);
+\draw[black!70, line width=1pt] (axis cs:-5,1) -- (axis cs:5,1);
+\draw[black!70, line width=1pt] (axis cs:0,0.4) -- (axis cs:0,1);
+\draw[black!30, dashed] (axis cs:0,1) -- (axis cs:0,15);
+\addplot[only marks, mark=*, mark size=1.3pt, cok, opacity=0.75] table[x=prev, y=razao]{\arqr{decisao_compra.csv}};
+\addplot[only marks, mark=*, mark size=1.3pt, black!55, opacity=0.75] table[x=prev, y=razao]{\arqr{decisao_venda.csv}};
+\addplot[only marks, mark=*, mark size=1.3pt, cdes, opacity=0.75] table[x=prev, y=razao]{\arqr{decisao_vetada.csv}};
+\node[cdes, font=\small\bfseries, align=center, fill=white, fill opacity=0.8, text opacity=1] at (axis cs:-3.2,9)
+  {VETADA (\vRVetos)\\[-1pt]\normalfont\footnotesize não compra e zera a posição};
+\node[cok!70!black, font=\small\bfseries, align=center, fill=white, fill opacity=0.8, text opacity=1] at (axis cs:3,0.5)
+  {COMPRA (\vRCompras)\\[-1pt]\normalfont\footnotesize compra, ou mantém a compra};
+\node[black!70, font=\small\bfseries, align=center, fill=white, fill opacity=0.8, text opacity=1] at (axis cs:-3,0.5)
+  {VENDA (\vRVendas)\\[-1pt]\normalfont\footnotesize o robô só compra: zera a compra};
+\node[font=\footnotesize, anchor=south east, black!70] at (axis cs:4.95,1) {$\sigma$ prevista $=$ limiar};
+\end{axis}
+\node[font=\footnotesize, text=black!75, align=left, anchor=north west, text width=11cm]
+  at ([yshift=-0.2cm]mapa.outer south west) {Como ler: o ARIMA decide a direção (esquerda ou direita da linha vertical) e o
+  GARCH decide se o risco permite operar (abaixo ou acima da linha horizontal). O GARCH nunca muda a direção, só veta.
+  Sem o GARCH, os \vRVetoCompra{} pontos vermelhos à direita seriam compras e os \vRVetoVenda{} à esquerda seriam vendas
+  (o ARIMA puro teve \vRComprasA{} sinais de compra e \vRVendasA{} de venda). Conferência: a regra
+  ``veta se $\sigma$ prevista $>$ limiar'', refeita a partir das colunas do traço, coincide com o veto registrado pelo robô
+  nos \vRN{} pregões (\vRIncoerentes{} diferenças).};
+\end{tikzpicture}
+\end{document}

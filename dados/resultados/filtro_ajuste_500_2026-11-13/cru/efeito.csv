@@ -1,0 +1,11 @@
+versao,grupo,n,dd_menor,vol_menor,ret_maior
+TG,principais,8,8,8,3
+TG,adicionais,4,4,4,4
+M500,principais,8,5,6,3
+M500,adicionais,4,3,3,3
+E500,principais,8,7,7,5
+E500,adicionais,4,4,4,3
+M1000,principais,8,5,6,5
+M1000,adicionais,4,4,4,4
+E1000,principais,8,8,8,5
+E1000,adicionais,4,4,4,2

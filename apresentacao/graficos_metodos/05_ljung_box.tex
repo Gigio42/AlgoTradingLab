@@ -1,0 +1,49 @@
+% Ljung-Box (TesteLjungBox do robô, 10 defasagens, 2 parâmetros ARMA, como na
+% validação numérica): autocorrelação dos resíduos do ARIMA(1,1,1), dos seus
+% quadrados e dos quadrados padronizados pelo GARCH; embaixo, como a
+% estatística Q se acumula defasagem a defasagem até o valor crítico.
+\documentclass[border=4pt]{standalone}
+\input{comum}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[base, group style={group size=3 by 2, horizontal sep=1.1cm, vertical sep=2.2cm,
+    ylabels at=edge left},
+  width=6.1cm, height=4.6cm]
+% linha 1: autocorrelação
+\nextgroupplot[title={Resíduos do ARIMA $\hat\varepsilon_t$}, ybar, bar width=3pt,
+  xmin=0, xmax=21, ymin=-0.2, ymax=0.2, ylabel={Autocorrelação $\rho_k$}, xlabel={Defasagem $k$},
+  /pgf/number format/fixed]
+\addplot[fill=cdad, draw=none] table[x=k, y=residuo]{\arq{lb_acf.csv}};
+\draw[cdes, dashed] (axis cs:0,\pLbBanda) -- (axis cs:21,\pLbBanda);
+\draw[cdes, dashed] (axis cs:0,-\pLbBanda) -- (axis cs:21,-\pLbBanda);
+\nextgroupplot[title={Quadrados $\hat\varepsilon_t^2$ (antes do GARCH)}, ybar, bar width=3pt,
+  xmin=0, xmax=21, ymin=-0.2, ymax=0.2, xlabel={Defasagem $k$}, /pgf/number format/fixed]
+\addplot[fill=cdad, draw=none] table[x=k, y=quadrado]{\arq{lb_acf.csv}};
+\draw[cdes, dashed] (axis cs:0,\pLbBanda) -- (axis cs:21,\pLbBanda);
+\draw[cdes, dashed] (axis cs:0,-\pLbBanda) -- (axis cs:21,-\pLbBanda);
+\nextgroupplot[title={Padronizados $(\hat\varepsilon_t/\sigma_t)^2$ (depois)}, ybar, bar width=3pt,
+  xmin=0, xmax=21, ymin=-0.2, ymax=0.2, xlabel={Defasagem $k$}, /pgf/number format/fixed]
+\addplot[fill=cmod, draw=none] table[x=k, y=padronizado_quadrado]{\arq{lb_acf.csv}};
+\draw[cdes, dashed] (axis cs:0,\pLbBanda) -- (axis cs:21,\pLbBanda);
+\draw[cdes, dashed] (axis cs:0,-\pLbBanda) -- (axis cs:21,-\pLbBanda);
+% linha 2: Q acumulado
+\nextgroupplot[xmin=0.5, xmax=10.5, ymin=0, ymax=32, xtick={1,...,10}, ylabel={$Q$ acumulado},
+  xlabel={Até a defasagem $k$}, title={$Q = \vLbQe$, $p = \vLbPe$:\\sobra autocorrelação}]
+\addplot[cmod!60!black, mark=*, mark size=1.5pt] table[x=k, y=residuo]{\arq{lb_parcelas.csv}};
+\draw[cdes, dashed, line width=1pt] (axis cs:0.5,\pLbCrit) -- (axis cs:10.5,\pLbCrit);
+\nextgroupplot[xmin=0.5, xmax=10.5, ymin=0, ymax=32, xtick={1,...,10},
+  xlabel={Até a defasagem $k$}, title={$Q = \vLbQeq$, $p = \vLbPeq$:\\a volatilidade se agrupa}]
+\addplot[cmod!60!black, mark=*, mark size=1.5pt] table[x=k, y=quadrado]{\arq{lb_parcelas.csv}};
+\draw[cdes, dashed, line width=1pt] (axis cs:0.5,\pLbCrit) -- (axis cs:10.5,\pLbCrit);
+\nextgroupplot[xmin=0.5, xmax=10.5, ymin=0, ymax=32, xtick={1,...,10},
+  xlabel={Até a defasagem $k$}, title={$Q = \vLbQzq$, $p = \vLbPzq$:\\o GARCH capturou o agrupamento}]
+\addplot[cmod, mark=*, mark size=1.5pt] table[x=k, y=padronizado_quadrado]{\arq{lb_parcelas.csv}};
+\draw[cdes, dashed, line width=1pt] (axis cs:0.5,\pLbCrit) -- (axis cs:10.5,\pLbCrit);
+\node[cdes, font=\footnotesize, anchor=south east] at (axis cs:10.4,\pLbCrit) {valor crítico em $k = 10$: $\vLbCrit$};
+\end{groupplot}
+\node[font=\footnotesize, align=center, text=black!75] at ([yshift=-1.45cm]group c2r2.south)
+  {Em cima, o tracejado é a faixa de ruído $\pm 1{,}96/\sqrt{n} = \pm\vLbBanda$.
+   Embaixo, $Q = n(n+2)\sum_{k=1}^{10} \rho_k^2/(n-k)$ soma as barras de cima ao quadrado;\\
+   passar do tracejado ($\chi^2$ com $\vLbGl$ graus de liberdade, 5\%) quer dizer que sobrou autocorrelação.};
+\end{tikzpicture}
+\end{document}

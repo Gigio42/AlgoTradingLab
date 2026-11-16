@@ -1,0 +1,127 @@
+Conferências (2026-11-15 04:26:34)
+
+1. Passagens por otimização (esperado 52; 500: 64 otimizações, 1000: 52):
+   janela 1000: 52 otimizações com 52 passagens
+   janela 500: 64 otimizações com 52 passagens
+
+2. Sub-grade sem GARCH idêntica em M500, E500, M1000 e E1000 (mesma ação e janela):
+   PETR4_C1.csv: igual nas 4 versões
+   PETR4_C2.csv: igual nas 4 versões
+   PETR4_C3.csv: igual nas 4 versões
+   PETR4_C4.csv: igual nas 4 versões
+   PETR4_T1.csv: igual nas 4 versões
+   PETR4_T2.csv: igual nas 4 versões
+   PETR4_T3.csv: igual nas 4 versões
+   PETR4_T4.csv: igual nas 4 versões
+   POMO4_C1.csv: igual nas 2 versões
+   POMO4_C2.csv: igual nas 4 versões
+   POMO4_C3.csv: igual nas 4 versões
+   POMO4_C4.csv: igual nas 4 versões
+   POMO4_T1.csv: igual nas 2 versões
+   POMO4_T2.csv: igual nas 4 versões
+   POMO4_T3.csv: igual nas 4 versões
+   POMO4_T4.csv: igual nas 4 versões
+   USIM5_C1.csv: igual nas 2 versões
+   USIM5_C2.csv: igual nas 4 versões
+   USIM5_C3.csv: igual nas 4 versões
+   USIM5_C4.csv: igual nas 4 versões
+   USIM5_T1.csv: igual nas 2 versões
+   USIM5_T2.csv: igual nas 4 versões
+   USIM5_T3.csv: igual nas 4 versões
+   USIM5_T4.csv: igual nas 4 versões
+   VALE3_C1.csv: igual nas 2 versões
+   VALE3_C2.csv: igual nas 4 versões
+   VALE3_C3.csv: igual nas 4 versões
+   VALE3_C4.csv: igual nas 4 versões
+   VALE3_T1.csv: igual nas 2 versões
+   VALE3_T2.csv: igual nas 4 versões
+   VALE3_T3.csv: igual nas 4 versões
+   VALE3_T4.csv: igual nas 4 versões
+
+3. PETR4 contra janelas_garch_2026-11-13 (mesma janela, Estrategia=3, mesmo ZerarNoVeto, e as 4 sem GARCH):
+   500 M C1: igual (52 passagens)
+   500 M T1: igual (52 passagens)
+   500 M C2: igual (52 passagens)
+   500 M T2: igual (52 passagens)
+   500 M C3: igual (52 passagens)
+   500 M T3: igual (52 passagens)
+   500 M C4: igual (52 passagens)
+   500 M T4: igual (52 passagens)
+   500 E C1: igual (52 passagens)
+   500 E T1: igual (52 passagens)
+   500 E C2: igual (52 passagens)
+   500 E T2: igual (52 passagens)
+   500 E C3: igual (52 passagens)
+   500 E T3: igual (52 passagens)
+   500 E C4: igual (52 passagens)
+   500 E T4: igual (52 passagens)
+   1000 M C1: igual (52 passagens)
+   1000 M T1: igual (52 passagens)
+   1000 M C2: igual (52 passagens)
+   1000 M T2: igual (52 passagens)
+   1000 M C3: igual (52 passagens)
+   1000 M T3: igual (52 passagens)
+   1000 M C4: igual (52 passagens)
+   1000 M T4: igual (52 passagens)
+   1000 E C1: igual (52 passagens)
+   1000 E T1: igual (52 passagens)
+   1000 E C2: igual (52 passagens)
+   1000 E T2: igual (52 passagens)
+   1000 E C3: igual (52 passagens)
+   1000 E T3: igual (52 passagens)
+   1000 E C4: igual (52 passagens)
+   1000 E T4: igual (52 passagens)
+
+4. Teste individual = passagem da grade do teste (PETR4, GS e GC, ret,dd):
+   M500,T1,GS: grade 23.0,13.7 | individual 23.0,13.7  igual
+   M500,T1,GC: grade 1.3,14.8 | individual 1.3,14.8  igual
+   M500,T2,GS: grade -24.4,66.8 | individual -24.4,66.8  igual
+   M500,T2,GC: grade -9.6,40.5 | individual -9.6,40.5  igual
+   M500,T3,GS: grade 9.4,21.4 | individual 9.4,21.4  igual
+   M500,T3,GC: grade 5.3,15.4 | individual 5.3,15.4  igual
+   M500,T4,GS: grade -27.3,62.1 | individual -27.3,62.1  igual
+   M500,T4,GC: grade -5.4,32.8 | individual -5.4,32.8  igual
+   E500,T1,GS: grade 1.7,10.1 | individual 1.7,10.1  igual
+   E500,T1,GC: grade 1.7,10.1 | individual 1.7,10.1  igual
+   E500,T2,GS: grade -0.4,31.9 | individual -0.4,31.9  igual
+   E500,T2,GC: grade -0.4,11.5 | individual -0.4,11.5  igual
+   E500,T3,GS: grade 4.4,25.4 | individual 4.4,25.4  igual
+   E500,T3,GC: grade 5.5,14.6 | individual 5.5,14.6  igual
+   E500,T4,GS: grade 48.4,33.5 | individual 48.4,33.5  igual
+   E500,T4,GC: grade -15.4,21.6 | individual -15.4,21.6  igual
+   M1000,T1,GS: grade 1.1,25.2 | individual 1.1,25.2  igual
+   M1000,T1,GC: grade 1.1,25.2 | individual 1.1,25.2  igual
+   M1000,T2,GS: grade -11.7,81.0 | individual -11.7,81.0  igual
+   M1000,T2,GC: grade -4.7,49.4 | individual -4.7,49.4  igual
+   M1000,T3,GS: grade 15.1,20.6 | individual 15.1,20.6  igual
+   M1000,T3,GC: grade 10.7,13.9 | individual 10.7,13.9  igual
+   M1000,T4,GS: grade -0.2,64.3 | individual -0.2,64.3  igual
+   M1000,T4,GC: grade 57.8,28.8 | individual 57.8,28.8  igual
+   E1000,T1,GS: grade -0.1,10.7 | individual -0.1,10.7  igual
+   E1000,T1,GC: grade -5.5,12.1 | individual -5.5,12.1  igual
+   E1000,T2,GS: grade -11.8,22.4 | individual -11.8,22.4  igual
+   E1000,T2,GC: grade -6.5,12.3 | individual -6.5,12.3  igual
+   E1000,T3,GS: grade 7.1,13.6 | individual 7.1,13.6  igual
+   E1000,T3,GC: grade 2.3,15.7 | individual 2.3,15.7  igual
+   E1000,T4,GS: grade 12.7,8.5 | individual 12.7,8.5  igual
+   E1000,T4,GC: grade 12.7,8.5 | individual 12.7,8.5  igual
+
+5. ARIMA sem GARCH (AS) igual nas quatro versões (teste individual, ret,dd):
+   T1: -12.7,45.1  igual
+   T2: -50.4,63.8  igual
+   T3: 14.2,20.1  igual
+   T4: 95.7,40.5  igual
+
+6. TG reconstruído: escolha refeita (escolhas.csv, PETR4) contra os testes do TG (metricas_R3/R6):
+   T1,GS: grade -8.4,17.5 | teste do TG -8.4,17.5  igual
+   T1,GC: grade -8.4,17.5 | teste do TG -8.4,17.5  igual
+   T1,AS: grade -12.7,45.1 | teste do TG -12.7,45.1  igual
+   T2,GS: grade -13.8,28.6 | teste do TG -13.8,28.6  igual
+   T2,GC: grade -6.8,15.5 | teste do TG -6.8,15.5  igual
+   T2,AS: grade -35.8,54.5 | teste do TG -35.8,54.5  igual
+   T3,GS: grade -13.7,17.6 | teste do TG -13.7,17.6  igual
+   T3,GC: grade -7.4,12.2 | teste do TG -7.4,12.2  igual
+   T3,AS: grade 14.2,20.1 | teste do TG 14.2,20.1  igual
+   T4,GS: grade 199.5,27.2 | teste do TG 199.5,27.2  igual
+   T4,GC: grade 42.9,40.2 | teste do TG 42.9,40.2  igual
+   T4,AS: grade 95.7,40.5 | teste do TG 95.7,40.5  igual

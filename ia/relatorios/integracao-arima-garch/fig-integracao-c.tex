@@ -1,0 +1,60 @@
+% Proposta C (12/11/2026, pedido do autor): a proposta B com a condição
+% explícita. O sinal do ARIMA não vai direto para a ordem: ele entra no filtro
+% e só segue se a operação não for vetada. Entrada "Série de preços" e as duas
+% perguntas da seção (Cap. I, 2º parágrafo de "Integração entre ARIMA e GARCH").
+% Filtro e ajuste combinados, como o último parágrafo da subseção "Uso da
+% volatilidade prevista na operação" descreve. Mesmo estilo das fig05/fig06.
+% Fora do TG até o autor decidir.
+\documentclass[11pt,border=2pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathptmx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,shapes.geometric}
+\tikzset{
+  seta/.style={-{Stealth[length=2.2mm]}, semithick},
+  caixa/.style={rectangle, draw, semithick, fill=gray!10, rounded corners=2pt,
+                align=center, minimum width=46mm, minimum height=10mm, font=\small},
+  dado/.style={trapezium, trapezium left angle=75, trapezium right angle=105, draw,
+               semithick, fill=white, align=center, minimum height=9mm, font=\small,
+               trapezium stretches body},
+  decisao/.style={diamond, draw, semithick, fill=white, aspect=2.4, align=center,
+                  inner sep=1pt, font=\small},
+  rotulo/.style={font=\footnotesize\itshape, align=center},
+  pequeno/.style={font=\footnotesize, align=center},
+}
+\begin{document}
+\begin{tikzpicture}
+  \node[dado] (ent) at (0,0) {Série de preços};
+  \node[caixa] (arima) at (0,-1.7) {ARIMA\\prevê o retorno do período seguinte};
+
+  \node[dado] (dir) at (-3.7,-3.6) {Sinal da previsão:\\direção da operação};
+  \node[dado] (res) at (3.4,-3.6) {Resíduos:\\real menos previsto};
+  \node[caixa] (garch) at (3.4,-5.3) {GARCH\\prevê a volatilidade};
+  \node[decisao] (lim) at (3.4,-7.45) {Volatilidade prevista\\acima do limiar?};
+  \node[caixa, minimum width=34mm, fill=white] (veto) at (8.0,-7.45)
+    {Operação vetada:\\o sinal é descartado};
+  \node[caixa] (tam) at (3.4,-9.65) {Tamanho da posição\\multiplicado por\\alvo $\div$ volatilidade prevista};
+
+  \node[caixa, minimum width=96mm, fill=gray!25] (ord) at (-0.15,-11.75)
+    {Ordem: lado dado pelo ARIMA, tamanho dado pelo GARCH};
+
+  \draw[seta] (ent) -- (arima);
+  \draw[seta] (arima.south) -- ++(0,-0.45) -| (dir.north);
+  \draw[seta] (arima.south) -- ++(0,-0.45) -| (res.north);
+  \draw[seta] (res) -- (garch);
+  \draw[seta] (garch) -- (lim);
+  % o sinal do ARIMA espera a resposta do filtro
+  \draw[seta] (dir.south) |- node[pos=0.75, above, pequeno]{o sinal aguarda\\o filtro} (lim.west);
+  \draw[seta] (lim) -- node[above, pequeno]{sim} (veto);
+  \draw[seta] (lim) -- node[right, pequeno]{não: o sinal é liberado} (tam);
+  \draw[seta] (tam) -- (tam |- ord.north);
+
+  \node[rotulo, anchor=south east] at ([xshift=-1mm, yshift=1mm]lim.north west) {filtro};
+  \node[rotulo, anchor=north west] at ([xshift=2mm]tam.north east) {ajuste da\\posição};
+
+  % as duas perguntas que a integração separa
+  \node[rotulo, below] at (-1.8,-2.65) {para que lado?};
+  \node[rotulo, below] at (1.8,-2.65) {com que risco?};
+\end{tikzpicture}
+\end{document}

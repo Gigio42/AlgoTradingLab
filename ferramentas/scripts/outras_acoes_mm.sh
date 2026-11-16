@@ -17,7 +17,7 @@ source "$(dirname "$0")/comum.sh"
 S="$(cd "$(dirname "$0")" && pwd)"; A="$(cd "$S/../.." && pwd)"
 OUT="$A/dados/resultados/refeito_2026-10-05"
 M="$A/dados/resultados/rodada3_b3_oficial/testes/in_mm.txt"
-MMEA='MediasMoveis2\MediasMoveis2'
+MMEA='robos\MediasMoveis2\MediasMoveis2'
 LOG="$OUT/testes/mm_outras.log"; : > "$LOG"
 JT=("" "2007.01.02 2011.12.30" "2013.01.02 2016.12.30" "2025.01.02 2026.09.19")
 

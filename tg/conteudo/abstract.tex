@@ -5,7 +5,7 @@
 \itshape
 This work revisits a study carried out at the Faculdade de Tecnologia de
 Indaiatuba in 2016, in which a trading robot for the MetaTrader 5 platform,
-guided by moving average crossovers, performed well in stable market periods but
+guided by moving average crossovers, made a profit outside the crisis period but
 accumulated losses over the period that includes the 2008 financial crisis. At the
 end of that study, the author suggested that models able to measure volatility
 could help overcome this limitation. Building on that suggestion, a new robot was
@@ -14,14 +14,17 @@ first, called ARIMA, tries to anticipate the direction of prices. The second,
 called GARCH, estimates how much the market is likely to fluctuate and decides
 whether it is worth trading and with how much. Both models were programmed in the platform's own
 language and tested on the official history
-of the Brazilian stock exchange, in periods of crisis and of calm, always in
+of the Brazilian stock exchange, in different periods, including two crises, always in
 comparison with the original strategy and with a version of the robot without the
 volatility control. The results show that this control made the robot safer.
 In every period analysed, it fluctuated less than both the version without the
 control and the original strategy, and its losses in the worst moments were
-smaller than those of the version without the control. In many periods the final
-gain was also larger. The ability to predict market direction, however, remained
-close to chance, and the differences in gain relative to the original strategy
+smaller than those of the version without the control. In some periods the final
+gain was also larger. The reduction in risk was repeated, in most cases, in three
+other stocks and also with longer estimation windows for GARCH. Allowing the robot to also bet on
+falling prices through short selling, on the other hand, increased the losses in
+the worst moments in every case tested. The share of profitable trades, however, stayed close to half,
+with or without the control, and the differences in gain relative to the original strategy
 varied from period to period, sometimes favouring one and sometimes the other.
 The conclusion is that
 the volatility model works as a protective instrument, especially useful in

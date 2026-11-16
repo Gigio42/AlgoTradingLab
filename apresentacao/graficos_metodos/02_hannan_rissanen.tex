@@ -1,0 +1,36 @@
+% Hannan-Rissanen no ARIMA(1,1,1) da PETR4: estágio 1 (AR longo, que estima os
+% erros não observados) e estágio 2 (regressão com o erro estimado defasado).
+% Os dois estágios são MQO. Mesmos coeficientes do CArima (resumo.txt).
+\documentclass[border=4pt]{standalone}
+\input{comum}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[base, group style={group size=2 by 1, horizontal sep=1.6cm},
+  height=5.6cm]
+\nextgroupplot[width=6.4cm, title={Estágio 1: um AR longo, com\\$m = \vHrM$ defasagens, ajustado por MQO},
+  xlabel={Defasagem $i$}, ylabel={Coeficiente $a_i$}, xmin=0, xmax=\pHrM+1,
+  ybar, bar width=1.6pt, /pgf/number format/fixed]
+\addplot[fill=cdad, draw=none] table[x=defasagem, y=coeficiente]{\arq{hr_ar_longo.csv}};
+\nextgroupplot[width=9.6cm, title={O que o AR longo não prevê é a estimativa do erro $\hat\varepsilon_t$\\(últimos 60 pregões da janela)},
+  date coordinates in=x, xticklabel={\day/\month}, ylabel={\%},
+  legend style={font=\small, at={(0.5,-0.2)}, anchor=north, legend columns=3, draw=none, column sep=4pt}]
+\addplot[ybar, area legend, bar width=2.2pt, fill=cdad!55, draw=none] table[x=data, y=retorno]{\arq{hr_erros.csv}};
+\addplot[cmod, line width=1.3pt] table[x=data, y expr=\thisrow{retorno}-\thisrow{erro_estagio1}]{\arq{hr_erros.csv}};
+\addplot[only marks, mark=*, mark size=1.2pt, cdes] table[x=data, y=erro_estagio1]{\arq{hr_erros.csv}};
+\legend{retorno $r_t$, previsto pelo AR longo, erro estimado $\hat\varepsilon_t$ (retorno $-$ previsto)}
+\end{groupplot}
+\begin{scope}[yshift=-2.9cm, every node/.style={draw, rounded corners=2pt, align=center, font=\small,
+  inner sep=5pt, fill=gray!8}]
+\node (e1) at (2.3,0) {\textbf{Estágio 1 (MQO)}\\[2pt]
+  $r_t = a_0 + \sum_{i=1}^{\vHrM} a_i\, r_{t-i} + \varepsilon_t$\\[2pt]
+  {\footnotesize \vHrObsUm\ observações} $\Rightarrow\ \hat\varepsilon_t$};
+\node (e2) at (8.4,0) {\textbf{Estágio 2 (MQO)}\\[2pt]
+  $r_t = c + \phi\, r_{t-1} + \theta\, \hat\varepsilon_{t-1} + u_t$\\[2pt]
+  {\footnotesize \vHrObsDois\ observações}};
+\node[fill=cmod!10, draw=cmod] (res) at (13.6,0) {\textbf{ARIMA(1,1,1)}\\[2pt]
+  $\hat\phi = \vHrPhi$\\$\hat\theta = \vHrTheta$};
+\draw[-{Stealth[length=6pt]}, line width=1pt] (e1) -- node[draw=none, fill=none, above, font=\footnotesize]{$\hat\varepsilon_{t-1}$ entra} (e2);
+\draw[-{Stealth[length=6pt]}, line width=1pt] (e2) -- (res);
+\end{scope}
+\end{tikzpicture}
+\end{document}

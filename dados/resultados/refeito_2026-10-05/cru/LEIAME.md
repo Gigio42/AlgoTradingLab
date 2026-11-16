@@ -44,4 +44,4 @@ TG. `outras_acoes.sh` passou a descartar essas passagens antes da escolha
 `outras_acoes_com_ic_2026-10-19.txt`). `analisar_grades.sh` com `SEM_IC=1
 CAMADA=puro` gera `analise_grades_cru_sem_ic.txt`; sem `SEM_IC`, a saída continua
 idêntica a `analise_grades_cru.txt`. A PETR4 não muda. Detalhes em
-`notas/INCERTEZAS.md`, item 71.
+`ia/INCERTEZAS.md`, item 71.

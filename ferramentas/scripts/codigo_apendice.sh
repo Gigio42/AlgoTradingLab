@@ -1,6 +1,6 @@
 #!/bin/bash
-# Gera as listagens dos Apendices A e B do TG a partir do codigo que de fato
-# roda (o EA e, desde 27/10/2026, Arima, SelecaoModelo, Garch e Estrategia):
+# Gera as listagens dos Apendices A, B e C do TG a partir do codigo que de fato
+# roda (o EA; desde 27/10/2026, Arima, SelecaoModelo, Garch e Estrategia; desde 02/11/2026, MediasMoveis2):
 #   1) aplica os marcadores (que no EA sao so comentarios):
 #        //@omitir-inicio ... //@omitir-fim   bloco fora da listagem
 #        linha terminada em //@omitir         linha fora da listagem

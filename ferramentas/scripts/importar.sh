@@ -2,7 +2,7 @@
 # importar.sh <preset.set> <SUFIXO>  -> importa CSVs como simbolos personalizados.
 # Fecha o terminal com taskkill (sem /f): so assim o simbolo vai para symbols.custom.dat.
 # PERFIL=<nome>: abre o terminal com esse perfil de graficos (o Default chegou ao
-# limite de 100 graficos, notas/INCERTEZAS.md item 54) e depois devolve o
+# limite de 100 graficos, ia/INCERTEZAS.md item 54) e depois devolve o
 # Config/common.ini original, para o terminal do autor voltar ao perfil dele.
 source "$(dirname "$0")/comum.sh"
 R="$N/MQL5/Files/import_b3_resultado.txt"; matar; cp -p "$R" "$TRAB/imp_orig.txt" 2>/dev/null

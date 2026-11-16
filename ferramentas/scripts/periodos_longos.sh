@@ -15,9 +15,9 @@ GT="UsarGARCH=true Estrategia=3 ModoLimiar=1 Limiar_Percentil=90 Vol_Alvo=0.01 Z
 AR="UsarGARCH=false Janela_Estimacao=120 IncluirConstante=false Limiar_Sinal=0"
 
 roda(){ local rot=$1 de=$2 ate=$3; shift 3
-  bash rodar.sh "$rot" 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL "$de" "$ate" 100000 1:1 "$B" "$@" >/dev/null 2>&1; }
+  bash rodar.sh "$rot" 'robos\ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL "$de" "$ate" 100000 1:1 "$B" "$@" >/dev/null 2>&1; }
 rodamm(){ local rot=$1 de=$2 ate=$3
-  bash rodar.sh "$rot" 'MediasMoveis2\MediasMoveis2' PETR4_OFICIAL "$de" "$ate" 100000 1:1 "$M" \
+  bash rodar.sh "$rot" 'robos\MediasMoveis2\MediasMoveis2' PETR4_OFICIAL "$de" "$ate" 100000 1:1 "$M" \
     Volume_Fixo_Input=0 Fracao_Capital=0.95 SomenteCompra=true Custo_Por_Lado=0.0003 >/dev/null 2>&1; }
 
 for p in "L1 2005.01.03 2026.09.18" "L2 2017.01.02 2024.12.30"; do

@@ -1,7 +1,7 @@
 # Traço por barra, PETR4, jul/2019 a jun/2021
 
 > **SUPERADO em 06/10/2026** pela refação com o EA corrigido
-> (`../refeito_2026-10-05/LEIAME.md`; erros em `notas/INCERTEZAS.md`, itens 43 a
+> (`../refeito_2026-10-05/LEIAME.md`; erros em `ia/INCERTEZAS.md`, itens 43 a
 > 47). Os números desta pasta foram produzidos com o EA antigo e não vão para o TG.
 
 

@@ -3,7 +3,7 @@
 Pedido do autor em 27/10/2026: com as janelas fixas do estudo de 26/10 (ARIMA
 240, GARCH 500, `janelas_240_500_2026-10-26/`), testar mais possibilidades na
 grade. Protocolo escrito antes: `PROTOCOLO.md`. **O TG não foi alterado.**
-Detalhes e leitura: `notas/INCERTEZAS.md`, item 79.
+Detalhes e leitura: `ia/INCERTEZAS.md`, item 79.
 
 Fatores (duas opções cada): `DistribuicaoGARCH` (normal × t de Student),
 `SelecaoPorBIC` (AIC × BIC), `Barras_Entre_Reselecao` (21 × 63). Só compra.

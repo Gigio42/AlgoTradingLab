@@ -1,0 +1,140 @@
+% O modelo inteiro em um pregão (22/02/2021), com os números e as séries que o
+% próprio robô usou. Dados: dados/resultados/modelo_completo_2026-11-06/
+% (ferramentas/ModeloCompleto.mq5, conferido contra o traço em conferencia.txt).
+\documentclass[border=6pt]{standalone}
+\input{comum}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+% ---------------------------------------------------------------- título
+\node[anchor=north, font=\large\bfseries] at (8.5,0) {O robô ARIMA-GARCH em um pregão: \vSegDia};
+\node[anchor=north, font=\small, text=black!70] at (8.5,-0.55)
+  {decisão tomada na abertura, só com fechamentos já conhecidos, na configuração ARIMA-GARCH Sharpe};
+
+% ---------------------------------------------------------------- 1 dados
+\draw[caixa, fill=black!2] (0,-1.2) rectangle (17,-6.0);
+\node[titulo] at (0.3,-1.4) {\passo{1} Os dados: a janela de 240 fechamentos que termina na véspera (refeita todo pregão)};
+\begin{axis}[mini, datas, at={(0.9cm,-2.25cm)}, anchor=north west, width=6.6cm, height=2.3cm,
+  xmin=2020-03-01, xmax=2021-02-28, xtick={2020-03-01,2020-09-01,2021-02-01},
+  xticklabels={mar/2020,set/2020,fev/2021}, ymin=10, ymax=32,
+  title={fechamento (R\$)}, title style={font=\scriptsize, yshift=-1.5mm}]
+\addplot[cdad, line width=0.8pt] table[x=data, y=fechamento]{\arqm{janela_Seg.csv}};
+\end{axis}
+\draw[seta] (7.85,-3.4) -- node[above, font=\scriptsize, align=center]{log e\\diferença} (9.2,-3.4);
+\begin{axis}[mini, datas, at={(9.6cm,-2.25cm)}, anchor=north west, width=6.9cm, height=2.3cm,
+  xmin=2020-03-01, xmax=2021-02-28, xtick={2020-03-01,2020-09-01,2021-02-01},
+  xticklabels={mar/2020,set/2020,fev/2021}, ymin=-40, ymax=25,
+  title={log-retorno (\% ao dia)}, title style={font=\scriptsize, yshift=-1.5mm}]
+\addplot[ycomb, cdad, line width=0.5pt] table[x=data, y=retorno]{\arqm{janela_Seg.csv}};
+\end{axis}
+\node[texto, text width=16.2cm] at (0.4,-5.25) {Fechamentos de \vSegIni{} a \vSegFim. A janela começa na queda de
+  março de 2020 e termina na queda de 19/02/2021 (último fechamento, R\$~\vSegFech). O modelo trabalha com o log do preço e, como
+  o passo~2 escolheu $d=1$, com a diferença dele, que é o log-retorno.};
+\draw[seta] (8.5,-6.0) -- (8.5,-6.75);
+
+% ---------------------------------------------------------------- 2 e 3 escolha do modelo
+\draw[caixa, fill=black!2] (0,-6.8) rectangle (8.3,-11.55);
+\draw[caixa, fill=black!2] (8.7,-6.8) rectangle (17,-11.55);
+\node[titulo] at (0.3,-7.0) {\passo{2} Quantas diferenças? Teste ADF};
+\node[titulo] at (9.0,-7.0) {\passo{3} Quantos termos? Grade do AIC};
+% régua do ADF: v em [-7,0] -> x = 7.6 + v
+\fill[cok!12] (0.6,-8.85) rectangle ({7.6+\pSegADFvc},-9.45);
+\draw[black!60] (0.6,-9.45) -- (7.6,-9.45);
+\foreach \v in {-7,-6,...,0} \draw[black!60] ({7.6+\v},-9.45) -- ({7.6+\v},-9.55) node[below, font=\tiny]{$\v$};
+\draw[cdes, dashed, line width=0.8pt] ({7.6+\pSegADFvc},-8.0) -- ({7.6+\pSegADFvc},-9.45);
+\node[font=\scriptsize, text=cdes, anchor=south] at ({7.6+\pSegADFvc},-8.05) {valor crítico \vSegADFvc};
+\node[font=\scriptsize, text=cok!80!black, anchor=north west] at (0.65,-8.9) {estacionária};
+\fill[cdad] ({7.6+\pSegADFnivel},-9.15) circle (2.6pt);
+\node[font=\scriptsize, anchor=west] at ({7.75+\pSegADFnivel},-9.15) {log-preço \vSegADFnivel};
+\fill[cmod] ({7.6+\pSegADFret},-8.6) circle (2.6pt);
+\node[font=\scriptsize, anchor=west] at ({7.75+\pSegADFret},-8.6) {log-retorno \vSegADFret};
+\node[texto, text width=7.7cm] at (0.3,-10.05) {O log-preço não passa no teste (anda sem rumo). O log-retorno
+  passa. Então $d=1$: o modelo prevê o retorno, e não o preço.};
+% grade do AIC
+\begin{axis}[at={(9.55cm,-7.65cm)}, anchor=north west, scale only axis, width=2.75cm, height=2.75cm,
+  xmin=-0.5, xmax=4.5, ymin=-0.5, ymax=4.5, xtick={0,...,4}, ytick={0,...,4},
+  tick label style={font=\scriptsize}, label style={font=\scriptsize},
+  xlabel={$q$ (erros)}, ylabel={$p$ (retornos)}, xlabel style={yshift=1.5mm}, ylabel style={yshift=-2mm},
+  colormap={azul}{rgb255=(0,90,181) rgb255=(150,190,230) rgb255=(245,245,245)},
+  point meta min=0, point meta max=20, enlargelimits=false, axis on top]
+\addplot[matrix plot*, mesh/cols=5, point meta=explicit]
+  table[col sep=comma, x=q, y=p, meta expr={min(\thisrow{delta},20)}]{\arqm{aic_Seg.csv}};
+\draw[cdes, line width=1.4pt] (axis cs:{\pSegQ-0.5},{\pSegP-0.5}) rectangle (axis cs:{\pSegQ+0.5},{\pSegP+0.5});
+\end{axis}
+\node[texto, text width=4.15cm] at (12.75,-7.75) {25 modelos, $p$ e $q$ de 0 a~4. Quanto mais escuro, menor
+  o AIC. O menor (em vermelho) foi o ARIMA(\vSegP,\vSegD,\vSegQ): os três últimos retornos e nenhum termo de erro.};
+\node[anchor=north, font=\scriptsize\itshape, text=black!70, align=center, text width=16.5cm] at (8.5,-11.05)
+  {passos 2 e 3: a cada 21 pregões. A última vez foi em \vSegSel, com os fechamentos de \vSegSelIni{} a \vSegSelFim};
+\draw[seta] (4.15,-11.55) -- (4.15,-12.3);
+\draw[seta] (12.85,-11.55) -- (12.85,-12.3);
+\begin{scope}[yshift=-0.35cm]
+
+% ---------------------------------------------------------------- 4 a 7: as duas pistas
+\node[anchor=south, font=\small\bfseries, text=cmod] at (2.2,-11.75) {ARIMA $\Rightarrow$ direção};
+\node[anchor=south, font=\small\bfseries, text=cgar!85!black] at (14.9,-11.75) {GARCH $\Rightarrow$ risco};
+\draw[caixa, fill=cmod!5, draw=cmod!60] (0,-12.0) rectangle (8.3,-14.4);
+\draw[caixa, fill=cgar!6, draw=cgar!70] (8.7,-12.0) rectangle (17,-14.4);
+\node[titulo] at (0.3,-12.2) {\passo{4} Coeficientes (Hannan-Rissanen, todo pregão)};
+\node[texto, text width=7.8cm] at (0.3,-12.75) {$\hat r_t = c + \phi_1 r_{t-1} + \phi_2 r_{t-2} + \phi_3 r_{t-3}$\\[3pt]
+  $c=\vSegConst\%$, \ $\phi_1=\vSegPhiUm$, \ $\phi_2=\vSegPhiDois$, \ $\phi_3=\vSegPhiTres$\\[2pt]
+  pesos estimados dos dados, um por retorno passado};
+\node[titulo] at (9.0,-12.2) {\passo{6} GARCH(1,1) nos resíduos (todo pregão)};
+\node[texto, text width=7.8cm] at (9.0,-12.75) {$\sigma^2_t = \omega + \alpha\,\varepsilon^2_{t-1} + \beta\,\sigma^2_{t-1}$\\[3pt]
+  $\alpha=\vSegAlfa$ (choque de ontem), \ $\beta=\vSegBeta$ (memória)\\[2pt]
+  $\varepsilon$ = o que o ARIMA errou em cada dia da janela};
+\draw[seta, cgar!80!black] (8.3,-13.2) -- node[above, font=\scriptsize, text=black]{$\varepsilon$} (8.7,-13.2);
+\draw[seta, cmod!70] (4.15,-14.4) -- (4.15,-14.95);
+\draw[seta, cgar!80!black] (12.85,-14.4) -- (12.85,-14.95);
+
+\draw[caixa, fill=cmod!5, draw=cmod!60] (0,-15.0) rectangle (8.3,-19.6);
+\draw[caixa, fill=cgar!6, draw=cgar!70] (8.7,-15.0) rectangle (17,-19.6);
+\node[titulo] at (0.3,-15.2) {\passo{5} Previsão do retorno de \vSegDia};
+\node[titulo] at (9.0,-15.2) {\passo{7} Volatilidade prevista contra o limiar};
+\begin{axis}[mini, datas, at={(0.95cm,-15.85cm)}, anchor=north west, width=6.95cm, height=2.35cm,
+  xmin=2021-01-04, xmax=2021-02-24, xtick={2021-01-04,2021-02-01,2021-02-22},
+  xticklabels={04/01,01/02,22/02}, ymin=-9, ymax=6, ylabel={\% ao dia}, ylabel style={yshift=-1mm}]
+\addplot[ycomb, cdad, line width=1.6pt] table[x=data, y=retorno]{\arqm{janela_Seg.csv}};
+\addplot[cmod, line width=0.8pt] table[x=data, y=ajustado]{\arqm{janela_Seg.csv}};
+\addplot[only marks, mark=*, mark size=2.6pt, cmod] coordinates {(2021-02-22,\pSegPrev)};
+\end{axis}
+\node[texto, text width=7.8cm] at (0.3,-18.55) {Barras: retorno realizado. Linha: o que o modelo previa para cada dia.
+  Ponto: previsão de \textbf{alta de \vSegPrev\%} $\Rightarrow$ sinal de compra.};
+\begin{axis}[mini, datas, at={(9.65cm,-15.85cm)}, anchor=north west, width=6.95cm, height=2.35cm,
+  xmin=2021-01-04, xmax=2021-02-24, xtick={2021-01-04,2021-02-01,2021-02-22},
+  xticklabels={04/01,01/02,22/02}, ymin=0, ymax=8, ylabel={\% ao dia}, ylabel style={yshift=-1mm}]
+\addplot[ycomb, cdad!70, line width=1.6pt] table[x=data, y expr={abs(\thisrow{residuo})}]{\arqm{janela_Seg.csv}};
+\addplot[cgar!90!black, line width=0.9pt] table[x=data, y=sigma]{\arqm{janela_Seg.csv}};
+\addplot[cdes, dashed, line width=0.8pt] coordinates {(2021-01-04,\pSegLim) (2021-02-24,\pSegLim)};
+\addplot[only marks, mark=*, mark size=2.6pt, cdes] coordinates {(2021-02-22,\pSegVol)};
+\end{axis}
+\node[texto, text width=7.8cm] at (9.0,-18.55) {Barras: tamanho do erro. Linha: $\sigma$ do GARCH. Tracejado: limiar
+  (percentil 70 da $\sigma$ na janela, \vSegLim\%). Ponto: \textbf{\vSegVol\% > \vSegLim\%} $\Rightarrow$ veto.};
+\draw[seta, cmod!70] (4.15,-19.6) -- (4.15,-20.25);
+\draw[seta, cgar!80!black] (12.85,-19.6) -- (12.85,-20.25);
+
+% ---------------------------------------------------------------- 8 decisão
+\draw[caixa, fill=black!2] (0,-20.3) rectangle (17,-24.35);
+\node[titulo] at (0.3,-20.5) {\passo{8} Decisão (só compra, posição zerada no veto)};
+\def\ya{-21.05}\def\yb{-21.6}\def\yc{-22.4}\def\yd{-23.2}
+\def\xa{0.4}\def\xb{4.3}\def\xc{10.45}\def\xd{16.6}
+\fill[cok!12] (\xb,\yb) rectangle (\xc,\yc);
+\fill[cdes!15] (\xc,\yb) rectangle (\xd,\yc);
+\fill[black!6] (\xb,\yc) rectangle (\xd,\yd);
+\draw[black!40] (\xa,\ya) rectangle (\xd,\yd);
+\draw[black!40] (\xa,\yb) -- (\xd,\yb) (\xa,\yc) -- (\xd,\yc) (\xb,\ya) -- (\xb,\yd) (\xc,\ya) -- (\xc,\yd);
+\node[font=\footnotesize\bfseries] at ({(\xb+\xc)/2},{(\ya+\yb)/2}) {$\sigma$ prevista $\le$ limiar};
+\node[font=\footnotesize\bfseries] at ({(\xc+\xd)/2},{(\ya+\yb)/2}) {$\sigma$ prevista $>$ limiar};
+\node[font=\footnotesize\bfseries, text=cmod] at ({(\xa+\xb)/2},{(\yb+\yc)/2}) {previsão de alta};
+\node[font=\footnotesize\bfseries, text=cmod] at ({(\xa+\xb)/2},{(\yc+\yd)/2}) {previsão de queda};
+\node[font=\footnotesize] at ({(\xb+\xc)/2},{(\yb+\yc)/2}) {compra};
+\node[font=\footnotesize, align=center] at ({(\xc+\xd)/2},{(\yb+\yc)/2}) {vetada: não compra e zera a posição};
+\node[font=\footnotesize] at ({(\xb+\xd)/2},{(\yc+\yd)/2}) {zera a posição (o robô não vende a descoberto)};
+\draw[cdes, line width=1.8pt] (\xc,\yb) rectangle (\xd,\yc);
+\node[font=\scriptsize\bfseries, text=cdes, anchor=south east, fill=white, inner sep=1.5pt] at (\xd-0.05,\yb-0.05) {\vSegDia};
+\node[texto, text width=16.2cm] at (0.4,-23.4) {O ARIMA diz para onde (linhas), o GARCH diz se é hora de estar exposto (colunas).
+  Em \vSegDia{} o robô não comprou e zerou a compra feita na sexta. No pregão seguinte a janela anda um dia e
+  tudo se refaz.};
+% volta ao passo 1
+\draw[seta, rounded corners=6pt, dashed] (0,-23.0) -- (-0.45,-23.0) -- node[sloped, above, font=\scriptsize]{próximo pregão} (-0.45,-3.25) -- (0,-3.25);
+\end{scope}
+\end{tikzpicture}
+\end{document}

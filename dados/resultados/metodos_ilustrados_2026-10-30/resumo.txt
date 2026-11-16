@@ -1,0 +1,62 @@
+================ METODOS ILUSTRADOS ================
+Janela: 2024-09-17 a 2026-09-18, 500 pregoes (PETR4_OFICIAL)
+
+--- ADF ---
+  log-preco : ADF=-0.9468 VC5=-2.8675 lags=11 n=488 estacionaria=nao
+  log-retorno: ADF=-6.1396 VC5=-2.8675 lags=10 n=488 estacionaria=SIM
+  Dickey-Fuller simples: gamma nivel=-0.00213  gamma retorno=-0.92712
+
+--- AIC ---
+  d escolhido pelo ADF: 1
+  (verossimilhanca avaliada sobre amostra comum: 4 obs. descartadas no inicio)
+   p   q          AIC          BIC         logL     n
+  --- --- ------------ ------------ ------------ -----
+    0   0    -2678.757    -2670.348     1341.378   495  <<<
+    0   1    -2679.234    -2666.620     1342.617   495  <<<
+    0   2    -2676.129    -2659.311     1342.064   495
+    0   3    -2673.775    -2652.752     1341.887   495
+    0   4    -2678.317    -2653.090     1345.159   495
+    1   0    -2679.465    -2666.851     1342.732   495  <<<
+    1   1    -2677.587    -2660.768     1342.793   495
+    1   2    -2674.042    -2653.020     1342.021   495
+    1   3    -2671.958    -2646.730     1341.979   495
+    1   4    -2676.679    -2647.247     1345.340   495
+    2   0    -2678.238    -2661.420     1343.119   495
+    2   1    -2676.206    -2655.183     1343.103   495
+    2   2    -2664.010    -2638.782     1338.005   495
+    2   3    -2662.594    -2633.162     1338.297   495
+    2   4    -2678.686    -2645.049     1347.343   495
+    3   0    -2676.238    -2655.216     1343.119   495
+    3   1    -2674.206    -2648.979     1343.103   495
+    3   2    -2662.594    -2633.162     1338.297   495
+    3   3    -2661.394    -2627.758     1338.697   495
+    3   4    -2677.144    -2639.303     1347.572   495
+    4   0    -2680.291    -2655.063     1346.145   495  <<<
+    4   1    -2678.352    -2648.920     1346.176   495
+    4   2    -2679.348    -2645.712     1347.674   495
+    4   3    -2677.180    -2639.339     1347.590   495
+    4   4    -2675.126    -2633.081     1347.563   495
+
+  melhor (grade deste script): (4,0) AIC=-2680.291 | BuscarMelhorPQ: (4,0)
+
+--- MQO (AR(1) no log-retorno, em %) ---
+  MQO direto: c=0.055036% phi=0.072876 SQR=1277.5949 n=498 | CArima(1,1,0): c=0.055036% phi=0.072876
+
+--- Hannan-Rissanen, ARIMA(1,1,1) ---
+  m=38 obs1=461 obs2=460 | passo a passo: c=0.00054430 phi=0.139876 theta=-0.076773
+  CArima: ARIMA(1,1,1) c=0.00054430 phi1=0.139876 theta1=-0.076773 | sigma2=0.0002565149 logL=1352.181 AIC=-2696.363 BIC=-2679.520 n=498
+
+--- GARCH(1,1) sobre os residuos do ARIMA(1,1,1) ---
+  GARCH(1,1) omega=0.0000736305 alpha1=0.126435 beta1=0.587799 | persist=0.714234 volLP=0.016052 logL=1359.525 AIC=-2713.050
+  Vol prevista = 0.016432
+  Otimizador registrado: 25 iteracoes reportadas, 1273 avaliacoes, codigo 7
+  final: omega_rel=0.287042 alfa=0.126435 beta=0.587799 | CGarch: omega_rel=0.287042 alfa=0.126435 beta=0.587799
+  Maior residuo: 2025-04-10 eps=-6.709% sigma_amostral=1.602% sigma_garch=2.463% | log f: -10.163 x -5.531
+
+--- Ljung-Box (10 defasagens, 2 parametros ARMA, como na validacao) ---
+  residuos      : Q=20.296 gl=8 p=0.0093
+  residuos^2    : Q=29.344 gl=8 p=0.0003
+  padronizados^2: Q=5.078 gl=8 p=0.7492
+  valor critico qui-quadrado(8) a 5%: 15.507
+
+================ FIM ================

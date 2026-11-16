@@ -12,7 +12,7 @@ for p in "L1 2005.01.03 2026.09.18" "L2 2017.01.02 2024.12.30"; do
   set -- $p; n=$1; de=$2; ate=$3
   for c in "GFant:$GF" "GTant:$GT" "ARant:$AR"; do
     r=${n}_${c%%:*}
-    bash "$S/rodar.sh" $r 'ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL $de $ate 100000 1:1 "$B" ${c#*:} >/dev/null 2>&1
+    bash "$S/rodar.sh" $r 'robos\ARIMA-GARCH\ARIMA_GARCH_EA' PETR4_OFICIAL $de $ate 100000 1:1 "$B" ${c#*:} >/dev/null 2>&1
     cp "$COMUM/metricas_$r.csv" "$COMUM/curva_$r.csv" "$OUT/sensibilidade/"
   done
 done

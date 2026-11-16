@@ -1,0 +1,35 @@
+% ADF (TesteADF do robô, com constante e defasagens pelo AIC): o log-preço da
+% PETR4 não é estacionário; o log-retorno é. Embaixo, a ideia do teste: a
+% inclinação de dy(t) contra y(t-1) (regressão de Dickey-Fuller sem as
+% defasagens, só para visualizar; a estatística mostrada é a do ADF completo).
+\documentclass[border=4pt]{standalone}
+\input{comum}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[base, group style={group size=2 by 2, horizontal sep=1.9cm, vertical sep=2.0cm},
+  width=8.2cm]
+\nextgroupplot[height=4.6cm, title={Log-preço ($d = 0$)}, date coordinates in=x, xticklabel={\month/\year},
+  xtick={2024-10-01,2025-04-01,2025-10-01,2026-04-01}, ylabel={$\ln(\text{preço})$},
+  /pgf/number format/fixed, /pgf/number format/precision=2]
+\addplot[cdad, line width=0.8pt] table[x=data, y=logpreco]{\arq{adf_series.csv}};
+\nextgroupplot[height=4.6cm, title={Log-retorno ($d = 1$, a série que o ARIMA modela)}, date coordinates in=x,
+  xticklabel={\month/\year}, xtick={2024-10-01,2025-04-01,2025-10-01,2026-04-01}, ylabel={\%},
+  unbounded coords=jump]
+\addplot[cmod, line width=0.5pt] table[x=data, y=retorno]{\arq{adf_series.csv}};
+\nextgroupplot[height=5.4cm, title={ADF $= \vADFnivel$, acima de $\vADFvcNivel$:\\não rejeita a raiz unitária},
+  xlabel={Nível de ontem, $y_{t-1}$}, ylabel={Variação de hoje, $\Delta y_t$ (\%)},
+  /pgf/number format/fixed, /pgf/number format/precision=2]
+\addplot[only marks, mark=*, mark size=0.8pt, cdad, fill opacity=0.5, draw opacity=0.5] table[x=x, y=y]{\arq{adf_dispersao_nivel.csv}};
+\addplot[cdes, line width=1.5pt] table[x=x, y=ajuste]{\arq{adf_dispersao_nivel.csv}};
+\node[anchor=north west, font=\small, fill=white, fill opacity=0.85, text opacity=1, align=left] at (rel axis cs:0.02,0.98)
+  {inclinação $\hat\gamma \approx \vGamaNivel$: o preço não\\volta para uma média};
+\nextgroupplot[height=5.4cm, title={ADF $= \vADFret$, abaixo de $\vADFvcRet$:\\rejeita, a série é estacionária},
+  xlabel={Retorno de ontem, $r_{t-1}$ (\%)}, ylabel={Variação de hoje, $\Delta r_t$ (\%)},
+  xmin=-8, xmax=8, ymin=-12, ymax=12]
+\addplot[only marks, mark=*, mark size=0.8pt, cdad, fill opacity=0.5, draw opacity=0.5] table[x=x, y=y]{\arq{adf_dispersao_retorno.csv}};
+\addplot[cmod, line width=1.5pt] table[x=x, y=ajuste]{\arq{adf_dispersao_retorno.csv}};
+\node[anchor=north east, font=\small, fill=white, fill opacity=0.85, text opacity=1, align=left] at (rel axis cs:0.98,0.98)
+  {inclinação $\hat\gamma \approx \vGamaRet$: o retorno\\volta para a média logo};
+\end{groupplot}
+\end{tikzpicture}
+\end{document}

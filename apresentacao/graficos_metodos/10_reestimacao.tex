@@ -1,0 +1,39 @@
+% O ARIMA sendo reestimado: ordens (p, d, q) escolhidas a cada 21 pregões e
+% coeficientes reestimados todo pregão (traço da refação de 05/10/2026).
+\documentclass[border=6pt]{standalone}
+\input{comum}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[base, traco, group style={group size=1 by 3, vertical sep=1.05cm, xticklabels at=edge bottom},
+  width=15cm, height=4.3cm]
+\nextgroupplot[ylabel={Preço (R\$)}, ymax=32, ymin=10,
+  title={\passo{1} O preço da PETR4 na janela (faixas cinza: trechos em que o ADF escolheu $d = 0$)}]
+\faixa{\thisrow{d}==0}{black!12}{10}{32}
+\addplot[cdad!60!black] table[x=data, y=preco]{\arqr{dia_a_dia.csv}};
+\nextgroupplot[ymin=-0.3, ymax=5.8, ytick={0,...,4}, ylabel={Ordem},
+  title={\passo{2} As ordens que o AIC escolheu: \vRModelos{} combinações $(p,d,q)$ em dois anos},
+  legend style={at={(0.005,0.97)}, anchor=north west, font=\footnotesize, legend columns=2}]
+\faixa{\thisrow{d}==0}{black!12}{-0.3}{5.8}
+\addplot[cmod, const plot, forget plot] table[x=data, y=p]{\arqr{dia_a_dia.csv}};
+\addplot[cari, const plot, dashed, forget plot] table[x=data, y=q]{\arqr{dia_a_dia.csv}};
+\addlegendimage{cmod, line width=0.9pt}\addlegendentry{$p$ (retornos passados)}
+\addlegendimage{cari, dashed, line width=0.9pt}\addlegendentry{$q$ (erros passados)}
+\nextgroupplot[ymin=-0.35, ymax=1.35, ylabel={Coeficiente},
+  title={\passo{3} Os coeficientes, reestimados todo pregão por Hannan-Rissanen},
+  legend style={at={(0.005,0.97)}, anchor=north west, font=\footnotesize, legend columns=2},
+  /pgf/number format/fixed]
+\faixa{\thisrow{d}==0}{black!12}{-0.35}{1.35}
+\addplot[black!40, forget plot, line width=0.5pt] coordinates {(2019-07-01,0) (2021-06-30,0)};
+\addplot[cmod] table[x=data, y=phi1]{\arqr{dia_a_dia.csv}};
+\addlegendentry{$\phi_1$}
+\addplot[cari] table[x=data, y=theta1]{\arqr{dia_a_dia.csv}};
+\addlegendentry{$\theta_1$}
+\end{groupplot}
+\node[font=\footnotesize, text=black!75, align=left, anchor=north west, text width=14.2cm]
+  at ([yshift=-0.75cm]group c1r3.south west) {Como ler: a cada 21 pregões o robô refaz o ADF e a grade do AIC e pode trocar de modelo
+  (houve \vRTrocas{} trocas). Entre uma escolha e outra o modelo é o mesmo, mas os coeficientes são reestimados todo dia com a
+  janela que andou um pregão. Em \vRDiasPasseio{} dos \vRN{} pregões a escolha foi ARIMA(0,1,0): sem $\phi$ nem $\theta$, a
+  previsão é só a constante, o retorno médio da janela. Com $d = 0$ (faixas cinza) o modelo trabalha no log-preço, e o $\phi_1$
+  perto de 1 faz quase o papel da diferença.};
+\end{tikzpicture}
+\end{document}

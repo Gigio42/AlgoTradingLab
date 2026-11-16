@@ -1,0 +1,30 @@
+% Quando cada versão do robô ficou comprada: ARIMA puro e ARIMA-GARCH, com os
+% mesmos sinais do ARIMA (traços da refação de 05/10/2026). Mostra só a
+% exposição, não o dinheiro: o resultado financeiro está no Cap. III.
+\documentclass[border=6pt]{standalone}
+\input{comum}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[base, traco, group style={group size=1 by 3, vertical sep=1.0cm, xticklabels at=edge bottom},
+  width=15cm, clip=false]
+\nextgroupplot[height=6.2cm, ymin=8, ymax=33, ylabel={Preço (R\$)},
+  title={\passo{1} O preço e os vetos do GARCH (faixas vermelhas)}]
+\faixa{\thisrow{vetou}==1}{cdes!13}{8}{33}
+\addplot[black!75] table[x=data, y=preco]{\arqr{dia_a_dia.csv}};
+\nextgroupplot[height=2.3cm, ymin=0, ymax=1, ytick=\empty, grid=none, axis on top,
+  title={\passo{2} Faixa colorida $=$ comprado naquele pregão}]
+\node[anchor=east, font=\footnotesize, align=right] at (rel axis cs:-0.01,0.5) {ARIMA puro\\\vRDiasCompradoA{} dias};
+\faixa{\thisrow{pos_a}==1}{cari!80}{0}{1}
+\nextgroupplot[height=2.3cm, ymin=0, ymax=1, ytick=\empty, grid=none, axis on top]
+\node[anchor=east, font=\footnotesize, align=right] at (rel axis cs:-0.01,0.5) {ARIMA-GARCH\\\vRDiasCompradoG{} dias};
+\faixa{\thisrow{pos}==1}{cmod!85}{0}{1}
+\end{groupplot}
+\node[font=\footnotesize, text=black!75, align=left, anchor=north west, text width=14.2cm]
+  at ([yshift=-0.75cm]group c1r3.south west) {Como ler: as duas versões recebem os mesmos sinais do ARIMA. O GARCH só pode tirar
+  exposição: nos \vRN{} pregões, a versão com GARCH nunca esteve comprada quando o ARIMA puro estava fora (\vRDiasSoGarch{} dias),
+  e esteve fora em \vRDiasSoArima{} dias em que o ARIMA puro estava comprado. Na queda de março de 2020 as duas já estavam fora,
+  porque o próprio ARIMA deu sinal de venda no fim de fevereiro. A diferença aparece em abril de 2020 (o ARIMA puro voltou a
+  comprar e o GARCH, ainda vetando, não) e em fevereiro de 2021 (figura 8). Entradas: \vREntradasA{} no ARIMA puro,
+  \vREntradasG{} com o GARCH.};
+\end{tikzpicture}
+\end{document}
