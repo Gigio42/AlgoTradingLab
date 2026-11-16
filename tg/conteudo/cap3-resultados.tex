@@ -189,7 +189,7 @@ verdadeiros. No GARCH, o parâmetro $\beta$, que responde pela persistência da
 volatilidade, ficou a menos de 1\% do valor verdadeiro, enquanto $\omega$ e
 $\alpha$ se afastaram cerca de 17\% e 8\%. Ainda assim, a soma $\alpha + \beta$,
 que determina quanto tempo um choque de volatilidade leva para se dissipar, foi
-estimada em 0,9765, contra 0,98 do valor verdadeiro. Os dois métodos de estimação
+estimada em cerca de 0,977, contra 0,98 do valor verdadeiro. Os dois métodos de estimação
 chegaram, portanto, perto dos valores que geraram as séries, o que indica que
 foram implementados corretamente.
 
@@ -603,7 +603,7 @@ móveis, por exemplo, foram as melhores em 2020 e 2023 e as piores em 2017, 2021
 No saldo registrado pelo MetaTrader 5, no Gráfico~\ref{gra:mt5-r6}, a queda
 mais forte do ARIMA aparece por volta da negociação 67. Ela aconteceu em junho de
 2018, quando a PETR4 perdeu 47,9\% do valor em cerca de um mês, e levou o saldo
-do ARIMA a R\$ 69 mil, o menor do teste. O ARIMA-GARCH atravessou esse trecho sem
+do ARIMA a R\$ 69 mil, o menor do teste. O ARIMA-GARCH Sharpe atravessou esse trecho sem
 a mesma queda, já que o seu menor saldo, de R\$ 81 mil, foi registrado logo no
 início do teste, em julho de 2017. Ao fim do período, o seu saldo era de
 R\$ 299 mil, contra R\$ 196 mil do ARIMA.
@@ -1202,7 +1202,7 @@ dos doze casos. Nas duas exceções, em 2025 a 2026, o ARIMA-GARCH
 Sharpe caiu menos na VALE3, e na USIM5 nenhuma das versões com GARCH chegou a
 operar. O ARIMA-GARCH Sharpe foi menos regular. Ele caiu mais que o ARIMA em três
 casos, e nos três a configuração escolhida mantinha a posição aberta durante o
-veto, como na PETR4. No retorno, o ARIMA sem o GARCH rendeu mais que o
+veto, como o ARIMA-GARCH Calmar da PETR4 em 2017 a 2024. No retorno, o ARIMA sem o GARCH rendeu mais que o
 ARIMA-GARCH Sharpe em nove dos doze casos, e o maior ganho da tabela foi dele, na
 POMO4 de 2007 a 2011.
 

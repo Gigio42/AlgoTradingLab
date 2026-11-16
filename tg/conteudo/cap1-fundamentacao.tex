@@ -658,7 +658,7 @@ Calmar considera apenas a pior queda.
 
 Os trabalhos relacionados foram selecionados entre pesquisas sobre o
 desenvolvimento de robôs de negociação na plataforma MetaTrader 5 e sobre a
-aplicação dos modelos ARIMA e GARCH à previsão de séries de preços de ações.
+aplicação dos modelos ARIMA e GARCH à previsão dos preços e da volatilidade de ações.
 
 O estudo de \citeonline{almeida2016}, desenvolvido na FATEC Indaiatuba, é o ponto
 de partida deste trabalho. O autor desenvolveu em MQL5 um robô de negociação para
@@ -695,6 +695,20 @@ entrada de redes neurais. A etapa que interessa a este trabalho é a primeira, e
 que os resíduos do modelo de média servem de entrada para o modelo de variância,
 mesma arquitetura adotada no algoritmo aqui desenvolvido.
 
+% 16/11/2026, pedido do autor: Thomaz (2019) também como trabalho relacionado.
+% Resumo da dissertação (ações, GARCH e extensões, normal e t de Student, achados) e
+% cap. 4, p. 56 (InfoMoney, preços diários de 02/01/2007 a 11/04/2018).
+\citeonline{thomaz2019} aplicou os modelos ARMA e GARCH em conjunto à previsão da
+volatilidade de três ações da bolsa brasileira, ABEV3, BBDC3 e VALE3, com preços
+diários de janeiro de 2007 a abril de 2018. Além do GARCH, o autor testou variações
+assimétricas, como o EGARCH e o TGARCH, e duas distribuições para os erros, a
+normal e a t de Student. Os modelos com a t de Student tiveram erros de previsão
+menores, e os assimétricos se ajustaram melhor de forma geral, embora em uma das
+séries a melhor previsão tenha sido a do GARCH(1,1) simétrico. O estudo avalia a
+qualidade da previsão da volatilidade, e não o resultado de uma estratégia de
+negociação, que é o que este trabalho acrescenta. Ele é também a principal fonte
+da fundamentação estatística deste capítulo.
+
 O Quadro~\ref{qua:comparativa} resume as características desses estudos e as
 deste trabalho.
 
@@ -714,6 +728,8 @@ Estudo & Ativo & Fonte de dados & Periodicidade & Método \\
 \citeonline{xing2024} & NVIDIA & Yahoo Finance & diário & ARIMA e ARIMA-GARCH, comparados a redes neurais \\
 \hline
 \citeonline{araya2024} & Apple & Yahoo Finance & diário & Resíduos do SARIMA como entrada do GARCH, seguidos de redes neurais \\
+\hline
+\citeonline{thomaz2019} & ABEV3, BBDC3 e VALE3 & InfoMoney & diário & ARMA-GARCH e variações assimétricas na previsão da volatilidade \\
 \hline
 Este trabalho & PETR4 e outras três ações & B3 (COTAHIST) & diário & ARIMA e ARIMA-GARCH, comparados às médias móveis de \citeonline{almeida2016} \\
 \hline

@@ -2113,3 +2113,54 @@ sobre o experimento · **[resultado]** sobre como ler um número.
      referências, tabelas contra os arquivos de resultado (só a exposição de T1 e
      os proventos de T2), código dos apêndices. Não há PDF de Hannan e Rissanen
      (1982) em `bibliografia/pdfs/` (citação autorizada no item 69).
+
+114. **[texto/referências] Correções da auditoria completa (16/11/2026, pedido do
+     autor).** Cópia antes: `ia/rascunhos/antes_auditoria_completa_2026-11-16/`.
+    - Referências: ano e folhas em Almeida (77 f.), Batista (65 f.) e Thomaz
+      (122 f.), contados nos PDFs de `bibliografia/pdfs/` (campo `pages` com
+      "ano. folhas" e `pagename = f.`, porque o estilo não repete o ano sozinho).
+      **Erro achado:** Batista (2024) estava como "Graduação em Engenharia de
+      Computação"; a folha de rosto do PDF diz Bacharel em Ciência da Computação.
+      Corrigido para "Bacharelado em Ciência da Computação".
+    - Local nos artigos: Harvey et al. = Nova Iorque (mesmo periódico da entrada de
+      Sharpe). Hannan e Rissanen = Oxford. **Não confirmado:** o local da
+      Biometrika não saiu de arquivo do projeto (a Crossref só informa JSTOR como
+      editora). Conferir, ou tirar, se a orientadora aceitar sem local.
+    - Datas de acesso: Batista, as três páginas do BCB, MetaQuotes (2024) e Xing
+      passaram a 16 nov. 2026 (os seis endereços responderam 200 em 16/11). **O de
+      Almeida (ric.cps.sp.gov.br) não respondeu** e ficou com 20 fev. 2025.
+    - Texto: "plano dos testes principais" em 2.1.2 e 2.5 (com "os testes
+      complementares foram acrescentados depois"); resumo e abstract com "na
+      maioria dos casos"; 3.11.3 "como o ARIMA-GARCH Calmar da PETR4 em 2017 a
+      2024"; 3.2 "cerca de 0,977"; 3.6.1 "ARIMA-GARCH Sharpe".
+    - **Não mexido:** a frase sobre IA da seção 2.4 (decisão dos autores com a
+      orientadora).
+    - 88 páginas, 0 estouro, 0 referência indefinida, nenhuma ilustração cortando
+      parágrafo, resumo e abstract em uma página cada, Considerações nas pp. 60-61.
+
+115. **[código × texto] Conferência dos apêndices (16/11/2026, pergunta do autor).**
+     Nada alterado.
+    - As seis listagens de `tg/codigo/` são idênticas às geradas hoje pelo
+      `codigo_apendice.sh` a partir de `robos/` (diff vazio). Sem marcador
+      `//@omitir` sobrando, 0 estouro de margem, linhas longas quebram sozinhas.
+      Não recompiladas hoje (iguais às de 02/11, que compilaram com 0 erros).
+    - **Achado 1:** a seleção das ordens (ADF e grade do AIC) usa sempre 240
+      pregões (`Janela_Selecao=240` fixo em todas as grades de
+      `refeito_2026-10-05/grades/`; no EA, `MathMax(Janela_Selecao,
+      Janela_Estimacao)`), mesmo quando a janela de estimação é 120. O Cap. II
+      (2.4.2, 2.4.4, 2.4.7) não diz isso, e o Apêndice A mostra o parâmetro.
+    - **Achado 2:** o Apêndice A diz que saíram "as opções que não foram usadas nos
+      experimentos". A janela própria do GARCH e o início adiado da operação
+      (`Janela_GARCH`, `Inicio_Operacao`) foram usados no primeiro teste
+      complementar (3.11.1) e não estão na listagem.
+
+116. **[texto] Thomaz (2019) nos trabalhos relacionados (16/11/2026, pedido do
+     autor).** Cópia antes: `ia/rascunhos/antes_thomaz_relacionado_2026-11-16/`.
+     Parágrafo novo na 1.7, linha no Quadro 2 e ajuste da justificativa na introdução
+     ("no Brasil", com a ressalva de que o estudo é de previsão, não de negociação).
+     Conferido no PDF: resumo (ABEV3, BBDC3, VALE3; GARCH, EGARCH, TGARCH, PGARCH,
+     GJR, IGARCH; normal e t de Student; t com erros menores; assimétricos melhores
+     no ajuste; BBDC3 com GARCH(1,1) simétrico na previsão) e cap. 4, p. 56
+     (InfoMoney, diário, 02/01/2007 a 11/04/2018). Siglas ABEV3 e BBDC3
+     acrescentadas ("ordinárias" pelo final 3, não confirmado em arquivo). 88
+     páginas, 0 estouro, Quadro 2 na p. 25, lista de siglas em uma página.
