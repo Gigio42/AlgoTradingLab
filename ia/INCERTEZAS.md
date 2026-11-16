@@ -1958,3 +1958,158 @@ sobre o experimento · **[resultado]** sobre como ler um número.
     reseleção a cada 21 pregões, que continuam no Cap. II. Legenda e texto em volta
     sem mudança. Anterior em `ia/rascunhos/antes_fig05_conceito_2026-11-15/`. TG com
     88 páginas, sem estouro; `main.docx` gerado de novo.
+
+108. **[texto] Janela do GARCH no TG como segundo teste complementar (15/11/2026,
+    pedido do autor).**
+    - Cap. II: "Teste complementar" virou "Testes complementares", com um parágrafo
+      sobre a verificação da janela (GARCH com janela própria de 240, 500 e 1000
+      resíduos; ARIMA fixo em 240; 152 + 4 configurações; quatro anos de aquecimento;
+      2013-2016, 2017-2024 e 2025-2026; resultados comparados só entre janelas).
+      "Janela de estimação" ganhou a ressalva "exceto na verificação…", e a frase
+      "alternativa que não foi adotada neste trabalho" virou "adotada apenas nessa
+      verificação". O parágrafo de abertura do plano diz "os testes complementares".
+    - Cap. III: seção nova 3.13 "A proteção depende da janela do GARCH?", depois de
+      "Outras ações", com a Tabela 17 (medianas, de
+      `janelas_garch_2026-11-13/cru/resumo_testes.csv`) e a configuração do GS de
+      2017-2024 fixa (`cru/traco_resumo.csv`; +199,5 / +64,6 / +80,7%, quedas 27,2 /
+      37,0 / 26,7%, todas abaixo dos 40,5% da mesma configuração sem GARCH).
+    - Considerações: a limitação da janela passou a citar este teste (antes citava o
+      de 26/10, só com 500), e o trabalho futuro ficou "janelas maiores também para o
+      ARIMA" e a janela expansiva.
+    - Ficaram fora, por decisão de 15/11: a janela de 120, o período 2007-2011 (série
+      PETR4_DESDE1999, sem segunda fonte para 1999-2002), manter × encerrar no veto
+      (`filtro_ajuste_500/1000`) e a concentração do +199,5% em 2018 e 2022.
+    - **Atenção na banca**: o "240" da Tabela 17 não é igual ao das outras seções
+      (ARIMA fixo em 240 e aquecimento de quatro anos). O texto diz isso no Cap. II.
+    - Cópia anterior dos três capítulos em
+      `ia/rascunhos/antes_janela_garch_no_tg_2026-11-15/`. TG com 89 páginas.
+
+109. **[texto] Testes complementares agrupados e nomes dos períodos (15/11/2026,
+    pedido do autor).**
+    - Cap. II: a subseção "Venda a descoberto" voltou para dentro de "Testes
+      complementares" (tinha saído em 12/11, também a pedido). Ordem igual à do
+      Cap. III: 1º a janela do GARCH, 2º a venda a descoberto, 3º as outras ações.
+      A remissão do plano (`sec:venda-metodo`) aponta agora para `sec:complementar`.
+    - Cap. III: seção nova 3.11 "Testes complementares", depois de "Efeito dos
+      custos, da Selic e dos proventos", com 3.11.1 "A proteção depende da janela do
+      GARCH?", 3.11.2 "Venda a descoberto" e 3.11.3 "Outras ações". O fim de "O
+      efeito vem do GARCH?" ganhou uma frase que remete à 3.11.1.
+    - Nomes dos períodos, iguais em títulos, texto e Figuras 7 e 9: "Crise
+      financeira de 2008" (2007-2011), "Queda e recuperação" (2013-2016), "Crise da
+      pandemia" (2017-2024) e "Período recente" (2025-2026). O autor escolheu
+      "crise financeira de 2008" em vez de "crise da bolsa" (2020 também foi crise da
+      bolsa). O texto de 3.5 continua dizendo que 2017-2024 é o teste principal.
+    - As duas figuras de períodos passaram a `width=\textwidth` (o nome maior as
+      deixava 2 mm mais largas que a mancha).
+    - Cópias: `ia/rascunhos/antes_venda_nos_complementares_2026-11-15/` e
+      `antes_nomes_periodos_2026-11-15/`. TG com 89 páginas, sem estouro.
+
+110. **[norma/layout] Auditoria de 16/11/2026 antes da entrega à orientadora.**
+    - **Margem inferior** ficava com 1,82 cm (o abnTeX2 arredondava a altura do
+      texto para um número inteiro de linhas). `main.tex`: margens 3/2/3/2 fixadas
+      com `\checkandfixthelayout[fixed]`; a mancha passou a 702,8 pt e a margem a
+      2,0 cm. O que ainda passa de 0,1 mm é a protrusão do microtype.
+    - **Referências** separadas por uma linha em branco de espaço simples (Manual
+      1.4); antes eram 2/3 de linha (`\AfterTheBibliography` no `main.tex`).
+    - **Números de linha dos apêndices** dentro da mancha (`xleftmargin=0.75cm`).
+    - **Cap. III**: as capturas do MetaTrader 5 ganharam o rótulo ao lado da imagem
+      (0,66 da largura; antes eram 0,7 com o rótulo em cima). O Gráfico 2 foi para
+      logo depois da Tabela 3, e a Tabela 15 (janela do GARCH) para depois do
+      primeiro parágrafo de resultado. Branco no pé das páginas do Cap. III: de 203%
+      somados (5 páginas com 20% a 41%) para 75% (só a p. 43, 21%, antes do
+      `\FloatBarrier` de "O ano de 2008"). Nenhuma ilustração corta parágrafo
+      (`checar_ilustracoes.sh`). TG de 90 para 88 páginas.
+    - A abertura do Cap. III foi atualizada com os testes complementares. A nota da
+      Tabela 15 ganhou a frase de 2007 a 2011 (pedido do autor).
+    - Relatório com o que continua aberto: `ia/relatorios/auditoria-2026-11-16.md`.
+      Cópia anterior: `ia/rascunhos/antes_auditoria_layout_2026-11-16/`.
+    - **Mesmo dia, pedido do autor** (itens 1 a 5 de `auditoria-2026-11-16.md`):
+      rótulo das capturas do MetaTrader 5 de volta para cima, com 0,6 da largura.
+      Resumo e abstract: "fora de crise" no lugar de "mercado estável", "em
+      diferentes períodos, incluindo duas crises" no lugar de "crise e calma", e
+      duas frases sobre as outras ações, a janela do GARCH e a venda a descoberto
+      (332 e 344 palavras). Considerações: frase sobre a venda a descoberto no
+      parágrafo do risco, e "na Seção 3.10" no lugar de "na análise complementar".
+      Cap. II: 2017 a 2024 declarado teste principal junto dos períodos (2.2), "como
+      no cenário principal" em 2.5.9, "análise complementar" trocada nos dois
+      lugares. Cap. III, 3.11.3: "o mesmo procedimento aplicado à PETR4". Figura 6:
+      "nenhuma compra no pregão", e o parágrafo diz que, com a opção ligada, o veto
+      também vende a posição aberta. Quadro 1 depois do parágrafo do risco (cortava
+      parágrafo). TG com 89 páginas, sem corte de parágrafo, branco do Cap. III só na
+      p. 43 (21%) e na p. 56 (20%, fim da 3.10). Cópia anterior:
+      `ia/rascunhos/antes_itens_auditoria_2026-11-16/`.
+
+111. **[texto] Considerações finais enxutas e com subdivisão de sugestões
+    (16/11/2026, pedido do autor).**
+    - Manual 2026-2028, item 4.1.2.14: as considerações respondem à pergunta,
+      revisitam as hipóteses e dizem se os objetivos foram alcançados, não podem ser
+      resumo nem repetição, e "nas considerações finais é possível dar sugestões e
+      recomendações para futuros estudos". Ou seja, as sugestões ficam DENTRO das
+      considerações, não num capítulo à parte. Subdivisão só é proibida na
+      introdução (item 4.1.2.1). Almeida (2016) usou "4 Considerações finais" com
+      "4.1 Sugestões para trabalhos futuros" e "4.2 Considerações Finais".
+    - Feito: "Considerações finais" sem número (como antes) e, no fim, a
+      subdivisão sem número "Sugestões para trabalhos futuros", que aparece no
+      sumário. Texto de 1.586 para 1.186 palavras, de 4 para pouco mais de 2
+      páginas: saíram as repetições (risco, médias móveis e retorno vinham na
+      resposta à pergunta e de novo nas hipóteses). Nenhum número novo. Saiu o
+      detalhe de que os valores de Almeida "só se aproximaram sob a hipótese de que
+      o histórico começasse em 2008" (fica no Cap. III).
+    - Introdução: a frase da organização diz que as considerações terminam com
+      sugestões para trabalhos futuros.
+    - **Corrigido no mesmo dia, pedido do autor:** o subtítulo saiu. Manual 1.5:
+      "Títulos/Subtítulos: numerado conforme indicativo sequencial", e o modelo de
+      sumário (Figura 7, p. 25 do Manual) mostra CONSIDERAÇÕES FINAIS sem número e
+      sem subdivisão. Um subtítulo sem número dentro delas não tem previsão, e um
+      "4.1" dentro de algo sem número não faz sentido. Pela ABNT pura (NBR 6024,
+      de memória, não confirmado) tudo seria numerado, como em Almeida (2016). As
+      sugestões ficam nos dois últimos parágrafos, o primeiro aberto por "Como
+      sugestão para trabalhos futuros".
+    - **Ajuste para caber em duas folhas (pedido do autor):** saíram "nas sete
+      comparações feitas" (o número aparece logo depois), "sem prever melhor a
+      direção dos preços" (dito na frase do acerto), a variação dos parâmetros do
+      GARCH "de um dia para o outro", "condições que só podem ser verificadas em
+      operação real", a explicação longa de por que a LSTM ficou de fora, e as frases
+      finais da LSTM foram encurtadas. Considerações nas pp. 60 e 61, TG com 88
+      páginas. Cópia antes deste ajuste:
+      `ia/rascunhos/antes_consideracoes_enxutas_2026-11-16/cap4-consideracoes_v2_antes_3linhas.tex`.
+    - Cópia anterior: `ia/rascunhos/antes_consideracoes_enxutas_2026-11-16/`. TG
+      com 89 páginas, sem estouro nem referência indefinida.
+
+112. **[texto] Releitura de 16/11/2026: o que ficou ruim com as mudanças e as
+     pendências antigas (pedido do autor).** Cópia antes: 
+     `ia/rascunhos/antes_releitura_correcoes_2026-11-16/`. Lista em
+     `ia/relatorios/auditoria-2026-11-16.md`, seção "Releitura".
+    - Feito: Cap. I sem a "opção de encerrar a posição no veto" (vira "Em algumas
+      configurações"); 3.8 sem a frase solta sobre a janela do GARCH; 3.6 sem repetir
+      o porquê do teste principal; 3.11.1 sem a remissão repetida; 3.11.3 sem "Como
+      complemento" e sem "PETR4" duas vezes; 2.5.8 sem reapresentar as outras ações.
+    - Redução: só a explicação da venda a descoberto (saiu do 2.4, ficou no 3.11.2 e
+      nas Considerações). Os outros dois itens de redução ficaram de fora, a pedido.
+    - Pendências antigas: 3.10 diz a etapa de cada número ("já com os custos") e
+      "ARIMA da Tabela 3" na exposição (43% = AS, `metricas_R3_T1_AS.csv`; os 45,6%
+      da 3.9 são a mesma configuração sem GARCH); notas dos 4 gráficos do MT5 remetem
+      à tabela do período; "2025 e 2026" → "2025 a 2026" (5); "variante" → "versão"
+      nas Considerações; Cap. I: pesos fixos só em 1.4.1, passeio aleatório retomado
+      (não reexplicado) antes do ADF, e 1.4 abre dizendo que média móvel e modelo
+      são cálculos sobre a série (itens 6 e 7 de 13/11); 2.4.7 "faixa de zero a
+      quatro para as ordens p e q"; siglas com BBAS3F, POMO4, USIM5 e VALE3.
+    - **Não confirmado:** a descrição das siglas VALE3 (ON da Vale), USIM5 (PNA da
+      Usiminas) e BBAS3F (ON do Banco do Brasil, fracionário) é conhecimento geral,
+      sem arquivo no repositório que a mostre. A POMO4 (MARCOPOLO PN) e a PETR4
+      (PETROBRAS PN) foram conferidas nas linhas do COTAHIST em `dados/fontes/b3/`.
+    - **Data final de 2025 a 2026:** a amostra vai até 21/09/2026 (último pregão do
+      COTAHIST baixado), e os testes rodaram até 18/09 (data final 2026.09.19 no
+      `refazer_testes.sh`). A nota da Tabela 8 agora diz isso. O motivo de deixar
+      21/09 de fora não está registrado. Se a banca perguntar, a resposta honesta é
+      que o fim do teste foi fixado na sexta-feira anterior.
+    - TG com 88 páginas, 0 estouro, 0 referência indefinida, nenhuma ilustração
+      cortando parágrafo, Considerações nas pp. 60 e 61, branco do Cap. III igual
+      (p. 43 com 21% e p. 56 com 20%). `main.docx` gerado de novo.
+
+113. **[auditoria] Auditoria completa de 16/11/2026 em HTML (pedido do autor).**
+     `ia/relatorios/auditoria-completa-2026-11-16.html`. Nada alterado no `tg/`.
+     Não reconferido nesta rodada: fidelidade de cada citação à obra, links das
+     referências, tabelas contra os arquivos de resultado (só a exposição de T1 e
+     os proventos de T2), código dos apêndices. Não há PDF de Hannan e Rissanen
+     (1982) em `bibliografia/pdfs/` (citação autorizada no item 69).

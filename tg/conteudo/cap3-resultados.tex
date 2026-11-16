@@ -48,10 +48,17 @@
 %   - Taxa de acerto (41% a 59%; diferença com e sem GARCH até 4 pontos), vetos
 %     e sinais, exposição: metricas_* (taxa_acerto, vetos, sinais, exposicao)
 %   - d = 1 em 83,1%: R/traco_demo/traco_demo_GARCH.csv
+%   - Janela do GARCH (seção 3.13, desde 15/11/2026):
+%     dados/resultados/janelas_garch_2026-11-13/cru/resumo_testes.csv e traco_resumo.csv
 %   - 03/04/2020: R/traco_demo/traco_demo_GARCH.csv
 %   - Almeida, 3 negociações somando R$ 7.530: bibliografia/pdfs/Almeida-2016.pdf,
 %     seção 3.3
 % =====================================================================
+% 16/11/2026 (auditoria): capturas do MetaTrader 5 com 0,6 da largura (eram 0,7;
+% o rótulo fica em cima, pedido do autor), gra:anual-t1 logo depois da Tabela 3 e tab:janela-garch depois do
+% primeiro parágrafo de resultado, para tirar
+% espaço em branco e não cortar parágrafo. Abertura do capítulo atualizada com os
+% testes complementares. Cópia em ia/rascunhos/antes_auditoria_layout_2026-11-16/.
 \setdiv{CAPÍTULO III}
 \chapter{Análise e discussão dos dados}
 
@@ -60,8 +67,9 @@ Começa pela reprodução do estudo de \citeonline{almeida2016} e pela validaç�
 estimadores e apresenta, em seguida, cada período de teste separadamente, com o ano de cada crise em
 detalhe. Depois verifica se o efeito
 observado vem mesmo do GARCH, mostra de que forma ele protege o capital e como os
-custos, a Selic e os proventos mudam o resultado e o que muda quando o robô
-também vende a descoberto, e fecha com outras três ações.
+custos, a Selic e os proventos mudam o resultado. Fecha com os testes
+complementares, que mudam a janela do GARCH, permitem a venda a descoberto e
+trocam a ação.
 
 \section{Reprodução do estudo de referência}
 
@@ -290,7 +298,7 @@ desse período foi a configuração com o índice menos negativo.
 
 
 
-\section{Crise financeira, 2007 a 2011}
+\section{Crise financeira de 2008, 2007 a 2011}
 
 \subsection{O período completo}
 
@@ -320,13 +328,6 @@ PETR4 & $-$14,0\% & 67,2\% & 43,2\% & -- \\
 \nota{Resultado bruto. Neste período, os dois critérios de escolha resultaram na mesma configuração do ARIMA-GARCH.}
 \end{table}
 
-Nenhum robô terminou o período com ganho. O ARIMA-GARCH foi o que menos perdeu e,
-principalmente, o que menos caiu. A sua queda máxima, de 17,5\%, foi pouco mais de
-um quarto da das médias móveis e menos da metade da do ARIMA, e a sua volatilidade,
-de 10,5\% ao ano, ficou abaixo de 40\% da dos outros dois. O ARIMA e as médias
-móveis oscilaram de forma muito parecida, o que mostra que trocar o cruzamento de
-médias pela previsão do ARIMA, por si só, não reduziu o risco.
-
 \begin{grafico}[htbp]
 \centering
 \caption{Retorno por ano, 2007 a 2011}
@@ -335,6 +336,13 @@ médias pela previsão do ARIMA, por si só, não reduziu o risco.
 \fonte{Elaboração própria.}
 \nota{Resultado bruto.}
 \end{grafico}
+
+Nenhum robô terminou o período com ganho. O ARIMA-GARCH foi o que menos perdeu e,
+principalmente, o que menos caiu. A sua queda máxima, de 17,5\%, foi pouco mais de
+um quarto da das médias móveis e menos da metade da do ARIMA, e a sua volatilidade,
+de 10,5\% ao ano, ficou abaixo de 40\% da dos outros dois. O ARIMA e as médias
+móveis oscilaram de forma muito parecida, o que mostra que trocar o cruzamento de
+médias pela previsão do ARIMA, por si só, não reduziu o risco.
 
 O Gráfico~\ref{gra:anual-t1} mostra o resultado de cada ano. O ARIMA-GARCH foi o
 robô que menos perdeu em 2008, ano detalhado na subseção seguinte, e o único com
@@ -368,11 +376,11 @@ R\$ 109 mil.
 \caption{Saldo registrado pelo MetaTrader 5, 2007 a 2011}
 \label{gra:mt5-t1}
 {\small ARIMA}\\[2pt]
-\includegraphics[width=0.7\textwidth]{../dados/resultados/refeito_2026-10-05/relatorios_mt5/rel_R3_T1_AS.png}\\[6pt]
+\includegraphics[width=0.6\textwidth]{../dados/resultados/refeito_2026-10-05/relatorios_mt5/rel_R3_T1_AS.png}\\[6pt]
 {\small ARIMA-GARCH}\\[2pt]
-\includegraphics[width=0.7\textwidth]{../dados/resultados/refeito_2026-10-05/relatorios_mt5/rel_R3_T1_GS.png}
+\includegraphics[width=0.6\textwidth]{../dados/resultados/refeito_2026-10-05/relatorios_mt5/rel_R3_T1_GS.png}
 \fonte{Relatório do testador de estratégias do MetaTrader 5.}
-\nota{Saldo em reais após cada negociação encerrada (\textit{Balance}, no original). O eixo horizontal é o número da negociação, e as escalas dos dois painéis são diferentes.}
+\nota{Saldo em reais após cada negociação encerrada (\textit{Balance}, no original). O eixo horizontal é o número da negociação, e as escalas dos dois painéis são diferentes. Os robôs são os mesmos da Tabela~\ref{tab:crise}.}
 \end{grafico}
 
 \FloatBarrier
@@ -450,7 +458,7 @@ média, 56,4\% do patrimônio aplicado.
 % de 2008: GS 0,0% a 22,1%, AS 23,2% a 61,8%; outubro 0,0%, 56,4%, -32,8%) e
 % cru/anual_T1.csv (2007 e 2010).
 
-\section{Queda prolongada e recuperação, 2013 a 2016}
+\section{Queda e recuperação, 2013 a 2016}
 
 O segundo período combina a queda prolongada da PETR4 até o início de 2016 com a
 forte recuperação que veio depois. É também o período em que o robô de
@@ -526,20 +534,19 @@ Sharpe, no mesmo mês, foi de R\$ 71 mil.
 \caption{Saldo registrado pelo MetaTrader 5, 2013 a 2016}
 \label{gra:mt5-t2}
 {\small ARIMA}\\[2pt]
-\includegraphics[width=0.7\textwidth]{../dados/resultados/refeito_2026-10-05/relatorios_mt5/rel_R3_T2_AS.png}\\[6pt]
+\includegraphics[width=0.6\textwidth]{../dados/resultados/refeito_2026-10-05/relatorios_mt5/rel_R3_T2_AS.png}\\[6pt]
 {\small ARIMA-GARCH Sharpe}\\[2pt]
-\includegraphics[width=0.7\textwidth]{../dados/resultados/refeito_2026-10-05/relatorios_mt5/rel_R3_T2_GS.png}
+\includegraphics[width=0.6\textwidth]{../dados/resultados/refeito_2026-10-05/relatorios_mt5/rel_R3_T2_GS.png}
 \fonte{Relatório do testador de estratégias do MetaTrader 5.}
-\nota{Saldo em reais após cada negociação encerrada (\textit{Balance}, no original). O eixo horizontal é o número da negociação, e as escalas dos dois painéis são diferentes.}
+\nota{Saldo em reais após cada negociação encerrada (\textit{Balance}, no original). O eixo horizontal é o número da negociação, e as escalas dos dois painéis são diferentes. Os robôs são os mesmos da Tabela~\ref{tab:fora-crise}.}
 \end{grafico}
 
-\section{Teste principal, 2017 a 2024}
+\section{Crise da pandemia, 2017 a 2024}
 
 \subsection{O período completo}
 
-O período de 2017 a 2024 é o teste principal, por ser o mais longo com escolha
-própria, e inclui a
-queda provocada pela pandemia em 2020. A Tabela~\ref{tab:principal} apresenta o
+O período de 2017 a 2024, teste principal do trabalho, inclui a queda provocada
+pela pandemia em 2020. A Tabela~\ref{tab:principal} apresenta o
 resultado.
 
 O ARIMA-GARCH Sharpe teve o maior retorno do período, de 199,5\%, e a menor
@@ -615,11 +622,11 @@ R\$ 299 mil, contra R\$ 196 mil do ARIMA.
 \caption{Saldo registrado pelo MetaTrader 5, 2017 a 2024}
 \label{gra:mt5-r6}
 {\small ARIMA}\\[2pt]
-\includegraphics[width=0.7\textwidth]{../dados/resultados/refeito_2026-10-05/relatorios_mt5/rel_R6_ARIMA.png}\\[6pt]
+\includegraphics[width=0.6\textwidth]{../dados/resultados/refeito_2026-10-05/relatorios_mt5/rel_R6_ARIMA.png}\\[6pt]
 {\small ARIMA-GARCH Sharpe}\\[2pt]
-\includegraphics[width=0.7\textwidth]{../dados/resultados/refeito_2026-10-05/relatorios_mt5/rel_R6_GS.png}
+\includegraphics[width=0.6\textwidth]{../dados/resultados/refeito_2026-10-05/relatorios_mt5/rel_R6_GS.png}
 \fonte{Relatório do testador de estratégias do MetaTrader 5.}
-\nota{Saldo em reais após cada negociação encerrada (\textit{Balance}, no original). O eixo horizontal é o número da negociação, e as escalas dos dois painéis são diferentes.}
+\nota{Saldo em reais após cada negociação encerrada (\textit{Balance}, no original). O eixo horizontal é o número da negociação, e as escalas dos dois painéis são diferentes. Os robôs são os mesmos da Tabela~\ref{tab:principal}.}
 \end{grafico}
 
 \FloatBarrier
@@ -739,7 +746,10 @@ PETR4 & +33,2\% & 25,1\% & 29,1\% & -- \\
 \hline
 \end{tabular}
 \fonte{Elaboração própria.}
-\nota{Resultado bruto. O período termina em 18 de setembro de 2026.}
+\nota{Resultado bruto. O período termina em 18 de setembro de 2026, sexta-feira anterior ao último pregão da amostra.}
+% 16/11/2026: a amostra vai até 21/09/2026 (Cap. II), e os testes de T3 rodaram com
+% data final 2026.09.19 no testador (refazer_testes.sh), última barra 18/09
+% (curva_R3_T3_*.csv). O motivo de não incluir 21/09 não está registrado.
 \end{table}
 
 \begin{grafico}[htbp]
@@ -756,11 +766,11 @@ PETR4 & +33,2\% & 25,1\% & 29,1\% & -- \\
 \caption{Saldo registrado pelo MetaTrader 5, 2025 a 2026}
 \label{gra:mt5-t3}
 {\small ARIMA}\\[2pt]
-\includegraphics[width=0.7\textwidth]{../dados/resultados/refeito_2026-10-05/relatorios_mt5/rel_R3_T3_AS.png}\\[6pt]
+\includegraphics[width=0.6\textwidth]{../dados/resultados/refeito_2026-10-05/relatorios_mt5/rel_R3_T3_AS.png}\\[6pt]
 {\small ARIMA-GARCH Sharpe}\\[2pt]
-\includegraphics[width=0.7\textwidth]{../dados/resultados/refeito_2026-10-05/relatorios_mt5/rel_R3_T3_GS.png}
+\includegraphics[width=0.6\textwidth]{../dados/resultados/refeito_2026-10-05/relatorios_mt5/rel_R3_T3_GS.png}
 \fonte{Relatório do testador de estratégias do MetaTrader 5.}
-\nota{Saldo em reais após cada negociação encerrada (\textit{Balance}, no original). O eixo horizontal é o número da negociação, e as escalas dos dois painéis são diferentes.}
+\nota{Saldo em reais após cada negociação encerrada (\textit{Balance}, no original). O eixo horizontal é o número da negociação, e as escalas dos dois painéis são diferentes. Os robôs são os mesmos da Tabela~\ref{tab:recente}.}
 \end{grafico}
 
 \section{O efeito vem do GARCH?}
@@ -774,11 +784,11 @@ Tabela~\ref{tab:efeito}.
 
 Em todas as sete comparações, a versão com GARCH teve volatilidade e queda máxima
 menores que as da mesma configuração sem ele. As comparações não são
-independentes entre si, já que, em 2013 a 2016 e em 2025 e 2026, o ARIMA-GARCH
+independentes entre si, já que, em 2013 a 2016 e em 2025 a 2026, o ARIMA-GARCH
 Sharpe e o ARIMA-GARCH Calmar têm a mesma configuração sem GARCH, mas o resultado
 se repetiu em todos os períodos. No retorno, o resultado foi outro. A versão com
 GARCH rendeu mais em três das sete comparações e menos nas outras quatro, entre
-elas as duas de 2025 e 2026.
+elas as duas de 2025 a 2026.
 % 05/11/2026, pedido do autor: as configurações fixas (escolhidas em 2010 a 2012)
 % saíram da Tabela anterior e do Cap. II e ficaram só como testes adicionais,
 % abaixo. Com elas eram onze comparações e o GARCH rendia mais em sete. Mesma
@@ -852,7 +862,7 @@ quando a volatilidade sobe, seja porque ajustam o tamanho da posição, seja por
 o veto encerra a posição aberta. Nesse grupo, considerando as quatro ações, o
 GARCH reduziu a queda máxima em 84\% a 92\% das comparações em 2007 a 2011, em
 91\% a 98\% em 2013 a 2016 e em 81\% a 92\% em 2017 a 2024, conforme a ação. Em
-2025 e 2026, um período mais calmo, o efeito foi menor, de 51\% a 95\%. No segundo
+2025 a 2026, um período mais calmo, o efeito foi menor, de 51\% a 95\%. No segundo
 grupo estão as que apenas impedem novas compras e mantêm a posição aberta. Elas não
 mostraram o mesmo efeito de forma consistente e reduziram a queda máxima em 31\% a
 70\% das comparações, conforme a ação e o período.
@@ -865,7 +875,7 @@ mostraram o mesmo efeito de forma consistente e reduziram a queda máxima em 31\
 Na comparação com as médias móveis, também no resultado bruto, a vantagem do GARCH
 apareceu no risco, mas não no retorno. As versões com GARCH oscilaram menos que as
 médias móveis em todos os períodos, mas as médias móveis renderam mais que as duas
-versões em 2013 a 2016 e em 2025 e 2026.
+versões em 2013 a 2016 e em 2025 a 2026.
 
 \section{Como o GARCH protege}
 \label{sec:mecanismo}
@@ -929,12 +939,13 @@ móveis, com 31, quase não mudaram.
 
 A Selic e os proventos puxam em sentidos opostos. A Selic favorece quem fica mais
 tempo fora do mercado, porque é o caixa parado que rende. Por isso, ela beneficiou
-sobretudo o ARIMA-GARCH. Em 2007 a 2011, ele passou de uma perda de 15,2\% para um
-ganho de 28,7\%, porque manteve, em média, só 20\% do patrimônio aplicado na ação,
-contra 43\% do ARIMA e 48\% das médias móveis. Os proventos, ao contrário,
+sobretudo o ARIMA-GARCH. Em 2007 a 2011, já com os custos, ele passou de uma perda
+de 15,2\% para um ganho de 28,7\%, porque manteve, em média, só 20\% do patrimônio
+aplicado na ação, contra 43\% do ARIMA da Tabela~\ref{tab:crise} e 48\% das
+médias móveis. Os proventos, ao contrário,
 favorecem quem fica mais tempo comprado, porque só recebe quem tem a ação. Em
 2017 a 2024, como mostra a Tabela~\ref{tab:camadas-r6}, eles levaram a PETR4 de 143,6\% para 777,9\%, acima de todos os
-robôs, e as médias móveis de 90,4\% para 396,0\%. Foi o único período em que essas etapas mudaram a
+robôs, e as médias móveis, já com os custos e a Selic, de 90,4\% para 396,0\%. Foi o único período em que essas etapas mudaram a
 ordem entre os robôs e a ação. Nos demais, quem estava à frente no resultado
 bruto continuou à frente com os custos, a Selic e os proventos. Em 2013 a 2016,
 por exemplo, as médias móveis ficaram em primeiro lugar em todas as etapas,
@@ -1045,7 +1056,73 @@ lado, quase não muda. A ordem dos robôs na queda máxima foi a mesma no result
 bruto e depois de cada etapa, em todos os períodos, e a volatilidade praticamente
 não se alterou. A conclusão sobre o risco não depende dessas escolhas de medida.
 
-\section{Venda a descoberto}
+\FloatBarrier
+\section{Testes complementares}
+\label{sec:testes-complementares}
+
+Os três testes complementares descritos na Seção~\ref{sec:complementar}
+verificam se as conclusões anteriores se mantêm quando muda a janela do GARCH,
+quando o robô também pode vender a descoberto e quando se trocam as ações.
+
+% 15/11/2026, pedido do autor: primeiro teste complementar (sec:complementar); subseção
+% de "Testes complementares" desde a noite de 15/11 (pedido do autor).
+% Procedência: dados/resultados/janelas_garch_2026-11-13/cru/resumo_testes.csv
+% (medianas das 152 configurações com GARCH, colunas ret e dd, e das 4 sem GARCH,
+% ret_arima e dd_arima; linhas T2, R6 e T3, jg 240/500/1000) e cru/traco_resumo.csv
+% (configuração do ARIMA-GARCH Sharpe de 2017-2024 fixa: jg 0 = o TG, 199,45 / 27,23;
+% 500: 64,56 / 36,96, veto 21,6% dos pregões; 1000: 80,69 / 26,70, veto 19,2%;
+% TG 33,1%). Gerados por ferramentas/scripts/janelas_garch_dados.sh. Mesma
+% configuração sem GARCH em 2017-2024, queda 40,5%: refeito_2026-10-05 (GSgemeo,
+% igual em filtro_ajuste_500_2026-11-13/cru/petr4.csv, TG,T4,GSgemeo). Relatório
+% completo: ia/relatorios/janela-garch/. INCERTEZAS item 108.
+\subsection{A proteção depende da janela do GARCH?}
+\label{sec:janela-garch}
+
+O primeiro teste complementar repetiu a grade com o GARCH estimado sobre janelas
+próprias de 240, 500 e 1000 pregões. A Tabela~\ref{tab:janela-garch} mostra a mediana
+das configurações em cada período.
+
+Em todos os períodos e com as três janelas, a queda máxima mediana das
+configurações com o GARCH ficou abaixo da das configurações sem ele. De 2013 a
+2016, por exemplo, ficou entre 28,2\% e 28,8\%, contra 45,0\% sem o GARCH. O
+retorno, ao contrário, mudou com a janela, sem um sentido único. De 2017 a 2024, a
+mediana caiu de +36,4\% com 240 pregões para +14,9\% com 500 e +14,3\% com 1000,
+e de 2025 a 2026 foi maior com 1000 pregões do que com 500. A proteção não
+dependeu da janela, e o retorno dependeu.
+
+\begin{table}[htbp]
+\centering
+\caption{Mediana das configurações por janela do GARCH}
+\label{tab:janela-garch}
+\fontsize{10}{12}\selectfont
+\begin{tabular}{l|c|c|c}
+\hline
+Janela do GARCH & 2013 a 2016 & 2017 a 2024 & 2025 a 2026 \\
+\hline
+240 pregões & $-$1,8\% / 28,2\% & +36,4\% / 35,9\% & +5,9\% / 18,2\% \\
+500 pregões & $-$1,6\% / 28,7\% & +14,9\% / 36,9\% & +3,9\% / 20,1\% \\
+1000 pregões & $-$1,6\% / 28,8\% & +14,3\% / 33,6\% & +6,7\% / 18,3\% \\
+\hline
+Sem GARCH & +1,1\% / 45,0\% & +29,0\% / 51,6\% & +8,8\% / 22,6\% \\
+\hline
+\end{tabular}
+\fonte{Elaboração própria.}
+\nota{Resultado bruto, com retorno / queda máxima. Mediana das 152 configurações com o GARCH e das quatro sem ele, na PETR4, com o ARIMA na janela de 240 pregões. O período de 2007 a 2011 não foi simulado, porque a janela de 1000 pregões exigiria cotações anteriores a 2003.}
+\end{table}
+
+O mesmo aparece quando se fixa uma única configuração. O ARIMA-GARCH Sharpe de
+2017 a 2024, que nas seções anteriores rendeu +199,5\% com queda máxima de 27,2\%,
+rendeu +64,6\% com a janela de 500 pregões, com queda de 37,0\%, e +80,7\% com a de
+1000, com queda de 26,7\%. Nessa configuração, o limiar do filtro é o percentil 70
+da volatilidade estimada dentro da janela. Uma janela mais longa inclui períodos
+agitados mais antigos, o limiar sobe e o robô veta menos. A proporção de pregões
+vetados, de 33,1\%, caiu para 21,6\% com 500 pregões e para 19,2\% com 1000. O
+retorno de cada configuração depende de quais dias ela deixa de operar, e isso
+muda com a janela. A queda máxima, por outro lado, ficou abaixo dos 40,5\% da
+mesma configuração sem o GARCH com as três janelas.
+
+\FloatBarrier
+\subsection{Venda a descoberto}
 \label{sec:venda}
 
 Os robôs apresentados até aqui operam apenas na ponta compradora. A venda a
@@ -1111,18 +1188,17 @@ Período & Queda & Retorno & Queda & Retorno & Queda & Retorno & Queda & Retorno
 % cru/outras_acoes_com_ic_2026-10-19.txt). A PETR4 do mesmo arquivo bate com as
 % Tabelas dos períodos. Na POMO4 2013-2016, ARIMA -20,975% e Calmar -20,996%.
 % Quatro ações (dois grupos): cru/analise_grades_cru_sem_ic.txt, bloco 2.
-\section{Outras ações}
+\subsection{Outras ações}
 
-Como complemento, o mesmo procedimento do teste principal, com os robôs operando
-apenas na ponta compradora, foi repetido em outras três ações, a VALE3, a USIM5 e
-a POMO4, nos períodos de 2007 a 2011, 2013 a 2016, 2017 a 2024 e 2025 a
+O mesmo procedimento aplicado à PETR4, com os robôs operando apenas na ponta
+compradora, foi repetido na VALE3, na USIM5 e na POMO4, nos períodos de 2007 a 2011, 2013 a 2016, 2017 a 2024 e 2025 a
 2026, com a otimização nos três anos anteriores a cada um. A Tabela~\ref{tab:outras} mostra o
 resultado bruto das configurações escolhidas. A comparação com as médias móveis
-foi feita apenas na PETR4. Como na PETR4, todas as configurações escolhidas usam o
-filtro, sozinho ou combinado com o ajuste da posição.
+foi feita apenas na PETR4. Assim como na ação principal, todas as configurações
+escolhidas usam o filtro, sozinho ou combinado com o ajuste da posição.
 
 O ARIMA-GARCH Calmar teve a menor queda máxima entre os robôs que operaram em dez
-dos doze casos. Nas duas exceções, em 2025 e 2026, o ARIMA-GARCH
+dos doze casos. Nas duas exceções, em 2025 a 2026, o ARIMA-GARCH
 Sharpe caiu menos na VALE3, e na USIM5 nenhuma das versões com GARCH chegou a
 operar. O ARIMA-GARCH Sharpe foi menos regular. Ele caiu mais que o ARIMA em três
 casos, e nos três a configuração escolhida mantinha a posição aberta durante o
@@ -1172,6 +1248,3 @@ Ação & Período & & Sharpe & Calmar & \\
 \fonte{Elaboração própria.}
 \nota{Resultado bruto, com retorno / queda máxima. Ação: compra e manutenção pela variação do preço.}
 \end{table}
-
-
-

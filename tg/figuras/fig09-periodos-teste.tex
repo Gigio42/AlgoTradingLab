@@ -29,11 +29,11 @@
 \begin{tikzpicture}[y=0.62cm]
   \fill[gray!22] (\X{2008}{1}{1}, -3.8) rectangle (\X{2009}{1}{1}, 0.55);
   \fill[gray!22] (\X{2020}{1}{1}, -3.8) rectangle (\X{2021}{1}{1}, 0.55);
-  \node[txt, above, align=center] at ({\X{2008}{7}{1}}, 0.55) {crise de 2008};
+  \node[txt, above, align=center] at ({\X{2008}{7}{1}}, 0.55) {crise financeira de 2008};
   \node[txt, above, align=center] at ({\X{2020}{7}{1}}, 0.55) {pandemia de 2020};
 
-  \foreach \y/\r in {0/{Crise financeira}, -1/{Queda e recuperação}, -2/{Inclui a pandemia},
-                     -3/{Mais recente}}
+  \foreach \y/\r in {0/{Crise financeira de 2008}, -1/{Queda e recuperação}, -2/{Crise da pandemia},
+                     -3/{Período recente}}
     \node[anchor=east, font=\small] at (-0.15, \y) {\r};
 
   \barra{0}{2007}{1}{2}{2011}{12}{30}{2007 a 2011}

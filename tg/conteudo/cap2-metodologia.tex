@@ -118,17 +118,17 @@ motivos. É o ativo estudado por \citeonline{almeida2016}, o que permite a
 comparação direta, e possui série longa e contínua no arquivo histórico da bolsa, com 5.881 pregões, de 2 de janeiro de 2003 a 21 de
 setembro de 2026.
 
-Outras três ações, VALE3, USIM5 e POMO4, foram usadas apenas na medição da venda
-a descoberto e no teste complementar, descritos no plano experimental.
+Outras três ações, VALE3, USIM5 e POMO4, foram usadas apenas nos testes complementares, descritos no plano experimental.
 % 12/11/2026, pedido do autor: o critério de escolha das outras ações saiu daqui
 % e foi, simplificado, para o teste complementar. Cópia anterior em
 % ia/rascunhos/antes_series_e_amostra_2026-11-12/.
 
 O recorte temporal foi dividido em períodos, em vez de tratado como um período único,
 porque o comportamento de uma estratégia depende do momento do mercado. Foram
-examinados um período de crise, de 2007 a 2011, um de queda prolongada seguida de
-recuperação, de 2013 a 2016, o intervalo de 2017 a 2024, que inclui a crise da
-pandemia, e o período mais recente, de 2025 a 2026. A
+examinados a crise financeira de 2008, de 2007 a 2011, a queda e recuperação, de
+2013 a 2016, a crise da pandemia, de 2017 a 2024, e o período recente, de 2025 a
+2026. O período de 2017 a 2024 é o teste principal, por ser o mais longo com
+otimização própria. A
 Figura~\ref{fig:periodos-teste} mostra esses períodos.
 % 05/11/2026, pedido do autor: 2005 a 2026 (configurações fixas) saiu do Cap. II
 % e ficou só como teste adicional no Cap. III, Seção "O efeito vem do GARCH?".
@@ -140,7 +140,7 @@ Figura~\ref{fig:periodos-teste} mostra esses períodos.
 \centering
 \caption{Períodos de teste}
 \label{fig:periodos-teste}
-\includegraphics{fig09-periodos-teste.pdf}
+\includegraphics[width=\textwidth]{fig09-periodos-teste.pdf}
 \fonte{Elaboração própria.}
 \end{figure}
 
@@ -173,7 +173,7 @@ que a própria companhia anunciou o desdobramento \cite{petrobras2005}.
 Os proventos, isto é, os dividendos e os juros sobre capital próprio pagos aos
 acionistas, não foram incorporados à série, para que os modelos trabalhassem
 apenas com as variações de preço negociadas em bolsa. Eles foram obtidos à parte,
-para a análise complementar do Capítulo III, no histórico de proventos em dinheiro
+para a Seção~\ref{sec:camadas} do Capítulo III, no histórico de proventos em dinheiro
 que a B3 divulga para a Petrobras \cite{b3Petrobras}. Para cada provento, esse
 histórico informa a última data com direito a recebê-lo e o seu valor como
 percentual do fechamento daquele dia. O valor por ação foi obtido aplicando esse
@@ -371,7 +371,8 @@ dia, o pregão mais antigo sai da janela e o mais recente entra, o que permite a
 modelo acompanhar as mudanças de comportamento do mercado. A janela nunca inclui o
 pregão em andamento, para que a decisão do dia não use uma informação que só
 estaria disponível no seu encerramento. O GARCH não tem janela própria e é
-estimado sobre os resíduos do ARIMA nessa mesma janela.
+estimado sobre os resíduos do ARIMA nessa mesma janela, exceto na verificação da
+janela do GARCH descrita na Seção~\ref{sec:complementar}.
 
 \citeonline{xing2024} compararam esse tipo de janela com a janela expansiva, que
 acumula todo o histórico desde o início, e no seu estudo o ARIMA teve melhor
@@ -381,7 +382,7 @@ testes foram montados. Cada teste foi iniciado no testador na data inicial do
 período, e observou-se que, nessa condição, o histórico disponível antes do início
 começa em 1º de janeiro do ano anterior e soma cerca de 250 pregões. Janelas
 maiores exigiriam iniciar a simulação antes do período e só começar a operar na
-data inicial, alternativa que não foi adotada neste trabalho.
+data inicial, alternativa adotada apenas nessa verificação.
 % 2026-10-29: a pedido do autor, a frase deixou de dizer que o testador impede
 % janelas maiores. A documentação da MetaQuotes só diz que o testador baixa dados
 % para formar no mínimo 100 barras antes do início; o 1º de janeiro é observação
@@ -449,8 +450,8 @@ desliga o modelo, a forma de uso, o tipo e o valor do limiar, o alvo de
 volatilidade e a opção de encerrar a posição no veto. Os parâmetros de execução são a fração do patrimônio aplicada em cada
 operação e a restrição de operar apenas na ponta compradora.
 
-Alguns parâmetros ficaram fixos em todos os testes, como a ordem máxima de zero a
-quatro do ARIMA e a reavaliação das ordens a cada 21 pregões. Os demais foram
+Alguns parâmetros ficaram fixos em todos os testes, como a faixa de zero a quatro
+para as ordens $p$ e $q$ do ARIMA e a reavaliação das ordens a cada 21 pregões. Os demais foram
 variados na otimização, com os valores apresentados no plano experimental.
 
 \section{Plano experimental}
@@ -458,7 +459,7 @@ variados na otimização, com os valores apresentados no plano experimental.
 O plano experimental foi definido antes da observação dos resultados. Esta seção
 descreve, em partes, as condições das simulações, a forma de medir o resultado, a
 reprodução do estudo de referência, a validação dos estimadores, as configurações testadas, a forma de escolher
-entre elas, os robôs comparados, a medição da venda a descoberto e o teste complementar.
+entre elas, os robôs comparados e os testes complementares.
 
 \subsection{Condições das simulações}
 
@@ -468,9 +469,11 @@ capital de R\$ 100 mil, aplicaram a cada operação 95\% do patrimônio, valor q
 o ajuste da posição, quando usado, pode reduzir, e operaram apenas na ponta
 compradora. A venda a descoberto, em que o robô vende uma ação que
 não tem para recomprá-la mais barato, ficou fora do cenário principal. Nela, o
-robô passa a apostar também na queda, e o resultado depende ainda mais da direção
-prevista pelo ARIMA, enquanto o foco deste trabalho é a proteção dada pelo GARCH.
-O efeito dela foi medido à parte, como descrito na Seção~\ref{sec:venda-metodo}. A reprodução do
+robô passa a apostar também na queda, enquanto o foco deste trabalho é a proteção
+dada pelo GARCH.
+% 16/11/2026 (releitura): a dependência da direção do ARIMA ficou só no Cap. III
+% (sec:venda) e nas Considerações.
+O efeito dela foi medido à parte, como descrito na Seção~\ref{sec:complementar}. A reprodução do
 estudo de referência usou as condições do autor, descritas mais adiante.
 
 \subsection{Medição dos resultados}
@@ -498,7 +501,7 @@ o custo.
 % 0,02240% + TTA 0,0026% = 0,0300% (dados/fontes/b3/tarifas_acoes_a_vista_b3_2026-10-21.html,
 % dados/FONTES.md item 8).
 
-Como análise complementar, o resultado foi medido também com os dois ajustes e
+Além do resultado bruto, mediu-se também o resultado com os dois ajustes e
 com os proventos. Cada provento foi creditado no primeiro pregão em que a ação
 passa a ser negociada sem direito a ele, na proporção do patrimônio que o robô
 mantinha aplicado na ação naquele dia. Na compra e manutenção, o provento foi
@@ -675,7 +678,7 @@ acrescenta à Figura~\ref{fig:periodos-teste} os períodos de otimização.
 \centering
 \caption{Períodos de otimização e de teste}
 \label{fig:periodos}
-\includegraphics{fig07-periodos.pdf}
+\includegraphics[width=\textwidth]{fig07-periodos.pdf}
 \fonte{Elaboração própria.}
 \end{figure}
 % 05/11/2026, pedido do autor: a figura fica logo depois do parágrafo que a cita,
@@ -708,11 +711,31 @@ versão com o GARCH também foi executada com o modelo desligado e todo o resto
 igual. Como o robô tem um único parâmetro que liga e desliga o GARCH, essa
 comparação isola o efeito dele.
 
-\subsection{Venda a descoberto}
-\label{sec:venda-metodo}
+\subsection{Testes complementares}
+\label{sec:complementar}
 
-Para medir o efeito da venda a descoberto, as configurações foram simuladas também
-com a opção de vender a descoberto, na PETR4 e nas outras três ações da amostra,
+O primeiro teste complementar, feito depois dos testes principais, verificou se a
+proteção depende da janela do GARCH. Nele, o GARCH passou a ter uma janela
+própria, formada pelos resíduos dos últimos 240, 500 ou 1000 pregões, calculados
+com os coeficientes do ARIMA de cada dia. Para que as três janelas tivessem dados
+desde o primeiro dia, a simulação foi iniciada quatro anos antes de cada período,
+e o robô só passou a operar na data inicial. O ARIMA foi mantido com a janela de
+240 pregões, o que reduziu a grade do Quadro~\ref{qua:grade} à metade, com 152
+configurações com o GARCH e quatro sem ele. A grade inteira foi simulada na PETR4,
+nos períodos de 2013 a 2016, 2017 a 2024 e 2025 a 2026. O período de 2007 a 2011
+ficou de fora, porque a janela de 1000 pregões exigiria cotações anteriores a
+2003, que não fazem parte da amostra. Por essas diferenças de montagem, os
+resultados desse teste foram comparados apenas entre as próprias janelas, e não
+com os das demais seções.
+% 15/11/2026, pedido do autor. Dados: dados/resultados/janelas_garch_2026-11-13/
+% (PROTOCOLO.md escrito antes de rodar; grades r3 só compra com
+% Janela_Estimacao=240, 156 passagens por otimização; Inicio_Operacao com quatro
+% anos de aquecimento; Janela_GARCH no EA, resíduos por CArima::ResiduosSobre).
+% A janela de 120 pregões e o período 2007-2011 (série PETR4_DESDE1999) do estudo
+% ficaram fora do texto. INCERTEZAS item 108.
+
+O segundo teste complementar mediu o efeito da venda a descoberto. As
+configurações foram simuladas também com a opção de vender a descoberto, na PETR4 e nas outras três ações da amostra,
 nos quatro períodos e com a otimização nos três anos anteriores a cada um. Cada
 configuração que também vende foi comparada à mesma configuração que só compra. A
 escolha dos robôs continuou a considerar apenas as configurações que operam na
@@ -720,19 +743,18 @@ ponta compradora. Com essa opção, a grade passou de 312 para 624 configuraçõ
 somadas a otimização e o teste nas quatro ações e nos quatro períodos, foram
 19.968 simulações.
 % 12/11/2026, pedido do autor: subseção própria, antes no fim do teste complementar.
+% 15/11/2026, pedido do autor: de volta, como o primeiro dos testes complementares,
+% na ordem do Cap. III (janela do GARCH, venda, outras ações).
 % 13/11/2026: a contagem de 624 e 19.968 veio do teste complementar para cá, porque
 % é a opção de vender que dobra a grade.
 % 19.968 = passagens sem o intervalo de confiança em refeito_2026-10-05/calibracao/
 % (4 ativos x C1..C3, T1..T3) mais outras_acoes_2017_2024_2026-11-10/calibracao/
 % (4 ativos x C4, T4), contadas por awk em 10/11/2026 (624 x 32).
 
-\subsection{Teste complementar}
-\label{sec:complementar}
-
-Um teste complementar verificou se os resultados se repetem fora do ativo
-principal. Além da PETR4, foram incluídas outras três ações, VALE3, da mineração,
-USIM5, da siderurgia, e POMO4, de bens de capital, escolhidas antes da observação
-de qualquer resultado por terem série completa de 2003 a 2026 no arquivo da bolsa
+O terceiro teste complementar verificou se os resultados se repetem fora do ativo
+principal. As outras três ações da amostra, VALE3, da mineração, USIM5, da
+siderurgia, e POMO4, de bens de capital, foram escolhidas antes da observação de
+qualquer resultado por terem série completa de 2003 a 2026 no arquivo da bolsa
 e por pertencerem a setores diferentes.
 % Critério completo em dados/FONTES.md, item 9 (23/09/2026): série completa de
 % 2003 a 2026 no COTAHIST, fator de cotação sempre 1 (exclui os bancos, cotados por
@@ -741,7 +763,7 @@ e por pertencerem a setores diferentes.
 % desde 12/11/2026 só o essencial, a pedido do autor.
 O mesmo procedimento foi repetido nas quatro ações, nos períodos de 2007 a 2011,
 2013 a 2016, 2017 a 2024 e 2025 a 2026, com os robôs operando apenas na ponta
-compradora, como no teste principal, e cada configuração com GARCH foi comparada
+compradora, como no cenário principal, e cada configuração com GARCH foi comparada
 à mesma configuração sem ele.
 % 10/11/2026, pergunta da orientadora: 2017 a 2024 acrescentado
 % (ferramentas/scripts/outras_acoes_2017_2024.sh, otimização em 2014 a 2016).

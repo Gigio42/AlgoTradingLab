@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auditoria do TG</title>
+<style>
+:root{
+  --bg:#f6f5f1; --card:#ffffff; --ink:#1d2228; --muted:#5d6670; --line:#e1ded6;
+  --ok:#1f7a4d; --ok-bg:#e4f3ea; --warn:#9a6200; --warn-bg:#fbefd3;
+  --bad:#b3362b; --bad-bg:#fbe4e0; --info:#2a5d9f; --info-bg:#e3edf9; --weak:#6b4aa0; --weak-bg:#ede6f7;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15181c; --card:#1e2227; --ink:#e8eaed; --muted:#9aa3ad; --line:#30363d;
+    --ok:#6fd09b; --ok-bg:#17352a; --warn:#f0c060; --warn-bg:#3a2e12;
+    --bad:#ff9085; --bad-bg:#40201c; --info:#8ab8f5; --info-bg:#1a2b42; --weak:#c3a6f0; --weak-bg:#2c2340;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Georgia,"Times New Roman",serif}
+main{max-width:980px;margin:0 auto;padding:32px 16px 80px}
+h1{font-size:30px;line-height:1.2;margin:0 0 6px}
+h2{font-size:22px;margin:44px 0 12px;padding-top:14px;border-top:2px solid var(--line)}
+h3{font-size:17px;margin:0 0 6px}
+p{margin:0 0 10px}
+.sub{color:var(--muted);font-family:system-ui,sans-serif;font-size:14px}
+nav{font-family:system-ui,sans-serif;font-size:14px;margin:18px 0 0;display:flex;flex-wrap:wrap;gap:6px 14px}
+nav a{color:var(--info);text-decoration:none}
+nav a:hover{text-decoration:underline}
+.verdict{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--ok);border-radius:8px;padding:18px 20px;margin:22px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-family:system-ui,sans-serif}
+.stat b{display:block;font-size:26px;line-height:1.1}
+.stat span{font-size:13px;color:var(--muted)}
+.stat.ok b{color:var(--ok)} .stat.warn b{color:var(--warn)} .stat.bad b{color:var(--bad)} .stat.weak b{color:var(--weak)} .stat.info b{color:var(--info)}
+.item{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:10px 0}
+.item .where{font-family:system-ui,sans-serif;font-size:13px;color:var(--muted);margin-bottom:4px}
+.item .fix{margin:6px 0 0;padding-left:12px;border-left:3px solid var(--line);color:var(--muted)}
+.tag{display:inline-block;font-family:system-ui,sans-serif;font-size:12px;font-weight:600;padding:1px 8px;border-radius:99px;margin-right:6px;vertical-align:2px}
+.t-ok{background:var(--ok-bg);color:var(--ok)} .t-warn{background:var(--warn-bg);color:var(--warn)}
+.t-bad{background:var(--bad-bg);color:var(--bad)} .t-info{background:var(--info-bg);color:var(--info)} .t-weak{background:var(--weak-bg);color:var(--weak)}
+ul.good{list-style:none;padding:0;margin:0}
+ul.good li{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:6px;padding:10px 14px;margin:8px 0}
+.tw{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-family:system-ui,sans-serif;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+code{font-size:13px;background:var(--bg);padding:1px 5px;border-radius:4px}
+ol.plan{padding-left:22px} ol.plan li{margin:6px 0}
+footer{margin-top:40px;color:var(--muted);font-family:system-ui,sans-serif;font-size:13px}
+</style>
+</head>
+<body>
+<main>
+
+<h1>Auditoria completa do TG</h1>
+<p class="sub">Desenvolvimento e comparação de modelos de negociação algorítmica: ARIMA-GARCH e médias móveis · PDF de 88 páginas compilado em 16/11/2026 · Manual de Normas FATEC-ID 2026-2027</p>
+
+<nav>
+<a href="#geral">Visão geral</a><a href="#bom">O que está bom</a><a href="#arrumar">Arrumar antes da banca</a>
+<a href="#incoerente">Incoerências</a><a href="#fraco">Pontos fracos</a><a href="#melhorar">Pode melhorar</a>
+<a href="#normas">Normas</a><a href="#biblio">Bibliografia</a><a href="#numeros">Números conferidos</a>
+<a href="#limites">O que não foi verificado</a><a href="#plano">Plano de ação</a>
+</nav>
+
+<h2 id="geral">Visão geral</h2>
+
+<div class="verdict">
+<h3>O trabalho está em condição de entrega. Não há erro que impeça.</h3>
+<p>A estrutura segue o Manual, os números do texto batem com as tabelas, toda ilustração tem fonte e chamada, e as 30 obras da lista são citadas. O texto é honesto sobre o que o modelo fez e o que não fez, e isso é o que mais protege o trabalho numa banca.</p>
+<p>O que resta é de outra ordem. Há três ajustes de norma nas referências, uma declaração sobre uso de IA que merece conferência, meia dúzia de frases incoerentes entre capítulos e alguns pontos em que a fundamentação é mais fina do que poderia ser.</p>
+</div>
+
+<div class="grid">
+<div class="stat ok"><b>10</b><span>pontos fortes</span></div>
+<div class="stat bad"><b>4</b><span>arrumar antes da banca</span></div>
+<div class="stat warn"><b>7</b><span>incoerências</span></div>
+<div class="stat weak"><b>8</b><span>pontos fracos</span></div>
+<div class="stat info"><b>6</b><span>melhorias opcionais</span></div>
+</div>
+
+<div class="tw"><table>
+<tr><th>Parte</th><th>Situação</th><th>Resumo</th></tr>
+<tr><td>Pré-textuais, resumo e abstract</td><td><span class="tag t-ok">bom</span></td><td>332 e 344 palavras (limite de 150 a 500), três palavras-chave. Uma frase do resumo é mais forte que a conclusão.</td></tr>
+<tr><td>Introdução</td><td><span class="tag t-ok">bom</span></td><td>Tem todos os itens obrigatórios, em texto corrido e sem subdivisão.</td></tr>
+<tr><td>Capítulo I</td><td><span class="tag t-warn">bom, com ressalva</span></td><td>Claro e encadeado. A teoria estatística se apoia quase toda em uma única dissertação.</td></tr>
+<tr><td>Capítulo II</td><td><span class="tag t-warn">bom, com ressalva</span></td><td>Numeração obrigatória correta e método reproduzível. Duas afirmações a ajustar (plano "definido antes", uso de IA).</td></tr>
+<tr><td>Capítulo III</td><td><span class="tag t-ok">bom</span></td><td>Todas as contagens conferidas batem. Pouca comparação com a literatura.</td></tr>
+<tr><td>Considerações finais</td><td><span class="tag t-ok">bom</span></td><td>Respondem à pergunta, revisitam as duas hipóteses e o objetivo, trazem limitações e sugestões. Duas folhas.</td></tr>
+<tr><td>Referências</td><td><span class="tag t-bad">ajustar</span></td><td>Conteúdo certo, formato de três tipos de entrada fora do modelo do Manual.</td></tr>
+</table></div>
+
+<h2 id="bom">O que está bom</h2>
+<ul class="good">
+<li><b>O desenho isola o efeito do GARCH.</b> Um único robô com uma chave que liga e desliga o modelo, e cada versão comparada com ela mesma sem o GARCH (Tabela 9). É o argumento mais sólido do trabalho.</li>
+<li><b>A escolha das configurações é fora da amostra.</b> Otimização nos três anos anteriores e teste no período seguinte, refeita a cada período (Figura 8). Isso responde de antemão à crítica de "escolheu o que deu certo".</li>
+<li><b>O texto não exagera.</b> Diz que o retorno foi maior em três de sete comparações e menor em quatro, que 2025 a 2026 foi ruim para o GARCH, que o +199,5% veio de dois anos e que cai com outra janela. Uma banca tem pouco a "descobrir".</li>
+<li><b>A reprodução do estudo de Almeida</b> é cuidadosa e separa o que foi reproduzido (a lógica) do que não dá para confirmar (o histórico que ele usou).</li>
+<li><b>A validação dos estimadores</b> com séries artificiais (Tabela 2) mostra que o ARIMA e o GARCH escritos em MQL5 funcionam, o que é a parte de ADS do trabalho.</li>
+<li><b>Dados oficiais e rastreáveis.</b> COTAHIST da B3 e Selic do Banco Central, com a correção por desdobramentos explicada e confirmada em duas fontes.</li>
+<li><b>Considerações finais dentro da norma.</b> Pergunta, hipótese 1 (parcialmente confirmada), hipótese 2 (confirmada no risco), objetivo geral, limitações e sugestões, nessa ordem, sem repetir o Capítulo III.</li>
+<li><b>Redação limpa.</b> Zero ponto e vírgula, travessão, negrito, lista ou primeira pessoa no corpo dos capítulos. Frases diretas e uma ideia por parágrafo.</li>
+<li><b>Ilustrações em ordem.</b> 8 figuras, 4 quadros, 16 gráficos e 17 tabelas, todos com título em cima, fonte embaixo e chamada no texto. Quadro, Tabela e Gráfico usados com o nome certo.</li>
+<li><b>Layout sem defeito técnico.</b> Nenhum estouro de margem, nenhuma referência quebrada, nenhuma ilustração cortando parágrafo, sumário em ordem.</li>
+</ul>
+
+<h2 id="arrumar">Arrumar antes da banca</h2>
+
+<div class="item">
+<div class="where">Referências · Almeida (2016), Batista (2024), Thomaz (2019)</div>
+<h3><span class="tag t-bad">norma</span>Trabalhos acadêmicos fora do modelo do Manual (item 5.2.2)</h3>
+<p>O Manual pede o ano logo depois do título e o número de folhas: "Título. 1998. 82 f. Monografia (...) – Instituição, Local, 1998." As três entradas estão sem o ano depois do título e sem o total de folhas.</p>
+<p class="fix">Acrescentar ano e folhas nas três. O número de folhas tem de sair do PDF de cada obra.</p>
+</div>
+
+<div class="item">
+<div class="where">Referências · Hannan e Rissanen (1982), Harvey et al. (2018)</div>
+<h3><span class="tag t-bad">norma</span>Artigos de periódico sem local de publicação (item 5.2.4)</h3>
+<p>O Manual lista o local como elemento essencial. Bollerslev, Engle, Araya e Sharpe têm local. Esses dois não têm, e a lista fica sem padrão.</p>
+<p class="fix">Acrescentar a cidade nos dois, ou confirmar com a orientadora que pode ficar sem.</p>
+</div>
+
+<div class="item">
+<div class="where">Seção 2.4, p. 28</div>
+<h3><span class="tag t-bad">atenção</span>A frase sobre o uso de inteligência artificial</h3>
+<p>O texto diz que uma ferramenta de IA "foi usada, de forma pontual, como apoio para juntar os trechos de código e para fazer verificações". É uma declaração dos autores, e a banca pode pedir detalhes. Ela precisa descrever o uso como ele de fato foi, incluindo revisão de texto, se houve.</p>
+<p class="fix">Reler a frase com a orientadora e conferir se o curso tem regra própria sobre declaração de IA. O Manual de 2026 não trata do assunto.</p>
+</div>
+
+<div class="item">
+<div class="where">Referências · seis entradas com acesso em 2025</div>
+<h3><span class="tag t-warn">acabamento</span>Datas de acesso antigas</h3>
+<p>Almeida (20 fev. 2025), Batista (30 mar. 2025), três páginas do Banco Central (22 abr. 2025), MetaQuotes 2024 (01 mar. 2025) e Xing (09 abr. 2025). A data de acesso da MetaQuotes 2024, que é a fonte da Figura 1, não está confirmada nas notas do projeto.</p>
+<p class="fix">Abrir cada link de novo e atualizar a data. Duas páginas do Banco Central são endereços antigos ("legado"), e vale ver se ainda abrem.</p>
+</div>
+
+<h2 id="incoerente">Incoerências</h2>
+
+<div class="item">
+<div class="where">2.1.2 e 2.5 × 2.5.8</div>
+<h3><span class="tag t-warn">método</span>"Plano definido antes dos resultados" × testes feitos depois</h3>
+<p>O Capítulo II afirma duas vezes que o plano experimental foi definido antes da observação dos resultados. A 2.5.8 diz que o teste da janela do GARCH foi "feito depois dos testes principais". É verdade para o plano principal e não para os complementares.</p>
+<p class="fix">Em 2.5, trocar por "O plano dos testes principais foi definido antes...". Uma palavra resolve.</p>
+</div>
+
+<div class="item">
+<div class="where">Resumo e abstract × Considerações e Tabela 17</div>
+<h3><span class="tag t-warn">conclusão</span>O resumo é mais forte que a conclusão sobre as outras ações</h3>
+<p>O resumo diz que "a redução do risco se repetiu em outras três ações". As Considerações restringem isso às configurações que tiram capital do mercado, e a Tabela 17 mostra o ARIMA-GARCH Sharpe caindo mais que o ARIMA em três dos doze casos (80,4% contra 66,0% na USIM5 de 2013 a 2016, por exemplo).</p>
+<p class="fix">Acrescentar a ressalva no resumo, por exemplo "na maioria dos casos", e a mesma no abstract.</p>
+</div>
+
+<div class="item">
+<div class="where">3.11.3, p. 58</div>
+<h3><span class="tag t-warn">redação</span>"como na PETR4" aponta para o robô errado</h3>
+<p>A frase fala do ARIMA-GARCH Sharpe nas outras ações e diz que ele "mantinha a posição aberta durante o veto, como na PETR4". Na PETR4, quem mantém a posição é o Calmar de 2017 a 2024 (Quadro 4). O Sharpe encerra em todos os períodos.</p>
+<p class="fix">Trocar por "como o ARIMA-GARCH Calmar da PETR4 em 2017 a 2024".</p>
+</div>
+
+<div class="item">
+<div class="where">3.2, Tabela 2</div>
+<h3><span class="tag t-warn">número</span>A soma α + β do texto não fecha com a tabela</h3>
+<p>O texto diz 0,9765. Somando os valores da tabela, 0,0825 + 0,8941, dá 0,9766. A diferença deve vir de casas a mais no arquivo, mas quem conferir de cabeça vai estranhar.</p>
+<p class="fix">Escrever "cerca de 0,977" ou usar a soma dos valores impressos.</p>
+</div>
+
+<div class="item">
+<div class="where">3.6.1, p. 49</div>
+<h3><span class="tag t-warn">redação</span>"O ARIMA-GARCH atravessou esse trecho" sem dizer qual</h3>
+<p>Nesse período há dois, o Sharpe e o Calmar. O gráfico é do Sharpe.</p>
+<p class="fix">Acrescentar "Sharpe".</p>
+</div>
+
+<div class="item">
+<div class="where">2.1.1 × Considerações (limitações)</div>
+<h3><span class="tag t-warn">classificação</span>Pesquisa "explicativa" que não fecha a explicação</h3>
+<p>O 2.1.1 diz que a pesquisa investiga por que o GARCH altera o desempenho. As limitações admitem que os testes não separam quanto da proteção vem de ficar com menos capital aplicado e quanto vem de escolher os dias. Não é contradição, mas é pergunta provável.</p>
+<p class="fix">Ter a resposta pronta para a defesa: a seção 3.9 explica o mecanismo (menos tempo comprado, fora nos dias agitados) e a separação fina fica como limite declarado.</p>
+</div>
+
+<div class="item">
+<div class="where">3.8 × 3.11.3</div>
+<h3><span class="tag t-info">já decidido</span>Outras ações em dois lugares</h3>
+<p>O resultado da grade inteira nas quatro ações está na 3.8, e o dos robôs escolhidos na 3.11.3. Ficou assim por decisão do autor em 16/11. Registrado aqui só para constar.</p>
+</div>
+
+<h2 id="fraco">Pontos fracos</h2>
+
+<div class="item">
+<div class="where">Capítulo I e II · 18 citações</div>
+<h3><span class="tag t-weak">fundamentação</span>A teoria estatística depende de uma única dissertação</h3>
+<p>Série temporal, retorno, estacionariedade, teste ADF, AIC, verossimilhança e a definição de risco vêm todos de Thomaz (2019). É uma dissertação de mestrado, não um livro-texto nem as obras originais. Se a banca questionar a fonte, não há segunda.</p>
+<p class="fix">Há um livro-texto de econometria financeira já baixado em <code>bibliografia/pdfs/</code> (Brooks, 2002) que não é citado. Só entra depois de lido.</p>
+</div>
+
+<div class="item">
+<div class="where">Capítulo III inteiro</div>
+<h3><span class="tag t-weak">discussão</span>Pouca comparação com outras pesquisas</h3>
+<p>O Manual pede que a análise compare os resultados com outros estudos e cite quem corrobora ou diverge. Isso aparece em um parágrafo da 3.9 (Araya e Harvey) e nas comparações com Almeida. Xing et al., o estudo mais parecido, não aparece no Capítulo III.</p>
+<p class="fix">Uma ou duas frases bastam. Por exemplo, Xing et al. mediram erro de previsão e este trabalho mediu resultado de operação, e nos dois o ganho do GARCH não veio de prever melhor a direção. Conferir no artigo antes de escrever.</p>
+</div>
+
+<div class="item">
+<div class="where">2.3.2 e limitações</div>
+<h3><span class="tag t-weak">análise</span>Sem teste estatístico, com sete comparações que não são independentes</h3>
+<p>Está declarado no método e nas limitações, e a repetição em todos os períodos ajuda. Continua sendo o ponto mais fácil de atacar.</p>
+<p class="fix">Não mexer no texto. Preparar a resposta: a conclusão é sobre o risco, que se repetiu em sete de sete, e o texto não afirma vantagem de retorno.</p>
+</div>
+
+<div class="item">
+<div class="where">Tabela 6 × 3.11.1</div>
+<h3><span class="tag t-weak">resultado</span>O melhor número do trabalho é frágil</h3>
+<p>O +199,5% do ARIMA-GARCH Sharpe em 2017 a 2024 vem de dois anos (2018 e 2022) e cai para +64,6% e +80,7% com outras janelas do GARCH. O texto diz tudo isso. O risco é a apresentação destacar o 199,5% e a banca lembrar do resto.</p>
+<p class="fix">Na defesa, apresentar a queda máxima como resultado principal e o retorno como variável.</p>
+</div>
+
+<div class="item">
+<div class="where">Seção 1.6 e Quadro 1</div>
+<h3><span class="tag t-weak">fonte</span>Índice de Calmar sem referência</h3>
+<p>O Sharpe cita Sharpe (1994). O Calmar só tem a comparação com o fator de recuperação do MetaTrader. É uma das duas regras de escolha dos robôs e não tem fonte própria.</p>
+<p class="fix">Já estava nas pendências: depende de o autor ler uma obra que defina o índice.</p>
+</div>
+
+<div class="item">
+<div class="where">12 citações</div>
+<h3><span class="tag t-weak">fonte</span>Xing et al. (2024) é um preprint</h3>
+<p>O artigo está no arXiv, sem revisão por pares, e sustenta afirmações gerais, como a de que o GARCH(1,1) é "a escolha predominante nos estudos de previsão de ações". A referência já diz "Preprint", o que é correto.</p>
+<p class="fix">Onde a afirmação é geral, vale ter outra fonte ao lado ou escrever "segundo Xing et al.".</p>
+</div>
+
+<div class="item">
+<div class="where">Seção 1.3</div>
+<h3><span class="tag t-weak">fonte</span>Análise técnica com uma só fonte, de edição do próprio autor</h3>
+<p>Fernandes (2014) é a única obra da seção, e a editora é o próprio autor. Para o papel que a análise técnica tem no trabalho, é suficiente, mas é a referência mais frágil da lista.</p>
+</div>
+
+<div class="item">
+<div class="where">Tabela 12, p. 56</div>
+<h3><span class="tag t-weak">explicação</span>Proventos que não mudam nada para o ARIMA-GARCH</h3>
+<p>Em 2013 a 2016, as duas versões com GARCH têm o mesmo valor nas colunas "+ Selic" e "+ proventos" (+15,8% e +34,0%). Conferi no arquivo de origem e está certo: os robôs não estavam comprados em nenhuma data de pagamento. Mas o texto não comenta, e parece erro de digitação.</p>
+<p class="fix">Uma frase na nota da tabela explicando que as versões com GARCH não tinham a ação nas datas dos proventos do período.</p>
+</div>
+
+<h2 id="melhorar">Pode melhorar</h2>
+
+<div class="item"><h3><span class="tag t-info">3.7</span>Parágrafo de uma frase só</h3><p>"O Gráfico 15 mostra a evolução do patrimônio no período." Os outros gráficos de patrimônio têm uma leitura. Falta dizer o que este mostra.</p></div>
+<div class="item"><h3><span class="tag t-info">2.2 e 3.6</span>"Crise da pandemia, 2017 a 2024"</h3><p>É um período de oito anos com o nome de um evento de um ano. O texto explica, mas um título como "Período da pandemia" causaria menos estranheza.</p></div>
+<div class="item"><h3><span class="tag t-info">Vocabulário</span>Robô, algoritmo, Expert Advisor, versão e configuração</h3><p>Os cinco termos aparecem para coisas próximas. As Considerações usam "algoritmo" onde o Capítulo III usa "robô". Não confunde, mas uniformizar deixa o texto mais firme.</p></div>
+<div class="item"><h3><span class="tag t-info">Introdução</span>Frase sobre Batista (2024) entre as duas hipóteses</h3><p>A primeira hipótese é seguida de um comentário sobre outro trabalho, e só depois vem a segunda. As duas ficariam mais claras juntas.</p></div>
+<div class="item"><h3><span class="tag t-info">Gráficos</span>Eixos de datas</h3><p>Alguns gráficos de patrimônio marcam datas além do fim do período (06/2012 no de 2007 a 2011, 03/2025 no de 2017 a 2024). É só a marcação do eixo, mas chama a atenção.</p></div>
+<div class="item"><h3><span class="tag t-info">Siglas</span>ALGLIB fora da lista</h3><p>É nome de biblioteca, e pode ficar de fora. Se a orientadora pedir a lista completa, é a única que falta.</p></div>
+
+<h2 id="normas">Normas da FATEC-ID</h2>
+<div class="tw"><table>
+<tr><th>Regra</th><th>Manual</th><th>Situação</th><th>Observação</th></tr>
+<tr><td>Papel A4, margens 3, 2, 3 e 2 cm</td><td>1.2</td><td><span class="tag t-ok">ok</span></td><td>Margem inferior corrigida em 16/11.</td></tr>
+<tr><td>Times 12, títulos 14, ilustrações 10</td><td>1</td><td><span class="tag t-ok">ok</span></td><td>Fonte do PDF conferida.</td></tr>
+<tr><td>Espaço 1,5 e sem afastamento entre parágrafos</td><td>1.4</td><td><span class="tag t-ok">ok</span></td><td></td></tr>
+<tr><td>Numeração no canto superior, a partir da introdução</td><td>1.5</td><td><span class="tag t-ok">ok</span></td><td>Introdução na página 9. Aberturas de capítulo contam e não mostram o número.</td></tr>
+<tr><td>Capa e folha de rosto</td><td>4.1.1.1 e 4.1.1.2</td><td><span class="tag t-ok">ok</span></td><td></td></tr>
+<tr><td>Folha de aprovação</td><td>4.1.1.4</td><td><span class="tag t-info">versão final</span></td><td>O Manual pede só na versão final.</td></tr>
+<tr><td>Resumo de 150 a 500 palavras, até três palavras-chave</td><td>4.1.1.8</td><td><span class="tag t-ok">ok</span></td><td>332 palavras e 344 no abstract.</td></tr>
+<tr><td>Listas de ilustrações, tabelas e siglas</td><td>4.1.1.10 a 12</td><td><span class="tag t-ok">ok</span></td><td>Siglas em ordem alfabética.</td></tr>
+<tr><td>Sumário</td><td>4.1.1.14</td><td><span class="tag t-ok">ok</span></td><td>Duas páginas, apêndices só com o título principal.</td></tr>
+<tr><td>Introdução sem subdivisão, com problema, hipóteses, objetivo, justificativa, método e organização</td><td>4.1.2.1</td><td><span class="tag t-ok">ok</span></td><td></td></tr>
+<tr><td>Capítulo II com a numeração obrigatória</td><td>caderno de delineamento</td><td><span class="tag t-ok">ok</span></td><td>2.1, 2.1.1, 2.1.2, 2.2, 2.3, 2.3.1 e 2.3.2.</td></tr>
+<tr><td>Análise compara com outras pesquisas</td><td>4.1.2</td><td><span class="tag t-warn">fraco</span></td><td>Ver "Pontos fracos".</td></tr>
+<tr><td>Considerações respondem à pergunta, às hipóteses e ao objetivo</td><td>4.1.2.14</td><td><span class="tag t-ok">ok</span></td><td>Sem subtítulo, como no modelo de sumário.</td></tr>
+<tr><td>Citação em caixa mista, direta com página</td><td>2.3.1</td><td><span class="tag t-ok">ok</span></td><td>Não há citação direta. Dez citações trazem página.</td></tr>
+<tr><td>Ilustração com título em cima, fonte embaixo e chamada</td><td>3</td><td><span class="tag t-ok">ok</span></td><td>45 de 45.</td></tr>
+<tr><td>Referências em espaço simples, com uma linha entre elas</td><td>1.4</td><td><span class="tag t-ok">ok</span></td><td></td></tr>
+<tr><td>Formato de monografia e dissertação</td><td>5.2.2</td><td><span class="tag t-bad">ajustar</span></td><td>Faltam o ano depois do título e as folhas.</td></tr>
+<tr><td>Formato de artigo de periódico</td><td>5.2.4</td><td><span class="tag t-bad">ajustar</span></td><td>Dois sem local.</td></tr>
+<tr><td>Redação impessoal</td><td>2</td><td><span class="tag t-ok">ok</span></td><td></td></tr>
+<tr><td>Estrangeirismo em itálico</td><td>1</td><td><span class="tag t-ok">ok</span></td><td>Não reconferido palavra a palavra nesta auditoria.</td></tr>
+</table></div>
+
+<h2 id="biblio">Bibliografia</h2>
+<p>Trinta obras na lista e trinta citadas no texto. Nenhuma sobra e nenhuma falta. A coluna "PDF" diz se há cópia em <code>bibliografia/pdfs/</code>.</p>
+<div class="tw"><table>
+<tr><th>Obra</th><th>Tipo</th><th>Citações</th><th>PDF</th><th>Observação</th></tr>
+<tr><td>Almeida (2016)</td><td>monografia</td><td class="n">33</td><td>sim</td><td>Formato 5.2.2 a ajustar. Acesso de 2025.</td></tr>
+<tr><td>Thomaz (2019)</td><td>dissertação</td><td class="n">18</td><td>sim</td><td>Formato 5.2.2 a ajustar. Sustenta quase toda a teoria.</td></tr>
+<tr><td>Xing et al. (2024)</td><td>preprint</td><td class="n">12</td><td>sim</td><td>Sem revisão por pares. Acesso de 2025.</td></tr>
+<tr><td>Araya, Aduda e Berhane (2024)</td><td>artigo</td><td class="n">8</td><td>sim</td><td>Em ordem.</td></tr>
+<tr><td>Bollerslev (1986)</td><td>artigo</td><td class="n">6</td><td>sim</td><td>Obra original do GARCH. Em ordem.</td></tr>
+<tr><td>MetaQuotes, Relatório de teste (2026c)</td><td>ajuda da plataforma</td><td class="n">5</td><td>página</td><td>Em ordem.</td></tr>
+<tr><td>Fernandes (2014)</td><td>livro</td><td class="n">4</td><td>sim</td><td>Edição do próprio autor.</td></tr>
+<tr><td>Batista (2024)</td><td>monografia</td><td class="n">4</td><td>sim</td><td>Formato 5.2.2 a ajustar. Prenome só com iniciais no arquivo. Acesso de 2025.</td></tr>
+<tr><td>Wazlawick (2021)</td><td>livro</td><td class="n">3</td><td>sim</td><td>Em ordem.</td></tr>
+<tr><td>Sharpe (1994)</td><td>artigo</td><td class="n">3</td><td>página</td><td>Lido na página do autor, com endereço na referência.</td></tr>
+<tr><td>Harvey et al. (2018)</td><td>artigo</td><td class="n">3</td><td>sim</td><td>Sem local de publicação.</td></tr>
+<tr><td>MetaQuotes, Estratégias de teste (2026a)</td><td>ajuda da plataforma</td><td class="n">3</td><td>página</td><td>Em ordem.</td></tr>
+<tr><td>MetaQuotes, MetaTrader 5 (2024)</td><td>site</td><td class="n">3</td><td>página</td><td>Fonte da Figura 1. Data de acesso não confirmada.</td></tr>
+<tr><td>B3, COTAHIST (2026b)</td><td>dados</td><td class="n">3</td><td>dados</td><td>Em ordem.</td></tr>
+<tr><td>Hannan e Rissanen (1982)</td><td>artigo</td><td class="n">2</td><td><b>não</b></td><td>Sem local. Não há PDF arquivado. Conferir se a leitura foi feita.</td></tr>
+<tr><td>Engle (1982)</td><td>artigo</td><td class="n">2</td><td>sim</td><td>Obra original do ARCH. Em ordem.</td></tr>
+<tr><td>MetaQuotes, Manual MQL5 (2026b)</td><td>documentação</td><td class="n">2</td><td>página</td><td>Em ordem.</td></tr>
+<tr><td>B3, Petrobras (2026a)</td><td>dados</td><td class="n">2</td><td>dados</td><td>Em ordem.</td></tr>
+<tr><td>Gómez e Maravall (1998)</td><td>documento de trabalho</td><td class="n">1</td><td>sim</td><td>Em ordem.</td></tr>
+<tr><td>Máximo (2020)</td><td>notícia</td><td class="n">1</td><td>página</td><td>Em ordem.</td></tr>
+<tr><td>Petróleo Brasileiro S.A. (2005)</td><td>comunicado</td><td class="n">1</td><td>dados</td><td>Em ordem.</td></tr>
+<tr><td>Dube (2023), Dube (2024), Chernish (2024)</td><td>artigos da comunidade MQL5</td><td class="n">1 cada</td><td>página</td><td>Citados como aprendizado, o que é o uso adequado.</td></tr>
+<tr><td>Banco Central, Bolsas, Corretoras e Selic (2025a, b, c)</td><td>páginas</td><td class="n">1 cada</td><td>página</td><td>Acesso de abr. 2025. Dois endereços antigos.</td></tr>
+<tr><td>Banco Central, SGS série 11 (2026)</td><td>dados</td><td class="n">1</td><td>dados</td><td>Em ordem.</td></tr>
+<tr><td>B3, Tarifas (2026c)</td><td>página</td><td class="n">1</td><td>dados</td><td>Em ordem.</td></tr>
+<tr><td>MetaQuotes, Tipos de otimização (2026d)</td><td>ajuda da plataforma</td><td class="n">1</td><td>página</td><td>Em ordem.</td></tr>
+</table></div>
+<p style="margin-top:12px">O que falta na lista, e não é erro: o teste ADF, o AIC e o índice de Calmar não têm a obra original citada. Os dois primeiros entram por Thomaz (2019). O Calmar não tem fonte nenhuma.</p>
+
+<h2 id="numeros">Números conferidos nesta auditoria</h2>
+<p>Refiz as contas que o texto faz sobre as próprias tabelas. Todas fecham, exceto a soma da Tabela 2 já citada.</p>
+<div class="tw"><table>
+<tr><th>Afirmação do texto</th><th>Onde</th><th>Resultado</th></tr>
+<tr><td>Reprodução difere em 3,6% do lucro, R$ 113 e R$ 12, duas operações a menos</td><td>3.1, Tabela 1</td><td><span class="tag t-ok">bate</span></td></tr>
+<tr><td>Coeficientes a menos de 4%, β a menos de 1%, ω e α a 17% e 8%</td><td>3.2, Tabela 2</td><td><span class="tag t-ok">bate</span></td></tr>
+<tr><td>α + β = 0,9765</td><td>3.2</td><td><span class="tag t-warn">tabela dá 0,9766</span></td></tr>
+<tr><td>Queda de 17,5% é "pouco mais de um quarto" e "menos da metade", volatilidade "abaixo de 40%"</td><td>3.4.1, Tabela 3</td><td><span class="tag t-ok">bate</span></td></tr>
+<tr><td>Retornos de 2025 e de 2026 compõem o total do período (PETR4, ARIMA, Sharpe)</td><td>3.7, Tabela 8</td><td><span class="tag t-ok">bate</span></td></tr>
+<tr><td>Risco menor em sete de sete, retorno maior em três e menor em quatro</td><td>3.8, Tabela 9</td><td><span class="tag t-ok">bate</span></td></tr>
+<tr><td>Nos quatro testes adicionais, risco menor e retorno maior</td><td>3.8, Tabela 10</td><td><span class="tag t-ok">bate</span></td></tr>
+<tr><td>657 de 1.983 sinais vetados e 33,1% dos pregões</td><td>3.9 e 3.11.1</td><td><span class="tag t-ok">bate</span></td></tr>
+<tr><td>Exposição de 43% do ARIMA em 2007 a 2011</td><td>3.10</td><td><span class="tag t-ok">bate com o arquivo</span></td></tr>
+<tr><td>Versões com GARCH sem ganho de proventos em 2013 a 2016</td><td>Tabela 12</td><td><span class="tag t-ok">bate com o arquivo</span></td></tr>
+<tr><td>19.968 simulações e 4.992 com venda nos períodos de teste</td><td>2.5.8 e 3.11.2</td><td><span class="tag t-ok">bate</span></td></tr>
+<tr><td>Venda a descoberto: queda maior em 16 de 16, retorno menor em 11</td><td>3.11.2, Tabela 16</td><td><span class="tag t-ok">bate</span></td></tr>
+<tr><td>Calmar com a menor queda em 10 de 12, Sharpe pior que o ARIMA em 3, ARIMA rende mais em 9</td><td>3.11.3, Tabela 17</td><td><span class="tag t-ok">bate</span></td></tr>
+<tr><td>Média de 248 pregões por ano</td><td>1.6</td><td><span class="tag t-ok">bate</span></td></tr>
+<tr><td>Introdução, resumo e Considerações coerentes com o Capítulo III</td><td>vários</td><td><span class="tag t-ok">bate, com a ressalva do resumo</span></td></tr>
+</table></div>
+
+<h2 id="limites">O que não foi verificado</h2>
+<div class="item">
+<p>Esta auditoria leu o PDF inteiro, da capa às referências, e rodou as conferências automáticas. Ficou de fora:</p>
+<p>Não reabri os PDFs das obras para conferir se cada citação diz o que o texto atribui a ela, nem as páginas indicadas. Essa conferência foi feita em rodadas anteriores e não foi repetida hoje.</p>
+<p>Não abri os links das referências. A última conferência registrada é de 02/11/2026.</p>
+<p>Não comparei os números das tabelas com os arquivos de resultados, com exceção dos dois casos indicados acima. A última conferência completa registrada é de 12/10, e as tabelas novas foram conferidas quando entraram.</p>
+<p>Não li o código dos apêndices linha a linha nem comparei com o repositório.</p>
+<p>A descrição das siglas VALE3, USIM5 e BBAS3F continua sem arquivo que a confirme, e não há registro de por que o teste de 2025 a 2026 termina em 18/09.</p>
+</div>
+
+<h2 id="plano">Plano de ação sugerido</h2>
+<ol class="plan">
+<li><b>Referências.</b> Ano e folhas nas três monografias, local nos dois artigos, datas de acesso renovadas. Cerca de meia hora, e elimina todos os itens de norma.</li>
+<li><b>Frase da IA em 2.4.</b> Decidir com a orientadora.</li>
+<li><b>Cinco frases.</b> "Plano dos testes principais", ressalva no resumo e no abstract, "como o Calmar da PETR4", soma da Tabela 2 e "Sharpe" na 3.6.1.</li>
+<li><b>Nota da Tabela 12</b> e uma leitura para o Gráfico 15.</li>
+<li><b>Para a defesa, sem mexer no texto.</b> Respostas prontas para: falta de teste estatístico, fragilidade do +199,5%, a pesquisa ser "explicativa" e o fim do teste em 18/09.</li>
+<li><b>Se houver tempo de leitura.</b> Uma segunda fonte para a teoria estatística, uma fonte para o Calmar e duas frases de comparação com Xing et al. no Capítulo III.</li>
+</ol>
+<p>O cronograma arquivado no projeto marca a entrega à coordenação entre 09 e 13/11 e a banca entre 23 e 27/11. Vale conferir as datas atuais, porque a nota é de 18/10.</p>
+
+<footer>Auditoria feita em 16/11/2026 sobre <code>tg/main.pdf</code>. Nota interna do projeto, não é material do TG.</footer>
+</main>
+</body>
+</html>

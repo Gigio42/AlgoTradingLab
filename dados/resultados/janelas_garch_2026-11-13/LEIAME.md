@@ -1,4 +1,4 @@
-# A janela do GARCH: 120, 240, 500 e 1000 (13/11/2026) — estudo, NÃO está no TG
+# A janela do GARCH: 120, 240, 500 e 1000 (13/11/2026) — parte no TG desde 15/11/2026 (Cap. III, 3.11.1, Tabela 15)
 
 Pedido do autor em 13/11/2026: um relatório com gráficos sobre o ARIMA-GARCH com
 janelas de 120, 240, 500 e 1000, para entender a janela (mais dado é

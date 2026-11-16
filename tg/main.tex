@@ -79,6 +79,12 @@
 \setlength{\parindent}{1.25cm}
 \setlength{\parskip}{0pt}
 \setlength{\baselineskip}{1.5\baselineskip}
+% 16/11/2026 (auditoria): o abnTeX2 arredonda a altura do texto para um número inteiro
+% de linhas e a margem inferior ficava com 1,82 cm. Com [fixed], a mancha é a das
+% margens (3/2/3/2 cm do Manual, item 1.2) sem arredondar.
+\setlrmarginsandblock{3cm}{2cm}{*}
+\setulmarginsandblock{3cm}{2cm}{*}
+\checkandfixthelayout[fixed]
 
 % Desabilitar remoção automática de parindent no primeiro parágrafo de seções
 \usepackage{indentfirst}
@@ -233,6 +239,7 @@
   numbers=left,
   numberstyle=\tiny\color{codegray},
   numbersep=8pt,
+  xleftmargin=0.75cm, % números de linha dentro da mancha (Manual 1.2; auditoria de 16/11/2026)
   breaklines=true,
   showstringspaces=false,
   tabsize=2,
@@ -354,6 +361,9 @@
 % NBR 6023 (desde 2018) e exemplos do Manual que citam a NBR 6023:2025: o
 % endereço eletrônico vai sem os sinais < >, que o abntex2cite põe por padrão.
 \def\UrlLeft{}\def\UrlRight{}
+% Manual 1.4: referências separadas entre si por uma linha em branco de espaço
+% simples (antes ficavam com 2/3 de linha; auditoria de 16/11/2026).
+\AfterTheBibliography{\setlength{\itemsep}{\baselineskip}\setlength{\parsep}{0pt}}
 \blocosumario
 \bibliography{referencias}
 

@@ -218,10 +218,12 @@ que os robôs deste trabalho leem para decidir. Modelar uma série temporal é
 descrevê-la por meio de equações cujos parâmetros são estimados a partir das
 próprias observações, de modo a identificar padrões no seu comportamento e, com
 eles, fazer previsões para os períodos seguintes \cite{thomaz2019}. É nisso que um
-modelo estatístico difere da média móvel apresentada na seção anterior. A média
-móvel aplica a mesma regra a qualquer ativo, com pesos fixados por convenção,
-enquanto o modelo estatístico ajusta os seus parâmetros ao histórico do ativo e do
-período analisados.
+modelo estatístico difere da média móvel apresentada na seção anterior. Os dois
+são cálculos sobre a série de preços, mas a média móvel aplica a mesma regra a
+qualquer ativo.
+% 16/11/2026 (releitura): os "pesos fixados por convenção" ficaram só na subseção do
+% ARIMA, com o exemplo do um décimo. Aqui, a frase também liga a análise técnica
+% estatística (seção anterior) aos modelos (auditoria de 13/11, itens 6 e 7).
 % Thomaz (2019), p. 16: série temporal como sequência de observações ao longo do
 % tempo; a modelagem "permite identificar padrões de comportamento [...],
 % possibilitando a realização de previsões". A comparação com a média móvel é
@@ -318,11 +320,13 @@ Figura~\ref{fig:fluxo-arima}.
 \end{figure}
 \FloatBarrier
 
-A primeira etapa é verificar se a série é estacionária. Uma série estacionária
-oscila em torno de uma média estável, e um choque que a afasta dessa média tende a
-se desfazer com o tempo. Os preços de ações, ao contrário, costumam se comportar
-como um passeio aleatório, em que cada choque se incorpora ao preço e não se
-desfaz, de modo que a variância da série cresce com o tempo \cite{thomaz2019}.
+A primeira etapa é verificar se a série é estacionária. Como visto na
+Seção~\ref{sec:series}, os preços de ações costumam se comportar como um passeio
+aleatório. Nele, cada choque se incorpora ao preço e não se desfaz, ao contrário do
+que ocorre numa série estacionária, e a variância da série cresce com o tempo
+\cite{thomaz2019}.
+% 16/11/2026 (releitura): a definição de série estacionária ficou só no início da
+% subseção do ARIMA. Aqui o passeio aleatório é retomado, não explicado de novo.
 Esse comportamento é chamado de raiz unitária. Para identificá-lo, usa-se o teste
 de Dickey-Fuller aumentado (ADF), que estima, por regressão, o quanto a variação de
 cada dia depende do nível da série no dia anterior. Se a série tende a voltar à
@@ -495,9 +499,13 @@ ARIMA ao nível de risco esperado, impedindo a operação ou reduzindo o seu tam
 quando a volatilidade prevista é alta. A Figura~\ref{fig:integracao} mostra esse
 caminho em um pregão. O ARIMA indica o lado da operação, e o GARCH, ajustado sobre
 os resíduos do ARIMA, prevê a volatilidade. Se a volatilidade prevista passa do
-limiar, a operação é vetada e o pregão termina sem ordem. Caso contrário, a ordem
-é enviada no lado indicado pelo ARIMA, com o tamanho ajustado ao risco. No pregão
-seguinte, o ciclo recomeça com a série atualizada.
+limiar, a operação é vetada e o pregão termina sem nova compra. Caso contrário, a ordem
+é enviada no lado indicado pelo ARIMA, com o tamanho ajustado ao risco. Em algumas
+configurações, o veto também encerra a posição aberta. No pregão seguinte, o ciclo
+recomeça com a série atualizada.
+% 16/11/2026 (auditoria): "sem ordem" virou "sem nova compra" e entrou a frase do
+% encerramento no veto (6 dos 7 robôs com GARCH escolhidos na PETR4 usam a opção).
+% Na releitura do mesmo dia, sem citar a "opção" do robô, que só aparece no Cap. II.
 % 13/11/2026, pedido do autor: figura refeita como o ciclo de um pregão, sem
 % fórmula (antes, proposta C de ia/relatorios/integracao-arima-garch/).
 % 13/11/2026: a figura voltou para o fim da subseção seguinte, porque com a seção
@@ -556,6 +564,15 @@ estratégias do MetaTrader 5 apresenta, ao lado do lucro, medidas de risco e
 Quadro~\ref{qua:metricas} resume as métricas usadas neste trabalho para avaliar e
 comparar os robôs.
 
+Risco é a possibilidade de que um evento inesperado e desfavorável produza um
+retorno menor que o esperado, ou mesmo uma perda. Em finanças, ele costuma ser
+medido pela variância ou pelo desvio-padrão dos retornos, isto é, pela
+volatilidade. Volatilidade e risco, porém, não são a mesma coisa, porque a
+volatilidade mede a dispersão para os dois lados, enquanto o risco está ligado
+às perdas \cite[p.~22-23]{thomaz2019}.
+
+% 16/11/2026: quadro depois do parágrafo do risco, para não cortar parágrafo na
+% página seguinte (checar_ilustracoes.sh).
 \begin{quadro}[htbp]
 \centering
 \caption{Métricas de avaliação usadas no trabalho}
@@ -584,13 +601,6 @@ Sinais vetados & quantas vezes o GARCH impediu uma operação indicada pelo ARIM
 \end{tabular}
 \fonte{Elaboração própria, com base em \citeonline{metaquotesRelatorio} e \citeonline{sharpe1994}.}
 \end{quadro}
-
-Risco é a possibilidade de que um evento inesperado e desfavorável produza um
-retorno menor que o esperado, ou mesmo uma perda. Em finanças, ele costuma ser
-medido pela variância ou pelo desvio-padrão dos retornos, isto é, pela
-volatilidade. Volatilidade e risco, porém, não são a mesma coisa, porque a
-volatilidade mede a dispersão para os dois lados, enquanto o risco está ligado
-às perdas \cite[p.~22-23]{thomaz2019}.
 
 Por isso, o risco é medido aqui de duas formas complementares. A queda máxima, que o relatório
 da plataforma chama de rebaixamento relativo e que também é conhecida pelo termo em
