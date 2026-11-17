@@ -2164,3 +2164,14 @@ sobre o experimento · **[resultado]** sobre como ler um número.
      (InfoMoney, diário, 02/01/2007 a 11/04/2018). Siglas ABEV3 e BBDC3
      acrescentadas ("ordinárias" pelo final 3, não confirmado em arquivo). 88
      páginas, 0 estouro, Quadro 2 na p. 25, lista de siglas em uma página.
+
+117. **[build] Duas versões do PDF (16/11/2026, pedido do autor).** `make` gera
+     `main.pdf` (sem folha de aprovação), `main-aprovacao.pdf` (com ela, 89 páginas)
+     e `main.docx` (do `main.pdf`). `main-aprovacao.tex` só liga a chave
+     `\ComFolhaAprovacao` e faz `\input{main}`; o `main.tex` inclui
+     `conteudo/folha-aprovacao.tex` quando a chave existe. A folha segue o modelo
+     do Manual (4.1.1.4, Figura 5): cabeçalho, autores, título, tabela "Banca
+     Avaliadora" e "Data da defesa". **Preencher depois da banca**: nomes, papéis e
+     data, nos `\newcommand` do início de `folha-aprovacao.tex` (vazios saem em
+     branco). Só a orientadora está preenchida. O alvo padrão do `make` era o
+     `docx` (primeiro do arquivo); agora é `all`.

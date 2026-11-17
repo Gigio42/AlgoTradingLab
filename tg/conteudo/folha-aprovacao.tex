@@ -1,0 +1,64 @@
+% =====================================================================
+%  FOLHA DE APROVAÇÃO (BANCA AVALIADORA)
+%  Manual FATEC-ID, item 4.1.1.4 e Figura 5: repete os dados da capa e
+%  acrescenta os membros da banca, as suas instituições e a data da defesa.
+%  "Esta folha deve constar somente na versão final."
+%  Por isso ela só entra em main-aprovacao.pdf (main-aprovacao.tex define
+%  \ComFolhaAprovacao). O main.pdf continua sem ela. Pedido do autor, 16/11/2026.
+%
+%  PREENCHER DEPOIS DA BANCA: os nomes, os papéis e a data abaixo. Enquanto
+%  estiverem vazios, saem células em branco e a data com traços.
+% =====================================================================
+\newcommand{\BancaOrientadora}{Profa. Simone Mendes da Silva}
+\newcommand{\BancaOrientadoraPapel}{Orientadora}
+\newcommand{\BancaNomeA}{}
+\newcommand{\BancaPapelA}{}
+\newcommand{\BancaNomeB}{}
+\newcommand{\BancaPapelB}{}
+\newcommand{\DataDefesa}{\rule{1.2cm}{0.4pt}/\rule{1.2cm}{0.4pt}/\rule{2cm}{0.4pt}}
+
+\begin{folhadeaprovacao}
+\thispagestyle{empty}
+\begin{center}
+{\fontsize{14}{22}\selectfont
+\MakeUppercase{Centro Estadual de Educação Tecnológica Paula Souza}\\
+\MakeUppercase{Faculdade de Tecnologia de Indaiatuba}\\
+\MakeUppercase{Dr. Archimedes Lamoglia}\\
+\MakeUppercase{Curso de Tecnologia}\\
+\MakeUppercase{em Análise e Desenvolvimento de Sistemas}\par}
+
+\vspace{0.08\textheight}
+
+{\fontsize{14}{18}\selectfont
+\MakeUppercase{Bruno Rocha Pereira e Giovanni Silva Loose}\par}
+
+\vspace{0.06\textheight}
+
+{\bfseries\fontsize{16}{20}\selectfont
+Desenvolvimento e comparação de modelos de negociação\\
+algorítmica: ARIMA-GARCH e médias móveis\par}
+\end{center}
+
+\vspace{0.08\textheight}
+
+\noindent{\bfseries Banca Avaliadora:}
+
+\vspace{0.5\onelineskip}
+
+{\renewcommand{\arraystretch}{2.2}
+\noindent\begin{tabular}{|>{\raggedright\arraybackslash}p{0.55\textwidth}|>{\raggedright\arraybackslash}p{0.37\textwidth}|}
+\hline
+\textbf{\BancaOrientadora} & \textbf{\BancaOrientadoraPapel} \\
+\hline
+\textbf{\BancaNomeA} & \textbf{\BancaPapelA} \\
+\hline
+\textbf{\BancaNomeB} & \textbf{\BancaPapelB} \\
+\hline
+\end{tabular}}
+
+\vfill
+
+\noindent Data da defesa: \DataDefesa
+
+\vspace{2cm}
+\end{folhadeaprovacao}
