@@ -278,7 +278,9 @@
 
 \input{conteudo/capa}
 \input{conteudo/folharosto}
-% \input{conteudo/folha-aprovacao}  % obrigatória só na versão final
+% Folha de aprovação: só na versão final (Manual 4.1.1.4). Entra apenas quando
+% compilado por main-aprovacao.tex, que liga \ComFolhaAprovacao (16/11/2026).
+\ifdefined\ComFolhaAprovacao\input{conteudo/folha-aprovacao}\fi
 
 % Elementos pré-textuais: espaçamento simples e sem parskip conforme Manual FATEC 1.4
 \SingleSpacing

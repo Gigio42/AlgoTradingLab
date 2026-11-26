@@ -321,7 +321,10 @@ janela, ele modela o logaritmo do preço diretamente. As ordens $p$ e $q$ foram
 escolhidas por busca em grade, de zero a quatro, pelo menor AIC
 \cite{thomaz2019}, procedimento semelhante ao de \citeonline{xing2024}. As ordens
 são reavaliadas a cada 21 pregões, cerca de um mês, de modo que podem mudar ao
-longo de um teste.
+longo de um teste. A escolha das ordens usa sempre os últimos 240 pregões, mesmo
+quando a janela de estimação é de 120.
+% 25/11/2026, pedido do autor (INCERTEZAS item 115, achado 1): Janela_Selecao=240
+% fixo em todas as grades; no EA, MathMax(Janela_Selecao, Janela_Estimacao).
 
 \subsection{Estimação do GARCH}
 
@@ -509,6 +512,15 @@ mantinha aplicado na ação naquele dia. Na compra e manutenção, o provento fo
 somado ao preço do mesmo dia. O resultado é uma estimativa do que o investidor
 teria recebido, porque não considera impostos nem o prazo entre essa data e o
 pagamento.
+
+Nas tabelas do Capítulo III, os proventos são somados antes da Selic, para
+separar duas situações. Até a etapa dos proventos, o capital que fica fora do
+mercado está parado num saldo que não rende. Na etapa da Selic, ele está numa
+conta remunerada, que rende a taxa do dia e pode ser usada a qualquer momento
+para comprar a ação.
+% 17/11/2026, pedido do autor: ordem bruto, custos, proventos, Selic, para
+% mostrar o saldo comum e o saldo remunerado (INCERTEZAS item 118). A
+% escolha das configurações continua com custos e Selic, sem proventos.
 % Desde 27/10/2026 (pedido do autor, depois da leitura da orientadora) os
 % proventos voltam, só com a base da B3 (camada 4 do Desempenho.mqh:
 % exposicao x provento / preço anterior, na data-ex; compra e manutenção:

@@ -67,7 +67,7 @@ Começa pela reprodução do estudo de \citeonline{almeida2016} e pela validaç�
 estimadores e apresenta, em seguida, cada período de teste separadamente, com o ano de cada crise em
 detalhe. Depois verifica se o efeito
 observado vem mesmo do GARCH, mostra de que forma ele protege o capital e como os
-custos, a Selic e os proventos mudam o resultado. Fecha com os testes
+custos, os proventos e a Selic mudam o resultado. Fecha com os testes
 complementares, que mudam a janela do GARCH, permitem a venda a descoberto e
 trocam a ação.
 
@@ -202,7 +202,7 @@ por fim, o saldo registrado pelo próprio MetaTrader 5 para o ARIMA e para o
 ARIMA-GARCH. Os números dessas seções são o resultado bruto,
 isto é, o patrimônio da conta simulada, sem custos, sem remuneração do caixa e sem
 proventos. Assim, a diferença entre os robôs vem apenas das decisões de cada
-modelo. O efeito dos custos, da Selic e dos proventos é mostrado à parte, na
+modelo. O efeito dos custos, dos proventos e da Selic é mostrado à parte, na
 Seção~\ref{sec:camadas}.
 
 Os dois períodos que contêm uma crise, de 2007 a 2011 e de 2017 a 2024, são
@@ -920,13 +920,13 @@ teria comprado. A volatilidade prevista pelo GARCH para aquele dia era de 7,58\%
 cerca de três vezes o limiar vigente, de 2,54\%, e a operação foi vetada. Naquele
 momento, a ação acumulava queda de 48,6\% em relação ao fechamento de 2019.
 
-\section{Efeito dos custos, da Selic e dos proventos}
+\section{Efeito dos custos, dos proventos e da Selic}
 \label{sec:camadas}
 
 As seções anteriores compararam os modelos pelo resultado bruto. Esta seção mostra
 como esse resultado muda quando são acrescentados, um de cada vez, os custos das
-ordens, a remuneração pela Selic do capital que fica fora do mercado e os
-proventos pagos pela ação, calculados como descrito no Capítulo II. As
+ordens, os proventos pagos pela ação e a remuneração pela Selic do capital que
+fica fora do mercado, calculados como descrito no Capítulo II. As
 Tabelas~\ref{tab:camadas-t1} a~\ref{tab:camadas-t3} apresentam o retorno em cada
 etapa, um período por tabela. Na primeira coluna está o resultado bruto, e cada
 coluna seguinte acrescenta um fator ao resultado da anterior. Os proventos são
@@ -937,26 +937,44 @@ Os custos pesaram mais para quem negociou mais. Em 2007 a 2011, o ARIMA, com 320
 negociações, passou de uma perda de 12,7\% para uma de 27,1\%, enquanto as médias
 móveis, com 31, quase não mudaram.
 
-A Selic e os proventos puxam em sentidos opostos. A Selic favorece quem fica mais
+Os proventos e a Selic puxam em sentidos opostos. Os proventos favorecem quem fica
+mais tempo comprado, porque só recebe quem tem a ação. Em 2017 a 2024, como mostra
+a Tabela~\ref{tab:camadas-r6}, eles levaram a PETR4 de 143,6\% para 777,9\%, acima
+de todos os robôs, e as médias móveis, já com os custos, de 43,2\% para 273,1\%.
+Em 2007 a 2011, levaram a PETR4 de uma perda de 14,0\% para um ganho de 2,0\%,
+também acima de todos os robôs. A Selic, ao contrário, favorece quem fica mais
 tempo fora do mercado, porque é o caixa parado que rende. Por isso, ela beneficiou
-sobretudo o ARIMA-GARCH. Em 2007 a 2011, já com os custos, ele passou de uma perda
-de 15,2\% para um ganho de 28,7\%, porque manteve, em média, só 20\% do patrimônio
-aplicado na ação, contra 43\% do ARIMA da Tabela~\ref{tab:crise} e 48\% das
-médias móveis. Os proventos, ao contrário,
-favorecem quem fica mais tempo comprado, porque só recebe quem tem a ação. Em
-2017 a 2024, como mostra a Tabela~\ref{tab:camadas-r6}, eles levaram a PETR4 de 143,6\% para 777,9\%, acima de todos os
-robôs, e as médias móveis, já com os custos e a Selic, de 90,4\% para 396,0\%. Foi o único período em que essas etapas mudaram a
-ordem entre os robôs e a ação. Nos demais, quem estava à frente no resultado
-bruto continuou à frente com os custos, a Selic e os proventos. Em 2013 a 2016,
-por exemplo, as médias móveis ficaram em primeiro lugar em todas as etapas,
-conforme a Tabela~\ref{tab:camadas-t2}.
+sobretudo o ARIMA-GARCH. Em 2007 a 2011, ele passou de uma perda de 11,9\% para
+um ganho de 33,8\%, porque manteve, em média, só 20\% do patrimônio aplicado na
+ação, contra 43\% do ARIMA da Tabela~\ref{tab:crise} e 48\% das médias móveis, e
+voltou ao primeiro lugar, à frente da PETR4.
+
+Nesses dois períodos, as etapas mudaram a ordem entre os robôs e a ação. Nos
+outros dois, quem estava à frente no resultado bruto continuou à frente em todas
+as etapas. Em 2013 a 2016, por exemplo, as médias móveis ficaram em primeiro lugar
+em todas elas, conforme a Tabela~\ref{tab:camadas-t2}.
+
+O retorno, portanto, depende de quais fatores se consideram. O risco, por outro
+lado, quase não muda. A ordem dos robôs na queda máxima foi a mesma no resultado
+bruto e depois de cada etapa, com uma exceção, em 2017 a 2024, em que o ARIMA e o
+ARIMA-GARCH Calmar, com quedas a menos de um ponto percentual uma da outra,
+trocaram de lugar em duas etapas. A volatilidade praticamente não se alterou. A conclusão sobre o risco não depende dessas escolhas de medida.
 
 % Procedência: dados/resultados/refeito_2026-10-05/proventos_b3/metricas_*.csv
-% (ret_puro, ret_custos, ret_selic, ret_completo; PETR4 = bh_preco e bh_total;
+% (ret_puro, ret_custos, ret_completo; PETR4 = bh_preco e bh_total;
 % Selic = selic; exposicao; saidas), proventos da B3 (ferramentas/scripts/proventos_b3.sh).
-% Em 2007-2011 a linha ARIMA-GARCH é a GS (= GC). Queda máxima por etapa:
-% dd_puro, dd_selic e dd_completo dos mesmos arquivos (ordem dos robôs igual nas
-% três etapas em todos os períodos, conferido em 27/10/2026).
+% Coluna "+ proventos" (custos + proventos, sem Selic): camadas_ordem_proventos.txt
+% da mesma pasta, gerado por ferramentas/scripts/camadas_ordem_proventos.sh a partir
+% das curvas diárias (conferência: a coluna "+ custos" recalculada bate com
+% ret_custos, diferença de até 0,001 p.p.). A última coluna é ret_completo, que não
+% depende da ordem. Ordem nova a pedido do autor em 17/11/2026 (antes: custos,
+% Selic, proventos; cópia em ia/rascunhos/antes_ordem_proventos_selic_2026-11-17/).
+% Em 2007-2011 a linha ARIMA-GARCH é a GS (= GC). Queda máxima por etapa: dd_puro,
+% dd_selic, dd_completo e, para custos e custos + proventos, o mesmo script
+% (17/11/2026): ordem dos robôs igual em todas as etapas, exceto 2017-2024, em que
+% ARIMA e GC (40,5 e 40,2 no bruto) trocam de lugar depois dos custos e com os
+% proventos (40,7 x 40,8 e 40,6 x 40,8). Volatilidade por etapa: variação de até
+% 1,7 p.p. ao ano (ARIMA 2017-2024, 32,0 -> 30,3).
 \begin{table}[htbp]
 \centering
 \caption{Retorno por etapa, 2007 a 2011}
@@ -964,19 +982,19 @@ conforme a Tabela~\ref{tab:camadas-t2}.
 \fontsize{10}{12}\selectfont
 \begin{tabular}{l|c|c|c|c}
 \hline
-Robô & Bruto & + custos & + Selic & + proventos \\
+Robô & Bruto & + custos & + proventos & + Selic \\
 \hline
-Médias móveis reproduzidas & $-$31,6\% & $-$32,8\% & $-$11,6\% & $-$2,9\% \\
+Médias móveis reproduzidas & $-$31,6\% & $-$32,8\% & $-$26,1\% & $-$2,9\% \\
 \hline
-ARIMA & $-$12,7\% & $-$27,1\% & $-$2,1\% & +6,5\% \\
+ARIMA & $-$12,7\% & $-$27,1\% & $-$20,6\% & +6,5\% \\
 \hline
-ARIMA-GARCH & $-$8,4\% & $-$15,2\% & +28,7\% & +33,8\% \\
+ARIMA-GARCH & $-$8,4\% & $-$15,2\% & $-$11,9\% & +33,8\% \\
 \hline
-PETR4 & $-$14,0\% & -- & -- & +2,0\% \\
+PETR4 & $-$14,0\% & -- & +2,0\% & +2,0\% \\
 \hline
 \end{tabular}
 \fonte{Elaboração própria.}
-\nota{Cada coluna acrescenta um fator ao resultado da coluna anterior. A Selic rendeu 68,1\% no período.}
+\nota{Cada coluna acrescenta um fator ao resultado da coluna anterior. Na PETR4, todo o capital fica na ação, e a Selic não altera o resultado. Todo o capital aplicado na Selic teria rendido 68,1\% no período.}
 \end{table}
 
 \begin{table}[htbp]
@@ -986,21 +1004,21 @@ PETR4 & $-$14,0\% & -- & -- & +2,0\% \\
 \fontsize{10}{12}\selectfont
 \begin{tabular}{l|c|c|c|c}
 \hline
-Robô & Bruto & + custos & + Selic & + proventos \\
+Robô & Bruto & + custos & + proventos & + Selic \\
 \hline
-Médias móveis reproduzidas & +100,8\% & +98,1\% & +150,9\% & +176,0\% \\
+Médias móveis reproduzidas & +100,8\% & +98,1\% & +118,0\% & +176,0\% \\
 \hline
-ARIMA & $-$35,8\% & $-$44,8\% & $-$30,5\% & $-$27,9\% \\
+ARIMA & $-$35,8\% & $-$44,8\% & $-$42,7\% & $-$27,9\% \\
 \hline
-ARIMA-GARCH Sharpe & $-$13,8\% & $-$18,8\% & +15,8\% & +15,8\% \\
+ARIMA-GARCH Sharpe & $-$13,8\% & $-$18,8\% & $-$18,8\% & +15,8\% \\
 \hline
-ARIMA-GARCH Calmar & $-$6,8\% & $-$9,5\% & +34,0\% & +34,0\% \\
+ARIMA-GARCH Calmar & $-$6,8\% & $-$9,5\% & $-$9,5\% & +34,0\% \\
 \hline
-PETR4 & $-$25,6\% & -- & -- & $-$17,7\% \\
+PETR4 & $-$25,6\% & -- & $-$17,7\% & $-$17,7\% \\
 \hline
 \end{tabular}
 \fonte{Elaboração própria.}
-\nota{Cada coluna acrescenta um fator ao resultado da coluna anterior. A Selic rendeu 53,9\% no período.}
+\nota{Cada coluna acrescenta um fator ao resultado da coluna anterior. Na PETR4, todo o capital fica na ação, e a Selic não altera o resultado. Todo o capital aplicado na Selic teria rendido 53,9\% no período.}
 \end{table}
 
 \begin{table}[htbp]
@@ -1010,21 +1028,21 @@ PETR4 & $-$25,6\% & -- & -- & $-$17,7\% \\
 \fontsize{10}{12}\selectfont
 \begin{tabular}{l|c|c|c|c}
 \hline
-Robô & Bruto & + custos & + Selic & + proventos \\
+Robô & Bruto & + custos & + proventos & + Selic \\
 \hline
-Médias móveis reproduzidas & +47,8\% & +43,2\% & +90,4\% & +396,0\% \\
+Médias móveis reproduzidas & +47,8\% & +43,2\% & +273,1\% & +396,0\% \\
 \hline
-ARIMA & +95,7\% & +70,5\% & +114,6\% & +356,6\% \\
+ARIMA & +95,7\% & +70,5\% & +262,9\% & +356,6\% \\
 \hline
-ARIMA-GARCH Sharpe & +199,5\% & +161,8\% & +273,8\% & +353,0\% \\
+ARIMA-GARCH Sharpe & +199,5\% & +161,8\% & +217,3\% & +353,0\% \\
 \hline
-ARIMA-GARCH Calmar & +42,9\% & +34,4\% & +114,1\% & +217,0\% \\
+ARIMA-GARCH Calmar & +42,9\% & +34,4\% & +99,1\% & +217,0\% \\
 \hline
-PETR4 & +143,6\% & -- & -- & +777,9\% \\
+PETR4 & +143,6\% & -- & +777,9\% & +777,9\% \\
 \hline
 \end{tabular}
 \fonte{Elaboração própria.}
-\nota{Cada coluna acrescenta um fator ao resultado da coluna anterior. A Selic rendeu 86,1\% no período.}
+\nota{Cada coluna acrescenta um fator ao resultado da coluna anterior. Na PETR4, todo o capital fica na ação, e a Selic não altera o resultado. Todo o capital aplicado na Selic teria rendido 86,1\% no período.}
 \end{table}
 
 \begin{table}[htbp]
@@ -1034,27 +1052,22 @@ PETR4 & +143,6\% & -- & -- & +777,9\% \\
 \fontsize{10}{12}\selectfont
 \begin{tabular}{l|c|c|c|c}
 \hline
-Robô & Bruto & + custos & + Selic & + proventos \\
+Robô & Bruto & + custos & + proventos & + Selic \\
 \hline
-Médias móveis reproduzidas & +18,1\% & +17,2\% & +31,3\% & +39,0\% \\
+Médias móveis reproduzidas & +18,1\% & +17,2\% & +24,2\% & +39,0\% \\
 \hline
-ARIMA & +14,2\% & +11,3\% & +24,1\% & +34,3\% \\
+ARIMA & +14,2\% & +11,3\% & +20,5\% & +34,3\% \\
 \hline
-ARIMA-GARCH Sharpe & $-$13,7\% & $-$15,5\% & $-$0,4\% & +5,5\% \\
+ARIMA-GARCH Sharpe & $-$13,7\% & $-$15,5\% & $-$10,5\% & +5,5\% \\
 \hline
-ARIMA-GARCH Calmar & $-$7,4\% & $-$8,8\% & +9,6\% & +13,9\% \\
+ARIMA-GARCH Calmar & $-$7,4\% & $-$8,8\% & $-$5,3\% & +13,9\% \\
 \hline
-PETR4 & +33,2\% & -- & -- & +57,6\% \\
+PETR4 & +33,2\% & -- & +57,6\% & +57,6\% \\
 \hline
 \end{tabular}
 \fonte{Elaboração própria.}
-\nota{Cada coluna acrescenta um fator ao resultado da coluna anterior. A Selic rendeu 25,7\% no período.}
+\nota{Cada coluna acrescenta um fator ao resultado da coluna anterior. Na PETR4, todo o capital fica na ação, e a Selic não altera o resultado. Todo o capital aplicado na Selic teria rendido 25,7\% no período.}
 \end{table}
-
-O retorno, portanto, depende de quais fatores se consideram. O risco, por outro
-lado, quase não muda. A ordem dos robôs na queda máxima foi a mesma no resultado
-bruto e depois de cada etapa, em todos os períodos, e a volatilidade praticamente
-não se alterou. A conclusão sobre o risco não depende dessas escolhas de medida.
 
 \FloatBarrier
 \section{Testes complementares}

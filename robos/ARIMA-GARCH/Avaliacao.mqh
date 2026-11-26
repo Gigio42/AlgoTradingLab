@@ -67,6 +67,15 @@ double AvaliarTeste(const int p, const int d, const int q, const CDiagnostico &d
                            TesterStatistics(STAT_PROFIT),
                            TesterStatistics(STAT_EQUITY_DDREL_PERCENT));
    valores += StringFormat(";%d", SelecaoPorBIC);
+   //--- Colunas das opcoes de 18/11/2026, so quando alguma esta ligada: sem elas a linha
+   //--- fica igual a de antes, byte a byte (regressao_codigo.sh)
+   if(ModeloGARCH != GARCH_SIMETRICO || Inicio_Janela_Expansiva > 0)
+     {
+      cabecalho += ";ModeloGARCH;Inicio_Janela_Expansiva;Janela_GARCH;gama_medio;janela_arima_media";
+      valores += StringFormat(";%d;%s;%d;%.6f;%.1f", ModeloGARCH,
+                              Inicio_Janela_Expansiva > 0 ? TimeToString(Inicio_Janela_Expansiva, TIME_DATE) : "0",
+                              Janela_GARCH, diagnostico.GamaMedio(), diagnostico.JanelaMedia());
+     }
 
    g_desempenho.Gravar(Rotulo, cabecalho, valores, resultado);
    return(resultado.excesso * 100.0);

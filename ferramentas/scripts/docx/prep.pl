@@ -85,8 +85,18 @@ for my $f (@arquivos) {
   $t =~ s/\\vspace\{([0-9.]+)\\textheight\}/\n\n\@\@ESPACO $1\@\@\n\n/g;
   $t =~ s/\\vspace\{\\onelineskip\}/\n\n\@\@ESPACO linha\@\@\n\n/g;
   $t =~ s/\\vfill\b/\n\n\@\@VFILL\@\@\n\n/g;
-  $t =~ s/\\begin\{(?:capa|folhaderosto)\}/\n\n\@\@CAPA\@\@\n\n/g;
-  $t =~ s/\\end\{(?:capa|folhaderosto)\}/\n\n\@\@FIMCAPA\@\@\n\n/g;
+  # folha de aprovação (25/11/2026): "Banca Avaliadora:" e "Data da defesa" à
+  # esquerda (@@ESQUERDA@@), a tabela em grade com linhas altas (@@BANCA@@) e
+  # os traços da data em branco (\rule) como sublinhados
+  if ($f =~ /folha-aprovacao/) {
+    $t =~ s/\\noindent\s*(\{\\bfseries Banca)/\n\n\@\@ESQUERDA\@\@\n\n$1/;
+    $t =~ s/(\\noindent\s*)?(\\begin\{tabular\})/\n\n\@\@BANCA\@\@\n\n$2/;
+    $t =~ s/\\(?:begin|end)\{center\}//g;   # já é centralizado; os \vspace ficam no nível de cima
+    $t =~ s/\\rule\{([0-9.]+)cm\}\{[^}]*\}/"_" x int($1 * 4)/ge;
+    $t =~ s/\\noindent\b//g;
+  }
+  $t =~ s/\\begin\{(?:capa|folhaderosto|folhadeaprovacao)\}/\n\n\@\@CAPA\@\@\n\n/g;
+  $t =~ s/\\end\{(?:capa|folhaderosto|folhadeaprovacao)\}/\n\n\@\@FIMCAPA\@\@\n\n/g;
   $t =~ s/\\hfill\\begin\{minipage\}\{[^}]*\}\}?(.*?)\\end\{minipage\}/\n\n\@\@NATUREZA\@\@\n\n$1\n\n\@\@FIMNATUREZA\@\@\n\n/gs;
   $t =~ s/\\begin\{resumo\}\[([^]]*)\]/\n\n\@\@PRETIT $1\@\@\n\n/g;
   $t =~ s/\\begin\{resumo\}/\n\n\@\@PRETIT RESUMO\@\@\n\n/g;

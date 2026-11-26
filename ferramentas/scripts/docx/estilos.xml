@@ -28,6 +28,8 @@
   <w:pPr><w:jc w:val="center"/></w:pPr><w:rPr><w:sz w:val="28"/><w:szCs w:val="28"/></w:rPr></w:style>
 <w:style w:type="paragraph" w:customStyle="1" w:styleId="TituloCapa"><w:name w:val="Capa Titulo"/><w:basedOn w:val="Centralizado"/>
   <w:rPr><w:b/><w:bCs/><w:sz w:val="32"/><w:szCs w:val="32"/></w:rPr></w:style>
+<w:style w:type="paragraph" w:customStyle="1" w:styleId="CapaEsquerda"><w:name w:val="Capa Esquerda"/><w:basedOn w:val="Normal"/>
+  <w:pPr><w:jc w:val="left"/></w:pPr></w:style>
 <w:style w:type="paragraph" w:customStyle="1" w:styleId="Natureza"><w:name w:val="Natureza do Trabalho"/><w:basedOn w:val="Normal"/>
   <w:pPr><w:spacing w:line="240" w:lineRule="auto"/><w:ind w:left="3969"/><w:jc w:val="both"/></w:pPr></w:style>
 <w:style w:type="paragraph" w:customStyle="1" w:styleId="Resumo"><w:name w:val="Resumo"/><w:basedOn w:val="Normal"/>

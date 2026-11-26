@@ -4,6 +4,19 @@ Lista de trabalho do TG, por ordem de prioridade. **Atualizada em 18/10/2026**,
 ao fim da sessão que preparou a entrega à orientadora. Detalhes e números de
 cada decisão ficam em `ia/INCERTEZAS.md` (o de hoje é o item 64).
 
+## VERSÃO FINAL (25/11/2026)
+
+Pedido do autor: verificar tudo e deixar PDF e Word prontos, com a folha de
+aprovação. `make` em `tg/` gera os quatro arquivos: `main.pdf` e `main.docx` (sem
+a folha), `main-aprovacao.pdf` e `main-aprovacao.docx` (com ela). Detalhes em
+INCERTEZAS item 120.
+
+- **Falta do autor:** preencher à mão os dois avaliadores e a data da defesa
+  (decidido deixar em branco), ou preencher em `tg/conteudo/folha-aprovacao.tex`
+  e rodar `make`.
+- **Fechado em 25/11:** orientadora aceitou "quase experimental"; Almeida e Biometrika
+  ficam como estão (decisão do autor). TG pronto para entrega.
+
 ## Prazos
 
 | Quando | O quê |

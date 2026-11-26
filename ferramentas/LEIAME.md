@@ -53,7 +53,7 @@ ficam em `scripts/comum.sh`.
 | `checar_ilustracoes.sh` | Depois de mexer no texto: lista as ilustrações que caíram no alto de uma página cortando um parágrafo ao meio (12/11/2026). Sem saída = nenhum corte. |
 | `dados_cru.sh` | Gera os dados do Cap. III a partir da refação de 05/10/2026. |
 | `graficos_cru.sh` | Compila os gráficos de `tg/graficos/cru/`. |
-| `docx/converter.sh` (e os demais de `docx/`) | Gera a versão em Word, `tg/main.docx`, a partir do LaTeX, pelo pandoc 3.8+ (`make docx` em `tg/`). Numeração, citações e referências saem do `main.aux` e do `main.bbl`, iguais às do PDF. |
+| `docx/converter.sh` (e os demais de `docx/`) | Gera a versão em Word, `tg/main.docx` (e, com `APROVACAO=1`, `tg/main-aprovacao.docx`, com a folha de aprovação, desde 25/11/2026), a partir do LaTeX, pelo pandoc 3.8+ (`make docx` em `tg/`). Numeração, citações e referências saem do `main.aux` e do `main.bbl`, iguais às do PDF. |
 | `metodos_ilustrados.sh` | Roda o `MetodosIlustrados.mq5` e guarda a saída em `dados/resultados/metodos_ilustrados_2026-10-30/`. |
 | `robo_em_acao.sh` | Resume o traço da refação de 05/10/2026 para as figuras 08 a 14 de `apresentacao/graficos_metodos/` (só lê arquivos). |
 | `modelo_completo.sh` | Roda o `ModeloCompleto.mq5` (refaz os pregões de 19 e 22/02/2021 com as funções do robô), guarda a saída em `dados/resultados/modelo_completo_2026-11-06/` e confere contra o traço. Dados dos relatórios `ia/relatorios/modelo-completo/` e `garch-funcionando/`. |
@@ -67,7 +67,7 @@ ficam em `scripts/comum.sh`.
 
 | Pasta de resultado | Scripts |
 |---|---|
-| `refeito_2026-10-05/` (vigente) | `refazer_calibracoes.sh`, `refazer_testes.sh`, `sensibilidade_longos.sh`, `camadas_proventos_b3.sh`, `outras_acoes_mm.sh` |
+| `refeito_2026-10-05/` (vigente) | `refazer_calibracoes.sh`, `refazer_testes.sh`, `sensibilidade_longos.sh`, `camadas_proventos_b3.sh`, `camadas_ordem_proventos.sh`, `outras_acoes_mm.sh` |
 | `replica_almeida_v2_2026-10-21/` | `series_replica_almeida.sh` (monta as séries), `replica_almeida_v2.sh`, `replica_almeida_v2b.sh`, `replica_almeida_v2c.sh`, `replica_almeida_v2d.sh` |
 | `garch_t_2026-10-13/` | `garch_t.sh` |
 | `bateria_2026-10-15/` | `bateria_2026_10_15.sh`, `exploratorio_estimacao.sh` |
@@ -93,7 +93,13 @@ ficam em `scripts/comum.sh`.
 | `protecao.sh`, `seletividade.sh`, `resumo_volatilidade.sh` | Queda máxima, volatilidade e seletividade do GARCH contra a gêmea. |
 | `outras_acoes.sh` | Resultado das configurações escolhidas em VALE3, USIM5 e POMO4. |
 | `proventos_b3.sh` | Monta a série de proventos da PETR4 a partir da lista oficial da B3. |
+| `camadas_ordem_proventos.sh` | Retorno por etapa na ordem bruto, custos, proventos, Selic, a partir das curvas diárias de `refeito_2026-10-05/proventos_b3/` (sem rodar o MT5); confere a coluna de custos contra o EA. |
+| `camadas_proventos_b3_longo.sh` | 2005–2026 (rótulos L1) com os proventos da B3, mesmas configurações da refação; `ROTULOS="..."` roda só alguns. |
 | `resumo_garch_t.sh`, `resumo_bateria.sh`, `resumo_exploratorio.sh` | Tabelas dos estudos à parte. |
 | `comparar_janelas.sh`, `efeito_janela_garch.sh`, `efeito_fatores.sh`, `estudo_janelas_dados.sh` | Análises dos estudos de 26 e 27/10/2026. |
 | `resumo_replica_almeida.sh`, `meses_replica_almeida.sh`, `saldo_mt5.sh` | Leem os relatórios `.htm` do testador (réplicas de Almeida). |
 | `traco_resumo.sh` | Resume o traço por barra num intervalo de datas. |
+| `validar_assimetrico.sh` + `../ValidacaoAssimetrico.mq5` | Validação teórica de GJR, EGARCH, t, BIC e janela expansiva (prefixo reserva, sem testador), 18/11/2026. |
+| `assimetricos.sh` | Bateria do estudo de 18/11/2026: oito variantes do GARCH 500 (GJR, EGARCH, t, expansiva, BIC, juntas) × cinco calibrações e seis testes. |
+| `assimetricos_resumo.sh` | Etapas (bruto, custos, proventos, Selic), pares na grade e conferências do estudo de 18/11/2026, em `cru/`. |
+| `assimetricos_relatorio.sh` | Roda o `assimetricos_resumo.sh` e monta `ia/relatorios/assimetricos/relatorio.html` a partir do `modelo.html` (dados embutidos, abre offline). |

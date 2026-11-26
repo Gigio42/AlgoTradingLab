@@ -23,6 +23,10 @@ private:
    long     m_ordens_antes;
    double   m_soma_graus_liberdade;
    long     m_estimativas_graus_liberdade;
+   double   m_soma_gama;
+   long     m_estimativas_gama;
+   double   m_soma_janela;
+   long     m_janelas;
 
    void     AbrirTraco(void);
 
@@ -31,7 +35,8 @@ public:
                                           m_arquivo_traco(INVALID_HANDLE), m_barras_processadas(0),
                                           m_falhas_ajuste(0), m_sinais_arima(0), m_vetos_garch(0),
                                           m_ordens_antes(0), m_soma_graus_liberdade(0.0),
-                                          m_estimativas_graus_liberdade(0) {}
+                                          m_estimativas_graus_liberdade(0), m_soma_gama(0.0), m_estimativas_gama(0),
+                                          m_soma_janela(0.0), m_janelas(0) {}
 
    void     Iniciar(CArima *arima, CGarch *garch, CNegociacao *negociacao, const int p, const int d, const int q);
    void     Encerrar(const int p, const int d, const int q);
@@ -43,6 +48,8 @@ public:
    void     BarraProcessada(void) { m_barras_processadas++; }
    void     FalhaDeAjuste(const string motivo);
    void     GrausLiberdadeEstimados(const double graus_liberdade);
+   void     GamaEstimado(const double gama) { if(m_garch != NULL && m_garch.Modelo() != GARCH_SIMETRICO) { m_soma_gama += gama; m_estimativas_gama++; } }
+   void     JanelaUsada(const int barras) { m_soma_janela += barras; m_janelas++; }
    void     Decisao(const double previsao, const double volatilidade, const double limiar,
                     const bool garch_ajustado, const DecisaoOperacao &decisao);
    void     GravarTraco(const double previsao, const double volatilidade, const double limiar,
@@ -52,6 +59,8 @@ public:
    long     VetosGarch(void)  const { return(m_vetos_garch); }
    double   GrausLiberdadeMedio(void) const
      { return((m_estimativas_graus_liberdade > 0) ? m_soma_graus_liberdade / (double)m_estimativas_graus_liberdade : 0.0); }
+   double   GamaMedio(void) const { return((m_estimativas_gama > 0) ? m_soma_gama / (double)m_estimativas_gama : 0.0); }
+   double   JanelaMedia(void) const { return((m_janelas > 0) ? m_soma_janela / (double)m_janelas : 0.0); }
   };
 
 void CDiagnostico::Iniciar(CArima *arima, CGarch *garch, CNegociacao *negociacao, const int p, const int d, const int q)
