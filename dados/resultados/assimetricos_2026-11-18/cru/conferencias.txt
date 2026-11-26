@@ -1,0 +1,26 @@
+Passagens por grade (esperado 156):
+  base PETR4_C4: 156
+  bic PETR4_C4: 156
+  egarch PETR4_C4: 156
+  egarch_tudo PETR4_C4: 156
+  exp PETR4_C4: 156
+  gjr PETR4_C4: 156
+  gjr_tudo PETR4_C4: 156
+  t PETR4_C4: 156
+
+Base x estudo de 13/11 (janelas_garch_2026-11-13/calibracao/500), passagem a passagem:
+  C4: 156 pares, 0 diferentes, 0 sem par
+
+Testes: ret_custos recalculado da curva x gravado pelo EA (pontos percentuais):
+  25 testes, maior diferenca 0.0010 p.p.
+  etapa final x ret_completo do EA: maior diferenca 0.0000 p.p.
+
+Janela media do ARIMA e gama medio nos testes com GARCH:
+  base: janela    | gama
+  bic: janela    | gama
+  egarch: janela 240.0 240.0 240.0 | gama -0.074725 -0.074725
+  egarch_tudo: janela 5201.0 5201.0 5201.0 | gama -0.068274 -0.068274
+  exp: janela 5201.0 5201.0 5201.0 | gama 0.000000 0.000000
+  gjr: janela 240.0 240.0 240.0 | gama 0.172689 0.167414
+  gjr_tudo: janela 5201.0 5201.0 5201.0 | gama 0.108693 0.108693
+  t: janela    | gama

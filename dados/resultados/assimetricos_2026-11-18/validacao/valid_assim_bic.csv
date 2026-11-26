@@ -1,0 +1,801 @@
+caso,rep,criterio,d,p,q
+ruido branco,0,AIC,1,0,0
+ruido branco,0,BIC,1,0,0
+ruido branco,1,AIC,1,2,0
+ruido branco,1,BIC,1,0,0
+ruido branco,2,AIC,1,0,0
+ruido branco,2,BIC,1,0,0
+ruido branco,3,AIC,1,0,0
+ruido branco,3,BIC,1,0,0
+ruido branco,4,AIC,1,0,0
+ruido branco,4,BIC,1,0,0
+ruido branco,5,AIC,1,3,0
+ruido branco,5,BIC,1,0,0
+ruido branco,6,AIC,1,0,0
+ruido branco,6,BIC,1,0,0
+ruido branco,7,AIC,1,0,0
+ruido branco,7,BIC,1,0,0
+ruido branco,8,AIC,1,0,0
+ruido branco,8,BIC,1,0,0
+ruido branco,9,AIC,1,0,0
+ruido branco,9,BIC,1,0,0
+ruido branco,10,AIC,1,0,3
+ruido branco,10,BIC,1,0,0
+ruido branco,11,AIC,1,0,0
+ruido branco,11,BIC,1,0,0
+ruido branco,12,AIC,1,3,0
+ruido branco,12,BIC,1,0,0
+ruido branco,13,AIC,1,0,0
+ruido branco,13,BIC,1,0,0
+ruido branco,14,AIC,1,0,3
+ruido branco,14,BIC,1,0,0
+ruido branco,15,AIC,1,0,0
+ruido branco,15,BIC,1,0,0
+ruido branco,16,AIC,1,1,0
+ruido branco,16,BIC,1,1,0
+ruido branco,17,AIC,1,2,0
+ruido branco,17,BIC,1,0,0
+ruido branco,18,AIC,1,0,0
+ruido branco,18,BIC,1,0,0
+ruido branco,19,AIC,0,3,0
+ruido branco,19,BIC,0,1,0
+ruido branco,20,AIC,1,1,0
+ruido branco,20,BIC,1,0,0
+ruido branco,21,AIC,1,0,0
+ruido branco,21,BIC,1,0,0
+ruido branco,22,AIC,1,0,0
+ruido branco,22,BIC,1,0,0
+ruido branco,23,AIC,1,0,0
+ruido branco,23,BIC,1,0,0
+ruido branco,24,AIC,1,0,0
+ruido branco,24,BIC,1,0,0
+ruido branco,25,AIC,1,0,0
+ruido branco,25,BIC,1,0,0
+ruido branco,26,AIC,1,0,0
+ruido branco,26,BIC,1,0,0
+ruido branco,27,AIC,1,0,0
+ruido branco,27,BIC,1,0,0
+ruido branco,28,AIC,1,0,0
+ruido branco,28,BIC,1,0,0
+ruido branco,29,AIC,1,0,4
+ruido branco,29,BIC,1,0,0
+ruido branco,30,AIC,1,0,0
+ruido branco,30,BIC,1,0,0
+ruido branco,31,AIC,1,0,0
+ruido branco,31,BIC,1,0,0
+ruido branco,32,AIC,1,4,0
+ruido branco,32,BIC,1,0,0
+ruido branco,33,AIC,1,0,3
+ruido branco,33,BIC,1,0,0
+ruido branco,34,AIC,1,0,0
+ruido branco,34,BIC,1,0,0
+ruido branco,35,AIC,1,0,2
+ruido branco,35,BIC,1,0,0
+ruido branco,36,AIC,1,1,0
+ruido branco,36,BIC,1,0,0
+ruido branco,37,AIC,1,2,0
+ruido branco,37,BIC,1,0,0
+ruido branco,38,AIC,1,0,0
+ruido branco,38,BIC,1,0,0
+ruido branco,39,AIC,1,0,0
+ruido branco,39,BIC,1,0,0
+ruido branco,40,AIC,1,0,0
+ruido branco,40,BIC,1,0,0
+ruido branco,41,AIC,1,0,0
+ruido branco,41,BIC,1,0,0
+ruido branco,42,AIC,1,0,0
+ruido branco,42,BIC,1,0,0
+ruido branco,43,AIC,1,1,0
+ruido branco,43,BIC,1,0,0
+ruido branco,44,AIC,1,3,0
+ruido branco,44,BIC,1,0,0
+ruido branco,45,AIC,1,0,0
+ruido branco,45,BIC,1,0,0
+ruido branco,46,AIC,1,0,0
+ruido branco,46,BIC,1,0,0
+ruido branco,47,AIC,1,0,0
+ruido branco,47,BIC,1,0,0
+ruido branco,48,AIC,1,2,0
+ruido branco,48,BIC,1,0,0
+ruido branco,49,AIC,1,1,0
+ruido branco,49,BIC,1,0,0
+ruido branco,50,AIC,1,0,0
+ruido branco,50,BIC,1,0,0
+ruido branco,51,AIC,1,0,0
+ruido branco,51,BIC,1,0,0
+ruido branco,52,AIC,0,4,0
+ruido branco,52,BIC,0,1,0
+ruido branco,53,AIC,0,1,1
+ruido branco,53,BIC,0,1,0
+ruido branco,54,AIC,1,0,3
+ruido branco,54,BIC,1,0,0
+ruido branco,55,AIC,1,0,0
+ruido branco,55,BIC,1,0,0
+ruido branco,56,AIC,1,0,0
+ruido branco,56,BIC,1,0,0
+ruido branco,57,AIC,1,0,0
+ruido branco,57,BIC,1,0,0
+ruido branco,58,AIC,1,1,0
+ruido branco,58,BIC,1,0,0
+ruido branco,59,AIC,1,0,0
+ruido branco,59,BIC,1,0,0
+ruido branco,60,AIC,1,0,0
+ruido branco,60,BIC,1,0,0
+ruido branco,61,AIC,1,0,0
+ruido branco,61,BIC,1,0,0
+ruido branco,62,AIC,0,4,0
+ruido branco,62,BIC,0,1,0
+ruido branco,63,AIC,1,2,0
+ruido branco,63,BIC,1,0,0
+ruido branco,64,AIC,1,0,0
+ruido branco,64,BIC,1,0,0
+ruido branco,65,AIC,1,0,0
+ruido branco,65,BIC,1,0,0
+ruido branco,66,AIC,1,1,0
+ruido branco,66,BIC,1,0,0
+ruido branco,67,AIC,1,0,1
+ruido branco,67,BIC,1,0,0
+ruido branco,68,AIC,1,0,0
+ruido branco,68,BIC,1,0,0
+ruido branco,69,AIC,0,3,0
+ruido branco,69,BIC,0,1,0
+ruido branco,70,AIC,1,0,0
+ruido branco,70,BIC,1,0,0
+ruido branco,71,AIC,1,0,0
+ruido branco,71,BIC,1,0,0
+ruido branco,72,AIC,1,0,0
+ruido branco,72,BIC,1,0,0
+ruido branco,73,AIC,1,0,0
+ruido branco,73,BIC,1,0,0
+ruido branco,74,AIC,1,0,0
+ruido branco,74,BIC,1,0,0
+ruido branco,75,AIC,1,1,0
+ruido branco,75,BIC,1,0,0
+ruido branco,76,AIC,1,0,0
+ruido branco,76,BIC,1,0,0
+ruido branco,77,AIC,1,0,0
+ruido branco,77,BIC,1,0,0
+ruido branco,78,AIC,1,0,0
+ruido branco,78,BIC,1,0,0
+ruido branco,79,AIC,1,0,0
+ruido branco,79,BIC,1,0,0
+ruido branco,80,AIC,1,0,0
+ruido branco,80,BIC,1,0,0
+ruido branco,81,AIC,1,0,0
+ruido branco,81,BIC,1,0,0
+ruido branco,82,AIC,1,1,0
+ruido branco,82,BIC,1,0,0
+ruido branco,83,AIC,1,0,0
+ruido branco,83,BIC,1,0,0
+ruido branco,84,AIC,1,0,0
+ruido branco,84,BIC,1,0,0
+ruido branco,85,AIC,1,0,0
+ruido branco,85,BIC,1,0,0
+ruido branco,86,AIC,1,0,0
+ruido branco,86,BIC,1,0,0
+ruido branco,87,AIC,1,0,0
+ruido branco,87,BIC,1,0,0
+ruido branco,88,AIC,1,0,0
+ruido branco,88,BIC,1,0,0
+ruido branco,89,AIC,1,0,0
+ruido branco,89,BIC,1,0,0
+ruido branco,90,AIC,1,0,0
+ruido branco,90,BIC,1,0,0
+ruido branco,91,AIC,1,0,0
+ruido branco,91,BIC,1,0,0
+ruido branco,92,AIC,1,0,0
+ruido branco,92,BIC,1,0,0
+ruido branco,93,AIC,1,0,0
+ruido branco,93,BIC,1,0,0
+ruido branco,94,AIC,1,2,0
+ruido branco,94,BIC,1,0,0
+ruido branco,95,AIC,1,0,0
+ruido branco,95,BIC,1,0,0
+ruido branco,96,AIC,1,0,0
+ruido branco,96,BIC,1,0,0
+ruido branco,97,AIC,1,0,0
+ruido branco,97,BIC,1,0,0
+ruido branco,98,AIC,1,0,0
+ruido branco,98,BIC,1,0,0
+ruido branco,99,AIC,1,0,0
+ruido branco,99,BIC,1,0,0
+ruido branco,100,AIC,0,4,0
+ruido branco,100,BIC,0,1,0
+ruido branco,101,AIC,1,0,0
+ruido branco,101,BIC,1,0,0
+ruido branco,102,AIC,1,4,1
+ruido branco,102,BIC,1,0,0
+ruido branco,103,AIC,1,1,0
+ruido branco,103,BIC,1,0,0
+ruido branco,104,AIC,1,0,0
+ruido branco,104,BIC,1,0,0
+ruido branco,105,AIC,1,4,0
+ruido branco,105,BIC,1,0,0
+ruido branco,106,AIC,1,0,0
+ruido branco,106,BIC,1,0,0
+ruido branco,107,AIC,1,0,0
+ruido branco,107,BIC,1,0,0
+ruido branco,108,AIC,1,1,0
+ruido branco,108,BIC,1,0,0
+ruido branco,109,AIC,1,0,0
+ruido branco,109,BIC,1,0,0
+ruido branco,110,AIC,1,0,0
+ruido branco,110,BIC,1,0,0
+ruido branco,111,AIC,1,0,0
+ruido branco,111,BIC,1,0,0
+ruido branco,112,AIC,1,0,0
+ruido branco,112,BIC,1,0,0
+ruido branco,113,AIC,1,0,0
+ruido branco,113,BIC,1,0,0
+ruido branco,114,AIC,1,0,0
+ruido branco,114,BIC,1,0,0
+ruido branco,115,AIC,1,0,0
+ruido branco,115,BIC,1,0,0
+ruido branco,116,AIC,1,2,0
+ruido branco,116,BIC,1,0,0
+ruido branco,117,AIC,0,1,0
+ruido branco,117,BIC,0,1,0
+ruido branco,118,AIC,1,0,1
+ruido branco,118,BIC,1,0,0
+ruido branco,119,AIC,1,1,0
+ruido branco,119,BIC,1,0,0
+ruido branco,120,AIC,1,0,0
+ruido branco,120,BIC,1,0,0
+ruido branco,121,AIC,1,0,0
+ruido branco,121,BIC,1,0,0
+ruido branco,122,AIC,1,0,0
+ruido branco,122,BIC,1,0,0
+ruido branco,123,AIC,1,2,0
+ruido branco,123,BIC,1,0,0
+ruido branco,124,AIC,1,0,0
+ruido branco,124,BIC,1,0,0
+ruido branco,125,AIC,1,0,0
+ruido branco,125,BIC,1,0,0
+ruido branco,126,AIC,1,0,1
+ruido branco,126,BIC,1,0,0
+ruido branco,127,AIC,1,0,0
+ruido branco,127,BIC,1,0,0
+ruido branco,128,AIC,1,0,0
+ruido branco,128,BIC,1,0,0
+ruido branco,129,AIC,1,1,0
+ruido branco,129,BIC,1,0,0
+ruido branco,130,AIC,1,3,0
+ruido branco,130,BIC,1,0,0
+ruido branco,131,AIC,1,0,0
+ruido branco,131,BIC,1,0,0
+ruido branco,132,AIC,1,0,0
+ruido branco,132,BIC,1,0,0
+ruido branco,133,AIC,1,0,0
+ruido branco,133,BIC,1,0,0
+ruido branco,134,AIC,1,0,0
+ruido branco,134,BIC,1,0,0
+ruido branco,135,AIC,1,0,0
+ruido branco,135,BIC,1,0,0
+ruido branco,136,AIC,1,0,0
+ruido branco,136,BIC,1,0,0
+ruido branco,137,AIC,1,0,3
+ruido branco,137,BIC,1,0,0
+ruido branco,138,AIC,1,0,0
+ruido branco,138,BIC,1,0,0
+ruido branco,139,AIC,1,0,0
+ruido branco,139,BIC,1,0,0
+ruido branco,140,AIC,1,0,0
+ruido branco,140,BIC,1,0,0
+ruido branco,141,AIC,1,0,0
+ruido branco,141,BIC,1,0,0
+ruido branco,142,AIC,1,0,0
+ruido branco,142,BIC,1,0,0
+ruido branco,143,AIC,1,0,0
+ruido branco,143,BIC,1,0,0
+ruido branco,144,AIC,1,0,0
+ruido branco,144,BIC,1,0,0
+ruido branco,145,AIC,0,1,0
+ruido branco,145,BIC,0,1,0
+ruido branco,146,AIC,1,0,0
+ruido branco,146,BIC,1,0,0
+ruido branco,147,AIC,1,0,0
+ruido branco,147,BIC,1,0,0
+ruido branco,148,AIC,1,4,0
+ruido branco,148,BIC,1,0,0
+ruido branco,149,AIC,1,0,0
+ruido branco,149,BIC,1,0,0
+ruido branco,150,AIC,1,0,0
+ruido branco,150,BIC,1,0,0
+ruido branco,151,AIC,1,0,0
+ruido branco,151,BIC,1,0,0
+ruido branco,152,AIC,1,0,0
+ruido branco,152,BIC,1,0,0
+ruido branco,153,AIC,1,0,0
+ruido branco,153,BIC,1,0,0
+ruido branco,154,AIC,1,1,0
+ruido branco,154,BIC,1,0,0
+ruido branco,155,AIC,1,0,0
+ruido branco,155,BIC,1,0,0
+ruido branco,156,AIC,1,0,0
+ruido branco,156,BIC,1,0,0
+ruido branco,157,AIC,1,0,0
+ruido branco,157,BIC,1,0,0
+ruido branco,158,AIC,1,0,0
+ruido branco,158,BIC,1,0,0
+ruido branco,159,AIC,1,0,0
+ruido branco,159,BIC,1,0,0
+ruido branco,160,AIC,1,0,0
+ruido branco,160,BIC,1,0,0
+ruido branco,161,AIC,1,2,0
+ruido branco,161,BIC,1,0,0
+ruido branco,162,AIC,1,0,0
+ruido branco,162,BIC,1,0,0
+ruido branco,163,AIC,1,0,0
+ruido branco,163,BIC,1,0,0
+ruido branco,164,AIC,1,0,0
+ruido branco,164,BIC,1,0,0
+ruido branco,165,AIC,0,1,0
+ruido branco,165,BIC,0,1,0
+ruido branco,166,AIC,1,0,4
+ruido branco,166,BIC,1,0,0
+ruido branco,167,AIC,1,0,0
+ruido branco,167,BIC,1,0,0
+ruido branco,168,AIC,1,4,0
+ruido branco,168,BIC,1,0,0
+ruido branco,169,AIC,0,1,0
+ruido branco,169,BIC,0,1,0
+ruido branco,170,AIC,1,0,0
+ruido branco,170,BIC,1,0,0
+ruido branco,171,AIC,1,0,0
+ruido branco,171,BIC,1,0,0
+ruido branco,172,AIC,0,2,0
+ruido branco,172,BIC,0,1,0
+ruido branco,173,AIC,1,3,0
+ruido branco,173,BIC,1,0,0
+ruido branco,174,AIC,1,0,0
+ruido branco,174,BIC,1,0,0
+ruido branco,175,AIC,1,0,0
+ruido branco,175,BIC,1,0,0
+ruido branco,176,AIC,0,1,0
+ruido branco,176,BIC,0,1,0
+ruido branco,177,AIC,1,0,0
+ruido branco,177,BIC,1,0,0
+ruido branco,178,AIC,1,0,0
+ruido branco,178,BIC,1,0,0
+ruido branco,179,AIC,1,0,0
+ruido branco,179,BIC,1,0,0
+ruido branco,180,AIC,1,0,0
+ruido branco,180,BIC,1,0,0
+ruido branco,181,AIC,1,0,0
+ruido branco,181,BIC,1,0,0
+ruido branco,182,AIC,1,1,0
+ruido branco,182,BIC,1,0,0
+ruido branco,183,AIC,1,0,0
+ruido branco,183,BIC,1,0,0
+ruido branco,184,AIC,1,0,0
+ruido branco,184,BIC,1,0,0
+ruido branco,185,AIC,1,0,0
+ruido branco,185,BIC,1,0,0
+ruido branco,186,AIC,1,0,0
+ruido branco,186,BIC,1,0,0
+ruido branco,187,AIC,1,0,0
+ruido branco,187,BIC,1,0,0
+ruido branco,188,AIC,1,0,0
+ruido branco,188,BIC,1,0,0
+ruido branco,189,AIC,1,1,0
+ruido branco,189,BIC,1,1,0
+ruido branco,190,AIC,1,0,0
+ruido branco,190,BIC,1,0,0
+ruido branco,191,AIC,1,0,0
+ruido branco,191,BIC,1,0,0
+ruido branco,192,AIC,1,0,0
+ruido branco,192,BIC,1,0,0
+ruido branco,193,AIC,1,0,0
+ruido branco,193,BIC,1,0,0
+ruido branco,194,AIC,1,1,0
+ruido branco,194,BIC,1,0,0
+ruido branco,195,AIC,1,0,0
+ruido branco,195,BIC,1,0,0
+ruido branco,196,AIC,1,0,0
+ruido branco,196,BIC,1,0,0
+ruido branco,197,AIC,1,1,0
+ruido branco,197,BIC,1,0,0
+ruido branco,198,AIC,0,1,0
+ruido branco,198,BIC,0,1,0
+ruido branco,199,AIC,1,0,0
+ruido branco,199,BIC,1,0,0
+AR(1) phi 0.3,0,AIC,1,0,2
+AR(1) phi 0.3,0,BIC,1,1,0
+AR(1) phi 0.3,1,AIC,0,2,0
+AR(1) phi 0.3,1,BIC,0,2,0
+AR(1) phi 0.3,2,AIC,1,1,0
+AR(1) phi 0.3,2,BIC,1,1,0
+AR(1) phi 0.3,3,AIC,1,0,1
+AR(1) phi 0.3,3,BIC,1,0,1
+AR(1) phi 0.3,4,AIC,1,0,1
+AR(1) phi 0.3,4,BIC,1,0,1
+AR(1) phi 0.3,5,AIC,1,0,0
+AR(1) phi 0.3,5,BIC,1,0,0
+AR(1) phi 0.3,6,AIC,1,2,4
+AR(1) phi 0.3,6,BIC,1,1,0
+AR(1) phi 0.3,7,AIC,1,1,0
+AR(1) phi 0.3,7,BIC,1,1,0
+AR(1) phi 0.3,8,AIC,1,1,0
+AR(1) phi 0.3,8,BIC,1,1,0
+AR(1) phi 0.3,9,AIC,1,1,0
+AR(1) phi 0.3,9,BIC,1,1,0
+AR(1) phi 0.3,10,AIC,1,0,4
+AR(1) phi 0.3,10,BIC,1,1,0
+AR(1) phi 0.3,11,AIC,1,4,0
+AR(1) phi 0.3,11,BIC,1,0,1
+AR(1) phi 0.3,12,AIC,1,2,0
+AR(1) phi 0.3,12,BIC,1,1,0
+AR(1) phi 0.3,13,AIC,1,1,0
+AR(1) phi 0.3,13,BIC,1,1,0
+AR(1) phi 0.3,14,AIC,1,0,1
+AR(1) phi 0.3,14,BIC,1,0,1
+AR(1) phi 0.3,15,AIC,1,1,0
+AR(1) phi 0.3,15,BIC,1,1,0
+AR(1) phi 0.3,16,AIC,1,1,0
+AR(1) phi 0.3,16,BIC,1,1,0
+AR(1) phi 0.3,17,AIC,1,1,0
+AR(1) phi 0.3,17,BIC,1,1,0
+AR(1) phi 0.3,18,AIC,1,1,0
+AR(1) phi 0.3,18,BIC,1,1,0
+AR(1) phi 0.3,19,AIC,1,0,1
+AR(1) phi 0.3,19,BIC,1,0,1
+AR(1) phi 0.3,20,AIC,1,1,0
+AR(1) phi 0.3,20,BIC,1,1,0
+AR(1) phi 0.3,21,AIC,1,1,0
+AR(1) phi 0.3,21,BIC,1,1,0
+AR(1) phi 0.3,22,AIC,1,0,4
+AR(1) phi 0.3,22,BIC,1,0,1
+AR(1) phi 0.3,23,AIC,1,1,0
+AR(1) phi 0.3,23,BIC,1,1,0
+AR(1) phi 0.3,24,AIC,1,1,0
+AR(1) phi 0.3,24,BIC,1,1,0
+AR(1) phi 0.3,25,AIC,1,2,0
+AR(1) phi 0.3,25,BIC,1,1,0
+AR(1) phi 0.3,26,AIC,1,0,1
+AR(1) phi 0.3,26,BIC,1,0,1
+AR(1) phi 0.3,27,AIC,1,0,1
+AR(1) phi 0.3,27,BIC,1,0,1
+AR(1) phi 0.3,28,AIC,1,1,0
+AR(1) phi 0.3,28,BIC,1,1,0
+AR(1) phi 0.3,29,AIC,0,1,3
+AR(1) phi 0.3,29,BIC,0,2,0
+AR(1) phi 0.3,30,AIC,1,1,0
+AR(1) phi 0.3,30,BIC,1,1,0
+AR(1) phi 0.3,31,AIC,0,2,0
+AR(1) phi 0.3,31,BIC,0,2,0
+AR(1) phi 0.3,32,AIC,1,0,2
+AR(1) phi 0.3,32,BIC,1,1,0
+AR(1) phi 0.3,33,AIC,1,1,0
+AR(1) phi 0.3,33,BIC,1,1,0
+AR(1) phi 0.3,34,AIC,1,0,1
+AR(1) phi 0.3,34,BIC,1,0,1
+AR(1) phi 0.3,35,AIC,1,1,0
+AR(1) phi 0.3,35,BIC,1,1,0
+AR(1) phi 0.3,36,AIC,1,1,0
+AR(1) phi 0.3,36,BIC,1,1,0
+AR(1) phi 0.3,37,AIC,1,1,0
+AR(1) phi 0.3,37,BIC,1,1,0
+AR(1) phi 0.3,38,AIC,1,0,1
+AR(1) phi 0.3,38,BIC,1,0,1
+AR(1) phi 0.3,39,AIC,1,1,0
+AR(1) phi 0.3,39,BIC,1,1,0
+AR(1) phi 0.3,40,AIC,1,1,0
+AR(1) phi 0.3,40,BIC,1,1,0
+AR(1) phi 0.3,41,AIC,1,1,0
+AR(1) phi 0.3,41,BIC,1,1,0
+AR(1) phi 0.3,42,AIC,1,1,0
+AR(1) phi 0.3,42,BIC,1,1,0
+AR(1) phi 0.3,43,AIC,1,0,1
+AR(1) phi 0.3,43,BIC,1,0,1
+AR(1) phi 0.3,44,AIC,1,4,0
+AR(1) phi 0.3,44,BIC,1,1,0
+AR(1) phi 0.3,45,AIC,1,0,1
+AR(1) phi 0.3,45,BIC,1,0,1
+AR(1) phi 0.3,46,AIC,1,1,0
+AR(1) phi 0.3,46,BIC,1,1,0
+AR(1) phi 0.3,47,AIC,1,1,0
+AR(1) phi 0.3,47,BIC,1,1,0
+AR(1) phi 0.3,48,AIC,1,1,0
+AR(1) phi 0.3,48,BIC,1,1,0
+AR(1) phi 0.3,49,AIC,1,0,1
+AR(1) phi 0.3,49,BIC,1,0,1
+AR(1) phi 0.3,50,AIC,1,1,0
+AR(1) phi 0.3,50,BIC,1,1,0
+AR(1) phi 0.3,51,AIC,1,1,0
+AR(1) phi 0.3,51,BIC,1,1,0
+AR(1) phi 0.3,52,AIC,1,0,4
+AR(1) phi 0.3,52,BIC,1,0,0
+AR(1) phi 0.3,53,AIC,1,1,0
+AR(1) phi 0.3,53,BIC,1,1,0
+AR(1) phi 0.3,54,AIC,1,1,0
+AR(1) phi 0.3,54,BIC,1,1,0
+AR(1) phi 0.3,55,AIC,1,1,0
+AR(1) phi 0.3,55,BIC,1,1,0
+AR(1) phi 0.3,56,AIC,1,0,2
+AR(1) phi 0.3,56,BIC,1,0,2
+AR(1) phi 0.3,57,AIC,1,1,0
+AR(1) phi 0.3,57,BIC,1,1,0
+AR(1) phi 0.3,58,AIC,1,1,0
+AR(1) phi 0.3,58,BIC,1,1,0
+AR(1) phi 0.3,59,AIC,1,1,0
+AR(1) phi 0.3,59,BIC,1,1,0
+AR(1) phi 0.3,60,AIC,1,0,1
+AR(1) phi 0.3,60,BIC,1,0,1
+AR(1) phi 0.3,61,AIC,1,1,0
+AR(1) phi 0.3,61,BIC,1,1,0
+AR(1) phi 0.3,62,AIC,1,0,2
+AR(1) phi 0.3,62,BIC,1,1,0
+AR(1) phi 0.3,63,AIC,1,1,0
+AR(1) phi 0.3,63,BIC,1,1,0
+AR(1) phi 0.3,64,AIC,1,0,1
+AR(1) phi 0.3,64,BIC,1,0,1
+AR(1) phi 0.3,65,AIC,1,1,0
+AR(1) phi 0.3,65,BIC,1,1,0
+AR(1) phi 0.3,66,AIC,1,3,4
+AR(1) phi 0.3,66,BIC,1,1,0
+AR(1) phi 0.3,67,AIC,1,0,2
+AR(1) phi 0.3,67,BIC,1,1,0
+AR(1) phi 0.3,68,AIC,1,1,0
+AR(1) phi 0.3,68,BIC,1,1,0
+AR(1) phi 0.3,69,AIC,1,1,0
+AR(1) phi 0.3,69,BIC,1,1,0
+AR(1) phi 0.3,70,AIC,1,3,0
+AR(1) phi 0.3,70,BIC,1,3,0
+AR(1) phi 0.3,71,AIC,1,1,0
+AR(1) phi 0.3,71,BIC,1,1,0
+AR(1) phi 0.3,72,AIC,1,0,1
+AR(1) phi 0.3,72,BIC,1,0,1
+AR(1) phi 0.3,73,AIC,1,0,1
+AR(1) phi 0.3,73,BIC,1,0,1
+AR(1) phi 0.3,74,AIC,1,0,1
+AR(1) phi 0.3,74,BIC,1,0,1
+AR(1) phi 0.3,75,AIC,0,2,0
+AR(1) phi 0.3,75,BIC,0,2,0
+AR(1) phi 0.3,76,AIC,1,1,0
+AR(1) phi 0.3,76,BIC,1,1,0
+AR(1) phi 0.3,77,AIC,1,1,0
+AR(1) phi 0.3,77,BIC,1,1,0
+AR(1) phi 0.3,78,AIC,1,1,0
+AR(1) phi 0.3,78,BIC,1,1,0
+AR(1) phi 0.3,79,AIC,1,1,0
+AR(1) phi 0.3,79,BIC,1,1,0
+AR(1) phi 0.3,80,AIC,1,1,0
+AR(1) phi 0.3,80,BIC,1,1,0
+AR(1) phi 0.3,81,AIC,1,2,0
+AR(1) phi 0.3,81,BIC,1,1,0
+AR(1) phi 0.3,82,AIC,1,0,1
+AR(1) phi 0.3,82,BIC,1,0,1
+AR(1) phi 0.3,83,AIC,1,1,0
+AR(1) phi 0.3,83,BIC,1,1,0
+AR(1) phi 0.3,84,AIC,1,0,1
+AR(1) phi 0.3,84,BIC,1,0,1
+AR(1) phi 0.3,85,AIC,1,1,0
+AR(1) phi 0.3,85,BIC,1,1,0
+AR(1) phi 0.3,86,AIC,1,1,0
+AR(1) phi 0.3,86,BIC,1,1,0
+AR(1) phi 0.3,87,AIC,1,1,0
+AR(1) phi 0.3,87,BIC,1,1,0
+AR(1) phi 0.3,88,AIC,1,0,1
+AR(1) phi 0.3,88,BIC,1,0,1
+AR(1) phi 0.3,89,AIC,1,0,1
+AR(1) phi 0.3,89,BIC,1,0,1
+AR(1) phi 0.3,90,AIC,1,2,0
+AR(1) phi 0.3,90,BIC,1,1,0
+AR(1) phi 0.3,91,AIC,1,0,1
+AR(1) phi 0.3,91,BIC,1,0,1
+AR(1) phi 0.3,92,AIC,1,1,0
+AR(1) phi 0.3,92,BIC,1,1,0
+AR(1) phi 0.3,93,AIC,1,1,0
+AR(1) phi 0.3,93,BIC,1,1,0
+AR(1) phi 0.3,94,AIC,1,0,1
+AR(1) phi 0.3,94,BIC,1,0,1
+AR(1) phi 0.3,95,AIC,1,1,0
+AR(1) phi 0.3,95,BIC,1,1,0
+AR(1) phi 0.3,96,AIC,1,1,0
+AR(1) phi 0.3,96,BIC,1,1,0
+AR(1) phi 0.3,97,AIC,1,1,0
+AR(1) phi 0.3,97,BIC,1,1,0
+AR(1) phi 0.3,98,AIC,1,1,0
+AR(1) phi 0.3,98,BIC,1,1,0
+AR(1) phi 0.3,99,AIC,1,1,0
+AR(1) phi 0.3,99,BIC,1,1,0
+AR(1) phi 0.3,100,AIC,1,1,0
+AR(1) phi 0.3,100,BIC,1,1,0
+AR(1) phi 0.3,101,AIC,1,1,0
+AR(1) phi 0.3,101,BIC,1,1,0
+AR(1) phi 0.3,102,AIC,1,0,1
+AR(1) phi 0.3,102,BIC,1,0,1
+AR(1) phi 0.3,103,AIC,1,0,1
+AR(1) phi 0.3,103,BIC,1,0,1
+AR(1) phi 0.3,104,AIC,1,1,0
+AR(1) phi 0.3,104,BIC,1,1,0
+AR(1) phi 0.3,105,AIC,1,0,1
+AR(1) phi 0.3,105,BIC,1,0,1
+AR(1) phi 0.3,106,AIC,1,0,1
+AR(1) phi 0.3,106,BIC,1,0,1
+AR(1) phi 0.3,107,AIC,1,3,0
+AR(1) phi 0.3,107,BIC,1,1,0
+AR(1) phi 0.3,108,AIC,1,0,4
+AR(1) phi 0.3,108,BIC,1,1,0
+AR(1) phi 0.3,109,AIC,1,1,0
+AR(1) phi 0.3,109,BIC,1,1,0
+AR(1) phi 0.3,110,AIC,1,0,4
+AR(1) phi 0.3,110,BIC,1,1,0
+AR(1) phi 0.3,111,AIC,1,1,0
+AR(1) phi 0.3,111,BIC,1,1,0
+AR(1) phi 0.3,112,AIC,1,1,0
+AR(1) phi 0.3,112,BIC,1,1,0
+AR(1) phi 0.3,113,AIC,1,1,0
+AR(1) phi 0.3,113,BIC,1,1,0
+AR(1) phi 0.3,114,AIC,1,1,0
+AR(1) phi 0.3,114,BIC,1,1,0
+AR(1) phi 0.3,115,AIC,1,1,0
+AR(1) phi 0.3,115,BIC,1,1,0
+AR(1) phi 0.3,116,AIC,1,0,1
+AR(1) phi 0.3,116,BIC,1,0,1
+AR(1) phi 0.3,117,AIC,1,4,0
+AR(1) phi 0.3,117,BIC,1,1,0
+AR(1) phi 0.3,118,AIC,1,1,0
+AR(1) phi 0.3,118,BIC,1,1,0
+AR(1) phi 0.3,119,AIC,1,1,0
+AR(1) phi 0.3,119,BIC,1,1,0
+AR(1) phi 0.3,120,AIC,1,1,0
+AR(1) phi 0.3,120,BIC,1,1,0
+AR(1) phi 0.3,121,AIC,1,1,0
+AR(1) phi 0.3,121,BIC,1,1,0
+AR(1) phi 0.3,122,AIC,1,0,1
+AR(1) phi 0.3,122,BIC,1,0,1
+AR(1) phi 0.3,123,AIC,1,1,0
+AR(1) phi 0.3,123,BIC,1,1,0
+AR(1) phi 0.3,124,AIC,0,3,0
+AR(1) phi 0.3,124,BIC,0,1,1
+AR(1) phi 0.3,125,AIC,1,1,0
+AR(1) phi 0.3,125,BIC,1,1,0
+AR(1) phi 0.3,126,AIC,1,0,1
+AR(1) phi 0.3,126,BIC,1,0,1
+AR(1) phi 0.3,127,AIC,1,1,0
+AR(1) phi 0.3,127,BIC,1,1,0
+AR(1) phi 0.3,128,AIC,1,1,0
+AR(1) phi 0.3,128,BIC,1,1,0
+AR(1) phi 0.3,129,AIC,1,1,0
+AR(1) phi 0.3,129,BIC,1,1,0
+AR(1) phi 0.3,130,AIC,1,1,0
+AR(1) phi 0.3,130,BIC,1,1,0
+AR(1) phi 0.3,131,AIC,1,1,0
+AR(1) phi 0.3,131,BIC,1,1,0
+AR(1) phi 0.3,132,AIC,1,0,1
+AR(1) phi 0.3,132,BIC,1,0,1
+AR(1) phi 0.3,133,AIC,1,1,0
+AR(1) phi 0.3,133,BIC,1,1,0
+AR(1) phi 0.3,134,AIC,1,1,0
+AR(1) phi 0.3,134,BIC,1,1,0
+AR(1) phi 0.3,135,AIC,1,1,0
+AR(1) phi 0.3,135,BIC,1,1,0
+AR(1) phi 0.3,136,AIC,1,0,2
+AR(1) phi 0.3,136,BIC,1,1,0
+AR(1) phi 0.3,137,AIC,1,0,1
+AR(1) phi 0.3,137,BIC,1,0,1
+AR(1) phi 0.3,138,AIC,1,0,1
+AR(1) phi 0.3,138,BIC,1,0,1
+AR(1) phi 0.3,139,AIC,0,2,0
+AR(1) phi 0.3,139,BIC,0,2,0
+AR(1) phi 0.3,140,AIC,0,3,0
+AR(1) phi 0.3,140,BIC,0,3,0
+AR(1) phi 0.3,141,AIC,1,0,4
+AR(1) phi 0.3,141,BIC,1,0,1
+AR(1) phi 0.3,142,AIC,1,1,0
+AR(1) phi 0.3,142,BIC,1,1,0
+AR(1) phi 0.3,143,AIC,1,1,0
+AR(1) phi 0.3,143,BIC,1,1,0
+AR(1) phi 0.3,144,AIC,1,0,1
+AR(1) phi 0.3,144,BIC,1,0,1
+AR(1) phi 0.3,145,AIC,1,1,0
+AR(1) phi 0.3,145,BIC,1,1,0
+AR(1) phi 0.3,146,AIC,1,0,1
+AR(1) phi 0.3,146,BIC,1,0,1
+AR(1) phi 0.3,147,AIC,1,3,0
+AR(1) phi 0.3,147,BIC,1,1,0
+AR(1) phi 0.3,148,AIC,1,0,4
+AR(1) phi 0.3,148,BIC,1,1,0
+AR(1) phi 0.3,149,AIC,1,1,0
+AR(1) phi 0.3,149,BIC,1,1,0
+AR(1) phi 0.3,150,AIC,1,1,0
+AR(1) phi 0.3,150,BIC,1,1,0
+AR(1) phi 0.3,151,AIC,1,1,0
+AR(1) phi 0.3,151,BIC,1,1,0
+AR(1) phi 0.3,152,AIC,1,1,0
+AR(1) phi 0.3,152,BIC,1,1,0
+AR(1) phi 0.3,153,AIC,1,1,0
+AR(1) phi 0.3,153,BIC,1,1,0
+AR(1) phi 0.3,154,AIC,1,1,0
+AR(1) phi 0.3,154,BIC,1,1,0
+AR(1) phi 0.3,155,AIC,1,3,0
+AR(1) phi 0.3,155,BIC,1,1,0
+AR(1) phi 0.3,156,AIC,1,0,1
+AR(1) phi 0.3,156,BIC,1,0,1
+AR(1) phi 0.3,157,AIC,1,1,0
+AR(1) phi 0.3,157,BIC,1,1,0
+AR(1) phi 0.3,158,AIC,1,1,0
+AR(1) phi 0.3,158,BIC,1,1,0
+AR(1) phi 0.3,159,AIC,1,0,1
+AR(1) phi 0.3,159,BIC,1,0,1
+AR(1) phi 0.3,160,AIC,1,1,0
+AR(1) phi 0.3,160,BIC,1,1,0
+AR(1) phi 0.3,161,AIC,1,0,1
+AR(1) phi 0.3,161,BIC,1,0,1
+AR(1) phi 0.3,162,AIC,1,1,0
+AR(1) phi 0.3,162,BIC,1,1,0
+AR(1) phi 0.3,163,AIC,1,1,0
+AR(1) phi 0.3,163,BIC,1,1,0
+AR(1) phi 0.3,164,AIC,0,2,0
+AR(1) phi 0.3,164,BIC,0,2,0
+AR(1) phi 0.3,165,AIC,1,1,0
+AR(1) phi 0.3,165,BIC,1,1,0
+AR(1) phi 0.3,166,AIC,1,4,0
+AR(1) phi 0.3,166,BIC,1,1,0
+AR(1) phi 0.3,167,AIC,1,3,0
+AR(1) phi 0.3,167,BIC,1,0,1
+AR(1) phi 0.3,168,AIC,1,2,0
+AR(1) phi 0.3,168,BIC,1,1,0
+AR(1) phi 0.3,169,AIC,1,1,0
+AR(1) phi 0.3,169,BIC,1,1,0
+AR(1) phi 0.3,170,AIC,1,1,0
+AR(1) phi 0.3,170,BIC,1,1,0
+AR(1) phi 0.3,171,AIC,1,0,1
+AR(1) phi 0.3,171,BIC,1,0,1
+AR(1) phi 0.3,172,AIC,1,1,0
+AR(1) phi 0.3,172,BIC,1,1,0
+AR(1) phi 0.3,173,AIC,1,0,1
+AR(1) phi 0.3,173,BIC,1,0,1
+AR(1) phi 0.3,174,AIC,1,0,1
+AR(1) phi 0.3,174,BIC,1,0,1
+AR(1) phi 0.3,175,AIC,1,1,0
+AR(1) phi 0.3,175,BIC,1,1,0
+AR(1) phi 0.3,176,AIC,1,0,4
+AR(1) phi 0.3,176,BIC,1,1,0
+AR(1) phi 0.3,177,AIC,1,0,1
+AR(1) phi 0.3,177,BIC,1,0,1
+AR(1) phi 0.3,178,AIC,1,1,0
+AR(1) phi 0.3,178,BIC,1,1,0
+AR(1) phi 0.3,179,AIC,1,1,0
+AR(1) phi 0.3,179,BIC,1,1,0
+AR(1) phi 0.3,180,AIC,1,0,1
+AR(1) phi 0.3,180,BIC,1,0,1
+AR(1) phi 0.3,181,AIC,1,1,0
+AR(1) phi 0.3,181,BIC,1,1,0
+AR(1) phi 0.3,182,AIC,1,3,0
+AR(1) phi 0.3,182,BIC,1,0,1
+AR(1) phi 0.3,183,AIC,1,1,0
+AR(1) phi 0.3,183,BIC,1,1,0
+AR(1) phi 0.3,184,AIC,0,2,0
+AR(1) phi 0.3,184,BIC,0,2,0
+AR(1) phi 0.3,185,AIC,1,1,0
+AR(1) phi 0.3,185,BIC,1,1,0
+AR(1) phi 0.3,186,AIC,1,1,0
+AR(1) phi 0.3,186,BIC,1,1,0
+AR(1) phi 0.3,187,AIC,1,0,4
+AR(1) phi 0.3,187,BIC,1,1,0
+AR(1) phi 0.3,188,AIC,0,2,0
+AR(1) phi 0.3,188,BIC,0,2,0
+AR(1) phi 0.3,189,AIC,1,0,2
+AR(1) phi 0.3,189,BIC,1,1,0
+AR(1) phi 0.3,190,AIC,1,0,1
+AR(1) phi 0.3,190,BIC,1,0,1
+AR(1) phi 0.3,191,AIC,1,3,0
+AR(1) phi 0.3,191,BIC,1,0,1
+AR(1) phi 0.3,192,AIC,1,1,0
+AR(1) phi 0.3,192,BIC,1,1,0
+AR(1) phi 0.3,193,AIC,1,3,0
+AR(1) phi 0.3,193,BIC,1,0,1
+AR(1) phi 0.3,194,AIC,1,1,0
+AR(1) phi 0.3,194,BIC,1,1,0
+AR(1) phi 0.3,195,AIC,1,1,0
+AR(1) phi 0.3,195,BIC,1,1,0
+AR(1) phi 0.3,196,AIC,1,1,0
+AR(1) phi 0.3,196,BIC,1,1,0
+AR(1) phi 0.3,197,AIC,1,2,0
+AR(1) phi 0.3,197,BIC,1,1,0
+AR(1) phi 0.3,198,AIC,1,3,0
+AR(1) phi 0.3,198,BIC,1,1,0
+AR(1) phi 0.3,199,AIC,1,2,0
+AR(1) phi 0.3,199,BIC,1,0,0

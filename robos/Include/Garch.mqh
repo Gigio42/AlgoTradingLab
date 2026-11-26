@@ -20,6 +20,7 @@
 //@apendice:    return(-0.5 * (MathLog(2.0 * M_PI) + MathLog(sigma2) + erro_quadrado / sigma2));
 //@apendice:   }
 #include "GarchDistribuicao.mqh"   //@omitir
+#include "GarchAssimetrico.mqh"    //@omitir
 
 //--- O que a funcao objetivo precisa ler (a ALGLIB a chama com um CObject)
 class CDadosGarch : public CObject
@@ -142,6 +143,8 @@ private:
    double   m_beta[];
    ENUM_DISTRIBUICAO_GARCH m_distribuicao;   //@omitir
    double   m_graus_liberdade;           // so com a t de Student   //@omitir
+   ENUM_MODELO_GARCH m_modelo;           // simetrico, GJR ou EGARCH   //@omitir
+   double   m_gama;                      // so nos assimetricos   //@omitir
 
    double   m_erros[];   //@omitir
    double   m_erros_quadrado[];
@@ -157,6 +160,8 @@ private:
    double   m_passo_diferencas;
 
    void     RecalcularVariancias(void);
+   bool     AjustarAssimetrico(void);              //@omitir
+   double   VarianciaSeguinteAssimetrica(void) const;   //@omitir
 
 public:
                      CGarch(void);
@@ -165,6 +170,7 @@ public:
    void     Definir(const int p, const int q);
    void     DefinirOtimizador(const int iteracoes_maximas, const double passo_diferencas = 1.0e-6);
    void     DefinirDistribuicao(const ENUM_DISTRIBUICAO_GARCH distribuicao) { m_distribuicao = distribuicao; m_ajustado = false; }   //@omitir
+   void     DefinirModelo(const ENUM_MODELO_GARCH modelo) { m_modelo = modelo; m_ajustado = false; }   //@omitir
 
    //--- residuos do ARIMA em ordem cronologica
    bool     Ajustar(const double &residuos[]);
@@ -183,10 +189,12 @@ public:
    double   Alfa(const int i) const { return((i >= 0 && i < ArraySize(m_alfa)) ? m_alfa[i] : 0.0); }
    double   Beta(const int j) const { return((j >= 0 && j < ArraySize(m_beta)) ? m_beta[j] : 0.0); }
    double   GrausLiberdade(void) const { return((m_distribuicao == DISTRIBUICAO_STUDENT) ? m_graus_liberdade : 0.0); }
+   double   Gama(void) const { return((m_modelo != GARCH_SIMETRICO) ? m_gama : 0.0); }
+   ENUM_MODELO_GARCH Modelo(void) const { return(m_modelo); }
    double   Persistencia(void) const;          // soma(alfa) + soma(beta)
    double   VarianciaLongoPrazo(void) const;   // omega / (1 - persistencia)
    double   LogVerossimilhanca(void) const { return(m_log_verossimilhanca); }
-   int      NumParametros(void) const { return(1 + m_p + m_q + ((m_distribuicao == DISTRIBUICAO_STUDENT) ? 1 : 0)); }
+   int      NumParametros(void) const { return(1 + m_p + m_q + ((m_distribuicao == DISTRIBUICAO_STUDENT) ? 1 : 0) + ((m_modelo != GARCH_SIMETRICO) ? 1 : 0)); }
    double   AIC(void) const;
    double   BIC(void) const;
    bool     Ajustado(void) const { return(m_ajustado); }
@@ -206,6 +214,8 @@ CGarch::CGarch(void) : m_p(1), m_q(1), m_omega(0.0), m_distribuicao(DISTRIBUICAO
    ArrayResize(m_beta, 1);
    ArrayInitialize(m_alfa, 0.0);
    ArrayInitialize(m_beta, 0.0);
+   m_modelo = GARCH_SIMETRICO;   //@omitir
+   m_gama = 0.0;   //@omitir
   }
 
 //@omitir-inicio
@@ -267,6 +277,7 @@ bool CGarch::Ajustar(const double &residuos[])
       m_erro = "Variancia amostral dos residuos nula ou invalida";   //@omitir
       return(false);
      }
+   if(m_modelo != GARCH_SIMETRICO) return(AjustarAssimetrico());   //@omitir
 
    CDadosGarch dados;
    ArrayResize(dados.erros_quadrado, n);
@@ -420,6 +431,7 @@ double CGarch::VolatilidadeProximoPeriodo(void) const
   {
    if(!m_ajustado)
       return(0.0);
+   if(m_modelo != GARCH_SIMETRICO) return(MathSqrt(MathMax(VarianciaSeguinteAssimetrica(), 1.0e-300)));   //@omitir
 
    double variancia = m_omega;
    for(int i = 1; i <= m_p; i++)
@@ -477,6 +489,10 @@ bool CGarch::ObterResiduosPadronizados(double &saida[]) const
 
 double CGarch::Persistencia(void) const
   {
+   if(m_modelo == GARCH_GJR)
+      return(m_alfa[0] + 0.5 * m_gama + m_beta[0]);
+   if(m_modelo == GARCH_EGARCH)
+      return(m_beta[0]);
    double soma = 0.0;
    for(int i = 0; i < m_p; i++)
       soma += m_alfa[i];
@@ -488,6 +504,8 @@ double CGarch::Persistencia(void) const
 double CGarch::VarianciaLongoPrazo(void) const
   {
    double persistencia = Persistencia();
+   if(m_modelo == GARCH_EGARCH)
+      return((m_beta[0] < 1.0) ? MathExp(m_omega / (1.0 - m_beta[0])) : m_variancia_amostral);
    if(persistencia >= 1.0 || persistencia < 0.0)
       return(m_variancia_amostral);
    return(m_omega / (1.0 - persistencia));
@@ -518,11 +536,53 @@ string CGarch::Descricao(void) const
       texto += StringFormat(" alpha%d=%.6f", i + 1, m_alfa[i]);
    for(int j = 0; j < m_q; j++)
       texto += StringFormat(" beta%d=%.6f", j + 1, m_beta[j]);
+   if(m_modelo != GARCH_SIMETRICO)
+      texto = (m_modelo == GARCH_GJR ? "GJR-" : "E") + texto + StringFormat(" gama=%.6f", m_gama);
    if(m_distribuicao == DISTRIBUICAO_STUDENT)
       texto += StringFormat(" nu=%.3f", m_graus_liberdade);
    texto += StringFormat(" | persist=%.6f volLP=%.6f logL=%.3f AIC=%.3f",
                          Persistencia(), MathSqrt(VarianciaLongoPrazo()), m_log_verossimilhanca, AIC());
    return(texto);
+  }
+  //@omitir-fim
+
+
+//@omitir-inicio
+//--- Assimetricos (GarchAssimetrico.mqh): mesmo papel de Ajustar e da previsao de um passo
+bool CGarch::AjustarAssimetrico(void)
+  {
+   if(m_p != 1 || m_q != 1)
+     {
+      m_erro = "Modelos assimetricos so com (1,1)";
+      return(false);
+     }
+   ParametrosGarchAssimetrico par;
+   if(!AjustarGarchAssimetrico(m_modelo, m_distribuicao, m_erros, m_variancia_amostral,
+                               m_iteracoes_maximas, m_passo_diferencas, par, m_erro))
+      return(false);
+   m_omega = par.omega;
+   m_alfa[0] = par.alfa;
+   m_beta[0] = par.beta;
+   m_gama = par.gama;
+   m_graus_liberdade = par.graus_liberdade;
+   if(!RecursaoGarchAssimetrico(m_modelo, m_distribuicao, par, m_erros, m_tamanho, m_inicio,
+                                m_variancia_amostral, m_sigma2, m_log_verossimilhanca))
+     {
+      m_erro = "Recursao da variancia invalida";
+      return(false);
+     }
+   m_ajustado = true;
+   return(true);
+  }
+
+double CGarch::VarianciaSeguinteAssimetrica(void) const
+  {
+   double saida = 0.0;
+   double eabs = ValorAbsolutoEsperado(m_distribuicao, m_graus_liberdade);
+   if(!PassoVarianciaAssimetrica(m_modelo, m_omega, m_alfa[0], m_gama, m_beta[0],
+                                 m_erros[m_tamanho - 1], m_sigma2[m_tamanho - 1], eabs, saida))
+      return(m_sigma2[m_tamanho - 1]);
+   return(saida);
   }
   //@omitir-fim
 

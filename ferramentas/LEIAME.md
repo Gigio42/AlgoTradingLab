@@ -67,7 +67,7 @@ ficam em `scripts/comum.sh`.
 
 | Pasta de resultado | Scripts |
 |---|---|
-| `refeito_2026-10-05/` (vigente) | `refazer_calibracoes.sh`, `refazer_testes.sh`, `sensibilidade_longos.sh`, `camadas_proventos_b3.sh`, `outras_acoes_mm.sh` |
+| `refeito_2026-10-05/` (vigente) | `refazer_calibracoes.sh`, `refazer_testes.sh`, `sensibilidade_longos.sh`, `camadas_proventos_b3.sh`, `camadas_ordem_proventos.sh`, `outras_acoes_mm.sh` |
 | `replica_almeida_v2_2026-10-21/` | `series_replica_almeida.sh` (monta as séries), `replica_almeida_v2.sh`, `replica_almeida_v2b.sh`, `replica_almeida_v2c.sh`, `replica_almeida_v2d.sh` |
 | `garch_t_2026-10-13/` | `garch_t.sh` |
 | `bateria_2026-10-15/` | `bateria_2026_10_15.sh`, `exploratorio_estimacao.sh` |
@@ -93,7 +93,13 @@ ficam em `scripts/comum.sh`.
 | `protecao.sh`, `seletividade.sh`, `resumo_volatilidade.sh` | Queda máxima, volatilidade e seletividade do GARCH contra a gêmea. |
 | `outras_acoes.sh` | Resultado das configurações escolhidas em VALE3, USIM5 e POMO4. |
 | `proventos_b3.sh` | Monta a série de proventos da PETR4 a partir da lista oficial da B3. |
+| `camadas_ordem_proventos.sh` | Retorno por etapa na ordem bruto, custos, proventos, Selic, a partir das curvas diárias de `refeito_2026-10-05/proventos_b3/` (sem rodar o MT5); confere a coluna de custos contra o EA. |
+| `camadas_proventos_b3_longo.sh` | 2005–2026 (rótulos L1) com os proventos da B3, mesmas configurações da refação; `ROTULOS="..."` roda só alguns. |
 | `resumo_garch_t.sh`, `resumo_bateria.sh`, `resumo_exploratorio.sh` | Tabelas dos estudos à parte. |
 | `comparar_janelas.sh`, `efeito_janela_garch.sh`, `efeito_fatores.sh`, `estudo_janelas_dados.sh` | Análises dos estudos de 26 e 27/10/2026. |
 | `resumo_replica_almeida.sh`, `meses_replica_almeida.sh`, `saldo_mt5.sh` | Leem os relatórios `.htm` do testador (réplicas de Almeida). |
 | `traco_resumo.sh` | Resume o traço por barra num intervalo de datas. |
+| `validar_assimetrico.sh` + `../ValidacaoAssimetrico.mq5` | Validação teórica de GJR, EGARCH, t, BIC e janela expansiva (prefixo reserva, sem testador), 18/11/2026. |
+| `assimetricos.sh` | Bateria do estudo de 18/11/2026: oito variantes do GARCH 500 (GJR, EGARCH, t, expansiva, BIC, juntas) × cinco calibrações e seis testes. |
+| `assimetricos_resumo.sh` | Etapas (bruto, custos, proventos, Selic), pares na grade e conferências do estudo de 18/11/2026, em `cru/`. |
+| `assimetricos_relatorio.sh` | Roda o `assimetricos_resumo.sh` e monta `ia/relatorios/assimetricos/relatorio.html` a partir do `modelo.html` (dados embutidos, abre offline). |

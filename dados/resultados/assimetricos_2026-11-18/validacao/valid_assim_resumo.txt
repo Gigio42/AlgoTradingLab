@@ -1,0 +1,62 @@
+Validacao das partes novas (GJR, EGARCH, t, BIC, janela expansiva) - 18/11/2026, semente 20261118
+
+1) Recuperacao de parametros (verdade: GJR alfa 0.03 gama 0.12 beta 0.88 pers 0.97; EGARCH alfa 0.15 gama -0.08 beta 0.96; t com nu 6)
+GJR normal                   n= 500 ajustou 200/200 | mediana alfa 0.0235 gama 0.1190 beta 0.8779 pers 0.9642 nu 0.00 | dp gama 0.0459 | gama>0 em 99%
+  [PASSOU] GJR normal n=500 ajusta: 100% das series
+GJR normal                   n=3000 ajustou  40/ 40 | mediana alfa 0.0279 gama 0.1234 beta 0.8826 pers 0.9707 nu 0.00 | dp gama 0.0178 | gama>0 em 100%
+  [PASSOU] GJR normal n=3000 recupera: alfa 0.028 gama 0.123 beta 0.883 pers 0.971
+EGARCH normal                n= 500 ajustou 200/200 | mediana alfa 0.1353 gama -0.0887 beta 0.9559 pers 0.9559 nu 0.00 | dp gama 0.0331 | gama>0 em 0%
+  [PASSOU] EGARCH normal n=500 ajusta: 100% das series
+EGARCH normal                n=3000 ajustou  40/ 40 | mediana alfa 0.1446 gama -0.0805 beta 0.9574 pers 0.9574 nu 0.00 | dp gama 0.0128 | gama>0 em 0%
+  [PASSOU] EGARCH normal n=3000 recupera: alfa 0.145 gama -0.080 beta 0.957
+GJR t                        n= 500 ajustou 100/100 | mediana alfa 0.0261 gama 0.1181 beta 0.8666 pers 0.9662 nu 6.05 | dp gama 0.0689 | gama>0 em 99%
+GJR t                        n=3000 ajustou  20/ 20 | mediana alfa 0.0337 gama 0.1211 beta 0.8797 pers 0.9689 nu 5.85 | dp gama 0.0253 | gama>0 em 100%
+  [PASSOU] GJR t n=3000 recupera: gama 0.121 beta 0.880 nu 5.85
+EGARCH t                     n= 500 ajustou 100/100 | mediana alfa 0.1372 gama -0.0940 beta 0.9513 pers 0.9513 nu 6.43 | dp gama 0.0393 | gama>0 em 1%
+EGARCH t                     n=3000 ajustou  20/ 20 | mediana alfa 0.1545 gama -0.0787 beta 0.9602 pers 0.9602 nu 5.93 | dp gama 0.0128 | gama>0 em 0%
+  [PASSOU] EGARCH t n=3000 recupera: gama -0.079 beta 0.960 nu 5.93
+
+2) Serie SEM assimetria (GARCH simetrico alfa 0.08 beta 0.90): gama deve ficar perto de zero
+GJR em dado simetrico        n=3000 ajustou  40/ 40 | mediana alfa 0.0807 gama 0.0012 beta 0.9013 pers 0.9796 nu 0.00 | dp gama 0.0203 | gama>0 em 52%
+EGARCH em dado simetrico     n=3000 ajustou  40/ 40 | mediana alfa 0.1601 gama -0.0019 beta 0.9766 pers 0.9766 nu 0.00 | dp gama 0.0096 | gama>0 em 38%
+  [PASSOU] GJR sem assimetria: |gama| pequeno: mediana gama 0.0012 (com assimetria a verdade e 0.12)
+  [PASSOU] EGARCH sem assimetria: |gama| pequeno: mediana gama -0.0019 (com assimetria a verdade e -0.08)
+
+3) Consistencia do codigo
+  [PASSOU] GJR com gama=0 = GARCH simetrico (log-verossimilhanca): 2582.84236679 x 2582.84236679
+  [PASSOU] previsao de um passo GARCH = formula: 0.0186936024 x 0.0186936024
+  [PASSOU] previsao de um passo GJR = formula: 0.0162599626 x 0.0162599626
+  [PASSOU] previsao de um passo EGARCH = formula: 0.0173418731 x 0.0173418731
+  [PASSOU] GJR e EGARCH tem um parametro a mais: 4, 4 e 3
+  [PASSOU] E|z| normal (Monte Carlo): simulado 0.79589 formula 0.79788
+  [PASSOU] E|z| t(6) padronizada (Monte Carlo): simulado 0.74847 formula 0.75000
+  [PASSOU] E|z| t com nu grande tende a normal: nu=2000: 0.79778
+
+4) Curva de impacto (variancia do dia seguinte para um choque de -k a +k desvios, partindo da variancia de longo prazo)
+  [PASSOU] GJR: queda de 2 desvios pesa mais que alta: vol seguinte 2.4576% x 2.0298%
+  [PASSOU] EGARCH: queda de 2 desvios pesa mais que alta: vol seguinte 2.3710% x 2.0204%
+
+5) PETR4_OFICIAL (B3): janelas de 500 log-retornos (menos a media), uma a cada 63 pregoes
+  5881 fechamentos lidos (2003.01.02 a 2026.09.21)
+  86 janelas com os seis modelos ajustados
+  GJR gama > 0 (alavanca) em 72 (84%); EGARCH gama < 0 em 75 (87%)
+  AIC menor que o do GARCH: GJR em 65%, EGARCH em 74%; t menor que a normal (GARCH) em 91%
+  razao de verossimilhanca GJR x GARCH significativa a 5% em 50% das janelas
+  Ljung-Box (10) nos residuos padronizados ao quadrado sem rejeitar a 5%: 480 de 516 ajustes
+  [PASSOU] PETR4: alavanca no sentido da teoria na maioria das janelas: GJR 72/86, EGARCH 75/86
+
+6) AIC x BIC: 200 series de 240 log-retornos por caso, log-preco = soma, selecao do EA (ADF + grade 0..4, COM constante: sem ela o ARIMA(0,1,0) fica fora da grade e o ruido branco nao teria a ordem certa entre as candidatas)
+  ruido branco   AIC: ordem certa 139/200, p+q medio 0.64 | BIC: ordem certa 185/200, p+q medio 0.07
+  [PASSOU] BIC escolhe modelos menores que o AIC (ruido branco): p+q medio 0.07 x 0.64
+  [PASSOU] BIC acerta a ordem mais vezes (ruido branco): 185 x 139
+  AR(1) phi 0.3  AIC: ordem certa 108/200, p+q medio 1.48 | BIC: ordem certa 135/200, p+q medio 1.05
+  [PASSOU] BIC escolhe modelos menores que o AIC (AR(1) phi 0.3): p+q medio 1.05 x 1.48
+  [PASSOU] BIC acerta a ordem mais vezes (AR(1) phi 0.3): 135 x 108
+
+7) Janela expansiva x movel (AR(1) nos log-retornos, estimado pelo CArima do EA, d=0, sem constante)
+  processo estavel (phi 0.1): media movel 0.1011 (dp 0.0651), expansiva 0.1009 (dp 0.0215); dp teorico 0.0642 e 0.0222
+  [PASSOU] expansiva mais precisa sem mudanca (dp cai ~ raiz(240/2000) = 0.35): razao dos dp 0.330
+  com quebra (0.2 -> -0.2 nos ultimos 500 dias): media movel -0.2033, expansiva 0.0983 (verdade atual -0.2)
+  [PASSOU] movel acompanha a quebra melhor que a expansiva: erro 0.003 x 0.298
+
+FIM: 0 criterio(s) falharam

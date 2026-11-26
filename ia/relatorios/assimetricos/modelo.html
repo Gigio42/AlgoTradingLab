@@ -1,0 +1,339 @@
+<title>GARCH assimétrico na PETR4</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: relatório de pesquisa em uma coluna de leitura; tabelas e gráficos se alargam até 1100px */
+:root {
+  --bg: #f5f6f8; --surface: #ffffff; --fg: #1a2130; --muted: #5b6577; --line: #d9dee6;
+  --accent: #1d6a85; --accent-soft: #dcecf2;
+  --good: #2f7d4f; --good-soft: #dff0e5; --bad: #b3453a; --bad-soft: #f7e1de; --neutral-soft: #eceff3;
+  --s1: #1d6a85; --s2: #c27c1a; --s3: #7a4fa3; --s4: #5b6577;
+  --font-head: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151c; --surface: #181d26; --fg: #e3e7ee; --muted: #9aa4b4; --line: #2c3442;
+  --accent: #5fb3d1; --accent-soft: #1b3440;
+  --good: #6cc38f; --good-soft: #17332a; --bad: #e98476; --bad-soft: #3a211f; --neutral-soft: #222936;
+  --s1: #5fb3d1; --s2: #e0a24a; --s3: #b48ae0; --s4: #9aa4b4; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151c; --surface: #181d26; --fg: #e3e7ee; --muted: #9aa4b4; --line: #2c3442;
+  --accent: #5fb3d1; --accent-soft: #1b3440;
+  --good: #6cc38f; --good-soft: #17332a; --bad: #e98476; --bad-soft: #3a211f; --neutral-soft: #222936;
+  --s1: #5fb3d1; --s2: #e0a24a; --s3: #b48ae0; --s4: #9aa4b4; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
+.wrap { max-width: 1100px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 80px; display: grid; gap: 48px; }
+section { display: grid; gap: 16px; min-width: 0; }
+.prose { max-width: 68ch; display: grid; gap: 12px; }
+.prose p { margin: 0; }
+h1, h2, h3 { font-family: var(--font-head); text-wrap: balance; margin: 0; line-height: 1.2; }
+h1 { font-size: 2.3rem; font-weight: 600; }
+h2 { font-size: 1.55rem; font-weight: 600; padding-top: 8px; border-top: 1px solid var(--line); }
+h3 { font-size: 1.15rem; font-weight: 600; }
+.eyebrow { font-family: var(--font-data); font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.lead { font-size: 1.1rem; color: var(--fg); }
+.muted { color: var(--muted); }
+code, .mono { font-family: var(--font-data); font-size: .88em; }
+.formula { font-family: var(--font-data); font-size: .9rem; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; overflow-x: auto; white-space: pre; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.grid2 > * { min-width: 0; }
+figure { margin: 0; display: grid; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; min-width: 0; }
+figcaption { font-size: .88rem; color: var(--muted); }
+figure .titulo { font-family: var(--font-head); font-weight: 600; font-size: 1rem; }
+svg { width: 100%; height: auto; display: block; }
+svg text { fill: var(--muted); font-family: var(--font-data); font-size: 11px; }
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; font-variant-numeric: tabular-nums; }
+th, td { padding: 7px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-family: var(--font-head); font-weight: 600; font-size: .85rem; color: var(--muted); background: var(--surface); position: sticky; top: 0; }
+th:first-child, td:first-child { text-align: left; }
+tr.ref td { color: var(--muted); }
+tr.sep td { border-top: 2px solid var(--line); }
+td.num { font-family: var(--font-data); font-size: .85rem; }
+td.cel-good { background: var(--good-soft); color: var(--good); }
+td.cel-bad { background: var(--bad-soft); color: var(--bad); }
+td.cel-neu { background: var(--neutral-soft); }
+.pill { display: inline-block; font-family: var(--font-data); font-size: .75rem; padding: 1px 8px; border-radius: 99px; }
+.pill.ok { background: var(--good-soft); color: var(--good); }
+.pill.no { background: var(--bad-soft); color: var(--bad); }
+.criterios { display: grid; gap: 6px; font-size: .92rem; }
+.criterios div { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: baseline; }
+.criterios .det { color: var(--muted); font-family: var(--font-data); font-size: .8rem; display: block; }
+.controles { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--surface); }
+.seg button { font: inherit; font-size: .85rem; border: 0; background: transparent; color: var(--fg); padding: 6px 12px; cursor: pointer; border-right: 1px solid var(--line); }
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--surface); }
+.seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .82rem; color: var(--muted); }
+.legenda span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; background: var(--c); vertical-align: -1px; }
+.aviso { border-left: 3px solid var(--s2); padding: 8px 14px; background: var(--surface); border-radius: 0 6px 6px 0; max-width: 68ch; }
+pre.cru { font-family: var(--font-data); font-size: .8rem; white-space: pre; overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin: 0; }
+details summary { cursor: pointer; font-family: var(--font-head); font-weight: 600; }
+@media (max-width: 520px) { h1 { font-size: 1.8rem; } th, td { padding: 6px 7px; } }
+</style>
+
+<div class="wrap">
+
+<header class="prose">
+  <div class="eyebrow">AlgoTradingLab · estudo de 18/11/2026 · fora do TG</div>
+  <h1>GARCH assimétrico, t de Student, janela expansiva e BIC na PETR4</h1>
+  <p class="lead">O ARIMA-GARCH com o GARCH sobre 500 resíduos, testado com cinco mudanças no modelo, uma de cada vez e depois todas juntas, nos períodos de teste do TG e em 2005–2010. Cada resultado aparece nas quatro etapas do Cap. III: bruto, com custos, com proventos e com a Selic no dinheiro parado.</p>
+  <p class="muted">Tudo o que se vê aqui foi lido dos arquivos de <code>dados/resultados/assimetricos_2026-11-18/</code>. Protocolo escrito antes de rodar: <code>PROTOCOLO.md</code> da mesma pasta.</p>
+</header>
+
+<!--LEITURA-->
+
+<section id="partes">
+  <h2>O que mudou no modelo</h2>
+  <div class="prose">
+    <p>A base é a do TG com uma diferença: o GARCH(1,1) usa os 500 últimos resíduos do ARIMA em vez dos 240 da janela. As cinco mudanças mexem em pontos diferentes, e por isso podem ser somadas.</p>
+  </div>
+  <div class="grid2">
+    <figure><div class="titulo">GJR-GARCH(1,1)</div>
+      <div class="formula">σ²ₜ = ω + (α + γ·1[εₜ₋₁ &lt; 0])·ε²ₜ₋₁ + β·σ²ₜ₋₁</div>
+      <figcaption>Glosten, Jagannathan e Runkle (1993). Com γ &gt; 0, uma queda aumenta mais a volatilidade do dia seguinte que uma alta do mesmo tamanho (efeito alavanca). Restrições: ω &gt; 0, α, β ≥ 0, α + γ ≥ 0 e α + γ/2 + β &lt; 1.</figcaption></figure>
+    <figure><div class="titulo">EGARCH(1,1)</div>
+      <div class="formula">ln σ²ₜ = ω + β·ln σ²ₜ₋₁ + α(|zₜ₋₁| − E|z|) + γ·zₜ₋₁</div>
+      <figcaption>Nelson (1991). Modela o logaritmo, então a variância é sempre positiva sem restringir sinais. O efeito alavanca aparece como γ &lt; 0. Só se exige 0 ≤ β &lt; 1.</figcaption></figure>
+    <figure><div class="titulo">t de Student</div>
+      <div class="formula">εₜ = σₜ·zₜ,  zₜ ~ t(ν) padronizada</div>
+      <figcaption>Já existia no EA (13/10). Caudas mais grossas que a normal; ν é estimado junto com os outros parâmetros. Vale também dentro do GJR e do EGARCH, e no EGARCH muda o E|z|.</figcaption></figure>
+    <figure><div class="titulo">Janela expansiva e BIC</div>
+      <div class="formula">janela = todas as barras desde 03/01/2000
+critério = −2 logL + k·ln n</div>
+      <figcaption>Na expansiva, o ARIMA (estimação diária e escolha das ordens) usa todo o histórico, em vez dos 240 últimos dias. O GARCH continua nos 500. O BIC pune cada parâmetro com ln n em vez de 2 e tende a escolher modelos menores que o AIC.</figcaption></figure>
+  </div>
+  <div class="scroll"><table id="tab-variantes"></table></div>
+</section>
+
+<section id="validacao">
+  <h2>Antes das simulações: o código faz o que a teoria diz?</h2>
+  <div class="prose">
+    <p>Script <code>ferramentas/ValidacaoAssimetrico.mq5</code>, com as mesmas classes do EA, em séries artificiais com parâmetros conhecidos e nas cotações reais da PETR4. Semente fixa: rodar de novo dá os mesmos números. A lista abaixo é a saída do script, sem edição.</p>
+  </div>
+  <div class="criterios" id="criterios"></div>
+  <div class="grid2">
+    <figure><div class="titulo">Curva de impacto</div>
+      <svg id="g-impacto" viewBox="0 0 460 280" role="img" aria-label="Volatilidade do dia seguinte em função do choque de hoje, para GARCH, GJR e EGARCH"></svg>
+      <div class="legenda"><span style="--c: var(--s4)">GARCH simétrico</span><span style="--c: var(--s1)">GJR</span><span style="--c: var(--s2)">EGARCH</span></div>
+      <figcaption>Volatilidade prevista para amanhã (% ao dia) depois de um choque de −4 a +4 desvios hoje, com os parâmetros verdadeiros da simulação. Nos dois assimétricos o lado esquerdo (queda) sobe mais.</figcaption></figure>
+    <figure><div class="titulo">Efeito alavanca na PETR4</div>
+      <svg id="g-gama" viewBox="0 0 460 280" role="img" aria-label="Gama estimado pelo GJR e pelo EGARCH em janelas de 500 retornos da PETR4"></svg>
+      <div class="legenda"><span style="--c: var(--s1)">γ do GJR (positivo = alavanca)</span><span style="--c: var(--s2)">−γ do EGARCH (positivo = alavanca)</span></div>
+      <figcaption>Uma janela de 500 log-retornos a cada 63 pregões, com erros normais. O γ do EGARCH aparece com o sinal trocado para os dois ficarem na mesma direção.</figcaption></figure>
+  </div>
+</section>
+
+<section id="testes">
+  <h2>Testes fora da amostra</h2>
+  <div class="prose">
+    <p>Para cada variante, a grade de 156 configurações rodou nos três anos anteriores ao teste, e o critério do TG escolheu o ARIMA-GARCH Sharpe (GS) e o ARIMA-GARCH Calmar (GC). A gêmea é o ARIMA do GS sem o GARCH. As colunas seguem a ordem do Cap. III: cada uma acrescenta um fator à anterior.</p>
+  </div>
+  <div class="controles">
+    <div><div class="eyebrow">Período</div><div class="seg" id="sel-teste"></div></div>
+    <div><div class="eyebrow">Robô</div><div class="seg" id="sel-robo"></div></div>
+  </div>
+  <div class="eyebrow" id="titulo-tabela"></div>
+  <div class="scroll"><table id="tab-testes"></table></div>
+  <p class="muted" id="nota-tabela" style="max-width: 68ch; margin: 0"></p>
+  <figure><div class="titulo" id="titulo-risco"></div>
+    <svg id="g-risco" viewBox="0 0 900 300" role="img" aria-label="Queda máxima e volatilidade de cada variante no período escolhido"></svg>
+    <div class="legenda"><span style="--c: var(--s1)">queda máxima</span><span style="--c: var(--s2)">volatilidade anualizada</span></div>
+    <figcaption>Com todas as etapas (custos, proventos e Selic). Linha tracejada: a variante base.</figcaption></figure>
+</section>
+
+<section id="conjunto">
+  <h2>Todos os períodos de uma vez</h2>
+  <div class="prose">
+    <p>Diferença de cada variante para a base no mesmo período, em pontos percentuais, com todas as etapas. Verde é melhor que a base (queda ou volatilidade menor, retorno maior), vermelho é pior. Diferença de até 1 ponto fica em cinza.</p>
+  </div>
+  <div class="controles">
+    <div><div class="eyebrow">Medida</div><div class="seg" id="sel-medida"></div></div>
+    <div><div class="eyebrow">Robô</div><div class="seg" id="sel-robo2"></div></div>
+  </div>
+  <div class="scroll"><table id="tab-conjunto"></table></div>
+</section>
+
+<section id="grade">
+  <h2>A grade inteira, dentro da calibração</h2>
+  <div class="prose">
+    <p>As 156 configurações de cada calibração, comparadas uma a uma com a mesma configuração na base (só as que usam GARCH). Não é teste fora da amostra: mostra se a mudança costuma ajudar em qualquer configuração, e não só na escolhida. Células: fração dos pares em que a variante ficou melhor e pior que a base (o resto é empate exato, em geral porque o GARCH não mudou nenhuma decisão), e a mediana da diferença variante − base, com custos e Selic, sem proventos (a camada usada na escolha). Verde quando melhor supera pior por 20 pontos ou mais.</p>
+  </div>
+  <div class="controles">
+    <div><div class="eyebrow">Medida</div><div class="seg" id="sel-par"></div></div>
+  </div>
+  <div class="scroll"><table id="tab-pares"></table></div>
+</section>
+
+<section id="procedencia">
+  <h2>Procedência e conferências</h2>
+  <div class="prose">
+    <p>Dados: <code>PETR4_DESDE1999</code> (B3 COTAHIST, idêntico ao <code>PETR4_OFICIAL</code> nas 5881 datas em comum), proventos da B3, Selic diária do BCB, custo de 0,03% por lado. Testador desde 03/01/2000 em tudo, com a operação começando na data de cada período. Scripts: <code>ferramentas/scripts/validar_assimetrico.sh</code>, <code>assimetricos.sh</code> (bateria) e <code>assimetricos_resumo.sh</code> (tabelas em <code>cru/</code>); este relatório é gerado por <code>assimetricos_relatorio.sh</code>.</p>
+  </div>
+  <details><summary>Conferências (cru/conferencias.txt)</summary><pre class="cru" id="conferencias"></pre></details>
+  <details><summary>Saída completa da validação (validacao/valid_assim_resumo.txt)</summary><pre class="cru" id="resumo-validacao"></pre></details>
+</section>
+
+</div>
+
+<!--DADOS-->
+
+<script>
+(function () {
+  const txt = id => (document.getElementById(id) || { textContent: "" }).textContent.trim();
+  const csv = (id, sep) => { const l = txt(id).split(/\r?\n/).filter(x => x); const h = l.shift().split(sep || ","); return l.map(r => { const v = r.split(sep || ","); const o = {}; h.forEach((k, i) => o[k] = v[i]); return o; }); };
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag, at, pai) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); if (pai) pai.appendChild(e); return e; };
+  const pct = (x, d = 1) => (x === "" || x == null || isNaN(+x)) ? "–" : (100 * x).toLocaleString("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d }) + "%";
+  const num = (x, d = 2) => (x === "" || x == null || isNaN(+x)) ? "–" : (+x).toLocaleString("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const pp = x => (x >= 0 ? "+" : "−") + Math.abs(x).toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+  const VARS = [["base", "Base (GARCH 500)", "simétrico", "normal", "móvel 240", "AIC"],
+    ["gjr", "GJR", "GJR", "normal", "móvel 240", "AIC"], ["egarch", "EGARCH", "EGARCH", "normal", "móvel 240", "AIC"],
+    ["t", "t de Student", "simétrico", "t", "móvel 240", "AIC"], ["exp", "Janela expansiva", "simétrico", "normal", "expansiva", "AIC"],
+    ["bic", "BIC", "simétrico", "normal", "móvel 240", "BIC"], ["gjr_tudo", "GJR + t + expansiva + BIC", "GJR", "t", "expansiva", "BIC"],
+    ["egarch_tudo", "EGARCH + t + expansiva + BIC", "EGARCH", "t", "expansiva", "BIC"]];
+  const NOME = Object.fromEntries(VARS.map(v => [v[0], v[1]]));
+  const TESTES = [["P0510", "2005–2010"], ["T1", "2007–2011"], ["T2", "2013–2016"], ["R6", "2017–2024"], ["T3", "2025–2026"], ["L1", "2005–2026"]];
+  const CAL = { P0510: "2002–2004", T1: "2004–2006", T2: "2010–2012", R6: "2014–2016", T3: "2022–2024", L1: "2010–2012" };
+  const ROBOS = [["GS", "ARIMA-GARCH Sharpe"], ["GC", "ARIMA-GARCH Calmar"], ["GSgemeo", "Gêmea (ARIMA sem GARCH)"]];
+
+  // tabela de variantes
+  (function () {
+    const t = document.getElementById("tab-variantes");
+    t.innerHTML = "<thead><tr><th>Variante</th><th>GARCH</th><th>Erro</th><th>Janela do ARIMA</th><th>Ordens por</th></tr></thead><tbody>" +
+      VARS.map(v => `<tr><td>${v[1]}</td><td>${v[2]}</td><td>${v[3]}</td><td>${v[4]}</td><td>${v[5]}</td></tr>`).join("") + "</tbody>";
+  })();
+
+  // criterios da validacao
+  (function () {
+    const linhas = txt("txt-validacao").split(/\r?\n/);
+    document.getElementById("resumo-validacao").textContent = txt("txt-validacao");
+    document.getElementById("conferencias").textContent = txt("txt-conferencias");
+    const box = document.getElementById("criterios");
+    let secao = "";
+    linhas.forEach(l => {
+      const s = l.match(/^(\d)\) (.*)$/); if (s) { secao = s[1]; return; }
+      const m = l.match(/^\s*\[(PASSOU|FALHOU)\] ([^:]+): (.*)$/); if (!m) return;
+      const d = document.createElement("div");
+      d.innerHTML = `<span class="pill ${m[1] === "PASSOU" ? "ok" : "no"}">${m[1] === "PASSOU" ? "passou" : "falhou"}</span><span>${m[2]}<span class="det">${m[3]}</span></span>`;
+      box.appendChild(d);
+    });
+  })();
+
+  // grafico de linhas generico
+  function linhas(svg, series, op) {
+    const W = 460, H = 280, m = { l: 48, r: 12, t: 12, b: 34 };
+    const xs = series.flatMap(s => s.pts.map(p => p[0])), ys = series.flatMap(s => s.pts.map(p => p[1]));
+    const x0 = op.x0 ?? Math.min(...xs), x1 = op.x1 ?? Math.max(...xs);
+    const y0 = op.y0 ?? Math.min(...ys), y1 = op.y1 ?? Math.max(...ys);
+    const X = x => m.l + (x - x0) / (x1 - x0) * (W - m.l - m.r), Y = y => H - m.b - (y - y0) / (y1 - y0) * (H - m.t - m.b);
+    op.yt.forEach(v => { el("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: "var(--line)", "stroke-width": 1 }, svg);
+      el("text", { x: m.l - 6, y: Y(v) + 4, "text-anchor": "end" }, svg).textContent = op.yf(v); });
+    op.xt.forEach(v => el("text", { x: X(v), y: H - m.b + 16, "text-anchor": "middle" }, svg).textContent = op.xf(v));
+    if (op.zero) el("line", { x1: m.l, x2: W - m.r, y1: Y(0), y2: Y(0), stroke: "var(--muted)", "stroke-width": 1, "stroke-dasharray": "3 3" }, svg);
+    if (op.xlab) el("text", { x: (m.l + W - m.r) / 2, y: H - 4, "text-anchor": "middle" }, svg).textContent = op.xlab;
+    series.forEach(s => el("path", { d: s.pts.map((p, i) => (i ? "L" : "M") + X(p[0]).toFixed(1) + " " + Y(p[1]).toFixed(1)).join(""), fill: "none", stroke: s.c, "stroke-width": 2 }, svg));
+  }
+
+  // impacto
+  (function () {
+    const d = csv("csv-impacto");
+    const f = k => d.map(r => [+r.choque_desvios, 100 * Math.sqrt(+r[k])]);
+    linhas(document.getElementById("g-impacto"), [{ pts: f("garch"), c: "var(--s4)" }, { pts: f("gjr"), c: "var(--s1)" }, { pts: f("egarch"), c: "var(--s2)" }],
+      { x0: -4, x1: 4, y0: 1.5, y1: 4, yt: [1.5, 2, 2.5, 3, 3.5, 4], yf: v => num(v, 1) + "%", xt: [-4, -2, 0, 2, 4], xf: v => (v > 0 ? "+" : "") + v, xlab: "choque de hoje (desvios-padrão)" });
+  })();
+
+  // gama na PETR4
+  (function () {
+    const d = csv("csv-petr4").filter(r => r.dist === "normal" && r.ok === "1");
+    const ano = s => { const [a, m, dd] = s.split("."); return +a + (+m - 1) / 12 + (+dd) / 365; };
+    const gj = d.filter(r => r.modelo === "GJR").map(r => [ano(r.fim), +r.gama]);
+    const eg = d.filter(r => r.modelo === "EGARCH").map(r => [ano(r.fim), -r.gama]);
+    const all = gj.concat(eg).map(p => p[1]);
+    const y0 = Math.min(-0.05, Math.floor(Math.min(...all) * 20) / 20), y1 = Math.ceil(Math.max(...all) * 20) / 20;
+    const yt = []; for (let v = y0; v <= y1 + 1e-9; v += 0.05) yt.push(+v.toFixed(2));
+    linhas(document.getElementById("g-gama"), [{ pts: gj, c: "var(--s1)" }, { pts: eg, c: "var(--s2)" }],
+      { x0: 2005, x1: 2027, y0, y1, yt, yf: v => num(v, 2), xt: [2005, 2010, 2015, 2020, 2025], xf: v => v, zero: true, xlab: "fim da janela de 500 retornos" });
+  })();
+
+  // testes
+  const T = csv("csv-testes");
+  const linha = (v, tst, r) => T.find(x => x.variante === v && x.teste === tst && x.robo === r);
+  const estado = { teste: "R6", robo: "GS", medida: "dd", robo2: "GS", par: "dd_menor" };
+  function seg(id, ops, chave, cb) {
+    const box = document.getElementById(id);
+    ops.forEach(([k, rot]) => { const b = document.createElement("button"); b.type = "button"; b.textContent = rot; b.id = id + "-" + k;
+      b.setAttribute("aria-pressed", estado[chave] === k); b.onclick = () => { estado[chave] = k; [...box.children].forEach(c => c.setAttribute("aria-pressed", c === b)); cb(); }; box.appendChild(b); });
+  }
+  function desenharTestes() {
+    const tst = estado.teste, r = estado.robo, rotT = TESTES.find(x => x[0] === tst)[1];
+    document.getElementById("titulo-tabela").textContent = `${rotT} · ${ROBOS.find(x => x[0] === r)[1]} · escolhido em ${CAL[tst]}`;
+    const cab = "<thead><tr><th>Robô</th><th>Bruto</th><th>+ custos</th><th>+ proventos</th><th>+ Selic</th><th>Queda máx.</th><th>Volat. a.a.</th><th>Negócios</th><th>Exposição</th><th>Ordens (p,d,q)</th><th>γ médio</th><th>Janela média</th></tr></thead>";
+    const fila = (nome, x, cls) => x ? `<tr class="${cls || ""}"><td>${nome}</td><td class="num">${pct(x.bruto)}</td><td class="num">${pct(x.custos)}</td><td class="num">${pct(x.proventos)}</td><td class="num">${pct(x.selic_etapa)}</td><td class="num">${pct(x.dd_selic_etapa)}</td><td class="num">${pct(x.vol_selic_etapa)}</td><td class="num">${x.negocios}</td><td class="num">${pct(x.exposicao, 0)}</td><td class="num">${x.robo === "MM" ? "–" : `(${x.p},${x.d},${x.q})`}</td><td class="num">${x.gama_medio ? num(x.gama_medio, 3) : "–"}</td><td class="num">${x.janela_arima_media ? num(x.janela_arima_media, 0) : (x.robo === "MM" ? "–" : "240")}</td></tr>`
+      : `<tr><td>${nome}</td><td colspan="11" class="muted">sem resultado ainda</td></tr>`;
+    let corpo = VARS.map(v => fila(v[1], linha(v[0], tst, r))).join("");
+    const mm = linha("MM", tst, "MM"), ref = mm || T.find(x => x.teste === tst);
+    corpo += fila("Médias móveis reproduzidas", mm, "sep");
+    if (ref) {
+      corpo += `<tr class="ref sep"><td>PETR4 (compra e manutenção)</td><td class="num">${pct(ref.ref_bh_preco)}</td><td class="num">–</td><td class="num">${pct(ref.ref_bh_total)}</td><td class="num">${pct(ref.ref_bh_total)}</td><td class="num">${pct(ref.ref_dd_bh_total)}</td><td colspan="6"></td></tr>`;
+      corpo += `<tr class="ref"><td>Todo o capital na Selic</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">${pct(ref.ref_selic)}</td><td colspan="7"></td></tr>`;
+    }
+    document.getElementById("tab-testes").innerHTML = cab + "<tbody>" + corpo + "</tbody>";
+    document.getElementById("nota-tabela").textContent = (tst === "L1" ? "2005–2026 usa as escolhas de 2010–2012, como na refação de 05/10: a calibração fica dentro do período, então não é fora da amostra. " : "") +
+      "Queda máxima e volatilidade com todas as etapas. Na PETR4, a coluna “bruto” é a variação do preço; “+ proventos” e “+ Selic” são o retorno com proventos (todo o capital fica na ação). Janela média: número médio de observações do ARIMA por dia.";
+    // grafico de risco
+    const svg = document.getElementById("g-risco"); svg.innerHTML = "";
+    document.getElementById("titulo-risco").textContent = `Risco por variante · ${rotT} · ${r}`;
+    const W = 900, H = 300, m = { l: 44, r: 10, t: 14, b: 70 };
+    const dados = VARS.map(v => [v[1], linha(v[0], tst, r)]).concat([["Médias móveis", mm]]);
+    const vals = dados.flatMap(d => d[1] ? [+d[1].dd_selic_etapa, +d[1].vol_selic_etapa] : []);
+    const y1 = Math.max(0.1, Math.ceil(Math.max(...vals, 0) * 10) / 10);
+    const Y = y => H - m.b - y / y1 * (H - m.t - m.b), bw = (W - m.l - m.r) / dados.length;
+    for (let v = 0; v <= y1 + 1e-9; v += y1 > 0.5 ? 0.2 : 0.1) { el("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: "var(--line)" }, svg);
+      el("text", { x: m.l - 6, y: Y(v) + 4, "text-anchor": "end" }, svg).textContent = Math.round(v * 100) + "%"; }
+    dados.forEach((d, i) => { const x = m.l + i * bw;
+      if (d[1]) { [["dd_selic_etapa", "var(--s1)"], ["vol_selic_etapa", "var(--s2)"]].forEach(([k, c], j) => {
+          const v = +d[1][k]; el("rect", { x: x + bw * (0.16 + j * 0.34), y: Y(v), width: bw * 0.32, height: Y(0) - Y(v), fill: c, rx: 2 }, svg);
+          el("text", { x: x + bw * (0.32 + j * 0.34), y: Y(v) - 4, "text-anchor": "middle" }, svg).textContent = Math.round(v * 100); }); }
+      const tx = el("text", { x: x + bw / 2, y: H - m.b + 16, "text-anchor": "middle" }, svg);
+      d[0].replace("Base (GARCH 500)", "Base").split(" + ").forEach((p, k) => { const s = el("tspan", { x: x + bw / 2, dy: k ? 13 : 0 }, tx); s.textContent = (k ? "+ " : "") + p; }); });
+    const b = linha("base", tst, r);
+    if (b) el("line", { x1: m.l, x2: W - m.r, y1: Y(+b.dd_selic_etapa), y2: Y(+b.dd_selic_etapa), stroke: "var(--s1)", "stroke-dasharray": "4 4", "stroke-width": 1 }, svg);
+  }
+
+  function desenharConjunto() {
+    const med = estado.medida, r = estado.robo2;
+    const campo = { dd: "dd_selic_etapa", vol: "vol_selic_etapa", ret: "selic_etapa", bruto: "bruto" }[med], melhorMaior = (med === "ret" || med === "bruto");
+    let h = "<thead><tr><th>Variante</th>" + TESTES.map(t => `<th>${t[1]}</th>`).join("") + "</tr></thead><tbody>";
+    h += "<tr class='ref'><td>Base (valor)</td>" + TESTES.map(t => { const b = linha("base", t[0], r); return `<td class="num">${b ? pct(b[campo]) : "–"}</td>`; }).join("") + "</tr>";
+    VARS.slice(1).forEach(v => { h += `<tr><td>${v[1]}</td>` + TESTES.map(t => {
+        const b = linha("base", t[0], r), x = linha(v[0], t[0], r); if (!b || !x) return "<td class='num'>–</td>";
+        const dif = 100 * (x[campo] - b[campo]), bom = melhorMaior ? dif > 1 : dif < -1, ruim = melhorMaior ? dif < -1 : dif > 1;
+        return `<td class="num ${bom ? "cel-good" : ruim ? "cel-bad" : "cel-neu"}">${pp(dif)}</td>`; }).join("") + "</tr>"; });
+    document.getElementById("tab-conjunto").innerHTML = h + "</tbody>";
+  }
+
+  function desenharPares() {
+    const P = csv("csv-pares"), k = estado.par;
+    const cals = [["C0", "2002–2004"], ["C1", "2004–2006"], ["C2", "2010–2012"], ["C4", "2014–2016"], ["C3", "2022–2024"]];
+    let h = "<thead><tr><th>Variante</th>" + cals.map(c => `<th>${c[1]}</th>`).join("") + "</tr></thead><tbody>";
+    VARS.slice(1).forEach(v => { h += `<tr><td>${v[1]}</td>` + cals.map(c => { const x = P.find(p => p.variante === v[0] && p.calibracao === c[0]);
+        if (!x) return "<td class='num'>–</td>"; const f = +x[k], med = { dd_menor: x.med_dif_dd_pp, vol_menor: x.med_dif_vol_pp, ret_maior: x.med_dif_ret_pp, sharpe_maior: x.med_dif_sharpe }[k];
+        const g = +x[{ dd_menor: "dd_maior", vol_menor: "vol_maior", ret_maior: "ret_menor", sharpe_maior: "sharpe_menor" }[k]], sal = f - g;
+        const cls = sal >= 0.2 ? "cel-good" : sal <= -0.2 ? "cel-bad" : "cel-neu";
+        return `<td class="num ${cls}">${pct(f, 0)} melhor · ${pct(g, 0)} pior<br><span class="muted">${pct(1 - f - g, 0)} empate · mediana ${k === "sharpe_maior" ? num(med, 3) : pp(+med) + " p.p."}</span></td>`; }).join("") + "</tr>"; });
+    document.getElementById("tab-pares").innerHTML = h + "</tbody>";
+  }
+
+  seg("sel-teste", TESTES, "teste", desenharTestes);
+  seg("sel-robo", ROBOS.map(r => [r[0], r[0] === "GSgemeo" ? "Gêmea" : r[0]]), "robo", desenharTestes);
+  seg("sel-medida", [["dd", "Queda máxima"], ["vol", "Volatilidade"], ["ret", "Retorno final"], ["bruto", "Retorno bruto"]], "medida", desenharConjunto);
+  seg("sel-robo2", ROBOS.map(r => [r[0], r[0] === "GSgemeo" ? "Gêmea" : r[0]]), "robo2", desenharConjunto);
+  seg("sel-par", [["dd_menor", "Queda menor"], ["vol_menor", "Volatilidade menor"], ["ret_maior", "Retorno maior"], ["sharpe_maior", "Sharpe maior"]], "par", desenharPares);
+  desenharTestes(); desenharConjunto(); desenharPares();
+})();
+</script>

@@ -100,6 +100,8 @@ input ENUM_ESTIMACAO_ARIMA    MetodoARIMA       = ESTIMACAO_HANNAN_RISSANEN; // 
 input bool                    SelecaoPorBIC     = false;           // Escolher (p,q) pelo BIC
 input ENUM_DISTRIBUICAO_GARCH DistribuicaoGARCH = DISTRIBUICAO_NORMAL; // Distribuicao dos erros do GARCH
 input int                     Janela_GARCH      = 0;               // Residuos usados pelo GARCH (0 = os da janela do ARIMA)
+input ENUM_MODELO_GARCH       ModeloGARCH       = GARCH_SIMETRICO; // Variacao do GARCH (GJR e EGARCH experimentais)
+input datetime                Inicio_Janela_Expansiva = 0;         // ARIMA sobre todo o historico desde esta data (0 = janela movel)
 //@omitir-fim
 
 CArima      g_arima;
@@ -128,6 +130,7 @@ int OnInit()
    //@omitir-fim
 
    if(Janela_GARCH != 0 && Janela_GARCH < 80) { Print("Janela_GARCH: 0 ou >= 80"); return(INIT_PARAMETERS_INCORRECT); }   //@omitir
+   if(ModeloGARCH != GARCH_SIMETRICO && (GARCH_p != 1 || GARCH_q != 1)) { Print("GJR e EGARCH so com GARCH(1,1)"); return(INIT_PARAMETERS_INCORRECT); }   //@omitir
    g_negociacao.Configurar(_Symbol, MagicNumber, Slippage);
    CArima::DefinirEstimacaoPadrao(MetodoARIMA);                            //@omitir
    g_arima.DefinirEstimacao(MetodoARIMA);                                   //@omitir
@@ -153,6 +156,7 @@ int OnInit()
    g_garch.DefinirOtimizador(Iteracoes_GARCH);   //@omitir
    //@apendice: g_garch.DefinirOtimizador(300);
    g_garch.DefinirDistribuicao(DistribuicaoGARCH);   //@omitir
+   g_garch.DefinirModelo(ModeloGARCH);   //@omitir
 
    g_diagnostico.Iniciar(GetPointer(g_arima), GetPointer(g_garch), GetPointer(g_negociacao), g_ordem_p, g_ordem_d, g_ordem_q);   //@omitir
    return(INIT_SUCCEEDED);
@@ -187,8 +191,10 @@ void OnTick()
    g_diagnostico.BarraProcessada();   //@omitir
 
    double serie[];
-   if(!CarregarSerie(Janela_Estimacao, serie))
+   if(!CarregarSerie(JanelaARIMA(Janela_Estimacao), serie))   //@omitir
+   //@apendice: if(!CarregarSerie(Janela_Estimacao, serie))
       return;
+   g_diagnostico.JanelaUsada(ArraySize(serie));   //@omitir
 
    if(!g_arima.Ajustar(serie))
      {
@@ -221,6 +227,18 @@ void OnTick()
    g_diagnostico.GravarTraco(previsao, volatilidade, limiar, UsarGARCH, decisao);   //@omitir
   }
 
+//@omitir-inicio
+//--- Janela expansiva (experimental, 18/11/2026): todas as barras fechadas desde
+//--- Inicio_Janela_Expansiva, nunca menos que a janela movel pedida
+int JanelaARIMA(const int janela_movel)
+  {
+   if(Inicio_Janela_Expansiva <= 0)
+      return(janela_movel);
+   int barras = Bars(_Symbol, _Period, Inicio_Janela_Expansiva, TimeCurrent()) - 1;
+   return(MathMax(janela_movel, barras));
+  }
+//@omitir-fim
+
 //--- Fechamentos a partir da barra 1: a barra 0 ainda esta se formando
 bool CarregarSerie(const int quantidade, double &serie[])
   {
@@ -250,7 +268,8 @@ bool CarregarSerie(const int quantidade, double &serie[])
 bool SelecionarOrdens()
   {
    double serie[];
-   int janela = MathMax(Janela_Selecao, Janela_Estimacao);
+   int janela = JanelaARIMA(MathMax(Janela_Selecao, Janela_Estimacao));   //@omitir
+   //@apendice: int janela = MathMax(Janela_Selecao, Janela_Estimacao);
    if(!CarregarSerie(janela, serie))
      {
       g_diagnostico.HistoricoInsuficiente(janela);   //@omitir
@@ -326,6 +345,7 @@ bool EstimarVolatilidade(double &volatilidade, double &limiar)
 
    volatilidade = g_garch.VolatilidadeProximoPeriodo();
    g_diagnostico.GrausLiberdadeEstimados(g_garch.GrausLiberdade());   //@omitir
+   g_diagnostico.GamaEstimado(g_garch.Gama());   //@omitir
 
    if(ModoLimiar == LIMIAR_PERCENTIL)
      {

@@ -14,3 +14,22 @@ derivadas: `cagr_*`, `excesso_completo`, `dd_completo`, `sharpe_completo*`,
 Bruto, custos, Selic, operações, queda e volatilidade são idênticos.
 
 Valores antes (Yahoo) e depois (B3): `tabelas_camadas.txt`.
+
+## Ordem bruto → custos → proventos → Selic (17/11/2026)
+
+Pedido do autor: a coluna antes da Selic passa a ser o capital de fora num saldo
+que não rende, e a última, numa conta remunerada. `camadas_ordem_proventos.txt`,
+gerado por `ferramentas/scripts/camadas_ordem_proventos.sh` a partir das curvas
+desta pasta (nada rodado no MT5). Conferência: a coluna "+ custos" recalculada
+bate com `ret_custos` do EA (diferença ≤ 0,001 p.p.); a última coluna é
+`ret_completo`, que não depende da ordem.
+
+## 2005–2026 com os proventos da B3 (17/11/2026)
+
+Pergunta do autor: o período mais longo com custos, proventos e Selic. Os quatro
+testes L1 (GS, GC, gêmea, MM) refeitos por `ferramentas/scripts/camadas_proventos_b3_longo.sh`
+(`execucao_longo.log`). Conferência: comparadas por nome com `../testes/metricas_L1_*`,
+todas as colunas que não dependem de proventos são idênticas. A tabela por etapa
+está em `camadas_ordem_proventos.txt` (linhas L1). A 1ª tentativa da MM falhou
+porque o `MediasMoveis2.ex5` do prefixo novo estava velho (sem `Rotulo` e
+`Fracao_Capital`); recompilado e rodado de novo (INCERTEZAS item 119).

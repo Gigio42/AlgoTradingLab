@@ -2175,3 +2175,46 @@ sobre o experimento · **[resultado]** sobre como ler um número.
      data, nos `\newcommand` do início de `folha-aprovacao.tex` (vazios saem em
      branco). Só a orientadora está preenchida. O alvo padrão do `make` era o
      `docx` (primeiro do arquivo); agora é `all`.
+
+118. **[texto] Tabelas de etapas na ordem bruto, custos, proventos, Selic (17/11/2026,
+    pedido do autor).** Ideia: a coluna "+ proventos" mostra o capital de fora num
+    saldo comum (rende zero) e a "+ Selic", numa conta remunerada. Feito no Cap. III
+    (`sec:camadas`: título, quatro tabelas, parágrafo dos proventos e da Selic,
+    parágrafo do risco, duas menções na introdução do capítulo) e no Cap. II (adendo
+    de um parágrafo no fim de "Medição dos resultados", sem referência, como pediu o
+    autor). Cópia anterior em `ia/rascunhos/antes_ordem_proventos_selic_2026-11-17/`.
+    - Números novos só na coluna do meio (custos + proventos), de
+      `refeito_2026-10-05/proventos_b3/camadas_ordem_proventos.txt`. A última coluna
+      não muda. Na PETR4, o valor com proventos aparece também na coluna da Selic
+      (todo o capital na ação); a nota de cada tabela diz isso e troca "A Selic
+      rendeu X%" por "Todo o capital aplicado na Selic teria rendido X%".
+    - **Conclusões que mudaram com a ordem:** em 2007-2011, com os proventos e sem
+      Selic, a PETR4 (+2,0%) fica à frente de todos os robôs (ARIMA-GARCH −11,9%); a
+      Selic devolve o ARIMA-GARCH ao primeiro lugar (+33,8%). O texto dizia que só
+      2017-2024 mudava a ordem; agora são dois períodos.
+    - **Correção que já valia antes:** "ordem dos robôs na queda máxima igual depois
+      de cada etapa" não tinha sido conferida na etapa só com custos. Conferido agora:
+      em 2017-2024 o ARIMA e o ARIMA-GARCH Calmar (40,5% e 40,2% no bruto) trocam de
+      lugar depois dos custos (40,7 × 40,8) e com os proventos (40,6 × 40,8). Texto
+      ajustado. Volatilidade por etapa varia até 1,7 p.p. ao ano.
+    - A escolha das configurações não muda (custos + Selic, sem proventos).
+    - Conta remunerada: o texto não diz que o saldo da corretora rende sozinho (nem
+      toda corretora remunera, e em 2007-2016 provavelmente não era comum, **não
+      confirmado**).
+
+119. **[dados] 2005–2026 com custos, proventos e Selic (17/11/2026, pergunta do autor).
+    NÃO está no TG.** Os quatro testes L1 refeitos com os proventos da B3
+    (`refeito_2026-10-05/proventos_b3/`, `camadas_proventos_b3_longo.sh`); tudo o que
+    não depende de proventos idêntico a 05/10. Ordem bruto → custos → proventos → Selic:
+    GS 74,2 → 19,3 → 60,6 → 845,4%; GC 33,5 → 8,6 → 24,9 → 785,6%; mesmo ARIMA sem GARCH
+    16,6 → −44,3 → 23,2 → 298,0%; MM 305,5 → 274,8 → 1.254,8 → 3.822,1%; PETR4 298,8%
+    (preço) e 2.414,5% (com proventos); todo o capital na Selic 795,8%. Queda máxima com
+    tudo: GC 13,9%, GS 29,1%, gêmea 78,9%, MM 61,3%; PETR4 92,0% (preço). Sharpe com tudo:
+    GS 0,09 (p 0,34), MM 0,38 (p 0,04), PETR4 c/ proventos 0,33. Configurações escolhidas
+    em 2010–2012, dentro do período.
+    - **Ambiente:** o `MediasMoveis2.ex5` do prefixo novo estava velho (34 KB, de 02/11,
+      sem `Rotulo`, `Fracao_Capital`, `SomenteCompra`): a 1ª execução rodou com 100
+      ações e não gravou nada. Recompilado (63 KB, 0 erros) e rodado de novo. Resultados
+      com MM gerados entre 02/11 e 17/11 no prefixo novo podem ter usado o binário
+      velho (**não verificado**; os que gravaram métricas usaram o novo, porque o velho
+      não grava).
