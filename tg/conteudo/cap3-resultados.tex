@@ -954,6 +954,12 @@ outros dois, quem estava à frente no resultado bruto continuou à frente em tod
 as etapas. Em 2013 a 2016, por exemplo, as médias móveis ficaram em primeiro lugar
 em todas elas, conforme a Tabela~\ref{tab:camadas-t2}.
 
+O retorno, portanto, depende de quais fatores se consideram. O risco, por outro
+lado, quase não muda. A ordem dos robôs na queda máxima foi a mesma no resultado
+bruto e depois de cada etapa, com uma exceção, em 2017 a 2024, em que o ARIMA e o
+ARIMA-GARCH Calmar, com quedas a menos de um ponto percentual uma da outra,
+trocaram de lugar em duas etapas. A volatilidade praticamente não se alterou. A conclusão sobre o risco não depende dessas escolhas de medida.
+
 % Procedência: dados/resultados/refeito_2026-10-05/proventos_b3/metricas_*.csv
 % (ret_puro, ret_custos, ret_completo; PETR4 = bh_preco e bh_total;
 % Selic = selic; exposicao; saidas), proventos da B3 (ferramentas/scripts/proventos_b3.sh).
@@ -1062,12 +1068,6 @@ PETR4 & +33,2\% & -- & +57,6\% & +57,6\% \\
 \fonte{Elaboração própria.}
 \nota{Cada coluna acrescenta um fator ao resultado da coluna anterior. Na PETR4, todo o capital fica na ação, e a Selic não altera o resultado. Todo o capital aplicado na Selic teria rendido 25,7\% no período.}
 \end{table}
-
-O retorno, portanto, depende de quais fatores se consideram. O risco, por outro
-lado, quase não muda. A ordem dos robôs na queda máxima foi a mesma no resultado
-bruto e depois de cada etapa, com uma exceção, em 2017 a 2024, em que o ARIMA e o
-ARIMA-GARCH Calmar, com quedas a menos de um ponto percentual uma da outra,
-trocaram de lugar em duas etapas. A volatilidade praticamente não se alterou. A conclusão sobre o risco não depende dessas escolhas de medida.
 
 \FloatBarrier
 \section{Testes complementares}

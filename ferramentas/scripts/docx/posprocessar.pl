@@ -38,12 +38,20 @@ while ($doc =~ /$SECAO/g) {
 $doc = $novo . substr($doc, $pos);
 
 # 2. estilo de tabela pela marca que o fatec.lua pôs antes dela
-my %estilo_tabela = (MarcaQuadro => 'Quadro', MarcaSemBorda => 'TabelaSemBorda');
+# MarcaBanca (25/11/2026): tabela da folha de aprovação, em grade como o quadro,
+# com linhas de 31 pt, texto centralizado na vertical e letra 12 (CapaEsquerda)
+my %estilo_tabela = (MarcaQuadro => 'Quadro', MarcaSemBorda => 'TabelaSemBorda', MarcaBanca => 'Quadro');
 my %marcas;
-$doc =~ s{<w:p><w:pPr><w:pStyle w:val="(Marca(?:Quadro|SemBorda))"\s*/></w:pPr></w:p>\s*(<w:tbl>.*?</w:tbl>)}{
+$doc =~ s{<w:p><w:pPr><w:pStyle w:val="(Marca(?:Quadro|SemBorda|Banca))"\s*/></w:pPr></w:p>\s*(<w:tbl>.*?</w:tbl>)}{
   my ($m, $tbl) = ($1, $2); $marcas{$m}++;
   $tbl =~ s{<w:tblStyle w:val="Table"\s*/>}{<w:tblStyle w:val="$estilo_tabela{$m}"/>};
   $tbl =~ s{<w:pStyle w:val="Compact"\s*/>}{<w:pStyle w:val="SiglaCelula"/>}g if $m eq 'MarcaSemBorda';
+  if ($m eq 'MarcaBanca') {
+    $tbl =~ s{<w:pStyle w:val="Compact"\s*/>}{<w:pStyle w:val="CapaEsquerda"/>}g;
+    $tbl =~ s{<w:trPr>\s*<w:tblHeader[^>]*/>\s*</w:trPr>}{}g;   # sem linha de cabeçalho
+    $tbl =~ s{<w:tr>}{<w:tr><w:trPr><w:trHeight w:val="620"/></w:trPr>}g;
+    $tbl =~ s{<w:tcPr\s*/>}{<w:tcPr><w:vAlign w:val="center"/></w:tcPr>}g;
+  }
   $tbl }gse;
 
 # 3. seção final (do último "CAPÍTULO N" ao fim): o pandoc não copia a página nem
@@ -77,5 +85,5 @@ for ([title => $titulo], [creator => $autores]) {
 }
 gravar("$dir/docProps/core.xml", $core);
 
-printf "posprocessar: %d quebras de seção juntadas (%d mantidas), %d quadros, %d tabela(s) sem borda, %d listagens numeradas\n",
-  $juntadas, $soltas, $marcas{MarcaQuadro} // 0, $marcas{MarcaSemBorda} // 0, $listagens;
+printf "posprocessar: %d quebras de seção juntadas (%d mantidas), %d quadros, %d tabela(s) sem borda, %d folha(s) de aprovação, %d listagens numeradas\n",
+  $juntadas, $soltas, $marcas{MarcaQuadro} // 0, $marcas{MarcaSemBorda} // 0, $marcas{MarcaBanca} // 0, $listagens;

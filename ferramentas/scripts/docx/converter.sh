@@ -1,6 +1,9 @@
 #!/bin/bash
 # Gera a versão em Word do TG (tg/main.docx) a partir do LaTeX, pelo pandoc.
 # Uso: bash converter.sh <pasta tg> <saida.docx>      (ou "make docx" em tg/)
+#      APROVACAO=1 bash converter.sh <pasta tg> <saida.docx>   com a folha de aprovação
+#      (main-aprovacao.docx, 25/11/2026; sem a variável, a folha fica de fora, como
+#      no main.pdf. O pandoc não entende o \ifdefined do main.tex e a incluía sempre.)
 #
 # Trabalha numa cópia temporária: nada em tg/ é alterado. Precisa do main.aux e
 # do main.bbl de uma compilação recente do PDF (o "make docx" compila antes),
@@ -48,6 +51,9 @@ perl "$C/bbl.pl" "$TG/main.bbl" "$W"
 cp "$W/refs.tex" refs.tex
 # macros do abnTeX2 que o pandoc não conhece e o lugar das referências
 perl -0pi -e 's/\\begin\{document\}/\\newcommand{\\fonte}[1]{\\par \\textbf{Fonte:} #1\\par}\n\\newcommand{\\nota}[1]{\\par \\textbf{Nota:} #1\\par}\n\\begin{document}/; s/\\bibliography\{referencias\}/\n\n\@\@REFS\@\@\n\n\\input{refs}\n\n\@\@FIMREFS\@\@\n\n/; s/\\partapendices//; s/\\(begin|end)\{apendicesenv\}//g' main.tex
+# folha de aprovação só com APROVACAO=1 (o \ifdefined do main.tex)
+if [ -n "${APROVACAO:-}" ]; then FOLHA='\input{conteudo/folha-aprovacao}'; else FOLHA=''; fi
+FOLHA="$FOLHA" perl -0pi -e 's/\\ifdefined\\ComFolhaAprovacao\\input\{conteudo\/folha-aprovacao\}\\fi/$ENV{FOLHA}/ or die "main.tex: chave da folha de aprovação não encontrada\n"' main.tex
 perl "$C/prep.pl" "$TG/main.aux" "$W/citas.tsv" main.tex conteudo/*.tex
 
 bash "$C/montar_ref.sh" "$P" "$W/ref.docx"

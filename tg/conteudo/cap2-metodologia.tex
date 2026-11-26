@@ -321,7 +321,10 @@ janela, ele modela o logaritmo do preço diretamente. As ordens $p$ e $q$ foram
 escolhidas por busca em grade, de zero a quatro, pelo menor AIC
 \cite{thomaz2019}, procedimento semelhante ao de \citeonline{xing2024}. As ordens
 são reavaliadas a cada 21 pregões, cerca de um mês, de modo que podem mudar ao
-longo de um teste.
+longo de um teste. A escolha das ordens usa sempre os últimos 240 pregões, mesmo
+quando a janela de estimação é de 120.
+% 25/11/2026, pedido do autor (INCERTEZAS item 115, achado 1): Janela_Selecao=240
+% fixo em todas as grades; no EA, MathMax(Janela_Selecao, Janela_Estimacao).
 
 \subsection{Estimação do GARCH}
 

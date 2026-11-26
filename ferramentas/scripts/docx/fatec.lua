@@ -22,14 +22,20 @@ local function espacador(pt)
     math.floor(math.min(pt, 1584) * 20)))
 end
 local function altura(item)
+  -- tabela da banca (folha de aprovação): linhas de 31 pt (posprocessar.pl)
+  if item.t == "Table" then
+    local n = #item.head.rows
+    for _, c in ipairs(item.bodies) do n = n + #c.body end
+    return n * 31
+  end
   if item.t ~= "Div" then return 0 end
   local estilo, total = item.attributes["custom-style"], 0
   for _, b in ipairs(item.content) do
     if estilo == "Natureza" then         -- 9 cm de largura, ~47 caracteres por linha, linha simples
       total = total + math.ceil((utf8.len(pandoc.utils.stringify(b)) or 0) / 47) * 12 * 1.15
     else                                 -- linhas separadas por \\ , espaçamento 1,5
-      local linhas = 1
-      if b.content then for _, x in ipairs(b.content) do if x.t == "LineBreak" then linhas = linhas + 1 end end end
+      local linhas = 1   -- quebras dentro de negrito (título) também contam (25/11/2026)
+      pandoc.walk_block(b, {LineBreak = function() linhas = linhas + 1 end})
       total = total + linhas * (estilo == "TituloCapa" and 16 or 14) * 1.15 * 1.5
     end
   end
@@ -271,6 +277,8 @@ function Pandoc(doc)
         add(secao{})
       elseif cmd == "ESPACO" then if capa then table.insert(capa, {espaco = arg}) end
       elseif cmd == "VFILL" then if capa then table.insert(capa, {vfill = true}) end
+      elseif cmd == "ESQUERDA" then estilo = "CapaEsquerda"   -- folha de aprovação
+      elseif cmd == "BANCA" then proxima_tabela = "MarcaBanca"
       elseif cmd == 'NATUREZA' then estilo = 'Natureza'
       elseif cmd == 'FIMNATUREZA' then estilo = 'Centralizado'
       elseif cmd == 'QUEBRA' then if estilo == 'Resumo' or estilo == 'ResumoIngles' then estilo = nil end; add(raw(QUEBRA))

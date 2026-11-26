@@ -267,7 +267,7 @@ Dependência externa: **nenhuma**. A ALGLIB (`MQL5/Include/Math/Alglib/`) e a
 `Math/Stat/` já acompanham qualquer instalação do MetaTrader 5.
 
 Exceção só para a **versão em Word do TG** (02/11/2026): `make docx` em `tg/`
-gera `tg/main.docx` com o **pandoc ≥ 3.8** (instalado em
+gera `tg/main.docx` (sem a folha de aprovação) e `tg/main-aprovacao.docx` (com ela, desde 25/11/2026) com o **pandoc ≥ 3.8** (instalado em
 `~/.local/opt/pandoc-3.13/`; ou `sudo pacman -S pandoc-cli`). Scripts em
 `ferramentas/scripts/docx/` (bash, Perl e um filtro Lua do pandoc, sem Python).
 Converte do LaTeX, nunca do PDF. Texto se corrige no `.tex` e o `.docx` se gera

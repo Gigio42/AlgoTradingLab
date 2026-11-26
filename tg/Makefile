@@ -17,10 +17,14 @@ GERADOR = ../ferramentas/scripts/codigo_apendice.sh ../ferramentas/scripts/sem_c
 # Versão em Word (entrega à coordenação, 02/11/2026): gerada do LaTeX pelo pandoc,
 # com os números e as citações do main.aux e do main.bbl, por isso depende do PDF.
 DOCX = ../ferramentas/scripts/docx
-docx: $(MAIN).docx
+docx: $(MAIN).docx $(MAIN)-aprovacao.docx
 
 $(MAIN).docx: $(MAIN).pdf $(wildcard $(DOCX)/*)
 	bash $(DOCX)/converter.sh . $@
+
+# Word da versão final, com a folha de aprovação (25/11/2026, pedido do autor)
+$(MAIN)-aprovacao.docx: $(MAIN).pdf $(MAIN)-aprovacao.pdf conteudo/folha-aprovacao.tex $(wildcard $(DOCX)/*)
+	APROVACAO=1 bash $(DOCX)/converter.sh . $@
 
 # Diagramas em TikZ (fonte .tex em figuras/): Cap. I desde 27/10/2026, linha do
 # tempo dos períodos (Cap. II) desde 05/11/2026, integração ARIMA-GARCH (Cap. I) e
@@ -32,8 +36,9 @@ FIGURAS = figuras/fig02-fluxograma-ea.pdf figuras/fig05-fluxo-arima.pdf figuras/
 GRAFICOS = graficos/heterocedasticidade.pdf
 
 # Duas versões (16/11/2026, pedido do autor): main.pdf sem a folha de aprovação e
-# main-aprovacao.pdf com ela (Manual 4.1.1.4: só na versão final).
-all: $(MAIN).pdf $(MAIN)-aprovacao.pdf $(MAIN).docx
+# main-aprovacao.pdf com ela (Manual 4.1.1.4: só na versão final). O mesmo para o
+# Word desde 25/11/2026: main.docx sem a folha e main-aprovacao.docx com ela.
+all: $(MAIN).pdf $(MAIN)-aprovacao.pdf $(MAIN).docx $(MAIN)-aprovacao.docx
 
 codigo/ARIMA_GARCH_EA.mq5: $(EA) $(GERADOR)
 	mkdir -p codigo

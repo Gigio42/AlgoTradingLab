@@ -2218,3 +2218,48 @@ sobre o experimento · **[resultado]** sobre como ler um número.
       com MM gerados entre 02/11 e 17/11 no prefixo novo podem ter usado o binário
       velho (**não verificado**; os que gravaram métricas usaram o novo, porque o velho
       não grava).
+
+120. **[build/norma] Versão final em PDF e Word, com e sem a folha de aprovação (25/11/2026,
+     pedido do autor).** Cópia antes: `ia/rascunhos/antes_versao_final_2026-11-25/`.
+    - **Conferido e sem problema:** 0 estouro de margem e 0 referência indefinida nos
+      dois PDFs (88 e 89 páginas); nenhum `;`, travessão longo, negrito, lista ou
+      primeira pessoa no corpo; toda ilustração com `\label`, fonte e chamada no
+      texto; nenhum "Tabela N" digitado; todas as obras do `.bib` citadas e toda
+      citação com entrada; resumo com 330 palavras e abstract com 339 (NBR 6028:
+      150 a 500); folha de aprovação conforme o modelo do Manual (4.1.1.4, Figura 5).
+    - **Corrigido no texto (só posição, nenhuma palavra mudou):** a Tabela 11 cortava
+      ao meio o último parágrafo da 3.10 (`checar_ilustracoes.sh`, efeito da mudança
+      de 17/11, item 118). O parágrafo "O retorno, portanto..." passou para antes das
+      quatro tabelas. Agora o texto da 3.10 termina, as Tabelas 11 a 13 vêm logo
+      depois e a 14 abre a página da 3.11. Mesmo número de páginas.
+    - **Defeito no Word achado e corrigido:** desde 17/11 o `main.docx` (que deveria
+      sair SEM a folha de aprovação) trazia uma folha quebrada, com os marcadores
+      `@@ESPACO@@`, `@@LARGURAS@@` e `@@VFILL@@` à vista. O pandoc não entende o
+      `\ifdefined` do `main.tex` e incluía o arquivo sempre. Agora o `converter.sh`
+      tira a chave (sem a folha) ou a troca pelo `\input` (com `APROVACAO=1`), e o
+      `make` gera também `main-aprovacao.docx`. No Word, a folha segue a do PDF:
+      cabeçalho, autores e título centralizados com os mesmos espaços, "Banca
+      Avaliadora:" e "Data da defesa" à esquerda, tabela em grade com linhas de 31
+      pt e letra 12 (`MarcaBanca` no `posprocessar.pl`, estilo `CapaEsquerda`). Na
+      mesma passada, o título em duas linhas da capa e da folha de rosto passou a
+      contar como duas na estimativa de altura do `fatec.lua` (contava uma, e o pé
+      da página ficava com menos folga).
+    - **Folha de aprovação em branco, por decisão do autor:** os dois avaliadores e a
+      data da defesa ficam para preencher à mão (ou nos `\newcommand` do início de
+      `tg/conteudo/folha-aprovacao.tex`, e `make` de novo).
+    - **Aplicado na conferência final, pedido do autor:** os achados 1 e 2 do item 115.
+      Cap. II (2.4.2): "A escolha das ordens usa sempre os últimos 240 pregões, mesmo
+      quando a janela de estimação é de 120." Apêndice A: "não foram usadas nos testes
+      principais" no lugar de "nos experimentos".
+    - **Continua aberto (decisão do autor, nada alterado):** o local de Biometrika
+      (Oxford, não confirmado); a data de acesso de Almeida (20 fev. 2025: o
+      ric.cps.sp.gov.br recusou a conexão de novo em 25/11); a resposta da
+      orientadora sobre "quase experimental" (item 98); 3.8 × 3.11.3 e o método
+      repetido no início da 3.11.2 e 3.11.3 (auditoria de 16/11).
+    - **Fechado pelo autor em 25/11:** a orientadora aceitou "quase experimental" (item
+      98 resolvido, texto já dizia isso); Almeida fica com a data de acesso atual (o
+      autor obteve o trabalho pelo coordenador do curso); Biometrika fica como está;
+      folha de aprovação preenchida à mão depois.
+    - O Word não foi aberto no Word nem no LibreOffice (não há LibreOffice nesta
+      máquina): a folha foi conferida no XML e no texto extraído pelo pandoc. O
+      sumário e as listas do Word são campos: ao abrir, aceitar "atualizar campos".

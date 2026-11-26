@@ -53,7 +53,7 @@ ficam em `scripts/comum.sh`.
 | `checar_ilustracoes.sh` | Depois de mexer no texto: lista as ilustrações que caíram no alto de uma página cortando um parágrafo ao meio (12/11/2026). Sem saída = nenhum corte. |
 | `dados_cru.sh` | Gera os dados do Cap. III a partir da refação de 05/10/2026. |
 | `graficos_cru.sh` | Compila os gráficos de `tg/graficos/cru/`. |
-| `docx/converter.sh` (e os demais de `docx/`) | Gera a versão em Word, `tg/main.docx`, a partir do LaTeX, pelo pandoc 3.8+ (`make docx` em `tg/`). Numeração, citações e referências saem do `main.aux` e do `main.bbl`, iguais às do PDF. |
+| `docx/converter.sh` (e os demais de `docx/`) | Gera a versão em Word, `tg/main.docx` (e, com `APROVACAO=1`, `tg/main-aprovacao.docx`, com a folha de aprovação, desde 25/11/2026), a partir do LaTeX, pelo pandoc 3.8+ (`make docx` em `tg/`). Numeração, citações e referências saem do `main.aux` e do `main.bbl`, iguais às do PDF. |
 | `metodos_ilustrados.sh` | Roda o `MetodosIlustrados.mq5` e guarda a saída em `dados/resultados/metodos_ilustrados_2026-10-30/`. |
 | `robo_em_acao.sh` | Resume o traço da refação de 05/10/2026 para as figuras 08 a 14 de `apresentacao/graficos_metodos/` (só lê arquivos). |
 | `modelo_completo.sh` | Roda o `ModeloCompleto.mq5` (refaz os pregões de 19 e 22/02/2021 com as funções do robô), guarda a saída em `dados/resultados/modelo_completo_2026-11-06/` e confere contra o traço. Dados dos relatórios `ia/relatorios/modelo-completo/` e `garch-funcionando/`. |
